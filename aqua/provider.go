@@ -1,83 +1,110 @@
 package aqua
 
 import (
-	"fmt"
-	"github.com/BryanKMorrow/aqua-sdk-go/client"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"context"
 	"log"
+
+	"github.com/aquasecurity/aqua-sdk-go/client"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
-const (
-	aquaUser     = "user"
-	aquaPassword = "password"
-	aquaURL      = "aqua_url"
+var version string
 
-	// MajorVersion is the major version
-	MajorVersion = 0
-	// MinorVersion is the minor version
-	MinorVersion = 0
-	// PatchVersion is the patch version
-	PatchVersion = 1
-)
+//Provider - Aquasec Provider
+func Provider(v string) *schema.Provider {
+	version = v
 
-// Version is the semver of this aqua
-var Version = fmt.Sprintf("%d.%d.%d", MajorVersion, MinorVersion, PatchVersion)
-
-// Provider returns a terraform aqua for Aqua Enterprise
-func Provider() *schema.Provider {
 	return &schema.Provider{
 		Schema: map[string]*schema.Schema{
-			aquaUser: {
+			"aquaUser": {
 				Type:        schema.TypeString,
-				Required:    true,
+				Optional:    true,
+				Sensitive:   true,
 				DefaultFunc: schema.EnvDefaultFunc("AQUA_USER", nil),
 			},
-			aquaPassword: {
+			"aquaPassword": {
 				Type:        schema.TypeString,
-				Required:    true,
+				Optional:    true,
 				Sensitive:   true,
 				DefaultFunc: schema.EnvDefaultFunc("AQUA_PASSWORD", nil),
 			},
-			aquaURL: {
+			"aquaURL": {
 				Type:        schema.TypeString,
-				Required:    true,
+				Optional:    true,
 				DefaultFunc: schema.EnvDefaultFunc("AQUA_URL", nil),
 			},
+			"config_path": {
+				Type:        schema.TypeString,
+				Optional:    true,
+				DefaultFunc: schema.EnvDefaultFunc("AQUA_CONFIG", "~/.aqua/tf.config"),
+				Description: "This is the file path for Aqua provider configuration. The default configuration path is ~/.aqua/tf.config",
+			},
 		},
-		ResourcesMap: map[string]*schema.Resource{
-			"aqua_users":                         resourceUser(),
-			"aqua_enforcer_groups":               resourceEnforcerGroup(),
-			"aqua_integration_registry":          resourceRegistry(),
-			"aqua_integration_serverless":        resourceServerless(),
-			"aqua_access_management_scopes":      resourceAccessManagementScope(),
-			"aqua_access_management_permissions": resourceAccessManagementPermission(),
-			"aqua_access_management_roles":       resourceAccessManagementRole(),
-		},
-		DataSourcesMap: map[string]*schema.Resource{
-			"aqua_users":                         dataSourceUser(),
-			"aqua_enforcer_groups":               dataSourceEnforcerGroup(),
-			"aqua_integration_registry":          dataSourceRegistry(),
-			"aqua_integration_serverless":        dataSourceServerless(),
-			"aqua_access_management_scopes":      dataSourceAccessManagementScope(),
-			"aqua_access_management_permissions": dataSourcePermissionSet(),
-			"aqua_access_management_roles":       dataSourceRole(),
-		},
-		ConfigureFunc: configureProvider,
+		ResourcesMap:         map[string]*schema.Resource{},
+		DataSourcesMap:       map[string]*schema.Resource{},
+		ConfigureContextFunc: providerConfigure,
 	}
 }
 
-func configureProvider(d *schema.ResourceData) (interface{}, error) {
-	user := d.Get(aquaUser).(string)
-	password := d.Get(aquaPassword).(string)
-	url := d.Get(aquaURL).(string)
+func getProviderConfigurationFromFile(d *schema.ResourceData) (string, string, string, error) {
+	log.Print("[DEBUG] Trying to load configuration from file")
+	return "", "", "", nil
+}
 
-	cli := client.NewClient(url, user, password)
+func providerConfigure(ctx context.Context, d *schema.ResourceData) (interface{}, diag.Diagnostics) {
+	var diags diag.Diagnostics
+	var err error
 
-	connected := cli.GetAuthToken()
+	aquaUser := d.Get("aquaUser").(string)
+	aquaPassword := d.Get("aquaPassword").(string)
+	aquaURL := d.Get("aquaURL").(string)
 
-	if !connected {
-		log.Fatalln("Failed to retrieve JWT Authorization Token")
+	if aquaUser == "" && aquaPassword == "" && aquaURL == "" {
+		aquaUser, aquaPassword, aquaURL, err = getProviderConfigurationFromFile(d)
+		if err != nil {
+			return nil, diag.FromErr(err)
+		}
 	}
 
-	return cli, nil
+	if aquaUser == "" {
+		diags = append(diags, diag.Diagnostic{
+			Severity: diag.Error,
+			Summary:  "Initializing provider, aquaUser parameter is missing",
+		})
+	}
+
+	if aquaPassword == "" {
+		diags = append(diags, diag.Diagnostic{
+			Severity: diag.Error,
+			Summary:  "Initializing provider, aquaPassword parameter is missing",
+		})
+	}
+
+	if aquaURL == "" {
+		diags = append(diags, diag.Diagnostic{
+			Severity: diag.Error,
+			Summary:  "Initializing provider, aquaURL parameter is missing",
+		})
+	}
+
+	if diags != nil && len(diags) > 0 {
+		return nil, diags
+	}
+
+	aquaClient := client.NewClient(aquaURL, aquaUser, aquaPassword)
+
+	connected := aquaClient.GetAuthToken()
+
+	if !connected {
+		diags = append(diags, diag.Diagnostic{
+			Severity: diag.Error,
+			Summary:  "Unable to fetch token",
+			Detail:   "Failed to retrieve JWT Authorization Token",
+		})
+
+		return nil, diags
+	}
+
+	return aquaClient, diags
 }
