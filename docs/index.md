@@ -13,10 +13,19 @@ description: |-
 ## Example Usage
 
 ```terraform
-provider "aqua" {
-  aquaUser     = "user"
-  aquaURL      = "http://aqua-url"
-  aquaPassword = "password"
+terraform {
+  required_providers {
+    aquasec = {
+      version = "0.2"
+      source  = "aquasec.com/demox/aquasec"
+    }
+  }
+}
+
+provider "aquasec" {
+  username = "admin"
+  aqua_url = "https://aquaurl.com"
+  password = "@password"
 }
 ```
 
@@ -25,7 +34,7 @@ provider "aqua" {
 
 ### Optional
 
-- **aquaPassword** (String, Sensitive)
-- **aquaURL** (String)
-- **aquaUser** (String, Sensitive)
+- **aqua_url** (String)
 - **config_path** (String) This is the file path for Aqua provider configuration. The default configuration path is ~/.aqua/tf.config
+- **password** (String, Sensitive)
+- **username** (String, Sensitive)

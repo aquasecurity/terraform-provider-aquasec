@@ -1,35 +1,31 @@
-package aqua
+package aquasec
 
 import (
 	"context"
 	"log"
 
-	"github.com/aquasecurity/aqua-sdk-go/client"
+	"github.com/aquasecurity/terraform-provider-aquasec/client"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
-var version string
-
-//Provider - Aquasec Provider
+// Provider -
 func Provider(v string) *schema.Provider {
-	version = v
-
 	return &schema.Provider{
 		Schema: map[string]*schema.Schema{
-			"aquaUser": {
+			"username": {
 				Type:        schema.TypeString,
 				Optional:    true,
 				Sensitive:   true,
 				DefaultFunc: schema.EnvDefaultFunc("AQUA_USER", nil),
 			},
-			"aquaPassword": {
+			"password": {
 				Type:        schema.TypeString,
 				Optional:    true,
 				Sensitive:   true,
 				DefaultFunc: schema.EnvDefaultFunc("AQUA_PASSWORD", nil),
 			},
-			"aquaURL": {
+			"aqua_url": {
 				Type:        schema.TypeString,
 				Optional:    true,
 				DefaultFunc: schema.EnvDefaultFunc("AQUA_URL", nil),
@@ -41,8 +37,12 @@ func Provider(v string) *schema.Provider {
 				Description: "This is the file path for Aqua provider configuration. The default configuration path is ~/.aqua/tf.config",
 			},
 		},
-		ResourcesMap:         map[string]*schema.Resource{},
-		DataSourcesMap:       map[string]*schema.Resource{},
+		ResourcesMap: map[string]*schema.Resource{
+			"aquasec_user": resourceUser(),
+		},
+		DataSourcesMap: map[string]*schema.Resource{
+			"aquasec_users": dataSourceUsers(),
+		},
 		ConfigureContextFunc: providerConfigure,
 	}
 }
@@ -56,35 +56,35 @@ func providerConfigure(ctx context.Context, d *schema.ResourceData) (interface{}
 	var diags diag.Diagnostics
 	var err error
 
-	aquaUser := d.Get("aquaUser").(string)
-	aquaPassword := d.Get("aquaPassword").(string)
-	aquaURL := d.Get("aquaURL").(string)
+	username := d.Get("username").(string)
+	password := d.Get("password").(string)
+	aquaURL := d.Get("aqua_url").(string)
 
-	if aquaUser == "" && aquaPassword == "" && aquaURL == "" {
-		aquaUser, aquaPassword, aquaURL, err = getProviderConfigurationFromFile(d)
+	if username == "" && password == "" && aquaURL == "" {
+		username, password, aquaURL, err = getProviderConfigurationFromFile(d)
 		if err != nil {
 			return nil, diag.FromErr(err)
 		}
 	}
 
-	if aquaUser == "" {
+	if username == "" {
 		diags = append(diags, diag.Diagnostic{
 			Severity: diag.Error,
-			Summary:  "Initializing provider, aquaUser parameter is missing",
+			Summary:  "Initializing provider, username parameter is missing",
 		})
 	}
 
-	if aquaPassword == "" {
+	if password == "" {
 		diags = append(diags, diag.Diagnostic{
 			Severity: diag.Error,
-			Summary:  "Initializing provider, aquaPassword parameter is missing",
+			Summary:  "Initializing provider, password parameter is missing",
 		})
 	}
 
 	if aquaURL == "" {
 		diags = append(diags, diag.Diagnostic{
 			Severity: diag.Error,
-			Summary:  "Initializing provider, aquaURL parameter is missing",
+			Summary:  "Initializing provider, aqua_url parameter is missing",
 		})
 	}
 
@@ -92,7 +92,7 @@ func providerConfigure(ctx context.Context, d *schema.ResourceData) (interface{}
 		return nil, diags
 	}
 
-	aquaClient := client.NewClient(aquaURL, aquaUser, aquaPassword)
+	aquaClient := client.NewClient(aquaURL, username, password)
 
 	connected := aquaClient.GetAuthToken()
 

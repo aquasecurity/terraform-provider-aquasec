@@ -12,3 +12,10 @@ provider "aquasec" {
   aqua_url = "https://aquaurl.com"
   password = "@password"
 }
+
+data "aquasec_users" "testusers" {
+}
+
+output "name" {
+  value = data.aquasec_users.testusers
+}

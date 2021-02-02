@@ -12,3 +12,15 @@ provider "aquasec" {
   aqua_url = "https://aquaurl.com"
   password = "@password"
 }
+
+
+resource "aquasec_user" "name" {
+  user_id  = "terraform-user"
+  password = "password"
+  name     = "Terraform User"
+  email    = "terraform@test.com"
+  roles = [
+    "Scanner",
+    "Administrator"
+  ]
+}
