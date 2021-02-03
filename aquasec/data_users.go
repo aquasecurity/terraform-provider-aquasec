@@ -48,32 +48,6 @@ func dataSourceUsers() *schema.Resource {
 	}
 }
 
-func flattenUsersData(users *[]client.User) ([]interface{}, string) {
-	id := ""
-	if users != nil {
-		us := make([]interface{}, len(*users), len(*users))
-
-		for i, user := range *users {
-			id = id + user.ID
-			u := make(map[string]interface{})
-
-			u["user_id"] = user.ID
-			u["name"] = user.Name
-			u["email"] = user.Email
-			u["roles"] = user.Roles
-			// oi["coffee_price"] = user.
-			// oi["coffee_image"] = user.Coffee.Image
-			// oi["quantity"] = user.Quantity
-
-			us[i] = u
-		}
-
-		return us, id
-	}
-
-	return make([]interface{}, 0), ""
-}
-
 func resourceRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Println("[DEBUG]  inside dataUser")
 	c := m.(*client.Client)
