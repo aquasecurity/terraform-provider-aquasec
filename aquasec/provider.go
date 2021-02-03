@@ -2,12 +2,24 @@ package aquasec
 
 import (
 	"context"
+	"encoding/json"
+	"fmt"
+	"io/ioutil"
 	"log"
+	"os"
 
 	"github.com/aquasecurity/terraform-provider-aquasec/client"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/mitchellh/go-homedir"
 )
+
+//Config - godoc
+type Config struct {
+	Username string `json:"tenant"`
+	Password string `json:"token"`
+	AquaURL  string `json:"aqua_url"`
+}
 
 // Provider -
 func Provider(v string) *schema.Provider {
@@ -33,7 +45,7 @@ func Provider(v string) *schema.Provider {
 			"config_path": {
 				Type:        schema.TypeString,
 				Optional:    true,
-				DefaultFunc: schema.EnvDefaultFunc("AQUA_CONFIG", "~/.aqua/tf.config"),
+				DefaultFunc: schema.EnvDefaultFunc("AQUA_CONFIG", "~/.aquasec/tf.config"),
 				Description: "This is the file path for Aqua provider configuration. The default configuration path is ~/.aqua/tf.config",
 			},
 		},
@@ -49,10 +61,38 @@ func Provider(v string) *schema.Provider {
 
 func getProviderConfigurationFromFile(d *schema.ResourceData) (string, string, string, error) {
 	log.Print("[DEBUG] Trying to load configuration from file")
+	if configPath, ok := d.GetOk("config_path"); ok && configPath.(string) != "" {
+		path, err := homedir.Expand(configPath.(string))
+		if err != nil {
+			log.Printf("[DEBUG] Failed to expand config file path %s, error %s", configPath, err)
+			return "", "", "", nil
+		}
+		if _, err := os.Stat(path); os.IsNotExist(err) {
+			log.Printf("[DEBUG] Terraform config file %s does not exist, error %s", path, err)
+			return "", "", "", nil
+		}
+		log.Printf("[DEBUG] Terraform configuration file is: %s", path)
+		configFile, err := os.Open(path)
+		if err != nil {
+			log.Printf("[DEBUG] Unable to open Terraform configuration file %s", path)
+			return "", "", "", fmt.Errorf("Unable to open terraform configuration file. Error %v", err)
+		}
+		defer configFile.Close()
+
+		configBytes, _ := ioutil.ReadAll(configFile)
+		var config Config
+		err = json.Unmarshal(configBytes, &config)
+		if err != nil {
+			log.Printf("[DEBUG] Failed to parse config file %s", path)
+			return "", "", "", fmt.Errorf("Invalid terraform configuration file format. Error %v", err)
+		}
+		return config.Username, config.Password, config.AquaURL, nil
+	}
 	return "", "", "", nil
 }
 
 func providerConfigure(ctx context.Context, d *schema.ResourceData) (interface{}, diag.Diagnostics) {
+	fmt.Println("----------------------------------------")
 	var diags diag.Diagnostics
 	var err error
 
