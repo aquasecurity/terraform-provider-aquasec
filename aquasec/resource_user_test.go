@@ -13,7 +13,7 @@ func TestAquasecUserManagement(t *testing.T) {
 	password := "password"
 	name := "terraform"
 	email := "terraform@test.com"
-	role := "administrator"
+	role := "Administrator"
 	resource.Test(t, resource.TestCase{
 		PreCheck:  func() { testAccPreCheck(t) },
 		Providers: testAccProviders,
