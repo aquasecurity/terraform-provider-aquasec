@@ -74,11 +74,9 @@ jobs:
       env:
         TF_ACC: "1"
         TF_ACC_TERRAFORM_VERSION: ${{ matrix.terraform }}
-
-        # Set whatever additional acceptance test env vars here. You can
-        # optionally use data from your repository secrets using the
-        # following syntax:
-        # SOME_VAR: ${{ secrets.SOME_VAR }}
+        AQUA_URL: "http://aqua-url"
+        AQUA_USER: "administrator"
+        AQUA_PASSWORD: "password"
 
       run: |
         go test -v -cover ./aquasec/
