@@ -9,7 +9,7 @@ import (
 )
 
 func TestAquasecUserManagement(t *testing.T) {
-	userID := "terraform ACC TEST USER"
+	userID := "terraform-test-user"
 	password := "password"
 	name := "terraform"
 	email := "terraform@test.com"
