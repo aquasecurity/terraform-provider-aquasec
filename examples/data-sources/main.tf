@@ -19,3 +19,10 @@ data "aquasec_users" "testusers" {
 output "name" {
   value = data.aquasec_users.testusers
 }
+
+data "aquasec_integration_registry" "testregistries" {
+}
+
+output "registries" {
+  value = data.aquasec_integration_registry.testregistries
+}

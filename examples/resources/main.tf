@@ -24,3 +24,15 @@ resource "aquasec_user" "name" {
     "Administrator"
   ]
 }
+
+resource "aquasec_integration_registry" "demoregistry" {
+  name = "terraform-ecr"
+  url = "us-east-1"
+  type = "AWS"
+  username = "APIKEY"
+  password = "SECRETKEY"
+  prefixes = [
+    "111111111111.dkr.ecr.us-east-1.amazonaws.com"
+  ]
+  auto_pull = true
+}
