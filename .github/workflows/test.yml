@@ -77,10 +77,6 @@ jobs:
         AQUA_URL: ${{ secrets.AQUA_URL }}
         AQUA_USER: ${{ secrets.AQUA_USER }}
         AQUA_PASSWORD: ${{ secrets.AQUA_PASSWORD }}
-        # Set whatever additional acceptance test env vars here. You can
-        # optionally use data from your repository secrets using the
-        # following syntax:
-        # SOME_VAR: ${{ secrets.SOME_VAR }}
 
       run: |
         go test -v -cover ./aquasec/
