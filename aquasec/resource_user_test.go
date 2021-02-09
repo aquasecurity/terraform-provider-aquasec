@@ -21,7 +21,7 @@ func TestAquasecUserManagement(t *testing.T) {
 			{
 				Config: testAccCheckAquasecUser(userID, password, name, email, role),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckAquasecUsersExists("aquasec_user.name"),
+					testAccCheckAquasecUsersExists("aquasec_user.user_id"),
 				),
 			},
 		},
