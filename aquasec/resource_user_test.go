@@ -15,8 +15,9 @@ func TestAquasecUserManagement(t *testing.T) {
 	email := "terraform@test.com"
 	role := "Administrator"
 	resource.Test(t, resource.TestCase{
-		PreCheck:  func() { testAccPreCheck(t) },
-		Providers: testAccProviders,
+		PreCheck:     func() { testAccPreCheck(t) },
+		Providers:    testAccProviders,
+		CheckDestroy: testAccUserDestroy,
 		Steps: []resource.TestStep{
 			{
 				// Config returns the test resource
@@ -40,7 +41,6 @@ func testAccCheckAquasecUser(userID string, password string, name string, email 
 		  "%s"
 		]
 	  }`, userID, password, name, email, role)
-
 }
 
 func testAccCheckAquasecUsersExists(n string) resource.TestCheckFunc {
@@ -54,7 +54,20 @@ func testAccCheckAquasecUsersExists(n string) resource.TestCheckFunc {
 		if rs.Primary.ID == "" {
 			return NewNotFoundErrorf("ID for %s in state", n)
 		}
-
 		return nil
 	}
+}
+
+func testAccUserDestroy(s *terraform.State) error {
+	for _, rs := range s.RootModule().Resources {
+		if rs.Type != "aquasec_user.new" {
+			continue
+		}
+
+		if rs.Primary.ID != "" {
+			return fmt.Errorf("Object %q still exists", rs.Primary.ID)
+		}
+		return nil
+	}
+	return nil
 }
