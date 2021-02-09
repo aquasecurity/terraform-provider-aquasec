@@ -24,3 +24,23 @@ resource "aquasec_user" "name" {
     "Administrator"
   ]
 }
+
+resource "aquasec_firewall_policy" "test-policy" {
+  name = "test-firewall-policy"
+  description = "this is a test firewall policy"
+
+  block_icmp_ping = true
+  block_metadata_service = false
+
+  inbound_networks {
+    allow = true
+    port_range = "8080-9999"
+    resource_type = "anywhere"
+  }
+
+  outbound_networks {
+    allow = false
+    port_range = "6060-7070"
+    resource_type = "anywhere"
+  }
+}

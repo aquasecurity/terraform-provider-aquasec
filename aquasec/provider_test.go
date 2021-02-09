@@ -10,7 +10,7 @@ import (
 
 var testAccProviders map[string]*schema.Provider
 var testAccProvider *schema.Provider
-var testVersion = "1.0.0"
+var testVersion = "1.0"
 
 func init() {
 	testAccProvider = Provider(testVersion)
