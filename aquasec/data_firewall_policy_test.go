@@ -10,7 +10,7 @@ import (
 
 func TestDataSourceFirewallPolicyBasic(t *testing.T) {
 	basicFirewallPolicy := client.FirewallPolicy{
-		Name:        "basic-data-firewall-policy",
+		Name:        "basic-data-firewall-policy" + randSuffix(6),
 		Description: "this is a basic firewall policy",
 	}
 
@@ -33,7 +33,7 @@ func TestDataSourceFirewallPolicyBasic(t *testing.T) {
 
 func TestDataSourceFirewallPolicyComplex(t *testing.T) {
 	complexFirewallpolicy := client.FirewallPolicy{
-		Name:                 "complex-data-firewall-policy",
+		Name:                 "complex-data-firewall-policy" + randSuffix(6),
 		Description:          "this is a complex firewall policy",
 		BlockICMPPing:        false,
 		BlockMetadataService: true,

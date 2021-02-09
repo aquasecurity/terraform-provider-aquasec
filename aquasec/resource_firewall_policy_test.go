@@ -10,7 +10,7 @@ import (
 
 func TestResourceAquasecFirewallPolicy(t *testing.T) {
 	basicFirewallPolicy := client.FirewallPolicy{
-		Name:        "basic-resource-firewall-policy",
+		Name:        "basic-resource-firewall-policy" + randSuffix(6),
 		Description: "this is a basic firewall policy",
 	}
 
@@ -33,7 +33,7 @@ func TestResourceAquasecFirewallPolicy(t *testing.T) {
 
 func TestResourceFirewallPolicyComplex(t *testing.T) {
 	complexFirewallpolicy := client.FirewallPolicy{
-		Name:                 "complex-resource-firewall-policy",
+		Name:                 "complex-resource-firewall-policy" + randSuffix(6),
 		Description:          "this is a complex firewall policy",
 		BlockICMPPing:        false,
 		BlockMetadataService: true,
