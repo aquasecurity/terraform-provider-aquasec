@@ -5,12 +5,13 @@ import (
 	"testing"
 
 	"github.com/aquasecurity/terraform-provider-aquasec/client"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/acctest"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 )
 
 func TestDataSourceFirewallPolicyBasic(t *testing.T) {
 	basicFirewallPolicy := client.FirewallPolicy{
-		Name:        "basic-data-firewall-policy" + randSuffix(6),
+		Name:        acctest.RandomWithPrefix("basic-data-firewall-policy"),
 		Description: "this is a basic firewall policy",
 	}
 
@@ -33,7 +34,7 @@ func TestDataSourceFirewallPolicyBasic(t *testing.T) {
 
 func TestDataSourceFirewallPolicyComplex(t *testing.T) {
 	complexFirewallpolicy := client.FirewallPolicy{
-		Name:                 "complex-data-firewall-policy" + randSuffix(6),
+		Name:                 acctest.RandomWithPrefix("complex-data-firewall-policy"),
 		Description:          "this is a complex firewall policy",
 		BlockICMPPing:        false,
 		BlockMetadataService: true,
