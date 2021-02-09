@@ -12,6 +12,7 @@ Please see the [GitHub template repository documentation](https://help.github.co
 
 Once you've written your provider, you'll want to [publish it on the Terraform Registry](https://www.terraform.io/docs/registry/providers/publishing.html) so that others can use it.
 
+
 ## Requirements
 
 -	[Terraform](https://www.terraform.io/downloads.html) >= 0.13.x
