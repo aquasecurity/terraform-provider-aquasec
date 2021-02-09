@@ -19,9 +19,10 @@ func TestAquasecUserManagement(t *testing.T) {
 		Providers: testAccProviders,
 		Steps: []resource.TestStep{
 			{
+				// Config returns the test resource
 				Config: testAccCheckAquasecUser(userID, password, name, email, role),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckAquasecUsersExists("aquasec_user.user_id"),
+					testAccCheckAquasecUsersExists("aquasec_user.new"),
 				),
 			},
 		},
