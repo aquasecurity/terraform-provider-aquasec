@@ -13,21 +13,21 @@ func TestAquasecUserManagementDatasource(t *testing.T) {
 		Providers: testAccProviders,
 		Steps: []resource.TestStep{
 			{
-				Config: `data "aquasec_users" "testusers" {}`,
-				Check:  testAccCheckAquasecUsersDataSurceExists("testusers"),
+				Config: testAccCheckAquasecUserDataSource(),
+				Check:  testAccCheckAquasecUsersDataSourceExists("data.aquasec_users.testusers"),
 			},
 		},
 	})
 }
 
-func testAccCheckAquasecUserDataSOurce() string {
+func testAccCheckAquasecUserDataSource() string {
 	return `
 	data "aquasec_users" "testusers" {}
 	`
 
 }
 
-func testAccCheckAquasecUsersDataSurceExists(n string) resource.TestCheckFunc {
+func testAccCheckAquasecUsersDataSourceExists(n string) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 		rs, ok := s.RootModule().Resources[n]
 
