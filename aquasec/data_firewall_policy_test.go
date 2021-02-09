@@ -14,7 +14,7 @@ func TestDataSourceFirewallPolicyBasic(t *testing.T) {
 		Description: "this is a basic firewall policy",
 	}
 
-	resource.ParallelTest(t, resource.TestCase{
+	resource.Test(t, resource.TestCase{
 		PreCheck: func() {
 			testAccPreCheck(t)
 		},
@@ -53,7 +53,7 @@ func TestDataSourceFirewallPolicyComplex(t *testing.T) {
 		},
 	}
 
-	resource.ParallelTest(t, resource.TestCase{
+	resource.Test(t, resource.TestCase{
 		PreCheck: func() {
 			testAccPreCheck(t)
 		},
