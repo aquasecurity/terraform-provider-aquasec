@@ -1,6 +1,7 @@
 package aquasec
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
@@ -8,22 +9,25 @@ import (
 )
 
 func TestAquasecRegistryDatasource(t *testing.T) {
+	name := "samplename"
 	resource.Test(t, resource.TestCase{
 		PreCheck:  func() { testAccPreCheck(t) },
 		Providers: testAccProviders,
 		Steps: []resource.TestStep{
 			{
-				Config: `data "aquasec_integration_registry" "testregistries" {}`,
+				Config: testAccCheckAquasecRegistryDataSource(name),
 				Check:  testAccCheckAquasecRegistryDataSourceExists("testregistries"),
 			},
 		},
 	})
 }
 
-func testAccCheckAquasecRegistryDataSOurce() string {
-	return `
-	data "aquasec_integration_registry" "testregistries" {}
-	`
+func testAccCheckAquasecRegistryDataSource(name string) string {
+	return fmt.Sprintf(`
+	data "aquasec_integration_registries" "testregistries" {
+		name = "%s"
+	}
+	`, name)
 
 }
 
