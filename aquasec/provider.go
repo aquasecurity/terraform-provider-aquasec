@@ -54,8 +54,8 @@ func Provider(v string) *schema.Provider {
 			"aquasec_integration_registry": resourceRegistry(),
 		},
 		DataSourcesMap: map[string]*schema.Resource{
-			"aquasec_users":                dataSourceUsers(),
-			"aquasec_integration_registry": dataSourceRegistry(),
+			"aquasec_users":                  dataSourceUsers(),
+			"aquasec_integration_registries": dataSourceRegistry(),
 		},
 		ConfigureContextFunc: providerConfigure,
 	}

@@ -25,7 +25,7 @@ func dataSourceRegistry() *schema.Resource {
 			},
 			"name": {
 				Type:     schema.TypeString,
-				Computed: true,
+				Required: true,
 			},
 			"url": {
 				Type:     schema.TypeString,
@@ -56,13 +56,13 @@ func dataSourceRegistry() *schema.Resource {
 
 func dataRegistryRead(d *schema.ResourceData, m interface{}) error {
 	log.Println("[DEBUG]  inside dataRegistryRead")
-	ac := m.(client.Client)
+	ac := m.(*client.Client)
 	name := d.Get("name").(string)
 	reg, err := ac.GetRegistry(name)
 	if err != nil {
 		return err
 	}
-	prefixes := d.Get("prefixes").([]interface{})
+	#prefixes := d.Get("prefixes").([]interface{})
 
 	d.Set("username", reg.Username)
 	d.Set("password", reg.Password)
