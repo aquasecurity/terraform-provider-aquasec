@@ -21,6 +21,7 @@ output "name" {
 }
 
 data "aquasec_integration_registry" "testregistries" {
+  name = "samplename"
 }
 
 output "registries" {

@@ -44,7 +44,7 @@ func dataSourceRegistry() *schema.Resource {
 				Computed: true,
 			},
 			"prefixes": {
-				Type:     schema.TypeSet,
+				Type:     schema.TypeList,
 				Computed: true,
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
@@ -62,6 +62,7 @@ func dataRegistryRead(d *schema.ResourceData, m interface{}) error {
 	if err != nil {
 		return err
 	}
+
 	prefixes := d.Get("prefixes").([]interface{})
 
 	d.Set("username", reg.Username)
