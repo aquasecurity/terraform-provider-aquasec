@@ -1,6 +1,8 @@
 package aquasec
 
-import "github.com/aquasecurity/terraform-provider-aquasec/client"
+import (
+	"github.com/aquasecurity/terraform-provider-aquasec/client"
+)
 
 func convertStringArr(ifaceArr []interface{}) []string {
 	return convertAndMapStringArr(ifaceArr, func(s string) string { return s })

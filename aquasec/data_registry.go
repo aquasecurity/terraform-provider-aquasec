@@ -62,7 +62,7 @@ func dataRegistryRead(d *schema.ResourceData, m interface{}) error {
 	if err != nil {
 		return err
 	}
-	#prefixes := d.Get("prefixes").([]interface{})
+	prefixes := d.Get("prefixes").([]interface{})
 
 	d.Set("username", reg.Username)
 	d.Set("password", reg.Password)
