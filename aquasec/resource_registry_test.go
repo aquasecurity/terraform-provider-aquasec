@@ -10,12 +10,12 @@ import (
 
 func TestAquasecresourceRegistry(t *testing.T) {
 	name := "testdemo"
-	url := ""
+	url := "https://docker.io"
 	rtype := "HUB"
 	username := ""
 	password := ""
 	prefixes := ""
-	autopull := true
+	autopull := false
 	resource.Test(t, resource.TestCase{
 		PreCheck:  func() { testAccPreCheck(t) },
 		Providers: testAccProviders,
