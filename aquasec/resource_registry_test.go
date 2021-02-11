@@ -17,8 +17,9 @@ func TestAquasecresourceRegistry(t *testing.T) {
 	prefixes := ""
 	autopull := false
 	resource.Test(t, resource.TestCase{
-		PreCheck:  func() { testAccPreCheck(t) },
-		Providers: testAccProviders,
+		PreCheck:     func() { testAccPreCheck(t) },
+		Providers:    testAccProviders,
+		CheckDestroy: testAccRegistryDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: testAccCheckAquasecRegistry(name, url, rtype, username, password, prefixes, autopull),
@@ -60,4 +61,18 @@ func testAccCheckAquasecRegistryExists(n string) resource.TestCheckFunc {
 
 		return nil
 	}
+}
+
+func testAccRegistryDestroy(s *terraform.State) error {
+	for _, rs := range s.RootModule().Resources {
+		if rs.Type != "aquasec_integration_registry.new" {
+			continue
+		}
+
+		if rs.Primary.ID != "" {
+			return fmt.Errorf("Object %q still exists", rs.Primary.ID)
+		}
+		return nil
+	}
+	return nil
 }
