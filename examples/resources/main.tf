@@ -25,6 +25,17 @@ resource "aquasec_user" "name" {
   ]
 }
 
+resource "aquasec_integration_registry" "demoregistry" {
+  name = "terraform-ecr"
+  url = "us-east-1"
+  type = "AWS"
+  username = "APIKEY"
+  password = "SECRETKEY"
+  prefixes = [
+    "111111111111.dkr.ecr.us-east-1.amazonaws.com"
+  ]
+  auto_pull = true
+}
 resource "aquasec_firewall_policy" "test-policy" {
   name = "test-firewall-policy"
   description = "this is a test firewall policy"

@@ -16,8 +16,8 @@ description: |-
 terraform {
   required_providers {
     aquasec = {
-      version = "0.2"
-      source  = "aquasec.com/demox/aquasec"
+      version = "1.0"
+      source  = "github.com/aquasec/aquasec"
     }
   }
 }
