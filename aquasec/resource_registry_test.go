@@ -23,7 +23,7 @@ func TestAquasecresourceRegistry(t *testing.T) {
 			{
 				Config: testAccCheckAquasecRegistry(name, url, rtype, username, password, prefixes, autopull),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckAquasecRegistryExists("aquasec_integration_registry.name"),
+					testAccCheckAquasecRegistryExists("aquasec_integration_registry.new"),
 				),
 			},
 		},

@@ -16,7 +16,7 @@ func TestAquasecRegistryDatasource(t *testing.T) {
 		Steps: []resource.TestStep{
 			{
 				Config: testAccCheckAquasecRegistryDataSource(name),
-				Check:  testAccCheckAquasecRegistryDataSourceExists("testregistries"),
+				Check:  testAccCheckAquasecRegistryDataSourceExists("data.aquasec_integration_registries.testregistries"),
 			},
 		},
 	})
