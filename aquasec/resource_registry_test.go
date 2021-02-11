@@ -9,12 +9,12 @@ import (
 )
 
 func TestAquasecresourceRegistry(t *testing.T) {
-	name := "terraform-ecr"
-	url := "us-east-1"
-	rtype := "AWS"
-	username := "APIKEY"
-	password := "SECRETKEY"
-	prefixes := "111111111111.dkr.ecr.us-east-1.amazonaws.com"
+	name := "testdemo"
+	url := ""
+	rtype := "HUB"
+	username := ""
+	password := ""
+	prefixes := ""
 	autopull := true
 	resource.Test(t, resource.TestCase{
 		PreCheck:  func() { testAccPreCheck(t) },
