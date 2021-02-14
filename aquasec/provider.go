@@ -53,11 +53,13 @@ func Provider(v string) *schema.Provider {
 			"aquasec_user":                 resourceUser(),
 			"aquasec_integration_registry": resourceRegistry(),
 			"aquasec_firewall_policy":      resourceFirewallPolicy(),
+			"aquasec_service":              resourceService(),
 		},
 		DataSourcesMap: map[string]*schema.Resource{
 			"aquasec_users":                  dataSourceUsers(),
 			"aquasec_integration_registries": dataSourceRegistry(),
 			"aquasec_firewall_policy":        dataSourceFirewallPolicy(),
+			"aquasec_service":                dataSourceService(),
 		},
 		ConfigureContextFunc: providerConfigure,
 	}
