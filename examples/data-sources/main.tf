@@ -27,3 +27,11 @@ data "aquasec_integration_registry" "testregistries" {
 output "registries" {
   value = data.aquasec_integration_registry.testregistries
 }
+
+data "aquasec_service" "test-svc" {
+  name = "test-svc"
+}
+
+output "service" {
+  value = data.aquasec_service.test-svc
+}

@@ -55,3 +55,29 @@ resource "aquasec_firewall_policy" "test-policy" {
     resource_type = "anywhere"
   }
 }
+
+resource "aquasec_service" "test-svc" {
+  name = "test-svc"
+  description = "test svc description"
+  policies = [
+    "default",
+  ]
+
+  priority = 95
+  target = "container"
+
+  scope_expression = "v1 || v2"
+  scope_variables {
+    attribute = "kubernetes.cluster"
+    value = "default"
+  }
+  scope_variables {
+      attribute = "kubernetes.cluster"
+      value = "kube-system"
+  }
+
+  application_scopes = [
+    "Global",
+  ]
+  enforce = true
+}
