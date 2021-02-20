@@ -79,4 +79,4 @@ jobs:
         AQUA_PASSWORD: ${{ secrets.AQUA_PASSWORD }}
 
       run: |
-        go test -v -cover ./aquasec/
+        go test -v -cover ./aquasec/ -timeout 30m
