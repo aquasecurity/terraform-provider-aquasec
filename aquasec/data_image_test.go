@@ -6,11 +6,12 @@ import (
 	"testing"
 
 	"github.com/aquasecurity/terraform-provider-aquasec/client"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/acctest"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 )
 
 var imageData = client.Image{
-	Registry:   "Docker Hub",
+	Registry:   acctest.RandomWithPrefix("terraform-test"),
 	Repository: "elasticsearch",
 	Tag:        "6.4.2",
 }
@@ -62,9 +63,9 @@ func imageDataRef(name string) string {
 }
 
 func getImageDataSource(image *client.Image) string {
-	return fmt.Sprintf(`
+	return getRegistry(image.Registry) + fmt.Sprintf(`
 	resource "aquasec_image" "test" {
-		registry = "%s"
+		registry = aquasec_integration_registry.demo.id
 		repository = "%s"
 		tag = "%s"
 	}
@@ -78,5 +79,5 @@ func getImageDataSource(image *client.Image) string {
 			aquasec_image.test,
 		]
 	}
-`, image.Registry, image.Repository, image.Tag)
+`, image.Repository, image.Tag)
 }

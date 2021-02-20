@@ -6,11 +6,12 @@ import (
 	"testing"
 
 	"github.com/aquasecurity/terraform-provider-aquasec/client"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/acctest"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 )
 
 var image = client.Image{
-	Registry:   "Docker Hub",
+	Registry:   acctest.RandomWithPrefix("terraform-test"),
 	Repository: "elasticsearch",
 	Tag:        "6.4.2",
 }
@@ -320,35 +321,47 @@ func imageResourceRef(name string) string {
 }
 
 func getImageResource(image *client.Image) string {
-	return fmt.Sprintf(`
+	return getRegistry(image.Registry) + fmt.Sprintf(`
 	resource "aquasec_image" "test" {
-		registry = "%s"
+		registry = aquasec_integration_registry.demo.id
 		repository = "%s"
 		tag = "%s"
 	}
-`, image.Registry, image.Repository, image.Tag)
+`, image.Repository, image.Tag)
 }
 
 func getImageResourceAllow(image *client.Image, comment string) string {
-	return fmt.Sprintf(`
+	return getRegistry(image.Registry) + fmt.Sprintf(`
 	resource "aquasec_image" "test" {
-		registry = "%s"
+		registry = aquasec_integration_registry.demo.id
 		repository = "%s"
 		tag = "%s"
 		allow_image = true
 		permission_modification_comment = "%s"
 	}
-`, image.Registry, image.Repository, image.Tag, comment)
+`, image.Repository, image.Tag, comment)
 }
 
 func getImageResourceBlock(image *client.Image, comment string) string {
-	return fmt.Sprintf(`
+	return getRegistry(image.Registry) + fmt.Sprintf(`
 	resource "aquasec_image" "test" {
-		registry = "%s"
+		registry = aquasec_integration_registry.demo.id
 		repository = "%s"
 		tag = "%s"
 		block_image = true
 		permission_modification_comment = "%s"
 	}
-`, image.Registry, image.Repository, image.Tag, comment)
+`, image.Repository, image.Tag, comment)
+}
+
+func getRegistry(name string) string {
+	return fmt.Sprintf(`
+	resource "aquasec_integration_registry" "demo" {
+		name = "%s"
+		type = "HUB"
+		prefixes = [
+			""
+		]
+	}
+`, name)
 }
