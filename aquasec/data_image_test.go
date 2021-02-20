@@ -71,13 +71,9 @@ func getImageDataSource(image *client.Image) string {
 	}
 
 	data "aquasec_image" "test" {
-		registry = aquasec_image.test.registry
-		repository = aquasec_image.test.repository
-		tag = aquasec_image.test.tag
-
-		depends_on = [
-			aquasec_image.test,
-		]
+		registry = split("/", aquasec_image.test.id).0
+		repository = split(":", split("/", aquasec_image.test.id).1).0
+		tag = split(":", split("/", aquasec_image.test.id).1).1
 	}
 `, image.Repository, image.Tag)
 }
