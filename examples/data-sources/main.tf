@@ -35,3 +35,13 @@ data "aquasec_service" "test-svc" {
 output "service" {
   value = data.aquasec_service.test-svc
 }
+
+data "aquasec_image" "test" {
+  registry = "Docker Hub"
+  repository = "elasticsearch"
+  tag = "7.10.1"
+}
+
+output "image" {
+  value = data.aquasec_image.test
+}
