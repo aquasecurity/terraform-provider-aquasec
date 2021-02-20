@@ -45,7 +45,7 @@ jobs:
     name: Matrix Test
     needs: build
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 60
     strategy:
       fail-fast: false
       matrix:
@@ -70,7 +70,7 @@ jobs:
         go mod download
         
     - name: TF acceptance tests
-      timeout-minutes: 30
+      timeout-minutes: 60
       env:
         TF_ACC: "1"
         TF_ACC_TERRAFORM_VERSION: ${{ matrix.terraform }}
@@ -79,4 +79,4 @@ jobs:
         AQUA_PASSWORD: ${{ secrets.AQUA_PASSWORD }}
 
       run: |
-        go test -v -cover ./aquasec/ -timeout 30m
+        go test -v -cover ./aquasec/ -timeout 60m
