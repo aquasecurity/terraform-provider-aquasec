@@ -671,6 +671,11 @@ func dataImageRead(ctx context.Context, d *schema.ResourceData, m interface{}) d
 	c := m.(*client.Client)
 	image := expandImage(d)
 
+	err = c.WaitUntilScanCompleted(image)
+	if err != nil {
+		return diag.FromErr(err)
+	}
+
 	newImage, err := c.GetImage(image)
 	if err != nil {
 		return diag.FromErr(err)
