@@ -9,25 +9,25 @@ import (
 )
 
 func TestAquasecEnforcerGroupDatasource(t *testing.T) {
-	group_id := "demo"
+	groupID := "local"
 	resource.Test(t, resource.TestCase{
 		PreCheck:  func() { testAccPreCheck(t) },
 		Providers: testAccProviders,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckAquasecEnforcerGroupDataSource(group_id),
+				Config: testAccCheckAquasecEnforcerGroupDataSource(groupID),
 				Check:  testAccCheckAquasecEnforcerGroupDataSourceExists("data.aquasec_enforcer_groups.testegdata"),
 			},
 		},
 	})
 }
 
-func testAccCheckAquasecEnforcerGroupDataSource(group_id string) string {
+func testAccCheckAquasecEnforcerGroupDataSource(groupID string) string {
 	return fmt.Sprintf(`
 	data "aquasec_enforcer_groups" "testegdata" {
 		group_id = "%s"
 	}
-	`, group_id)
+	`, groupID)
 
 }
 
