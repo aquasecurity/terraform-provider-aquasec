@@ -13,7 +13,7 @@ func TestAquasecenforcerGroup(t *testing.T) {
 	description := "Created"
 	logical_name := "terraform-eg"
 	enforce := false
-	gateways := "demo"
+	gateways := "local-cluster"
 	etype := "agent"
 	otype := "kubernetes"
 	service_account := "aqua-sa"
