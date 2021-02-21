@@ -26,7 +26,7 @@ func TestAquasecenforcerGroup(t *testing.T) {
 			{
 				Config: testAccCheckEnforcerGroup(group_id, description, logical_name, enforce, gateways, etype, otype, service_account, namespace, master),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckEnforcerGroupExists("aqua_enforcer_groups.terraform-eg"),
+					testAccCheckEnforcerGroupExists("aquasec_enforcer_groups.terraform-eg"),
 				),
 			},
 		},
@@ -35,7 +35,7 @@ func TestAquasecenforcerGroup(t *testing.T) {
 
 func testAccCheckEnforcerGroup(group_id string, description string, logical_name string, enforce bool, gateways string, etype string, otype string, service_account string, namespace string, master bool) string {
 	return fmt.Sprintf(`
-	resource "aqua_enforcer_groups" "terraform-eg" {
+	resource "aquasec_enforcer_groups" "terraform-eg" {
 		group_id = "%s"
 		description = "%s"
 		logical_name = "%s"
