@@ -25,8 +25,8 @@ func TestResourceAquasecFirewallPolicy(t *testing.T) {
 			{
 				Config: getBasicFirewallPolicyResource(basicFirewallPolicy),
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr(resourceRef(basicFirewallPolicy.Name), "name", basicFirewallPolicy.Name),
-					resource.TestCheckResourceAttr(resourceRef(basicFirewallPolicy.Name), "description", basicFirewallPolicy.Description),
+					resource.TestCheckResourceAttr(firewallPolicyResourceRef(basicFirewallPolicy.Name), "name", basicFirewallPolicy.Name),
+					resource.TestCheckResourceAttr(firewallPolicyResourceRef(basicFirewallPolicy.Name), "description", basicFirewallPolicy.Description),
 				),
 			},
 		},
@@ -64,23 +64,23 @@ func TestResourceFirewallPolicyComplex(t *testing.T) {
 			{
 				Config: getComplexFirewallPolicyResource(complexFirewallpolicy),
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr(resourceRef(complexFirewallpolicy.Name), "name", complexFirewallpolicy.Name),
-					resource.TestCheckResourceAttr(resourceRef(complexFirewallpolicy.Name), "description", complexFirewallpolicy.Description),
-					resource.TestCheckResourceAttr(resourceRef(complexFirewallpolicy.Name), "block_metadata_service", fmt.Sprintf("%v", complexFirewallpolicy.BlockMetadataService)),
-					resource.TestCheckResourceAttr(resourceRef(complexFirewallpolicy.Name), "block_icmp_ping", fmt.Sprintf("%v", complexFirewallpolicy.BlockICMPPing)),
-					resource.TestCheckResourceAttr(resourceRef(complexFirewallpolicy.Name), "outbound_networks.0.allow", fmt.Sprintf("%v", complexFirewallpolicy.OutboundNetworks[0].Allow)),
-					resource.TestCheckResourceAttr(resourceRef(complexFirewallpolicy.Name), "outbound_networks.0.port_range", complexFirewallpolicy.OutboundNetworks[0].PortRange),
-					resource.TestCheckResourceAttr(resourceRef(complexFirewallpolicy.Name), "outbound_networks.0.resource_type", complexFirewallpolicy.OutboundNetworks[0].ResourceType),
-					resource.TestCheckResourceAttr(resourceRef(complexFirewallpolicy.Name), "inbound_networks.0.allow", fmt.Sprintf("%v", complexFirewallpolicy.InboundNetworks[0].Allow)),
-					resource.TestCheckResourceAttr(resourceRef(complexFirewallpolicy.Name), "inbound_networks.0.port_range", complexFirewallpolicy.InboundNetworks[0].PortRange),
-					resource.TestCheckResourceAttr(resourceRef(complexFirewallpolicy.Name), "inbound_networks.0.resource_type", complexFirewallpolicy.InboundNetworks[0].ResourceType),
+					resource.TestCheckResourceAttr(firewallPolicyResourceRef(complexFirewallpolicy.Name), "name", complexFirewallpolicy.Name),
+					resource.TestCheckResourceAttr(firewallPolicyResourceRef(complexFirewallpolicy.Name), "description", complexFirewallpolicy.Description),
+					resource.TestCheckResourceAttr(firewallPolicyResourceRef(complexFirewallpolicy.Name), "block_metadata_service", fmt.Sprintf("%v", complexFirewallpolicy.BlockMetadataService)),
+					resource.TestCheckResourceAttr(firewallPolicyResourceRef(complexFirewallpolicy.Name), "block_icmp_ping", fmt.Sprintf("%v", complexFirewallpolicy.BlockICMPPing)),
+					resource.TestCheckResourceAttr(firewallPolicyResourceRef(complexFirewallpolicy.Name), "outbound_networks.0.allow", fmt.Sprintf("%v", complexFirewallpolicy.OutboundNetworks[0].Allow)),
+					resource.TestCheckResourceAttr(firewallPolicyResourceRef(complexFirewallpolicy.Name), "outbound_networks.0.port_range", complexFirewallpolicy.OutboundNetworks[0].PortRange),
+					resource.TestCheckResourceAttr(firewallPolicyResourceRef(complexFirewallpolicy.Name), "outbound_networks.0.resource_type", complexFirewallpolicy.OutboundNetworks[0].ResourceType),
+					resource.TestCheckResourceAttr(firewallPolicyResourceRef(complexFirewallpolicy.Name), "inbound_networks.0.allow", fmt.Sprintf("%v", complexFirewallpolicy.InboundNetworks[0].Allow)),
+					resource.TestCheckResourceAttr(firewallPolicyResourceRef(complexFirewallpolicy.Name), "inbound_networks.0.port_range", complexFirewallpolicy.InboundNetworks[0].PortRange),
+					resource.TestCheckResourceAttr(firewallPolicyResourceRef(complexFirewallpolicy.Name), "inbound_networks.0.resource_type", complexFirewallpolicy.InboundNetworks[0].ResourceType),
 				),
 			},
 		},
 	})
 }
 
-func resourceRef(name string) string {
+func firewallPolicyResourceRef(name string) string {
 	return fmt.Sprintf("aquasec_firewall_policy.%s", name)
 }
 

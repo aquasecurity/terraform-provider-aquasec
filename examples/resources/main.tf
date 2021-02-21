@@ -55,3 +55,45 @@ resource "aquasec_firewall_policy" "test-policy" {
     resource_type = "anywhere"
   }
 }
+
+resource "aquasec_service" "test-svc" {
+  name = "test-svc"
+  description = "test svc description"
+  policies = [
+    "default",
+  ]
+
+  priority = 95
+  target = "container"
+
+  scope_expression = "v1 || v2"
+  scope_variables {
+    attribute = "kubernetes.cluster"
+    value = "default"
+  }
+  scope_variables {
+      attribute = "kubernetes.cluster"
+      value = "kube-system"
+  }
+
+  application_scopes = [
+    "Global",
+  ]
+  enforce = true
+}
+resource "aquasec_enforcer_groups" "new" {
+  group_id = "terraform"
+  description = "Created1"
+  logical_name = "terraform-eg"
+  enforce = true
+  gateways = [
+    "local-cluster"
+  ]
+  type = "agent"
+  orchestrator {
+    type = "kubernetes"
+    service_account = "aquasa"
+    namespace = "aqua"
+    master = false
+  }
+}

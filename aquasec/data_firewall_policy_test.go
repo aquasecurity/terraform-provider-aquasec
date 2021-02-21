@@ -25,7 +25,7 @@ func TestDataSourceFirewallPolicyBasic(t *testing.T) {
 				Config: getBasicFirewallPolicyData(basicFirewallPolicy),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr(dataSourceRef(basicFirewallPolicy.Name), "name", basicFirewallPolicy.Name),
-					resource.TestCheckResourceAttr(dataSourceRef(basicFirewallPolicy.Name), "name", basicFirewallPolicy.Name),
+					resource.TestCheckResourceAttr(dataSourceRef(basicFirewallPolicy.Name), "description", basicFirewallPolicy.Description),
 				),
 			},
 		},

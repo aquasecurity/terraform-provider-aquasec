@@ -27,3 +27,19 @@ data "aquasec_integration_registry" "testregistries" {
 output "registries" {
   value = data.aquasec_integration_registry.testregistries
 }
+
+data "aquasec_service" "test-svc" {
+  name = "test-svc"
+}
+
+output "service" {
+  value = data.aquasec_service.test-svc
+}
+
+data "aquasec_enforcer_groups" "testegdata" {
+	group_id = "default"
+}
+
+output "enforcergroups"{
+  value = data.aquasec_enforcer_groups.testegdata
+}
