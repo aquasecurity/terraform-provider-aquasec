@@ -36,6 +36,7 @@ output "service" {
   value = data.aquasec_service.test-svc
 }
 
+<<<<<<< HEAD
 data "aquasec_enforcer_groups" "testegdata" {
 	group_id = "default"
 }
@@ -43,3 +44,14 @@ data "aquasec_enforcer_groups" "testegdata" {
 output "enforcergroups"{
   value = data.aquasec_enforcer_groups.testegdata
 }
+=======
+data "aquasec_image" "test" {
+  registry = "Docker Hub"
+  repository = "elasticsearch"
+  tag = "7.10.1"
+}
+
+output "image" {
+  value = data.aquasec_image.test
+}
+>>>>>>> main

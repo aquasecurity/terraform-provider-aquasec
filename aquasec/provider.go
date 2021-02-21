@@ -55,6 +55,7 @@ func Provider(v string) *schema.Provider {
 			"aquasec_firewall_policy":      resourceFirewallPolicy(),
 			"aquasec_enforcer_groups":      resourceEnforcerGroup(),
 			"aquasec_service":              resourceService(),
+			"aquasec_image":                resourceImage(),
 		},
 		DataSourcesMap: map[string]*schema.Resource{
 			"aquasec_users":                  dataSourceUsers(),
@@ -62,6 +63,7 @@ func Provider(v string) *schema.Provider {
 			"aquasec_firewall_policy":        dataSourceFirewallPolicy(),
 			"aquasec_enforcer_groups":        dataSourceEnforcerGroup(),
 			"aquasec_service":                dataSourceService(),
+			"aquasec_image":                  dataImage(),
 		},
 		ConfigureContextFunc: providerConfigure,
 	}

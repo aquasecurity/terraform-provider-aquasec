@@ -97,3 +97,8 @@ resource "aquasec_enforcer_groups" "new" {
     master = false
   }
 }
+resource "aquasec_image" "test" {
+  registry = "Docker Hub"
+  repository = "elasticsearch"
+  tag = "7.10.1"
+}
