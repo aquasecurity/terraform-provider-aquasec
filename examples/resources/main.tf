@@ -81,3 +81,9 @@ resource "aquasec_service" "test-svc" {
   ]
   enforce = true
 }
+
+resource "aquasec_image" "test" {
+  registry = "Docker Hub"
+  repository = "elasticsearch"
+  tag = "7.10.1"
+}

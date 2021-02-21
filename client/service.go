@@ -11,25 +11,25 @@ import (
 
 // Service represents a local Aqua Service
 type Service struct {
-	Name              string          `json:"name"`
-	Description       string          `json:"description"`
-	Author            string          `json:"author"`
-	Containers        []string        `json:"containers"`
-	ContainersCount   int             `json:"containers_count"`
-	Evaluated         bool            `json:"evaluated"`
-	Monitoring        bool            `json:"monitoring"`
-	Policies          []string        `json:"policies"`
-	Lastupdate        int             `json:"lastupdate"`
-	Vulnerabilities   Vulnerabilities `json:"vulnerabilities"`
-	Enforce           bool            `json:"enforce"`
-	MembershipRules   MembershipRules `json:"membership_rules"`
-	NotEvaluatedCount int             `json:"not_evaluated_count"`
-	UnregisteredCount int             `json:"unregistered_count"`
-	IsRegistered      bool            `json:"is_registered"`
-	ApplicationScopes []string        `json:"application_scopes"`
+	Name              string               `json:"name"`
+	Description       string               `json:"description"`
+	Author            string               `json:"author"`
+	Containers        []string             `json:"containers"`
+	ContainersCount   int                  `json:"containers_count"`
+	Evaluated         bool                 `json:"evaluated"`
+	Monitoring        bool                 `json:"monitoring"`
+	Policies          []string             `json:"policies"`
+	Lastupdate        int                  `json:"lastupdate"`
+	Vulnerabilities   VulnerabilitiesTypes `json:"vulnerabilities"`
+	Enforce           bool                 `json:"enforce"`
+	MembershipRules   MembershipRules      `json:"membership_rules"`
+	NotEvaluatedCount int                  `json:"not_evaluated_count"`
+	UnregisteredCount int                  `json:"unregistered_count"`
+	IsRegistered      bool                 `json:"is_registered"`
+	ApplicationScopes []string             `json:"application_scopes"`
 }
 
-type Vulnerabilities struct {
+type VulnerabilitiesTypes struct {
 	Total        int     `json:"total"`
 	High         int     `json:"high"`
 	Medium       int     `json:"medium"`
