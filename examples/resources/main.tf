@@ -81,7 +81,22 @@ resource "aquasec_service" "test-svc" {
   ]
   enforce = true
 }
-
+resource "aquasec_enforcer_groups" "new" {
+  group_id = "terraform"
+  description = "Created1"
+  logical_name = "terraform-eg"
+  enforce = true
+  gateways = [
+    "local-cluster"
+  ]
+  type = "agent"
+  orchestrator {
+    type = "kubernetes"
+    service_account = "aquasa"
+    namespace = "aqua"
+    master = false
+  }
+}
 resource "aquasec_image" "test" {
   registry = "Docker Hub"
   repository = "elasticsearch"
