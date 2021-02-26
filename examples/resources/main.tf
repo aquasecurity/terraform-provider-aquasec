@@ -102,3 +102,12 @@ resource "aquasec_image" "test" {
   repository = "elasticsearch"
   tag = "7.10.1"
 }
+
+resource "aquasec_notification_slack" "new" {
+    name = "Slack"
+    enabled = true
+    type = "slack"
+    channel = "#general"
+    webhook_url = "https://hooks.slack.com/services/T01PHXXXXXX/XXXXXXABJSC/EnwXXXXXXeoVS3BhR9SkBDAo"
+    user_name = "Aquasec"
+}

@@ -56,6 +56,7 @@ func Provider(v string) *schema.Provider {
 			"aquasec_enforcer_groups":      resourceEnforcerGroup(),
 			"aquasec_service":              resourceService(),
 			"aquasec_image":                resourceImage(),
+			"aquasec_notification_slack":   resourceNotification(),
 		},
 		DataSourcesMap: map[string]*schema.Resource{
 			"aquasec_users":                  dataSourceUsers(),
