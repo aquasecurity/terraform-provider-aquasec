@@ -22,7 +22,7 @@ func TestAquasecNotification(t *testing.T) {
 			{
 				Config: testAccCheckNotification(user_name, channel, webhook_url, enabled, stype, name),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckNotificationExists("aquasec_enforcer_groups.slacknew"),
+					testAccCheckNotificationExists("aquasec_notification_slack.slacknew"),
 				),
 			},
 		},
