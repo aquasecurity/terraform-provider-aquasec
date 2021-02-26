@@ -43,6 +43,7 @@ data "aquasec_enforcer_groups" "testegdata" {
 output "enforcergroups"{
   value = data.aquasec_enforcer_groups.testegdata
 }
+
 data "aquasec_image" "test" {
   registry = "Docker Hub"
   repository = "elasticsearch"
@@ -51,4 +52,12 @@ data "aquasec_image" "test" {
 
 output "image" {
   value = data.aquasec_image.test
+}
+
+data "aquasec_container_runtime_policy" "test" {
+  name = "test-container-runtime-policy"
+}
+
+output "test-crp" {
+  value = data.aquasec_container_runtime_policy.test
 }

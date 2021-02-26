@@ -104,10 +104,81 @@ resource "aquasec_image" "test" {
 }
 
 resource "aquasec_notification_slack" "new" {
-    name = "Slack"
-    enabled = true
-    type = "slack"
-    channel = "#general"
-    webhook_url = "https://hooks.slack.com/services/T01PHXXXXXX/XXXXXXABJSC/EnwXXXXXXeoVS3BhR9SkBDAo"
-    user_name = "Aquasec"
+  name = "Slack"
+  enabled = true
+  type = "slack"
+  channel = "#general"
+  webhook_url = "https://hooks.slack.com/services/T01PHXXXXXX/XXXXXXABJSC/EnwXXXXXXeoVS3BhR9SkBDAo"
+  user_name = "Aquasec"
+}
+
+resource "aquasec_container_runtime_policy" "test" {
+  name                          = "test"
+  description                   = "This is a container runtime policy"
+  enforce                       = true
+  enforce_after_days            = 9
+  block_non_compliant_images    = true
+  block_non_compliant_workloads = true
+  block_container_exec          = true
+  block_unregistered_images     = true
+  enable_drift_prevention       = true
+  allowed_executables = [
+    "test",
+    "exe",
+  ]
+  blocked_executables = [
+    "test1",
+    "exe1",
+  ]
+
+  blocked_files = [
+    "test",
+    "files",
+  ]
+  audit_all_processes_activity = true
+  audit_full_command_arguments = true
+  audit_all_network_activity   = true
+
+  enable_fork_guard        = true
+  fork_guard_process_limit = 12
+
+  enable_ip_reputation_security = true
+
+  blocked_packages = [
+    "pkg",
+  ]
+  blocked_inbound_ports = [
+    "80",
+    "8080"
+  ]
+  blocked_outbound_ports = [
+    "90",
+    "9090"
+  ]
+  enable_port_scan_detection = true
+  blocked_volumes = [
+    "blocked",
+    "vol"
+  ]
+  readonly_files_and_directories = [
+    "readonly",
+    "/dir/"
+  ]
+  exceptional_readonly_files_and_directories = [
+    "readonly2",
+    "/dir2/"
+  ]
+  block_access_host_network   = true
+  block_adding_capabilities   = true
+  block_use_pid_namespace     = true
+  block_use_ipc_namespace     = true
+  block_use_user_namespace    = true
+  block_use_uts_namespace     = true
+  block_privileged_containers = true
+  block_root_user             = true
+  block_low_port_binding      = true
+  limit_new_privileges = true
+  blocked_capabilities = [
+    "ALL"
+  ]
 }
