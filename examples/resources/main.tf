@@ -194,3 +194,68 @@ resource "aquasec_function_runtime_policy" "test" {
     "exe",
   ]
 }
+
+resource "aquasec_host_runtime_policy" "test" {
+  name               = "test-host-terraform"
+  description        = "This is a test host runtime policy."
+  enabled            = true
+  enforce            = false
+  enforce_after_days = 4
+  blocked_files = [
+    "blocked",
+  ]
+  audit_all_os_user_activity    = true
+  audit_full_command_arguments  = true
+  enable_ip_reputation_security = true
+  os_users_allowed = [
+    "user1",
+  ]
+  os_groups_allowed = [
+    "group1",
+  ]
+  os_users_blocked = [
+    "user2",
+  ]
+  os_groups_blocked = [
+    "group2",
+  ]
+  monitor_system_time_changes = true
+  monitor_windows_services    = true
+
+  windows_registry_monitoring {
+    monitor_create      = true
+    monitor_read        = true
+    monitor_modify      = true
+    monitor_delete      = true
+    monitor_attributes  = true
+    monitored_paths     = ["paths"]
+    excluded_paths      = ["expaths"]
+    monitored_processes = ["process"]
+    excluded_processes  = ["exprocess"]
+    monitored_users     = ["user"]
+    excluded_users      = ["expuser"]
+  }
+
+  windows_registry_protection {
+    protected_paths     = ["paths"]
+    excluded_paths      = ["expaths"]
+    protected_processes = ["process"]
+    excluded_processes  = ["exprocess"]
+    protected_users     = ["user"]
+    excluded_users      = ["expuser"]
+  }
+
+  file_integrity_monitoring {
+    monitor_create      = true
+    monitor_read        = true
+    monitor_modify      = true
+    monitor_delete      = true
+    monitor_attributes  = true
+    monitored_paths     = ["paths"]
+    excluded_paths      = ["expaths"]
+    monitored_processes = ["process"]
+    excluded_processes  = ["exprocess"]
+    monitored_users     = ["user"]
+    excluded_users      = ["expuser"]
+  }
+}

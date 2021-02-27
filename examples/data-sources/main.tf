@@ -69,3 +69,11 @@ data "aquasec_function_runtime_policy" "test" {
 output "test-frp" {
   value = data.aquasec_function_runtime_policy.test
 }
+
+data "aquasec_host_runtime_policy" "test" {
+  name = "test-host-runtime-policy"
+}
+
+output "test-hrp" {
+  value = data.aquasec_host_runtime_policy.test
+}
