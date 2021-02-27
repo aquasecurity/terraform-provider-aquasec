@@ -58,6 +58,7 @@ func Provider(v string) *schema.Provider {
 			"aquasec_image":                    resourceImage(),
 			"aquasec_notification_slack":       resourceNotification(),
 			"aquasec_container_runtime_policy": resourceContainerRuntimePolicy(),
+			"aquasec_function_runtime_policy":  resourceFunctionRuntimePolicy(),
 		},
 		DataSourcesMap: map[string]*schema.Resource{
 			"aquasec_users":                    dataSourceUsers(),
@@ -67,6 +68,7 @@ func Provider(v string) *schema.Provider {
 			"aquasec_service":                  dataSourceService(),
 			"aquasec_image":                    dataImage(),
 			"aquasec_container_runtime_policy": dataContainerRuntimePolicy(),
+			"aquasec_function_runtime_policy":  dataFunctionRuntimePolicy(),
 		},
 		ConfigureContextFunc: providerConfigure,
 	}

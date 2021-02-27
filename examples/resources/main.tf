@@ -182,3 +182,15 @@ resource "aquasec_container_runtime_policy" "test" {
     "ALL"
   ]
 }
+
+resource "aquasec_function_runtime_policy" "test" {
+  name                          = "test-function-terraform"
+  description                   = "This is a test description."
+  enforce                       = true
+  block_malicious_executables   = true
+
+  blocked_executables = [
+    "bin",
+    "exe",
+  ]
+}

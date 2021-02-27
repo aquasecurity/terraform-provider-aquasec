@@ -61,3 +61,11 @@ data "aquasec_container_runtime_policy" "test" {
 output "test-crp" {
   value = data.aquasec_container_runtime_policy.test
 }
+
+data "aquasec_function_runtime_policy" "test" {
+  name = "test-function-runtime-policy"
+}
+
+output "test-frp" {
+  value = data.aquasec_function_runtime_policy.test
+}
