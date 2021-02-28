@@ -35,6 +35,8 @@ provider "aquasec" {
 ### Optional
 
 - **aqua_url** (String)
+- **ca_certificate_path** (String) This is the file path for server CA certificates if they are not available on the host OS.
 - **config_path** (String) This is the file path for Aqua provider configuration. The default configuration path is ~/.aqua/tf.config
 - **password** (String, Sensitive)
 - **username** (String, Sensitive)
+- **verify_tls** (Boolean) If true, server tls certificates will be verified by the client before making a connection. Defaults to true.

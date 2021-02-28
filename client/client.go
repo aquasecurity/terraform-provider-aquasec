@@ -2,8 +2,9 @@ package client
 
 import (
 	"crypto/tls"
+	"crypto/x509"
 	"encoding/json"
-	"log"
+	"fmt"
 
 	"github.com/parnurzeal/gorequest"
 )
@@ -19,35 +20,46 @@ type Client struct {
 }
 
 // NewClient - initialize and return the Client
-func NewClient(url string, user string, password string) *Client {
+func NewClient(url, user, password string, verifyTLS bool, caCertByte []byte) *Client {
+	tlsConfig := &tls.Config{
+		InsecureSkipVerify: !verifyTLS,
+	}
+
+	roots := x509.NewCertPool()
+	if len(caCertByte) > 0 {
+		roots.AppendCertsFromPEM(caCertByte)
+
+		if verifyTLS {
+			tlsConfig = &tls.Config{
+				RootCAs: roots,
+			}
+		}
+	}
+
 	c := &Client{
 		url:       url,
 		user:      user,
 		password:  password,
-		gorequest: gorequest.New().TLSClientConfig(&tls.Config{InsecureSkipVerify: true}),
+		gorequest: gorequest.New().TLSClientConfig(tlsConfig),
 	}
 	return c
 }
 
 // GetAuthToken - Connect to Aqua and return a JWT bearerToken (string)
 // Return: bool - successfully connected?
-func (cli *Client) GetAuthToken() bool {
-	var connected bool
-	resp, body, err := cli.gorequest.Post(cli.url+"/api/v1/login").Param("abilities", "1").
+func (cli *Client) GetAuthToken() (string, error) {
+	resp, body, errs := cli.gorequest.Post(cli.url+"/api/v1/login").Param("abilities", "1").
 		Send(`{"id":"` + cli.user + `", "password":"` + cli.password + `"}`).End()
-	if err != nil {
-		connected = false
-		return connected
+	if errs != nil {
+		return "", getMergedError(errs)
 	}
 
 	if resp.StatusCode == 200 {
 		var raw map[string]interface{}
 		_ = json.Unmarshal([]byte(body), &raw)
 		cli.token = raw["token"].(string)
-		connected = true
-	} else {
-		log.Printf("Failed with status: %s", resp.Status)
-		connected = false
+		return cli.token, nil
 	}
-	return connected
+
+	return "", fmt.Errorf("request failed. status: %s, response: %s", resp.Status, body)
 }

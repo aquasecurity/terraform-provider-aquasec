@@ -42,6 +42,18 @@ func Provider(v string) *schema.Provider {
 				Optional:    true,
 				DefaultFunc: schema.EnvDefaultFunc("AQUA_URL", nil),
 			},
+			"verify_tls": {
+				Type:        schema.TypeBool,
+				Optional:    true,
+				DefaultFunc: schema.EnvDefaultFunc("AQUA_TLS_VERIFY", true),
+				Description: "If true, server tls certificates will be verified by the client before making a connection. Defaults to true.",
+			},
+			"ca_certificate_path": {
+				Type:        schema.TypeString,
+				Optional:    true,
+				DefaultFunc: schema.EnvDefaultFunc("AQUA_CA_CERT_PATH", nil),
+				Description: "This is the file path for server CA certificates if they are not available on the host OS.",
+			},
 			"config_path": {
 				Type:        schema.TypeString,
 				Optional:    true,
@@ -116,6 +128,8 @@ func providerConfigure(ctx context.Context, d *schema.ResourceData) (interface{}
 	username := d.Get("username").(string)
 	password := d.Get("password").(string)
 	aquaURL := d.Get("aqua_url").(string)
+	verifyTLS := d.Get("verify_tls").(bool)
+	caCertPath := d.Get("ca_certificate_path").(string)
 
 	if username == "" && password == "" && aquaURL == "" {
 		username, password, aquaURL, err = getProviderConfigurationFromFile(d)
@@ -145,19 +159,32 @@ func providerConfigure(ctx context.Context, d *schema.ResourceData) (interface{}
 		})
 	}
 
+	var caCertByte []byte
+	if caCertPath != "" {
+		caCertByte, err = ioutil.ReadFile(caCertPath)
+		if err != nil {
+			diags = append(diags, diag.Diagnostic{
+				Severity: diag.Error,
+				Summary:  "Unable to read CA certificates",
+				Detail:   err.Error(),
+			})
+
+			return nil, diags
+		}
+	}
+
 	if diags != nil && len(diags) > 0 {
 		return nil, diags
 	}
 
-	aquaClient := client.NewClient(aquaURL, username, password)
+	aquaClient := client.NewClient(aquaURL, username, password, verifyTLS, caCertByte)
 
-	connected := aquaClient.GetAuthToken()
-
-	if !connected {
+	_, err = aquaClient.GetAuthToken()
+	if err != nil {
 		diags = append(diags, diag.Diagnostic{
 			Severity: diag.Error,
 			Summary:  "Unable to fetch token",
-			Detail:   "Failed to retrieve JWT Authorization Token",
+			Detail:   err.Error(),
 		})
 
 		return nil, diags
