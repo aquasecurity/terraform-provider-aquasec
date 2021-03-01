@@ -1,7 +1,8 @@
 package client
 
 import (
-	"github.com/pkg/errors"
+	"errors"
+	"strings"
 )
 
 type ErrorResponse struct {
@@ -10,10 +11,10 @@ type ErrorResponse struct {
 }
 
 func getMergedError(errs []error) error {
-	var mergedErr error
+	var errStrs []string
 	for _, err := range errs {
-		mergedErr = errors.Wrap(mergedErr, err.Error())
+		errStrs = append(errStrs, err.Error())
 	}
 
-	return mergedErr
+	return errors.New(strings.Join(errStrs, "; "))
 }
