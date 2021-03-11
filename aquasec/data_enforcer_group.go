@@ -124,29 +124,27 @@ func dataSourceEnforcerGroup() *schema.Resource {
 }
 
 func dataEnforcerGroupRead(d *schema.ResourceData, m interface{}) error {
-	log.Println("[DEBUG]  inside dataEnforcerGroupRead")
 	ac := m.(*client.Client)
 	name := d.Get("group_id").(string)
 	group, err := ac.GetEnforcerGroup(name)
-	log.Print(group)
-	if err != nil {
+	if err == nil {
+		d.Set("group_id", group.ID)
+		d.Set("description", group.Description)
+		d.Set("logical_name", group.Logicalname)
+		d.Set("type", group.Type)
+		d.Set("enforce", group.Enforce)
+		//d.Set("gateways", convertStringArr(gateways))
+		d.Set("gateways", group.Gateways)
+		d.Set("token", group.Token)
+		d.Set("orchestrator", flattenOrchestrators(group.Orchestrator))
+		d.Set("command", flattenCommands(group.Command))
+
+		log.Println("[DEBUG]  setting id: ", name)
+		d.SetId(name)
+	} else {
 		return err
 	}
 	//gateways := d.Get("gateways").([]interface{})
-
-	d.Set("group_id", group.ID)
-	d.Set("description", group.Description)
-	d.Set("logical_name", group.Logicalname)
-	d.Set("type", group.Type)
-	d.Set("enforce", group.Enforce)
-	//d.Set("gateways", convertStringArr(gateways))
-	d.Set("gateways", group.Gateways)
-	d.Set("token", group.Token)
-	d.Set("orchestrator", flattenOrchestrators(group.Orchestrator))
-	d.Set("command", flattenCommands(group.Command))
-
-	log.Println("[DEBUG]  setting id: ", name)
-	d.SetId(name)
 
 	return nil
 }
