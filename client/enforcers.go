@@ -160,13 +160,11 @@ func (cli *Client) UpdateEnforcerGroup(group EnforcerGroup) error {
 	apiPath := "/api/v1/hostsbatch"
 	resp, _, errs := request.Clone().Put(cli.url+apiPath).Send(string(payload)).Param("update_enforcers", "true").End()
 	//resp, _, errs := request.Clone().Put(cli.url + apiPath).Send(string(payload)).End()
-	log.Print("Printing Resp Code from Update..")
-	log.Print(resp.StatusCode)
+
 	if errs != nil {
 		return errors.Wrap(err, "failed modifying enforcer group")
 	}
 	if resp.StatusCode != 201 || resp.StatusCode != 204 {
-		log.Print("Print from wrong status code..")
 		return err
 	}
 	return nil
