@@ -223,26 +223,32 @@ func resourceEnforcerGroupCreate(d *schema.ResourceData, m interface{}) error {
 	}
 
 	err := ac.CreateEnforcerGroup(group)
+
 	if err != nil {
 		return err
 	}
-	log.Println(d)
-	d.SetId(d.Get("group_id").(string))
 
 	err = resourceEnforcerGroupRead(d, m)
-	return err
+
+	if err == nil {
+		d.SetId(d.Get("group_id").(string))
+	} else {
+		return err
+	}
+
+	return nil
 }
 
 func resourceEnforcerGroupRead(d *schema.ResourceData, m interface{}) error {
 	ac := m.(*client.Client)
 	name := d.Get("group_id").(string)
-	log.Println("[DEBUG]  enforcer group name: ", name)
+
 	r, err := ac.GetEnforcerGroup(name)
 	if err != nil {
 		log.Print("[ERROR]  error calling ac.GetEnforcerGroup: ", r)
 		return err
 	}
-	log.Println("[DEBUG]  enforcer group: ", r)
+
 	return nil
 }
 
@@ -284,11 +290,13 @@ func resourceEnforcerGroupUpdate(d *schema.ResourceData, m interface{}) error {
 		}
 
 		err := ac.UpdateEnforcerGroup(group)
-		if err != nil {
+		if err == nil {
+			_ = d.Set("last_updated", time.Now().Format(time.RFC850))
+
+		} else {
 			log.Println("[DEBUG]  error while updating enforcer group: ", err)
 			return err
 		}
-		_ = d.Set("last_updated", time.Now().Format(time.RFC850))
 	}
 	return nil
 }

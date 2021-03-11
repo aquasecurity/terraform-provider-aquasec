@@ -169,17 +169,21 @@ func resourceService() *schema.Resource {
 
 func resourceServiceCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	c := m.(*client.Client)
-	name := d.Get("name").(string)
+	//name := d.Get("name").(string)
 
 	service := expandService(d)
 	err := c.CreateService(service)
-	if err != nil {
+	if err == nil {
 		return diag.FromErr(err)
 	}
 
-	d.SetId(name)
+	//d.SetId(name)
+	err1 := resourceServiceRead(ctx, d, m)
+	if err1 != nil {
+		return err1
+	}
 
-	return resourceServiceRead(ctx, d, m)
+	return nil
 }
 
 func resourceServiceRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
@@ -187,36 +191,35 @@ func resourceServiceRead(ctx context.Context, d *schema.ResourceData, m interfac
 	name := d.Get("name").(string)
 
 	service, err := c.GetService(name)
-	if err != nil {
+	if err == nil {
+		d.Set("description", service.Description)
+		d.Set("author", service.Author)
+		d.Set("containers_count", service.ContainersCount)
+		d.Set("monitoring", service.Monitoring)
+		d.Set("evaluated", service.Evaluated)
+		d.Set("policies", service.Policies)
+		d.Set("lastupdate", service.Lastupdate)
+		d.Set("vulnerabilities_total", service.Vulnerabilities.Total)
+		d.Set("vulnerabilities_high", service.Vulnerabilities.High)
+		d.Set("vulnerabilities_medium", service.Vulnerabilities.Medium)
+		d.Set("vulnerabilities_low", service.Vulnerabilities.Low)
+		d.Set("vulnerabilities_sensitive", service.Vulnerabilities.Sensitive)
+		d.Set("vulnerabilities_malware", service.Vulnerabilities.Malware)
+		d.Set("vulnerabilities_negligible", service.Vulnerabilities.Negligible)
+		d.Set("vulnerabilities_score_average", service.Vulnerabilities.ScoreAverage)
+		d.Set("enforce", service.Enforce)
+		d.Set("priority", service.MembershipRules.Priority)
+		d.Set("target", service.MembershipRules.Target)
+		d.Set("scope_expression", service.MembershipRules.Scope.Expression)
+		d.Set("scope_variables", flattenScopeVariables(service.MembershipRules.Scope.Variables))
+		d.Set("not_evaluated_count", service.NotEvaluatedCount)
+		d.Set("unregistered_count", service.UnregisteredCount)
+		d.Set("is_registered", service.IsRegistered)
+		d.Set("application_scopes", service.ApplicationScopes)
+		d.SetId(name)
+	} else {
 		return diag.FromErr(err)
 	}
-
-	d.Set("description", service.Description)
-	d.Set("author", service.Author)
-	d.Set("containers_count", service.ContainersCount)
-	d.Set("monitoring", service.Monitoring)
-	d.Set("evaluated", service.Evaluated)
-	d.Set("policies", service.Policies)
-	d.Set("lastupdate", service.Lastupdate)
-	d.Set("vulnerabilities_total", service.Vulnerabilities.Total)
-	d.Set("vulnerabilities_high", service.Vulnerabilities.High)
-	d.Set("vulnerabilities_medium", service.Vulnerabilities.Medium)
-	d.Set("vulnerabilities_low", service.Vulnerabilities.Low)
-	d.Set("vulnerabilities_sensitive", service.Vulnerabilities.Sensitive)
-	d.Set("vulnerabilities_malware", service.Vulnerabilities.Malware)
-	d.Set("vulnerabilities_negligible", service.Vulnerabilities.Negligible)
-	d.Set("vulnerabilities_score_average", service.Vulnerabilities.ScoreAverage)
-	d.Set("enforce", service.Enforce)
-	d.Set("priority", service.MembershipRules.Priority)
-	d.Set("target", service.MembershipRules.Target)
-	d.Set("scope_expression", service.MembershipRules.Scope.Expression)
-	d.Set("scope_variables", flattenScopeVariables(service.MembershipRules.Scope.Variables))
-	d.Set("not_evaluated_count", service.NotEvaluatedCount)
-	d.Set("unregistered_count", service.UnregisteredCount)
-	d.Set("is_registered", service.IsRegistered)
-	d.Set("application_scopes", service.ApplicationScopes)
-
-	d.SetId(name)
 
 	return nil
 }
@@ -228,12 +231,14 @@ func resourceServiceUpdate(ctx context.Context, d *schema.ResourceData, m interf
 	if d.HasChanges("description", "monitoring", "policies", "enforce", "application_scopes", "target", "priority", "scope_expression", "scope_variables") {
 		service := expandService(d)
 		err := c.UpdateService(service)
-		if err != nil {
+		if err == nil {
+			d.SetId(name)
+		} else {
 			return diag.FromErr(err)
 		}
 	}
 
-	d.SetId(name)
+	//d.SetId(name)
 
 	return nil
 }
@@ -243,11 +248,13 @@ func resourceServiceDelete(ctx context.Context, d *schema.ResourceData, m interf
 	name := d.Get("name").(string)
 
 	err := c.DeleteService(name)
-	if err != nil {
+	if err == nil {
+		d.SetId("")
+	} else {
 		return diag.FromErr(err)
 	}
 
-	d.SetId("")
+	//d.SetId("")
 
 	return nil
 }

@@ -703,9 +703,17 @@ func resourceImageCreate(ctx context.Context, d *schema.ResourceData, m interfac
 		return diag.FromErr(err)
 	}
 
-	d.SetId(getImageId(image))
+	//d.SetId(getImageId(image))
 
-	return resourceImageRead(ctx, d, m)
+	err1 := resourceImageRead(ctx, d, m)
+	if err1 == nil {
+		d.SetId(getImageId(image))
+	} else {
+		return err1
+	}
+
+	return nil
+	//return resourceImageRead(ctx, d, m)
 }
 
 func resourceImageRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
@@ -719,62 +727,62 @@ func resourceImageRead(ctx context.Context, d *schema.ResourceData, m interface{
 	}
 
 	vulnerabilities, err := c.GetVulnerabilities(image)
-	if err != nil {
+	if err == nil {
+		d.Set("registry", newImage.Registry)
+		d.Set("registry_type", newImage.RegistryType)
+		d.Set("repository", newImage.Repository)
+		d.Set("tag", newImage.Tag)
+		d.Set("scan_status", newImage.ScanStatus)
+		d.Set("scan_date", newImage.ScanDate)
+		d.Set("scan_error", newImage.ScanError)
+		d.Set("digest", newImage.Digest)
+		d.Set("labels", newImage.Labels)
+		d.Set("docker_id", newImage.Metadata.DockerID)
+		d.Set("parent", newImage.Metadata.Parent)
+		d.Set("repo_digests", newImage.Metadata.RepoDigests)
+		d.Set("comment", newImage.Metadata.Comment)
+		d.Set("created", newImage.Metadata.Created)
+		d.Set("docker_version", newImage.Metadata.DockerVersion)
+		d.Set("architecture", newImage.Metadata.Architecture)
+		d.Set("virtual_size", newImage.Metadata.VirtualSize)
+		d.Set("default_user", newImage.Metadata.DefaultUser)
+		d.Set("environment_variables", newImage.Metadata.Env)
+		d.Set("docker_labels", newImage.Metadata.DockerLabels)
+		d.Set("image_type", newImage.Metadata.ImageType)
+		d.Set("critical_vulnerabilities", newImage.CritVulns)
+		d.Set("high_vulnerabilities", newImage.HighVulns)
+		d.Set("medium_vulnerabilities", newImage.MedVulns)
+		d.Set("low_vulnerabilities", newImage.LowVulns)
+		d.Set("negligible_vulnerabilities", newImage.NegVulns)
+		d.Set("total_vulnerabilities", newImage.VulnsFound)
+		d.Set("sensitive_data", newImage.SensitiveData)
+		d.Set("malware", newImage.Malware)
+		d.Set("image_size", newImage.Size)
+		d.Set("author", newImage.Author)
+		d.Set("os", newImage.Os)
+		d.Set("os_version", newImage.OsVersion)
+		d.Set("disallowed", newImage.Disallowed)
+		d.Set("whitelisted", newImage.Whitelisted)
+		d.Set("blacklisted", newImage.Blacklisted)
+		d.Set("permission_author", newImage.PermissionAuthor)
+		d.Set("permission", newImage.Permission)
+		d.Set("permission_comment", newImage.PermissionComment)
+		d.Set("newer_image_exists", newImage.NewerImageExists)
+		d.Set("partial_results", newImage.PartialResults)
+		d.Set("name", newImage.Name)
+		d.Set("pending_disallowed", newImage.PendingDisallowed)
+		d.Set("dta_severity_score", newImage.DtaSeverityScore)
+		d.Set("dta_skipped", newImage.DtaSkipped)
+		d.Set("dta_skipped_reason", newImage.DtaSkippedReason)
+		d.Set("disallowed_by_assurance_checks", newImage.AssuranceResults.Disallowed)
+		d.Set("assurance_checks_performed", flattenAssuranceChecksPerformed(newImage.AssuranceResults.ChecksPerformed))
+		d.Set("history", flattenHistory(newImage.History))
+		d.Set("vulnerabilities", flattenVulnerabilities(vulnerabilities))
+
+		d.SetId(getImageId(newImage))
+	} else {
 		return diag.FromErr(err)
 	}
-
-	d.Set("registry", newImage.Registry)
-	d.Set("registry_type", newImage.RegistryType)
-	d.Set("repository", newImage.Repository)
-	d.Set("tag", newImage.Tag)
-	d.Set("scan_status", newImage.ScanStatus)
-	d.Set("scan_date", newImage.ScanDate)
-	d.Set("scan_error", newImage.ScanError)
-	d.Set("digest", newImage.Digest)
-	d.Set("labels", newImage.Labels)
-	d.Set("docker_id", newImage.Metadata.DockerID)
-	d.Set("parent", newImage.Metadata.Parent)
-	d.Set("repo_digests", newImage.Metadata.RepoDigests)
-	d.Set("comment", newImage.Metadata.Comment)
-	d.Set("created", newImage.Metadata.Created)
-	d.Set("docker_version", newImage.Metadata.DockerVersion)
-	d.Set("architecture", newImage.Metadata.Architecture)
-	d.Set("virtual_size", newImage.Metadata.VirtualSize)
-	d.Set("default_user", newImage.Metadata.DefaultUser)
-	d.Set("environment_variables", newImage.Metadata.Env)
-	d.Set("docker_labels", newImage.Metadata.DockerLabels)
-	d.Set("image_type", newImage.Metadata.ImageType)
-	d.Set("critical_vulnerabilities", newImage.CritVulns)
-	d.Set("high_vulnerabilities", newImage.HighVulns)
-	d.Set("medium_vulnerabilities", newImage.MedVulns)
-	d.Set("low_vulnerabilities", newImage.LowVulns)
-	d.Set("negligible_vulnerabilities", newImage.NegVulns)
-	d.Set("total_vulnerabilities", newImage.VulnsFound)
-	d.Set("sensitive_data", newImage.SensitiveData)
-	d.Set("malware", newImage.Malware)
-	d.Set("image_size", newImage.Size)
-	d.Set("author", newImage.Author)
-	d.Set("os", newImage.Os)
-	d.Set("os_version", newImage.OsVersion)
-	d.Set("disallowed", newImage.Disallowed)
-	d.Set("whitelisted", newImage.Whitelisted)
-	d.Set("blacklisted", newImage.Blacklisted)
-	d.Set("permission_author", newImage.PermissionAuthor)
-	d.Set("permission", newImage.Permission)
-	d.Set("permission_comment", newImage.PermissionComment)
-	d.Set("newer_image_exists", newImage.NewerImageExists)
-	d.Set("partial_results", newImage.PartialResults)
-	d.Set("name", newImage.Name)
-	d.Set("pending_disallowed", newImage.PendingDisallowed)
-	d.Set("dta_severity_score", newImage.DtaSeverityScore)
-	d.Set("dta_skipped", newImage.DtaSkipped)
-	d.Set("dta_skipped_reason", newImage.DtaSkippedReason)
-	d.Set("disallowed_by_assurance_checks", newImage.AssuranceResults.Disallowed)
-	d.Set("assurance_checks_performed", flattenAssuranceChecksPerformed(newImage.AssuranceResults.ChecksPerformed))
-	d.Set("history", flattenHistory(newImage.History))
-	d.Set("vulnerabilities", flattenVulnerabilities(vulnerabilities))
-
-	d.SetId(getImageId(newImage))
 
 	return nil
 }
@@ -833,11 +841,13 @@ func resourceImageDelete(ctx context.Context, d *schema.ResourceData, m interfac
 
 	image := expandImage(d)
 	err = c.DeleteImage(image)
-	if err != nil {
+	if err == nil {
+		d.SetId("")
+	} else {
 		return diag.FromErr(err)
 	}
 
-	d.SetId("")
+	//d.SetId("")
 
 	return nil
 }

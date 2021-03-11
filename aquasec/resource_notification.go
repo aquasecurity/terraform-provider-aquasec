@@ -75,9 +75,14 @@ func resourceNotificationCreate(d *schema.ResourceData, m interface{}) error {
 		return err
 	}
 
-	d.SetId(d.Get("name").(string))
+	//d.SetId(d.Get("name").(string))
 
 	err = resourceNotificationRead(d, m)
+	if err == nil {
+		d.SetId(d.Get("name").(string))
+	} else {
+		return err
+	}
 
 	return nil
 }

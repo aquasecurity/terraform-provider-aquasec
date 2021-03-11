@@ -287,9 +287,17 @@ func resourceContainerRuntimePolicyCreate(ctx context.Context, d *schema.Resourc
 		return diag.FromErr(err)
 	}
 
-	d.SetId(name)
+	//d.SetId(name)
 
-	return resourceContainerRuntimePolicyRead(ctx, d, m)
+	err1 := resourceContainerRuntimePolicyRead(ctx, d, m)
+	if err1 == nil {
+		d.SetId(name)
+	} else {
+		return err1
+	}
+
+	//return resourceContainerRuntimePolicyRead(ctx, d, m)
+	return nil
 }
 
 func resourceContainerRuntimePolicyRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
@@ -297,52 +305,52 @@ func resourceContainerRuntimePolicyRead(ctx context.Context, d *schema.ResourceD
 	name := d.Get("name").(string)
 
 	crp, err := c.GetRuntimePolicy(name)
-	if err != nil {
+	if err == nil {
+		d.Set("description", crp.Description)
+		d.Set("author", crp.Author)
+		d.Set("application_scopes", crp.ApplicationScopes)
+		d.Set("scope_variables", flattenScopeVariables(crp.Scope.Variables))
+		d.Set("scope_expression", crp.Scope.Expression)
+		d.Set("enabled", crp.Enabled)
+		d.Set("enforce", crp.Enforce)
+		d.Set("enforce_after_days", crp.EnforceAfterDays)
+		d.Set("block_container_exec", crp.BlockContainerExec)
+		d.Set("block_non_compliant_workloads", crp.BlockNonCompliantWorkloads)
+		d.Set("block_non_compliant_images", crp.BlockDisallowedImages)
+		d.Set("block_unregistered_images", crp.OnlyRegisteredImages)
+		d.Set("enable_drift_prevention", crp.DriftPrevention.Enabled && crp.DriftPrevention.ExecLockdown)
+		d.Set("allowed_executables", crp.AllowedExecutables.AllowExecutables)
+		d.Set("blocked_executables", crp.ExecutableBlacklist.Executables)
+		d.Set("blocked_files", crp.FileBlock.FilenameBlockList)
+		d.Set("audit_all_processes_activity", crp.Auditing.AuditAllProcesses)
+		d.Set("audit_all_network_activity", crp.Auditing.AuditAllNetwork)
+		d.Set("audit_full_command_arguments", crp.Auditing.AuditProcessCmdline)
+		d.Set("enable_fork_guard", crp.EnableForkGuard)
+		d.Set("fork_guard_process_limit", crp.ForkGuardProcessLimit)
+		d.Set("enable_ip_reputation_security", crp.EnableIPReputation)
+		d.Set("limit_new_privileges", crp.NoNewPrivileges)
+		d.Set("blocked_packages", crp.PackageBlock.PackagesBlackList)
+		d.Set("blocked_inbound_ports", crp.PortBlock.BlockInboundPorts)
+		d.Set("blocked_outbound_ports", crp.PortBlock.BlockOutboundPorts)
+		d.Set("enable_port_scan_detection", crp.EnablePortScanProtection)
+		d.Set("blocked_volumes", crp.RestrictedVolumes.Volumes)
+		d.Set("readonly_files_and_directories", crp.ReadonlyFiles.ReadonlyFiles)
+		d.Set("exceptional_readonly_files_and_directories", crp.ReadonlyFiles.ExceptionalReadonlyFiles)
+		d.Set("block_access_host_network", crp.LimitContainerPrivileges.Netmode)
+		d.Set("block_adding_capabilities", crp.LimitContainerPrivileges.BlockAddCapabilities)
+		d.Set("block_use_pid_namespace", crp.LimitContainerPrivileges.Pidmode)
+		d.Set("block_use_ipc_namespace", crp.LimitContainerPrivileges.Ipcmode)
+		d.Set("block_use_user_namespace", crp.LimitContainerPrivileges.Usermode)
+		d.Set("block_use_uts_namespace", crp.LimitContainerPrivileges.Utsmode)
+		d.Set("block_privileged_containers", crp.LimitContainerPrivileges.Privileged)
+		d.Set("block_root_user", crp.LimitContainerPrivileges.PreventRootUser)
+		d.Set("block_low_port_binding", crp.LimitContainerPrivileges.PreventLowPortBinding)
+		d.Set("blocked_capabilities", crp.LinuxCapabilities.RemoveLinuxCapabilities)
+
+		d.SetId(name)
+	} else {
 		return diag.FromErr(err)
 	}
-
-	d.Set("description", crp.Description)
-	d.Set("author", crp.Author)
-	d.Set("application_scopes", crp.ApplicationScopes)
-	d.Set("scope_variables", flattenScopeVariables(crp.Scope.Variables))
-	d.Set("scope_expression", crp.Scope.Expression)
-	d.Set("enabled", crp.Enabled)
-	d.Set("enforce", crp.Enforce)
-	d.Set("enforce_after_days", crp.EnforceAfterDays)
-	d.Set("block_container_exec", crp.BlockContainerExec)
-	d.Set("block_non_compliant_workloads", crp.BlockNonCompliantWorkloads)
-	d.Set("block_non_compliant_images", crp.BlockDisallowedImages)
-	d.Set("block_unregistered_images", crp.OnlyRegisteredImages)
-	d.Set("enable_drift_prevention", crp.DriftPrevention.Enabled && crp.DriftPrevention.ExecLockdown)
-	d.Set("allowed_executables", crp.AllowedExecutables.AllowExecutables)
-	d.Set("blocked_executables", crp.ExecutableBlacklist.Executables)
-	d.Set("blocked_files", crp.FileBlock.FilenameBlockList)
-	d.Set("audit_all_processes_activity", crp.Auditing.AuditAllProcesses)
-	d.Set("audit_all_network_activity", crp.Auditing.AuditAllNetwork)
-	d.Set("audit_full_command_arguments", crp.Auditing.AuditProcessCmdline)
-	d.Set("enable_fork_guard", crp.EnableForkGuard)
-	d.Set("fork_guard_process_limit", crp.ForkGuardProcessLimit)
-	d.Set("enable_ip_reputation_security", crp.EnableIPReputation)
-	d.Set("limit_new_privileges", crp.NoNewPrivileges)
-	d.Set("blocked_packages", crp.PackageBlock.PackagesBlackList)
-	d.Set("blocked_inbound_ports", crp.PortBlock.BlockInboundPorts)
-	d.Set("blocked_outbound_ports", crp.PortBlock.BlockOutboundPorts)
-	d.Set("enable_port_scan_detection", crp.EnablePortScanProtection)
-	d.Set("blocked_volumes", crp.RestrictedVolumes.Volumes)
-	d.Set("readonly_files_and_directories", crp.ReadonlyFiles.ReadonlyFiles)
-	d.Set("exceptional_readonly_files_and_directories", crp.ReadonlyFiles.ExceptionalReadonlyFiles)
-	d.Set("block_access_host_network", crp.LimitContainerPrivileges.Netmode)
-	d.Set("block_adding_capabilities", crp.LimitContainerPrivileges.BlockAddCapabilities)
-	d.Set("block_use_pid_namespace", crp.LimitContainerPrivileges.Pidmode)
-	d.Set("block_use_ipc_namespace", crp.LimitContainerPrivileges.Ipcmode)
-	d.Set("block_use_user_namespace", crp.LimitContainerPrivileges.Usermode)
-	d.Set("block_use_uts_namespace", crp.LimitContainerPrivileges.Utsmode)
-	d.Set("block_privileged_containers", crp.LimitContainerPrivileges.Privileged)
-	d.Set("block_root_user", crp.LimitContainerPrivileges.PreventRootUser)
-	d.Set("block_low_port_binding", crp.LimitContainerPrivileges.PreventLowPortBinding)
-	d.Set("blocked_capabilities", crp.LinuxCapabilities.RemoveLinuxCapabilities)
-
-	d.SetId(name)
 
 	return nil
 }
@@ -353,11 +361,13 @@ func resourceContainerRuntimePolicyUpdate(ctx context.Context, d *schema.Resourc
 
 	crp := expandContainerRuntimePolicy(d)
 	err := c.UpdateRuntimePolicy(crp)
-	if err != nil {
+	if err == nil {
+		d.SetId(name)
+	} else {
 		return diag.FromErr(err)
 	}
 
-	d.SetId(name)
+	//d.SetId(name)
 
 	return nil
 }
@@ -367,11 +377,13 @@ func resourceContainerRuntimePolicyDelete(ctx context.Context, d *schema.Resourc
 	name := d.Get("name").(string)
 
 	err := c.DeleteRuntimePolicy(name)
-	if err != nil {
+	if err == nil {
+		d.SetId("")
+	} else {
 		return diag.FromErr(err)
 	}
 
-	d.SetId("")
+	//d.SetId("")
 
 	return nil
 }
