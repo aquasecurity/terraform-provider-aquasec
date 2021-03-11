@@ -173,7 +173,7 @@ func resourceServiceCreate(ctx context.Context, d *schema.ResourceData, m interf
 
 	service := expandService(d)
 	err := c.CreateService(service)
-	if err == nil {
+	if err != nil {
 		return diag.FromErr(err)
 	}
 
