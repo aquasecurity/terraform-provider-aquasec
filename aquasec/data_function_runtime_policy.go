@@ -115,25 +115,25 @@ func dataFunctionRuntimePolicyRead(ctx context.Context, d *schema.ResourceData, 
 	name := d.Get("name").(string)
 
 	crp, err := c.GetRuntimePolicy(name)
-	if err != nil {
+	if err == nil {
+		d.Set("description", crp.Description)
+		d.Set("author", crp.Author)
+		d.Set("application_scopes", crp.ApplicationScopes)
+		d.Set("scope_variables", flattenScopeVariables(crp.Scope.Variables))
+		d.Set("scope_expression", crp.Scope.Expression)
+		d.Set("enabled", crp.Enabled)
+		d.Set("enforce", crp.Enforce)
+		d.Set("block_malicious_executables", crp.DriftPrevention.Enabled && crp.DriftPrevention.ExecLockdown)
+		d.Set("blocked_executables", crp.ExecutableBlacklist.Executables)
+		d.Set("honeypot_access_key", crp.Tripwire.UserID)
+		d.Set("honeypot_secret_key", crp.Tripwire.UserPassword)
+		d.Set("honeypot_apply_on", crp.Tripwire.ApplyOn)
+		d.Set("honeypot_serverless_app_name", crp.Tripwire.ServerlessApp)
+
+		d.SetId(name)
+	} else {
 		return diag.FromErr(err)
 	}
-
-	d.Set("description", crp.Description)
-	d.Set("author", crp.Author)
-	d.Set("application_scopes", crp.ApplicationScopes)
-	d.Set("scope_variables", flattenScopeVariables(crp.Scope.Variables))
-	d.Set("scope_expression", crp.Scope.Expression)
-	d.Set("enabled", crp.Enabled)
-	d.Set("enforce", crp.Enforce)
-	d.Set("block_malicious_executables", crp.DriftPrevention.Enabled && crp.DriftPrevention.ExecLockdown)
-	d.Set("blocked_executables", crp.ExecutableBlacklist.Executables)
-	d.Set("honeypot_access_key", crp.Tripwire.UserID)
-	d.Set("honeypot_secret_key", crp.Tripwire.UserPassword)
-	d.Set("honeypot_apply_on", crp.Tripwire.ApplyOn)
-	d.Set("honeypot_serverless_app_name", crp.Tripwire.ServerlessApp)
-
-	d.SetId(name)
 
 	return nil
 }

@@ -131,9 +131,16 @@ func resourceFirewallPolicyCreate(ctx context.Context, d *schema.ResourceData, m
 		return diag.FromErr(err)
 	}
 
-	d.SetId(name)
+	//d.SetId(name)
+	err1 := resourceFirewallPolicyRead(ctx, d, m)
+	if err1 == nil {
+		d.SetId(name)
+	} else {
+		return err1
+	}
 
-	return resourceFirewallPolicyRead(ctx, d, m)
+	//return resourceFirewallPolicyRead(ctx, d, m)
+	return nil
 }
 
 func resourceFirewallPolicyRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
@@ -141,21 +148,21 @@ func resourceFirewallPolicyRead(ctx context.Context, d *schema.ResourceData, m i
 	name := d.Get("name").(string)
 
 	firewallPolicy, err := c.GetFirewallPolicy(name)
-	if err != nil {
+	if err == nil {
+		d.Set("description", firewallPolicy.Description)
+		d.Set("block_icmp_ping", firewallPolicy.BlockICMPPing)
+		d.Set("block_metadata_service", firewallPolicy.BlockMetadataService)
+		d.Set("type", firewallPolicy.Type)
+		d.Set("author", firewallPolicy.Author)
+		d.Set("lastupdate", firewallPolicy.Lastupdate)
+		d.Set("version", firewallPolicy.Version)
+		d.Set("inbound_networks", flattenNetworks(firewallPolicy.InboundNetworks))
+		d.Set("outbound_networks", flattenNetworks(firewallPolicy.OutboundNetworks))
+
+		d.SetId(name)
+	} else {
 		return diag.FromErr(err)
 	}
-
-	d.Set("description", firewallPolicy.Description)
-	d.Set("block_icmp_ping", firewallPolicy.BlockICMPPing)
-	d.Set("block_metadata_service", firewallPolicy.BlockMetadataService)
-	d.Set("type", firewallPolicy.Type)
-	d.Set("author", firewallPolicy.Author)
-	d.Set("lastupdate", firewallPolicy.Lastupdate)
-	d.Set("version", firewallPolicy.Version)
-	d.Set("inbound_networks", flattenNetworks(firewallPolicy.InboundNetworks))
-	d.Set("outbound_networks", flattenNetworks(firewallPolicy.OutboundNetworks))
-
-	d.SetId(name)
 
 	return nil
 }
@@ -179,11 +186,13 @@ func resourceFirewallPolicyDelete(ctx context.Context, d *schema.ResourceData, m
 	name := d.Get("name").(string)
 
 	err := c.DeleteFirewallPolicy(name)
-	if err != nil {
+	if err == nil {
+		d.SetId("")
+	} else {
 		return diag.FromErr(err)
 	}
 
-	d.SetId("")
+	//d.SetId("")
 
 	return nil
 }

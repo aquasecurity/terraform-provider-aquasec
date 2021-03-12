@@ -52,12 +52,13 @@ func resourceRead(ctx context.Context, d *schema.ResourceData, m interface{}) di
 	log.Println("[DEBUG]  inside dataUser")
 	c := m.(*client.Client)
 	result, err := c.GetUsers()
-	if err != nil {
-		return diag.FromErr(err)
-	}
-	users, id := flattenUsersData(&result)
-	d.SetId(id)
-	if err := d.Set("users", users); err != nil {
+	if err == nil {
+		users, id := flattenUsersData(&result)
+		d.SetId(id)
+		if err := d.Set("users", users); err != nil {
+			return diag.FromErr(err)
+		}
+	} else {
 		return diag.FromErr(err)
 	}
 

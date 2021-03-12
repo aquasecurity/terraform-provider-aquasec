@@ -59,24 +59,21 @@ func dataRegistryRead(d *schema.ResourceData, m interface{}) error {
 	ac := m.(*client.Client)
 	name := d.Get("name").(string)
 	reg, err := ac.GetRegistry(name)
-	if err != nil {
+	if err == nil {
+		prefixes := d.Get("prefixes").([]interface{})
+		d.Set("username", reg.Username)
+		d.Set("password", reg.Password)
+		d.Set("name", reg.Name)
+		d.Set("type", reg.Type)
+		d.Set("url", reg.URL)
+		d.Set("auto_pull", reg.AutoPull)
+		d.Set("auto_pull_max", reg.AutoPullMax)
+		d.Set("auto_pull_time", reg.AutoPullTime)
+		d.Set("prefixes", convertStringArr(prefixes))
+		d.SetId(name)
+	} else {
 		return err
 	}
-
-	prefixes := d.Get("prefixes").([]interface{})
-
-	d.Set("username", reg.Username)
-	d.Set("password", reg.Password)
-	d.Set("name", reg.Name)
-	d.Set("type", reg.Type)
-	d.Set("url", reg.URL)
-	d.Set("auto_pull", reg.AutoPull)
-	d.Set("auto_pull_max", reg.AutoPullMax)
-	d.Set("auto_pull_time", reg.AutoPullTime)
-	d.Set("prefixes", convertStringArr(prefixes))
-
-	log.Println("[DEBUG]  setting id: ", name)
-	d.SetId(name)
 
 	return nil
 }

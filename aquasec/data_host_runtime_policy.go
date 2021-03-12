@@ -369,33 +369,33 @@ func dataHostRuntimePolicyRead(ctx context.Context, d *schema.ResourceData, m in
 	name := d.Get("name").(string)
 
 	crp, err := c.GetRuntimePolicy(name)
-	if err != nil {
+	if err == nil {
+		d.Set("description", crp.Description)
+		d.Set("author", crp.Author)
+		d.Set("application_scopes", crp.ApplicationScopes)
+		d.Set("scope_variables", flattenScopeVariables(crp.Scope.Variables))
+		d.Set("scope_expression", crp.Scope.Expression)
+		d.Set("enabled", crp.Enabled)
+		d.Set("enforce", crp.Enforce)
+		d.Set("enforce_after_days", crp.EnforceAfterDays)
+		d.Set("blocked_files", crp.FileBlock.FilenameBlockList)
+		d.Set("audit_all_os_user_activity", crp.Auditing.AuditOsUserActivity)
+		d.Set("audit_full_command_arguments", crp.Auditing.AuditProcessCmdline)
+		d.Set("enable_ip_reputation_security", crp.EnableIPReputation)
+		d.Set("os_users_allowed", crp.WhitelistedOsUsers.UserWhiteList)
+		d.Set("os_groups_allowed", crp.WhitelistedOsUsers.GroupWhiteList)
+		d.Set("os_users_blocked", crp.BlacklistedOsUsers.UserBlackList)
+		d.Set("os_groups_blocked", crp.BlacklistedOsUsers.GroupBlackList)
+		d.Set("monitor_system_time_changes", crp.SystemIntegrityProtection.AuditSystemtimeChange)
+		d.Set("monitor_windows_services", crp.SystemIntegrityProtection.WindowsServicesMonitoring)
+		d.Set("windows_registry_monitoring", flattenWindowsRegistryMonitoring(crp.RegistryAccessMonitoring))
+		d.Set("file_integrity_monitoring", flattenFileIntegrityMonitoring(crp.FileIntegrityMonitoring))
+		d.Set("windows_registry_protection", flattenWindowsRegistryProtection(crp.ReadonlyRegistry))
+
+		d.SetId(name)
+	} else {
 		return diag.FromErr(err)
 	}
-
-	d.Set("description", crp.Description)
-	d.Set("author", crp.Author)
-	d.Set("application_scopes", crp.ApplicationScopes)
-	d.Set("scope_variables", flattenScopeVariables(crp.Scope.Variables))
-	d.Set("scope_expression", crp.Scope.Expression)
-	d.Set("enabled", crp.Enabled)
-	d.Set("enforce", crp.Enforce)
-	d.Set("enforce_after_days", crp.EnforceAfterDays)
-	d.Set("blocked_files", crp.FileBlock.FilenameBlockList)
-	d.Set("audit_all_os_user_activity", crp.Auditing.AuditOsUserActivity)
-	d.Set("audit_full_command_arguments", crp.Auditing.AuditProcessCmdline)
-	d.Set("enable_ip_reputation_security", crp.EnableIPReputation)
-	d.Set("os_users_allowed", crp.WhitelistedOsUsers.UserWhiteList)
-	d.Set("os_groups_allowed", crp.WhitelistedOsUsers.GroupWhiteList)
-	d.Set("os_users_blocked", crp.BlacklistedOsUsers.UserBlackList)
-	d.Set("os_groups_blocked", crp.BlacklistedOsUsers.GroupBlackList)
-	d.Set("monitor_system_time_changes", crp.SystemIntegrityProtection.AuditSystemtimeChange)
-	d.Set("monitor_windows_services", crp.SystemIntegrityProtection.WindowsServicesMonitoring)
-	d.Set("windows_registry_monitoring", flattenWindowsRegistryMonitoring(crp.RegistryAccessMonitoring))
-	d.Set("file_integrity_monitoring", flattenFileIntegrityMonitoring(crp.FileIntegrityMonitoring))
-	d.Set("windows_registry_protection", flattenWindowsRegistryProtection(crp.ReadonlyRegistry))
-
-	d.SetId(name)
 
 	return nil
 }

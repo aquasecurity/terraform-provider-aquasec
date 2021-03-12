@@ -78,16 +78,23 @@ func resourceUserCreate(d *schema.ResourceData, m interface{}) error {
 		return err
 	}
 
-	d.SetId(d.Get("user_id").(string))
+	//d.SetId(d.Get("user_id").(string))
 
 	err = resourceUserRead(d, m)
+	if err == nil {
+		d.SetId(d.Get("user_id").(string))
+	} else {
+		return err
+	}
 
-	return err
+	return nil
 }
 
 func resourceUserRead(d *schema.ResourceData, m interface{}) error {
 	ac := m.(*client.Client)
-	id := d.Id()
+
+	//id := d.Id()
+	id := d.Get("user_id").(string)
 	r, err := ac.GetUser(id)
 	if err != nil {
 		log.Println("[DEBUG]  error calling ac.ReadUser: ", r)
@@ -125,11 +132,13 @@ func resourceUserUpdate(d *schema.ResourceData, m interface{}) error {
 		}
 
 		err := c.UpdateUser(user)
-		if err != nil {
+		if err == nil {
+			_ = d.Set("last_updated", time.Now().Format(time.RFC850))
+		} else {
 			log.Println("[DEBUG]  error while updating user: ", err)
 			return err
 		}
-		_ = d.Set("last_updated", time.Now().Format(time.RFC850))
+		//_ = d.Set("last_updated", time.Now().Format(time.RFC850))
 	}
 
 	return nil
@@ -140,11 +149,13 @@ func resourceUserDelete(d *schema.ResourceData, m interface{}) error {
 	id := d.Id()
 	err := c.DeleteUser(id)
 	log.Println(err)
-	if err != nil {
+	if err == nil {
+		d.SetId("")
+	} else {
 		log.Println("[DEBUG]  error deleting user: ", err)
 		return err
 	}
-	d.SetId("")
+	//d.SetId("")
 
 	return err
 }

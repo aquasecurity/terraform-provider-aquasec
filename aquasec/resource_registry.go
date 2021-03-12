@@ -93,17 +93,22 @@ func resourceRegistryCreate(d *schema.ResourceData, m interface{}) error {
 	if err != nil {
 		return err
 	}
-
-	d.SetId(d.Get("name").(string))
+	//d.SetId(d.Get("name").(string))
 
 	err = resourceRegistryRead(d, m)
+	if err == nil {
+		d.SetId(d.Get("name").(string))
+	} else {
+		return err
+	}
 
-	return err
+	return nil
 }
 
 func resourceRegistryRead(d *schema.ResourceData, m interface{}) error {
 	ac := m.(*client.Client)
-	id := d.Id()
+	//id := d.Id()
+	id := d.Get("name").(string)
 	r, err := ac.GetRegistry(id)
 	if err != nil {
 		log.Println("[DEBUG]  error calling ac.GetRegistry: ", r)
@@ -130,11 +135,13 @@ func resourceRegistryUpdate(d *schema.ResourceData, m interface{}) error {
 		}
 
 		err := c.UpdateRegistry(registry)
-		if err != nil {
+		if err == nil {
+			_ = d.Set("last_updated", time.Now().Format(time.RFC850))
+		} else {
 			log.Println("[DEBUG]  error while updating registry: ", err)
 			return err
 		}
-		_ = d.Set("last_updated", time.Now().Format(time.RFC850))
+		//_ = d.Set("last_updated", time.Now().Format(time.RFC850))
 	}
 
 	return nil
@@ -144,12 +151,14 @@ func resourceRegistryDelete(d *schema.ResourceData, m interface{}) error {
 	c := m.(*client.Client)
 	id := d.Id()
 	err := c.DeleteRegistry(id)
-	log.Println(err)
-	if err != nil {
+
+	if err == nil {
+		d.SetId("")
+	} else {
 		log.Println("[DEBUG]  error deleting registry: ", err)
 		return err
 	}
-	d.SetId("")
+	//d.SetId("")
 
 	return err
 }
