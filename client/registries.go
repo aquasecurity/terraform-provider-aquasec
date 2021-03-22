@@ -1,12 +1,10 @@
 package client
 
 import (
-	"crypto/tls"
 	"encoding/json"
 	"fmt"
 	"log"
 
-	"github.com/parnurzeal/gorequest"
 	"github.com/pkg/errors"
 )
 
@@ -45,7 +43,7 @@ type Registry struct {
 func (cli *Client) GetRegistry(name string) (*Registry, error) {
 	var err error
 	var response Registry
-	request := gorequest.New().TLSClientConfig(&tls.Config{InsecureSkipVerify: true})
+	request := cli.gorequest
 	request.Set("Authorization", "Bearer "+cli.token)
 	apiPath := fmt.Sprintf("/api/v1/registries/%s", name)
 	events, body, errs := request.Clone().Get(cli.url + apiPath).End()
@@ -72,7 +70,7 @@ func (cli *Client) GetRegistry(name string) (*Registry, error) {
 func (cli *Client) GetRegistries() (*[]Registry, error) {
 	var err error
 	var response []Registry
-	request := gorequest.New().TLSClientConfig(&tls.Config{InsecureSkipVerify: true})
+	request := cli.gorequest
 	request.Set("Authorization", "Bearer "+cli.token)
 	apiPath := "/api/v1/registries"
 	events, body, errs := request.Clone().Get(cli.url + apiPath).End()
@@ -97,14 +95,14 @@ func (cli *Client) CreateRegistry(reg Registry) error {
 	if err != nil {
 		return err
 	}
-	request := gorequest.New().TLSClientConfig(&tls.Config{InsecureSkipVerify: true})
+	request := cli.gorequest
 	request.Set("Authorization", "Bearer "+cli.token)
 	apiPath := fmt.Sprintf("/api/v1/registries")
 	resp, _, errs := request.Clone().Post(cli.url + apiPath).Send(string(payload)).End()
 	if errs != nil {
 		return errors.Wrap(err, "failed creating registry")
 	}
-	if resp.StatusCode != 201 || resp.StatusCode != 204 {
+	if resp.StatusCode != 201 && resp.StatusCode != 204 {
 		return err
 	}
 	return nil
@@ -116,14 +114,14 @@ func (cli *Client) UpdateRegistry(reg Registry) error {
 	if err != nil {
 		return err
 	}
-	request := gorequest.New().TLSClientConfig(&tls.Config{InsecureSkipVerify: true})
+	request := cli.gorequest
 	request.Set("Authorization", "Bearer "+cli.token)
 	apiPath := fmt.Sprintf("/api/v1/registries/%s", reg.Name)
 	resp, _, errs := request.Clone().Put(cli.url + apiPath).Send(string(payload)).End()
 	if errs != nil {
 		return errors.Wrap(err, "failed modifying registry")
 	}
-	if resp.StatusCode != 201 || resp.StatusCode != 204 {
+	if resp.StatusCode != 201 && resp.StatusCode != 204 {
 		return err
 	}
 	return nil
@@ -131,7 +129,7 @@ func (cli *Client) UpdateRegistry(reg Registry) error {
 
 // DeleteRegistry removes a registry
 func (cli *Client) DeleteRegistry(name string) error {
-	request := gorequest.New().TLSClientConfig(&tls.Config{InsecureSkipVerify: true})
+	request := cli.gorequest
 	request.Set("Authorization", "Bearer "+cli.token)
 	apiPath := fmt.Sprintf("/api/v1/registries/%s", name)
 	events, _, errs := request.Clone().Delete(cli.url + apiPath).End()
