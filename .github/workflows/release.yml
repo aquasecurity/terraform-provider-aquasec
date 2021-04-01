@@ -35,7 +35,7 @@ jobs:
         # TODO: move this to HashiCorp namespace or find alternative that is just simple gpg commands
         # see https://github.com/hashicorp/terraform-provider-scaffolding/issues/22
         uses: crazy-max/ghaction-import-gpg@v3.0.1
-        env:
+        with:
           # These secrets will need to be configured for the repository:
           gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
           passphrase: ${{ secrets.PASSPHRASE }}
