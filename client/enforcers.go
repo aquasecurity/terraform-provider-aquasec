@@ -1,12 +1,10 @@
 package client
 
 import (
-	"crypto/tls"
 	"encoding/json"
 	"fmt"
 	"log"
 
-	"github.com/parnurzeal/gorequest"
 	"github.com/pkg/errors"
 )
 
@@ -83,7 +81,7 @@ type EnforcerGroup struct {
 func (cli *Client) GetEnforcerGroup(name string) (*EnforcerGroup, error) {
 	var err error
 	var response EnforcerGroup
-	request := gorequest.New().TLSClientConfig(&tls.Config{InsecureSkipVerify: true})
+	request := cli.gorequest
 	request.Set("Authorization", "Bearer "+cli.token)
 	apiPath := fmt.Sprintf("/api/v1/hostsbatch/%s", name)
 	events, body, errs := request.Clone().Get(cli.url + apiPath).End()
@@ -110,7 +108,7 @@ func (cli *Client) GetEnforcerGroup(name string) (*EnforcerGroup, error) {
 func (cli *Client) GetEnforcerGroups() ([]EnforcerGroup, error) {
 	var err error
 	var response []EnforcerGroup
-	request := gorequest.New().TLSClientConfig(&tls.Config{InsecureSkipVerify: true})
+	request := cli.gorequest
 	request.Set("Authorization", "Bearer "+cli.token)
 	apiPath := fmt.Sprintf("/api/v1/hostsbatch")
 	events, body, errs := request.Clone().Get(cli.url + apiPath).End()
@@ -134,7 +132,7 @@ func (cli *Client) CreateEnforcerGroup(group EnforcerGroup) error {
 	if err != nil {
 		return err
 	}
-	request := gorequest.New().TLSClientConfig(&tls.Config{InsecureSkipVerify: true})
+	request := cli.gorequest
 	request.Set("Authorization", "Bearer "+cli.token)
 	apiPath := fmt.Sprintf("/api/v1/hostsbatch")
 	resp, _, errs := request.Clone().Post(cli.url + apiPath).Send(string(payload)).End()
@@ -155,7 +153,7 @@ func (cli *Client) UpdateEnforcerGroup(group EnforcerGroup) error {
 	if err != nil {
 		return err
 	}
-	request := gorequest.New().TLSClientConfig(&tls.Config{InsecureSkipVerify: true})
+	request := cli.gorequest
 	request.Set("Authorization", "Bearer "+cli.token)
 	apiPath := "/api/v1/hostsbatch"
 	resp, _, errs := request.Clone().Put(cli.url+apiPath).Send(string(payload)).Param("update_enforcers", "true").End()
@@ -172,7 +170,7 @@ func (cli *Client) UpdateEnforcerGroup(group EnforcerGroup) error {
 
 // DeleteEnforcerGroup removes an enforcer group
 func (cli *Client) DeleteEnforcerGroup(name string) error {
-	request := gorequest.New().TLSClientConfig(&tls.Config{InsecureSkipVerify: true})
+	request := cli.gorequest
 	request.Set("Authorization", "Bearer "+cli.token)
 	apiPath := fmt.Sprintf("/api/v1/hostsbatch/%s", name)
 	events, _, errs := request.Clone().Delete(cli.url + apiPath).End()

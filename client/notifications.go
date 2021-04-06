@@ -1,12 +1,10 @@
 package client
 
 import (
-	"crypto/tls"
 	"encoding/json"
 	"fmt"
 	"log"
 
-	"github.com/parnurzeal/gorequest"
 	"github.com/pkg/errors"
 )
 
@@ -29,7 +27,7 @@ func (cli *Client) SlackNotificationCreate(notf Notification) error {
 	if err != nil {
 		return err
 	}
-	request := gorequest.New().TLSClientConfig(&tls.Config{InsecureSkipVerify: true})
+	request := cli.gorequest
 	request.Set("Authorization", "Bearer "+cli.token)
 	apiPath := fmt.Sprintf("/api/v1/settings/notifiers/Slack")
 	resp, _, errs := request.Clone().Put(cli.url + apiPath).Send(string(payload)).End()
@@ -49,7 +47,7 @@ func (cli *Client) SlackNotificationUpdate(notf Notification) error {
 	if err != nil {
 		return err
 	}
-	request := gorequest.New().TLSClientConfig(&tls.Config{InsecureSkipVerify: true})
+	request := cli.gorequest
 	request.Set("Authorization", "Bearer "+cli.token)
 	apiPath := fmt.Sprintf("/api/v1/settings/notifiers/Slack")
 
@@ -68,7 +66,7 @@ func (cli *Client) SlackNotificationRead() (*Notification, error) {
 	var err error
 	var response Notification
 
-	request := gorequest.New().TLSClientConfig(&tls.Config{InsecureSkipVerify: true})
+	request := cli.gorequest
 	request.Set("Authorization", "Bearer "+cli.token)
 	apiPath := fmt.Sprintf("/api/v1/settings/notifiers/Slack")
 	events, body, errs := request.Clone().Get(cli.url + apiPath).End()
@@ -94,7 +92,7 @@ func (cli *Client) SlackNotificationDelete(notf Notification) error {
 	if err != nil {
 		return err
 	}
-	request := gorequest.New().TLSClientConfig(&tls.Config{InsecureSkipVerify: true})
+	request := cli.gorequest
 	request.Set("Authorization", "Bearer "+cli.token)
 	apiPath := fmt.Sprintf("/api/v1/settings/notifiers/Slack")
 	resp, _, errs := request.Clone().Put(cli.url + apiPath).Send(string(payload)).End()
