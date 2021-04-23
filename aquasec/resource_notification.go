@@ -44,7 +44,7 @@ func resourceNotification() *schema.Resource {
 			},
 			"name": {
 				Type:     schema.TypeString,
-				Computed: true,
+				Optional: true,
 			},
 			"type": {
 				Type:     schema.TypeString,
