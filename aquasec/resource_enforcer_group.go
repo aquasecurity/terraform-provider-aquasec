@@ -30,7 +30,6 @@ func resourceEnforcerGroup() *schema.Resource {
 			"last_updated": {
 				Type:     schema.TypeString,
 				Optional: true,
-				Computed: true,
 			},
 			"logical_name": {
 				Type:     schema.TypeString,
@@ -61,11 +60,11 @@ func resourceEnforcerGroup() *schema.Resource {
 			},
 			"container_activity_protection": {
 				Type:     schema.TypeBool,
-				Optional: true,
+				Computed: true,
 			},
 			"network_protection": {
 				Type:     schema.TypeBool,
-				Optional: true,
+				Computed: true,
 			},
 			"host_network_protection": {
 				Type:     schema.TypeBool,
@@ -97,11 +96,11 @@ func resourceEnforcerGroup() *schema.Resource {
 			},
 			"last_update": {
 				Type:     schema.TypeInt,
-				Optional: true,
+				Computed: true,
 			},
 			"token": {
 				Type:     schema.TypeString,
-				Optional: true,
+				Computed: true,
 			},
 			"command": {
 				Type:     schema.TypeSet,
@@ -153,11 +152,11 @@ func resourceEnforcerGroup() *schema.Resource {
 			},
 			"host_os": {
 				Type:     schema.TypeString,
-				Optional: true,
+				Computed: true,
 			},
 			"install_command": {
 				Type:     schema.TypeString,
-				Optional: true,
+				Computed: true,
 			},
 			"allow_kube_enforcer_audit": {
 				Type:     schema.TypeBool,
