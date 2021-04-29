@@ -110,7 +110,9 @@ func resourceRegistryRead(d *schema.ResourceData, m interface{}) error {
 	//id := d.Id()
 	id := d.Get("name").(string)
 	r, err := ac.GetRegistry(id)
-	if err != nil {
+	if err == nil {
+		d.Set("author", r.Author)
+	} else {
 		log.Println("[DEBUG]  error calling ac.GetRegistry: ", r)
 		return err
 	}

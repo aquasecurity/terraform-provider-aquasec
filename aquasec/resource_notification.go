@@ -44,7 +44,7 @@ func resourceNotification() *schema.Resource {
 			},
 			"name": {
 				Type:     schema.TypeString,
-				Required: true,
+				Optional: true,
 			},
 			"type": {
 				Type:     schema.TypeString,
@@ -66,7 +66,7 @@ func resourceNotificationCreate(d *schema.ResourceData, m interface{}) error {
 		MainText:   d.Get("main_text").(string),
 		Icon:       d.Get("icon").(string),
 		ServiceKey: d.Get("service_key").(string),
-		Name:       d.Get("name").(string),
+		Name:       "Slack",
 		Type:       d.Get("type").(string),
 	}
 
@@ -79,7 +79,7 @@ func resourceNotificationCreate(d *schema.ResourceData, m interface{}) error {
 
 	err = resourceNotificationRead(d, m)
 	if err == nil {
-		d.SetId(d.Get("name").(string))
+		d.SetId("Slack")
 	} else {
 		return err
 	}
@@ -98,7 +98,7 @@ func resourceNotificationUpdate(d *schema.ResourceData, m interface{}) error {
 		MainText:   d.Get("main_text").(string),
 		Icon:       d.Get("icon").(string),
 		ServiceKey: d.Get("service_key").(string),
-		Name:       d.Get("name").(string),
+		Name:       "Slack",
 		Type:       d.Get("type").(string),
 	}
 

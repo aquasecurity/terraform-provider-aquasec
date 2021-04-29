@@ -30,7 +30,6 @@ func resourceEnforcerGroup() *schema.Resource {
 			"last_updated": {
 				Type:     schema.TypeString,
 				Optional: true,
-				Computed: true,
 			},
 			"logical_name": {
 				Type:     schema.TypeString,
@@ -61,11 +60,11 @@ func resourceEnforcerGroup() *schema.Resource {
 			},
 			"container_activity_protection": {
 				Type:     schema.TypeBool,
-				Optional: true,
+				Computed: true,
 			},
 			"network_protection": {
 				Type:     schema.TypeBool,
-				Optional: true,
+				Computed: true,
 			},
 			"host_network_protection": {
 				Type:     schema.TypeBool,
@@ -97,11 +96,11 @@ func resourceEnforcerGroup() *schema.Resource {
 			},
 			"last_update": {
 				Type:     schema.TypeInt,
-				Optional: true,
+				Computed: true,
 			},
 			"token": {
 				Type:     schema.TypeString,
-				Optional: true,
+				Computed: true,
 			},
 			"command": {
 				Type:     schema.TypeSet,
@@ -153,11 +152,11 @@ func resourceEnforcerGroup() *schema.Resource {
 			},
 			"host_os": {
 				Type:     schema.TypeString,
-				Optional: true,
+				Computed: true,
 			},
 			"install_command": {
 				Type:     schema.TypeString,
-				Optional: true,
+				Computed: true,
 			},
 			"allow_kube_enforcer_audit": {
 				Type:     schema.TypeBool,
@@ -244,7 +243,31 @@ func resourceEnforcerGroupRead(d *schema.ResourceData, m interface{}) error {
 	name := d.Get("group_id").(string)
 
 	r, err := ac.GetEnforcerGroup(name)
-	if err != nil {
+	if err == nil {
+		d.Set("token", r.Token)
+		d.Set("gateway_name", r.GatewayName)
+		d.Set("gateway_address", r.GatewayAddress)
+		d.Set("container_activity_protection", r.ContainerActivityProtection)
+		d.Set("network_protection", r.NetworkProtection)
+		d.Set("host_network_protection", r.HostNetworkProtection)
+		d.Set("user_access_control", r.UserAccessControl)
+		d.Set("image_assurance", r.ImageAssurance)
+		d.Set("host_protection", r.HostProtection)
+		d.Set("audit_all", r.AuditAll)
+		d.Set("audit_success_login", r.AuditSuccessLogin)
+		d.Set("audit_failed_login", r.AuditFailedLogin)
+		d.Set("last_update", r.LastUpdate)
+		d.Set("command", flattenCommands(r.Command))
+		d.Set("host_os", r.HostOs)
+		d.Set("install_command", r.InstallCommand)
+		d.Set("allow_kube_enforcer_audit", r.AllowKubeEnforcerAudit)
+		d.Set("auto_discovery_enabled", r.AutoDiscoveryEnabled)
+		d.Set("auto_discover_configure_registries", r.AutoDiscoverConfigureRegistries)
+		d.Set("auto_scan_discovered_images_running_containers", r.AutoScanDiscoveredImagesRunningContainers)
+		d.Set("admission_control", r.AdmissionControl)
+		d.Set("micro_enforce_injection", r.MicroEnforcerInjection)
+		d.Set("block_admission_control", r.BlockAdmissionControl)
+	} else {
 		log.Print("[ERROR]  error calling ac.GetEnforcerGroup: ", r)
 		return err
 	}
@@ -292,7 +315,6 @@ func resourceEnforcerGroupUpdate(d *schema.ResourceData, m interface{}) error {
 		err := ac.UpdateEnforcerGroup(group)
 		if err == nil {
 			_ = d.Set("last_updated", time.Now().Format(time.RFC850))
-
 		} else {
 			log.Println("[DEBUG]  error while updating enforcer group: ", err)
 			return err
