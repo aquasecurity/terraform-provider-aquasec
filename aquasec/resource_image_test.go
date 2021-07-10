@@ -32,7 +32,7 @@ func TestResourceAquasecImageCreate(t *testing.T) {
 					resource.TestCheckResourceAttr(rootRef, "repository", image.Repository),
 					resource.TestCheckResourceAttr(rootRef, "tag", image.Tag),
 					resource.TestCheckResourceAttr(rootRef, "scan_status", "finished"),
-					resource.TestCheckResourceAttr(rootRef, "disallowed", "true"),
+					resource.TestCheckResourceAttr(rootRef, "disallowed", "false"),
 					resource.TestCheckResourceAttrSet(rootRef, "created"),
 					resource.TestCheckResourceAttrSet(rootRef, "scan_date"),
 					resource.TestCheckResourceAttr(rootRef, "scan_error", ""),
