@@ -198,7 +198,7 @@ func TestResourceAquasecImageBlock(t *testing.T) {
 					resource.TestCheckResourceAttrSet(rootRef, "vulnerabilities.0.name"),
 					resource.TestCheckResourceAttrSet(rootRef, "history.0.created"),
 					resource.TestCheckResourceAttrSet(rootRef, "assurance_checks_performed.0.control"),
-					resource.TestCheckResourceAttr(rootRef, "disallowed", "true"),
+					resource.TestCheckResourceAttr(rootRef, "disallowed", "false"),
 					resource.TestCheckResourceAttr(rootRef, "blacklisted", "true"),
 					resource.TestCheckResourceAttr(rootRef, "whitelisted", "false"),
 					resource.TestCheckResourceAttr(rootRef, "permission_comment", "This image is blacklisted from terraform test."),
