@@ -21,8 +21,8 @@ The provider lets you declaratively define the configuration for your Aqua Enter
 ## Contents
 
 * [Requirements](#requirements)
-* [Build the Provider](#build-the-aquasec-provider)
-* [Install and Test Locally](#Install-and-Test-the-Provider-Locally)
+* [Build the Provider locally](#Build-the-Aquasec-Provider)
+* [Test Aquasec Terraform Provider](#Test-Aquasec-Terraform-Provider)
 * [Contributing](#contributing)
 
 
@@ -30,10 +30,16 @@ The provider lets you declaratively define the configuration for your Aqua Enter
 
 -	[Terraform](https://www.terraform.io/downloads.html) v0.12.x or higher
 -	[Go](https://golang.org/doc/install) v1.16.x (to build the provider plugin)
-- [Aqua Enterprise Plaatform](https://www.aquasec.com/aqua-cloud-native-security-platform/)
+-   [Aqua Enterprise Plaatform](https://www.aquasec.com/aqua-cloud-native-security-platform/)
 
 
 ## Build the Aquasec Provider
+
+The Aquasec Terraform provider can be pulled from the [Hashicorp registry](https://registry.terraform.io/providers/aquasecurity/aquasec/latest) as for the included examples in this repository.
+
+As an alternative, and for development purposes, you can build the provider locally with the following instructions.
+
+**Clone the repo**
 
 Clone the repository locally and switch to the version you want to try
 ```
@@ -41,41 +47,47 @@ git clone https://github.com/aquasecurity/terraform-provider-aquasec.git
 
 cd terraform-provider-aquasec
 
-git checkout v0.6
+git checkout v0.8.1
 ```
 
-Build the provider
+**Build the provider**
 ```
 go build
 ```
 
 The last command will compile the Terraform Provider and generate a `terraform-provider-aquasec` binary in your local directory.
 
-## Install and Test the Provider Locally
+**Install the provider**
 
-After [building the provider](#build-the-aquasec-provider), the generated binary will need to be installed into the folder containing the Terraform resources.
+After a successful build, the generated binary will need to be installed into the folder containing the Terraform resources.
 
 We'll use here the [example Terraform resources](examples/resources/main.tf) provided in this repo.
 
 ```
-mkdir -p examples/resources/.terraform/plugins/terraform-provider-aquasec/aquasec/aquasec/0.6/darwin_amd64/
+mkdir -p examples/resources/.terraform/plugins/terraform-provider-aquasec/aquasec/aquasec/0.8.1/darwin_amd64/
 
-mv terraform-provider-aquasec examples/resources/.terraform/plugins/terraform-provider-aquasec/aquasec/aquasec/0.6/darwin_amd64/terraform-provider-aquasec
+mv terraform-provider-aquasec examples/resources/.terraform/plugins/terraform-provider-aquasec/aquasec/aquasec/0.8.1/darwin_amd64/terraform-provider-aquasec
 ```
-Make sure to replace the version `0.6` and the architecture `darwin_amd64` in the path as relevant for your system.
+Make sure to replace the version `0.8.1` and the architecture `darwin_amd64` in the path as relevant for your system.
+
+**Terraform configuration**
 
 In order to test the provider installed locally, the provider block will have to include the path to the current binary, as in the following example
 ```
 terraform {
   required_providers {
     aquasec = {
-      version = "0.6"
+      version = "0.8.1"
       source  = "terraform-provider-aquasec/aquasec/aquasec"
     }
   }
 }
 ```
-Once applied the change above, move to the resources folder and initialise Terraform
+
+## Test Aquasec Terraform Provider
+
+The following instructions will let you test the provider. If you built a localy copy of it please make sure to follow the instruction above and replace the provider definition in the example resources.
+
 ```
 cd examples/resources
 
