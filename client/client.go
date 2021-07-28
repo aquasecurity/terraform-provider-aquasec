@@ -48,7 +48,7 @@ func NewClient(url, user, password string, verifyTLS bool, caCertByte []byte) *C
 // GetAuthToken - Connect to Aqua and return a JWT bearerToken (string)
 // Return: bool - successfully connected?
 func (cli *Client) GetAuthToken() (string, error) {
-	resp, body, errs := cli.gorequest.Post(cli.url+"/api/v1/login").Param("abilities", "1").
+	resp, body, errs := cli.gorequest.Post(cli.url + "/api/v1/login").
 		Send(`{"id":"` + cli.user + `", "password":"` + cli.password + `"}`).End()
 	if errs != nil {
 		return "", getMergedError(errs)
