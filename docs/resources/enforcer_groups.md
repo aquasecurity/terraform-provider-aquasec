@@ -19,12 +19,12 @@ description: |-
 
 - **gateways** (List of String)
 - **group_id** (String)
-- **logical_name** (String)
 - **orchestrator** (Block Set, Min: 1) (see [below for nested schema](#nestedblock--orchestrator))
 - **type** (String)
 
 ### Optional
 
+- **logical_name** (String)
 - **admission_control** (Boolean)
 - **allow_kube_enforcer_audit** (Boolean)
 - **audit_all** (Boolean)
