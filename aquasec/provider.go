@@ -84,6 +84,7 @@ func Provider(v string) *schema.Provider {
 			"aquasec_container_runtime_policy": dataContainerRuntimePolicy(),
 			"aquasec_function_runtime_policy":  dataFunctionRuntimePolicy(),
 			"aquasec_host_runtime_policy":      dataHostRuntimePolicy(),
+			"aquasec_image_assurance_policy": 	dataImageAssurancePolicy(),
 		},
 		ConfigureContextFunc: providerConfigure,
 	}

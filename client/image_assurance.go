@@ -172,7 +172,7 @@ func (cli *Client) GetImageAssurancePolicy(name string) (*ImageAssurancePolicy, 
 }
 
 // CreateImageAssurancePolicy - creates single Aqua Image Assurance Policy
-func (cli *Client) CreateImageAssurancePolicy(imageassurancepolicy ImageAssurancePolicy) error {
+func (cli *Client) CreateImageAssurancePolicy(imageassurancepolicy *ImageAssurancePolicy) error {
 	payload, err := json.Marshal(imageassurancepolicy)
 	if err != nil {
 		return err
@@ -181,11 +181,9 @@ func (cli *Client) CreateImageAssurancePolicy(imageassurancepolicy ImageAssuranc
 	request.Set("Authorization", "Bearer "+cli.token)
 	apiPath := fmt.Sprintf("/api/v2/assurance_policy/image")
 	resp, _, errs := request.Clone().Post(cli.url + apiPath).Send(string(payload)).End()
-	log.Print("Body is :", string(payload))
 	if errs != nil {
 		return errors.Wrap(getMergedError(errs), "failed creating Image Assurance Policy.")
 	}
-	log.Print("Resp:",resp.StatusCode)
 	if resp.StatusCode != 201 && resp.StatusCode != 204 {
 		body, err := ioutil.ReadAll(resp.Body)
 		if err != nil {
@@ -204,14 +202,14 @@ func (cli *Client) CreateImageAssurancePolicy(imageassurancepolicy ImageAssuranc
 }
 
 // UpdateImageAssurancePolicy updates an existing Image Assurance Policy
-func (cli *Client) UpdateImageAssurancePolicy(ImageAssurancePolicy ImageAssurancePolicy) error {
-	payload, err := json.Marshal(ImageAssurancePolicy)
+func (cli *Client) UpdateImageAssurancePolicy(imageassurancepolicy *ImageAssurancePolicy) error {
+	payload, err := json.Marshal(imageassurancepolicy)
 	if err != nil {
 		return err
 	}
 	request := cli.gorequest
 	request.Set("Authorization", "Bearer "+cli.token)
-	apiPath := fmt.Sprintf("/api/v2/assurance_policy/image/%s", ImageAssurancePolicy.Name)
+	apiPath := fmt.Sprintf("/api/v2/assurance_policy/image/%s", imageassurancepolicy.Name)
 	resp, _, errs := request.Clone().Put(cli.url + apiPath).Send(string(payload)).End()
 	if errs != nil {
 		return errors.Wrap(getMergedError(errs), "failed modifying Image Assurance Policy")

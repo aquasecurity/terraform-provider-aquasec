@@ -77,3 +77,11 @@ data "aquasec_host_runtime_policy" "test" {
 output "test-hrp" {
   value = data.aquasec_host_runtime_policy.test
 }
+
+data "aquasec_image_assurance_policy" "default" {
+    name = "DTA"
+}
+
+output "images" {
+  value = data.aquasec_image_assurance_policy.default
+}
