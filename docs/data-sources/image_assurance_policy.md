@@ -179,7 +179,17 @@ Read-only:
 Read-only:
 
 - **expression** (String)
-- **variables** (List of String)
+- **variables** (Set of Object) (see [below for nested schema](#nestedobjatt--scope--variables))
+
+<a id="nestedobjatt--scope--variables"></a>
+### Nested Schema for `scope.variables`
+
+Read-only:
+
+- **attribute** (String)
+- **name** (String)
+- **value** (String)
+
 
 
 <a id="nestedatt--trusted_base_images"></a>

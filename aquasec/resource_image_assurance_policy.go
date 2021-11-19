@@ -212,10 +212,23 @@ func resourceImageAssurancePolicy() *schema.Resource {
 							Optional: true,
 						},
 						"variables": {
-							Type:     schema.TypeList,
+							Type:     schema.TypeSet,
 							Optional: true,
-							Elem: &schema.Schema{
-								Type: schema.TypeString,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+									"attribute": {
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+									"value": {
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+									"name": {
+										Type:     schema.TypeString,
+										Optional: true,
+									},
+								},
 							},
 						},
 					},
@@ -700,13 +713,26 @@ func resourceImageAssurancePolicyDelete(d *schema.ResourceData, m interface{}) e
 	return nil
 }
 
-func flatteniapscope(scope client.Scopes) []map[string]interface{} {
+func flatteniapscope(scope1 client.Scopes) []map[string]interface{} {
 	return []map[string]interface{}{
 		{
-			"expression":      	scope.Expression,
-			"variables": 		scope.Variables,
+			"expression":      	scope1.Expression,
+			"variables": 		flattenscopevariables(scope1.Variables),
 		},
 	}
+}
+
+func flattenscopevariables(variable []client.VariableI) []interface{} {
+	check := make([]interface{}, len(variable))
+	for i := range variable {
+		check[i] = map[string]interface{}{
+			"attribute": 			variable[i].Attribute,
+			"value": 				variable[i].Value,
+			"name": 				variable[i].Name,
+		}
+	}
+
+	return check
 }
 
 func flattenAutoScanTime(scantime client.ScanTimeAuto) []map[string]interface{} {
@@ -949,9 +975,20 @@ func expandImageAssurancePolicy(d *schema.ResourceData) *client.ImageAssurancePo
 	scope, ok := d.GetOk("scope")
 	if ok {
 		scopeentries := scope.([]interface{})[0].(map[string]interface{})
+		VariablesList := scopeentries["variables"].([]interface{})
+		variablearray := make([]client.VariableI, len(VariablesList))
+		for i, Data := range VariablesList {
+			varLists := Data.(map[string]interface{})
+			VarData := client.VariableI{
+				Attribute:       	varLists["attribute"].(string),
+				Name:    			varLists["name"].(string),
+				Value: 				varLists["value"].(string),
+			}
+			variablearray[i] = VarData
+		}
 		Sc := client.Scopes {
 			Expression: scopeentries["expression"].(string),
-			Variables: scopeentries["variables"].([]interface{}),
+			Variables: variablearray,
 		}
 		iap.Scope = Sc
 	}

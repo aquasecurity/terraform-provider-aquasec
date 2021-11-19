@@ -182,7 +182,17 @@ Optional:
 Optional:
 
 - **expression** (String)
-- **variables** (List of String)
+- **variables** (Block Set) (see [below for nested schema](#nestedblock--scope--variables))
+
+<a id="nestedblock--scope--variables"></a>
+### Nested Schema for `scope.variables`
+
+Optional:
+
+- **attribute** (String)
+- **name** (String)
+- **value** (String)
+
 
 
 <a id="nestedblock--trusted_base_images"></a>

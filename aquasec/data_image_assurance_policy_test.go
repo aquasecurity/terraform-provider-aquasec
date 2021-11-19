@@ -8,7 +8,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
-func TestAquasecImageAssurancePolicyDatasource(t *testing.T) {
+func TestDataAquasecImageAssurancePolicy(t *testing.T) {
 	name := "Default"
 	resource.Test(t, resource.TestCase{
 		PreCheck:  func() { testAccPreCheck(t) },

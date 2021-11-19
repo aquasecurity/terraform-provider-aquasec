@@ -107,8 +107,15 @@ type Labels struct {
 
 type Scopes struct {
 	Expression 						string        				`json:"expression"`
-	Variables  						[]interface{} 				`json:"variables"`
+	Variables  						[]VariableI					`json:"variables"`
 }
+
+type VariableI struct {
+	Attribute						string						`json:"attribute"`
+	Value							string                      `json:"value"`
+	Name							string						`json:"name,omitempty"`
+}
+
 
 type ListPackages struct {
 	Format       					string 						`json:"format"`
