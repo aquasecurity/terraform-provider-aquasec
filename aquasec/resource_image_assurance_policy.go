@@ -210,6 +210,7 @@ func resourceImageAssurancePolicy() *schema.Resource {
 						"expression": {
 							Type:     schema.TypeString,
 							Optional: true,
+							Computed: true,
 						},
 						"variables": {
 							Type:     schema.TypeSet,
@@ -219,10 +220,12 @@ func resourceImageAssurancePolicy() *schema.Resource {
 									"attribute": {
 										Type:     schema.TypeString,
 										Optional: true,
+										Computed: true,
 									},
 									"value": {
 										Type:     schema.TypeString,
 										Optional: true,
+										Computed: true,
 									},
 									"name": {
 										Type:     schema.TypeString,
@@ -485,10 +488,12 @@ func resourceImageAssurancePolicy() *schema.Resource {
 						"iteration": {
 							Type:     schema.TypeInt,
 							Optional: true,
+							Computed: true,
 						},
 						"week_days": {
 							Type:     schema.TypeList,
 							Optional: true,
+							Computed: true,
 							Elem: &schema.Schema{
 								Type: schema.TypeString,
 							},
