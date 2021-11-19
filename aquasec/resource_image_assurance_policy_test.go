@@ -11,7 +11,7 @@ import (
 func TestAquasecImageAssurancePolicy(t *testing.T) {
 	assurance_type := "image"
 	description := "Created using Terraform"
-	name := "terraform-iap"
+	name := "terraform-iaptest"
 	application_scopes := "Global"
 	resource.Test(t, resource.TestCase{
 		PreCheck:  func() { testAccPreCheck(t) },
