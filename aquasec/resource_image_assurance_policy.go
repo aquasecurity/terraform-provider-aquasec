@@ -205,6 +205,7 @@ func resourceImageAssurancePolicy() *schema.Resource {
 			"scope": {
 				Type:     schema.TypeSet,
 				Optional: true,
+				Computed: true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"expression": {
@@ -475,6 +476,7 @@ func resourceImageAssurancePolicy() *schema.Resource {
 			"auto_scan_time": {
 				Type:     schema.TypeSet,
 				Optional: true,
+				Computed: true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"iteration_type": {
