@@ -26,7 +26,7 @@ func resourceImageAssurancePolicy() *schema.Resource {
 			},
 			"author": {
 				Type:     schema.TypeString,
-				Optional: true,
+				Computed: true,
 			},
 			"registry": {
 				Type:     schema.TypeString,
@@ -441,7 +441,7 @@ func resourceImageAssurancePolicy() *schema.Resource {
 			},
 			"ignore_recently_published_vln_period": {
 				Type:     schema.TypeInt,
-				Optional: true,
+				Computed: true,
 			},
 			"ignore_risk_resources_enabled": {
 				Type:     schema.TypeBool,
