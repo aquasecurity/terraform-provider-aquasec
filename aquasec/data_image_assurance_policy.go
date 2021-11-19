@@ -555,7 +555,7 @@ func dataImageAssurancePolicy() *schema.Resource {
 				Computed: true,
 			},
 			"partial_results_image_fail": {
-				Type:     schema.TypeString,
+				Type:     schema.TypeBool,
 				Computed: true,
 			},
 		},
