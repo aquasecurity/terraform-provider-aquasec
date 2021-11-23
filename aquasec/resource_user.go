@@ -10,7 +10,9 @@ import (
 
 func resourceUser() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceUserCreate,
+		Description: "The `aquasec_user` resource manages your users within Aqua.\n\n" +
+			"The users created must have at least one Role that is already " +
+			"present within Aqua.",
 		Read:   resourceUserRead,
 		Update: resourceUserUpdate,
 		Delete: resourceUserDelete,

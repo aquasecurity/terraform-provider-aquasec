@@ -18,45 +18,97 @@ Once you've written your provider, you'll want to [publish it on the Terraform R
 -	[Terraform](https://www.terraform.io/downloads.html) >= 0.13.x
 -	[Go](https://golang.org/doc/install) >= 1.15
 
-## Building The Provider
+## Build the Aquasec Provider
 
-1. Clone the repository
-1. Enter the repository directory
-1. Build the provider using the Go `install` command: 
+The Aquasec Terraform provider can be pulled from the [Hashicorp registry](https://registry.terraform.io/providers/aquasecurity/aquasec/latest) as for the included examples in this repository.
+
+As an alternative, and for development purposes, you can build the provider locally with the following instructions.
+
+**Clone the repo**
+
+Clone the repository locally and switch to the version you want to try
+```
+git clone https://github.com/aquasecurity/terraform-provider-aquasec.git
+
+cd terraform-provider-aquasec
+
+git checkout v0.8.1
+```
+
+**Build the provider**
+```
+go build
+```
+
+The last command will compile the Terraform Provider and generate a `terraform-provider-aquasec` binary in your local directory.
+
+**Install the provider**
+
+After a successful build, the generated binary will need to be installed into the folder containing the Terraform resources.
+
+We'll use here the [example Terraform resources](examples/resources/main.tf) provided in this repo.
+
+```
+mkdir -p examples/resources/.terraform/plugins/terraform-provider-aquasec/aquasec/aquasec/0.8.1/darwin_amd64/
+
+mv terraform-provider-aquasec examples/resources/.terraform/plugins/terraform-provider-aquasec/aquasec/aquasec/0.8.1/darwin_amd64/terraform-provider-aquasec
+```
+Make sure to replace the version `0.8.1` and the architecture `darwin_amd64` in the path as relevant for your system.
+
+**Terraform configuration**
+
+In order to test the provider installed locally, the provider block will have to include the path to the current binary, as in the following example
+```
+terraform {
+  required_providers {
+    aquasec = {
+      version = "0.8.1"
+      source  = "terraform-provider-aquasec/aquasec/aquasec"
+    }
+  }
+}
+```
+
+## Test Aquasec Terraform Provider
+
+The following instructions will let you test the provider. If you built a localy copy of it please make sure to follow the instruction above and replace the provider definition in the example resources.
+
+```
+cd examples/resources
+
+terraform init
+```
+
+Finally, make sure to replace the Aqua credentials and URL in the `provider` block and start trying out the different resources as provided in the example file.
+
+```
+provider "aquasec" {
+  username = "admin"
+  aqua_url = "https://aquaurl.com"
+  password = "@password"
+}
+```
+
+## Documentation generation
+
+This will allow you to locally generate updates to the documentation (found in the `docs` directory).
 ```sh
-$ go install
+go install github.com/hashicorp/terraform-plugin-docs/cmd/tfplugindocs # check source url in tools/tools.go
 ```
-
-## Adding Dependencies
-
-This provider uses [Go modules](https://github.com/golang/go/wiki/Modules).
-Please see the Go documentation for the most up to date information about using Go modules.
-
-To add a new dependency `github.com/author/dependency` to your Terraform provider:
-
-```
-go get github.com/author/dependency
-go mod tidy
-```
-
-Then commit the changes to `go.mod` and `go.sum`.
-
-## Using the provider
-
-Fill this in for each provider
-
-## Developing the Provider
-
-If you wish to work on the provider, you'll first need [Go](http://www.golang.org) installed on your machine (see [Requirements](#requirements) above).
-
-To compile the provider, run `go install`. This will build the provider and put the provider binary in the `$GOPATH/bin` directory.
-
-To generate or update documentation, run `go generate`.
-
-In order to run the full suite of Acceptance tests, run `make testacc`.
-
-*Note:* Acceptance tests create real resources, and often cost money to run.
-
+Ensure `GOBIN` is set correctly, or that the installed `tfplugindocs` tool is available on your `PATH`.
 ```sh
-$ make testacc
+which tfplugindocs # if not found, check in your $GOPATH/bin/tfplugindocs
 ```
+
+Ensure you are in the root directory of the project, and run
+```sh
+tfplugindocs generate
+```
+
+The tool will analyse the source code, and automatically build a schema map, with `Description` fields allowing for
+some additional context to be provided. It will also iterate through template files in `templates/`, and example code for
+each resource can be provided at `examples/resources/[full resource name]/resource.tf`. Similarly, for data sources,
+the location is `examples/data-sources/[full data source name]/data-source.tf`.
+
+The output in the docs directory is what gets published on https://registry.terraform.io. Please take care to provide
+quality documentation and examples of resources and data sources developed for the provider.

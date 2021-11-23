@@ -11,6 +11,8 @@ import (
 
 func dataSourceUsers() *schema.Resource {
 	return &schema.Resource{
+		Description: "The data source `aquasec_users` provides a method to query all users within the Aqua\n\n" +
+			"users database. The fields returned from this query are detailed in the Schema section below.",
 		ReadContext: resourceRead,
 		Schema: map[string]*schema.Schema{
 			"users": {

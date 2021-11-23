@@ -79,7 +79,7 @@ description: |-
 - **packages_black_list_enabled** (Boolean)
 - **packages_white_list** (Set of Object) (see [below for nested schema](#nestedatt--packages_white_list))
 - **packages_white_list_enabled** (Boolean)
-- **partial_results_image_fail** (String)
+- **partial_results_image_fail** (Boolean)
 - **read_only** (Boolean)
 - **registries** (List of String)
 - **registry** (String)

@@ -6,7 +6,7 @@ description: |-
   
 ---
 
-# aquasec_firewall_policy (Resource)
+# Resource `aquasec_firewall_policy`
 
 
 
@@ -30,7 +30,7 @@ description: |-
 - **type** (String) Indicates the class of protection defined by the firewall.
 - **version** (String) Aqua version functionality supported
 
-### Read-Only
+### Read-only
 
 - **author** (String) Username of the account that created the policy.
 - **lastupdate** (Number) Timestamp of the last update in Unix time format.

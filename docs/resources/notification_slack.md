@@ -19,7 +19,6 @@ description: |-
 
 - **channel** (String)
 - **enabled** (Boolean)
-- **name** (String)
 - **type** (String)
 - **user_name** (String)
 - **webhook_url** (String)
@@ -29,6 +28,7 @@ description: |-
 - **icon** (String)
 - **id** (String) The ID of this resource.
 - **main_text** (String)
+- **name** (String)
 - **service_key** (String)
 
 

@@ -6,7 +6,7 @@ description: |-
   
 ---
 
-# aquasec_service (Resource)
+# Resource `aquasec_service`
 
 
 
@@ -32,7 +32,7 @@ description: |-
 - **monitoring** (Boolean) Indicates if monitoring is enabled or not
 - **priority** (Number) Rules priority, must be between 1-100.
 
-### Read-Only
+### Read-only
 
 - **author** (String) Username of the account that created the service.
 - **containers_count** (Number) The number of containers associated with the service.

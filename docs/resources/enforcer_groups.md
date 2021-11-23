@@ -34,27 +34,27 @@ description: |-
 - **auto_discovery_enabled** (Boolean)
 - **auto_scan_discovered_images_running_containers** (Boolean)
 - **block_admission_control** (Boolean)
-- **container_activity_protection** (Boolean)
 - **description** (String)
 - **enforce** (Boolean)
 - **host_network_protection** (Boolean)
-- **host_os** (String)
 - **host_protection** (Boolean)
 - **id** (String) The ID of this resource.
 - **image_assurance** (Boolean)
-- **install_command** (String)
-- **last_update** (Number)
 - **last_updated** (String)
 - **micro_enforce_injection** (Boolean)
-- **network_protection** (Boolean)
-- **token** (String)
 - **user_access_control** (Boolean)
 
 ### Read-only
 
 - **command** (Set of Object) (see [below for nested schema](#nestedatt--command))
+- **container_activity_protection** (Boolean)
 - **gateway_address** (String)
 - **gateway_name** (String)
+- **host_os** (String)
+- **install_command** (String)
+- **last_update** (Number)
+- **network_protection** (Boolean)
+- **token** (String)
 
 <a id="nestedblock--orchestrator"></a>
 ### Nested Schema for `orchestrator`

@@ -6,7 +6,7 @@ description: |-
   
 ---
 
-# aquasec_image (Resource)
+# Resource `aquasec_image`
 
 
 
@@ -28,7 +28,7 @@ description: |-
 - **id** (String) The ID of this resource.
 - **permission_modification_comment** (String) A comment on why the image was whitelisted or blacklisted
 
-### Read-Only
+### Read-only
 
 - **architecture** (String) The image architecture.
 - **assurance_checks_performed** (List of Object) The list of image assurance checks performed on the image. (see [below for nested schema](#nestedatt--assurance_checks_performed))
@@ -81,7 +81,7 @@ description: |-
 <a id="nestedatt--assurance_checks_performed"></a>
 ### Nested Schema for `assurance_checks_performed`
 
-Read-Only:
+Read-only:
 
 - **assurance_type** (String)
 - **blocking** (Boolean)
@@ -95,7 +95,7 @@ Read-Only:
 <a id="nestedatt--history"></a>
 ### Nested Schema for `history`
 
-Read-Only:
+Read-only:
 
 - **comment** (String)
 - **created** (String)
@@ -107,7 +107,7 @@ Read-Only:
 <a id="nestedatt--vulnerabilities"></a>
 ### Nested Schema for `vulnerabilities`
 
-Read-Only:
+Read-only:
 
 - **ack_author** (String)
 - **ack_comment** (String)
