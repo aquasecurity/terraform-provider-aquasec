@@ -1,5 +1,5 @@
 <a href="https://terraform.io">
-    <img src="https://www.terraform.io/assets/images/og-image-8b3e4f7d.png" alt="Terraform logo" title="Terraform" height="100" />
+    <img src="Terraform_PrimaryLogo_Color_RGB.png" alt="Terraform logo" title="Terraform" height="100" />
 </a>
 <a href="https://www.aquasec.com/">
     <img src="https://avatars3.githubusercontent.com/u/12783832?s=200&v=4" alt="Aqua logo" title="Aquasec" height="100" />
