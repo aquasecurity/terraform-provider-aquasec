@@ -6,7 +6,7 @@ description: |-
   
 ---
 
-# aquasec_container_runtime_policy (Data Source)
+# Data Source `aquasec_container_runtime_policy`
 
 
 
@@ -23,7 +23,7 @@ description: |-
 
 - **id** (String) The ID of this resource.
 
-### Read-Only
+### Read-only
 
 - **allowed_executables** (List of String) List of executables that are allowed for the user.
 - **application_scopes** (List of String) Indicates the application scope of the service.
@@ -69,7 +69,7 @@ description: |-
 <a id="nestedatt--scope_variables"></a>
 ### Nested Schema for `scope_variables`
 
-Read-Only:
+Read-only:
 
 - **attribute** (String)
 - **value** (String)

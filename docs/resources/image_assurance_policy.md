@@ -25,7 +25,6 @@ description: |-
 
 - **allowed_images** (List of String)
 - **audit_on_failure** (Boolean)
-- **author** (String)
 - **auto_scan_configured** (Boolean)
 - **auto_scan_enabled** (Boolean)
 - **auto_scan_time** (Block Set) (see [below for nested schema](#nestedblock--auto_scan_time))
@@ -63,7 +62,6 @@ description: |-
 - **force_microenforcer** (Boolean)
 - **function_integrity_enabled** (Boolean)
 - **ignore_recently_published_vln** (Boolean)
-- **ignore_recently_published_vln_period** (Number)
 - **ignore_risk_resources_enabled** (Boolean)
 - **ignored_risk_resources** (List of String)
 - **images** (List of String)
@@ -78,7 +76,7 @@ description: |-
 - **packages_black_list_enabled** (Boolean)
 - **packages_white_list** (Block Set) (see [below for nested schema](#nestedblock--packages_white_list))
 - **packages_white_list_enabled** (Boolean)
-- **partial_results_image_fail** (String)
+- **partial_results_image_fail** (Boolean)
 - **read_only** (Boolean)
 - **registries** (List of String)
 - **registry** (String)
@@ -96,7 +94,9 @@ description: |-
 
 ### Read-only
 
+- **author** (String)
 - **id** (String) The ID of this resource.
+- **ignore_recently_published_vln_period** (Number)
 
 <a id="nestedblock--auto_scan_time"></a>
 ### Nested Schema for `auto_scan_time`

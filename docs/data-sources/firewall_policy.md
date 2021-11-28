@@ -6,7 +6,7 @@ description: |-
   
 ---
 
-# aquasec_firewall_policy (Data Source)
+# Data Source `aquasec_firewall_policy`
 
 
 
@@ -23,7 +23,7 @@ description: |-
 
 - **id** (String) The ID of this resource.
 
-### Read-Only
+### Read-only
 
 - **author** (String) Username of the account that created the policy.
 - **block_icmp_ping** (Boolean) Indicates whether policy includes blocking incoming 'ping' requests.
@@ -38,7 +38,7 @@ description: |-
 <a id="nestedatt--inbound_networks"></a>
 ### Nested Schema for `inbound_networks`
 
-Read-Only:
+Read-only:
 
 - **allow** (Boolean)
 - **port_range** (String)
@@ -49,7 +49,7 @@ Read-Only:
 <a id="nestedblock--outbound_networks"></a>
 ### Nested Schema for `outbound_networks`
 
-Read-Only:
+Read-only:
 
 - **allow** (Boolean) Indicates whether the specified resources are allowed to receive data or requests.
 - **port_range** (String) Range of ports affected by firewall.

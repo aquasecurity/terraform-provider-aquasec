@@ -6,7 +6,7 @@ description: |-
   
 ---
 
-# aquasec_host_runtime_policy (Data Source)
+# Data Source `aquasec_host_runtime_policy`
 
 
 
@@ -23,7 +23,7 @@ description: |-
 
 - **id** (String) The ID of this resource.
 
-### Read-Only
+### Read-only
 
 - **application_scopes** (List of String) Indicates the application scope of the service.
 - **audit_all_os_user_activity** (Boolean) If true, all process activity will be audited.
@@ -50,7 +50,7 @@ description: |-
 <a id="nestedatt--file_integrity_monitoring"></a>
 ### Nested Schema for `file_integrity_monitoring`
 
-Read-Only:
+Read-only:
 
 - **excluded_paths** (List of String)
 - **excluded_processes** (List of String)
@@ -68,7 +68,7 @@ Read-Only:
 <a id="nestedatt--scope_variables"></a>
 ### Nested Schema for `scope_variables`
 
-Read-Only:
+Read-only:
 
 - **attribute** (String)
 - **value** (String)
@@ -77,7 +77,7 @@ Read-Only:
 <a id="nestedatt--windows_registry_monitoring"></a>
 ### Nested Schema for `windows_registry_monitoring`
 
-Read-Only:
+Read-only:
 
 - **excluded_paths** (List of String)
 - **excluded_processes** (List of String)
@@ -95,7 +95,7 @@ Read-Only:
 <a id="nestedatt--windows_registry_protection"></a>
 ### Nested Schema for `windows_registry_protection`
 
-Read-Only:
+Read-only:
 
 - **excluded_paths** (List of String)
 - **excluded_processes** (List of String)

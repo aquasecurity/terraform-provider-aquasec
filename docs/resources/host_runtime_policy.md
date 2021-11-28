@@ -6,7 +6,7 @@ description: |-
   
 ---
 
-# aquasec_host_runtime_policy (Resource)
+# Resource `aquasec_host_runtime_policy`
 
 
 
@@ -43,7 +43,7 @@ description: |-
 - **windows_registry_monitoring** (Block List, Max: 1) Configuration for windows registry monitoring. (see [below for nested schema](#nestedblock--windows_registry_monitoring))
 - **windows_registry_protection** (Block List, Max: 1) Configuration for windows registry protection. (see [below for nested schema](#nestedblock--windows_registry_protection))
 
-### Read-Only
+### Read-only
 
 - **author** (String) Username of the account that created the service.
 

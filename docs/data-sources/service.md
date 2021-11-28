@@ -6,7 +6,7 @@ description: |-
   
 ---
 
-# aquasec_service (Data Source)
+# Data Source `aquasec_service`
 
 
 
@@ -23,7 +23,7 @@ description: |-
 
 - **id** (String) The ID of this resource.
 
-### Read-Only
+### Read-only
 
 - **application_scopes** (List of String) Indicates the application scope of the service.
 - **author** (String) Username of the account that created the service.
@@ -53,7 +53,7 @@ description: |-
 <a id="nestedatt--scope_variables"></a>
 ### Nested Schema for `scope_variables`
 
-Read-Only:
+Read-only:
 
 - **attribute** (String)
 - **value** (String)

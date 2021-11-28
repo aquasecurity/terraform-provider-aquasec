@@ -6,7 +6,7 @@ description: |-
   
 ---
 
-# aquasec_container_runtime_policy (Resource)
+# Resource `aquasec_container_runtime_policy`
 
 
 
@@ -62,7 +62,7 @@ description: |-
 - **scope_expression** (String) Logical expression of how to compute the dependency of the scope variables.
 - **scope_variables** (Block List) List of scope attributes. (see [below for nested schema](#nestedblock--scope_variables))
 
-### Read-Only
+### Read-only
 
 - **author** (String) Username of the account that created the service.
 
