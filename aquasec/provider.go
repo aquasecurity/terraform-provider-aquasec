@@ -19,6 +19,7 @@ type Config struct {
 	Username string `json:"tenant"`
 	Password string `json:"token"`
 	AquaURL  string `json:"aqua_url"`
+	CloudEnv string `json:"cloud_env"`
 }
 
 // Provider -
@@ -63,6 +64,12 @@ func Provider(v string) *schema.Provider {
 				DefaultFunc: schema.EnvDefaultFunc("AQUA_CONFIG", "~/.aquasec/tf.config"),
 				Description: "This is the file path for Aqua provider configuration. The default configuration path is `~/.aqua/tf.config`. Can alternatively be sourced from the `AQUA_CONFIG` environment variable.",
 			},
+			"cloud_env": {
+				Type:        schema.TypeString,
+				Optional:    true,
+				DefaultFunc: schema.EnvDefaultFunc("AQUA_CLOUD_ENV", nil),
+				Description: "If present, this variables signifies which environment of Aqua Cloud we are using. The default configuration path is `~/.aqua/tf.config`. Can alternatively be sourced from the `AQUA_CLOUD_ENV` environment variable.",
+			},
 		},
 		ResourcesMap: map[string]*schema.Resource{
 			"aquasec_user":                     resourceUser(),
@@ -93,23 +100,23 @@ func Provider(v string) *schema.Provider {
 	}
 }
 
-func getProviderConfigurationFromFile(d *schema.ResourceData) (string, string, string, error) {
+func getProviderConfigurationFromFile(d *schema.ResourceData) (string, string, string, string, error) {
 	log.Print("[DEBUG] Trying to load configuration from file")
 	if configPath, ok := d.GetOk("config_path"); ok && configPath.(string) != "" {
 		path, err := homedir.Expand(configPath.(string))
 		if err != nil {
 			log.Printf("[DEBUG] Failed to expand config file path %s, error %s", configPath, err)
-			return "", "", "", nil
+			return "", "", "", "", nil
 		}
 		if _, err := os.Stat(path); os.IsNotExist(err) {
 			log.Printf("[DEBUG] Terraform config file %s does not exist, error %s", path, err)
-			return "", "", "", nil
+			return "", "", "", "", nil
 		}
 		log.Printf("[DEBUG] Terraform configuration file is: %s", path)
 		configFile, err := os.Open(path)
 		if err != nil {
 			log.Printf("[DEBUG] Unable to open Terraform configuration file %s", path)
-			return "", "", "", fmt.Errorf("Unable to open terraform configuration file. Error %v", err)
+			return "", "", "", "", fmt.Errorf("Unable to open terraform configuration file. Error %v", err)
 		}
 		defer configFile.Close()
 
@@ -118,11 +125,11 @@ func getProviderConfigurationFromFile(d *schema.ResourceData) (string, string, s
 		err = json.Unmarshal(configBytes, &config)
 		if err != nil {
 			log.Printf("[DEBUG] Failed to parse config file %s", path)
-			return "", "", "", fmt.Errorf("Invalid terraform configuration file format. Error %v", err)
+			return "", "", "", "", fmt.Errorf("Invalid terraform configuration file format. Error %v", err)
 		}
-		return config.Username, config.Password, config.AquaURL, nil
+		return config.Username, config.Password, config.AquaURL, config.CloudEnv, nil
 	}
-	return "", "", "", nil
+	return "", "", "", "", nil
 }
 
 func providerConfigure(ctx context.Context, d *schema.ResourceData) (interface{}, diag.Diagnostics) {
@@ -135,9 +142,10 @@ func providerConfigure(ctx context.Context, d *schema.ResourceData) (interface{}
 	aquaURL := d.Get("aqua_url").(string)
 	verifyTLS := d.Get("verify_tls").(bool)
 	caCertPath := d.Get("ca_certificate_path").(string)
+	cloudEnv := d.Get("cloud_env").(string)
 
-	if username == "" && password == "" && aquaURL == "" {
-		username, password, aquaURL, err = getProviderConfigurationFromFile(d)
+	if username == "" && password == "" && aquaURL == "" && cloudEnv == "" {
+		username, password, aquaURL, cloudEnv, err = getProviderConfigurationFromFile(d)
 		if err != nil {
 			return nil, diag.FromErr(err)
 		}
@@ -146,22 +154,31 @@ func providerConfigure(ctx context.Context, d *schema.ResourceData) (interface{}
 	if username == "" {
 		diags = append(diags, diag.Diagnostic{
 			Severity: diag.Error,
-			Summary:  "Initializing provider, username parameter is missing",
+			Summary:  "Initializing provider, username parameter is missing.",
 		})
 	}
 
 	if password == "" {
 		diags = append(diags, diag.Diagnostic{
 			Severity: diag.Error,
-			Summary:  "Initializing provider, password parameter is missing",
+			Summary:  "Initializing provider, password parameter is missing.",
 		})
 	}
 
 	if aquaURL == "" {
 		diags = append(diags, diag.Diagnostic{
 			Severity: diag.Error,
-			Summary:  "Initializing provider, aqua_url parameter is missing",
+			Summary:  "Initializing provider, aqua_url parameter is missing.",
 		})
+	}
+
+	if cloudEnv != "" {
+		if (cloudEnv != "prod" && cloudEnv != "test") {
+			diags = append(diags, diag.Diagnostic{
+				Severity: diag.Error,
+				Summary:  "Error Initializing provider, value of cloud_env needs to be either prod or test.",
+			})	
+		}
 	}
 
 	var caCertByte []byte
@@ -182,9 +199,15 @@ func providerConfigure(ctx context.Context, d *schema.ResourceData) (interface{}
 		return nil, diags
 	}
 
-	aquaClient := client.NewClient(aquaURL, username, password, verifyTLS, caCertByte)
+	//aquaClient := client.NewClient(aquaURL, username, password, verifyTLS, caCertByte)
+	aquaClient := client.NewClient(aquaURL, username, password, cloudEnv, verifyTLS, caCertByte)
 
-	_, err = aquaClient.GetAuthToken()
+	if cloudEnv != "" {
+		_, err = aquaClient.GetUSEAuthToken()
+	} else {
+		_, err = aquaClient.GetAuthToken()
+	}
+
 	if err != nil {
 		diags = append(diags, diag.Diagnostic{
 			Severity: diag.Error,
