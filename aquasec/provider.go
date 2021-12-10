@@ -202,10 +202,10 @@ func providerConfigure(ctx context.Context, d *schema.ResourceData) (interface{}
 	//aquaClient := client.NewClient(aquaURL, username, password, verifyTLS, caCertByte)
 	aquaClient := client.NewClient(aquaURL, username, password, cloudEnv, verifyTLS, caCertByte)
 
-	if cloudEnv != "" {
-		_, err = aquaClient.GetUSEAuthToken()
-	} else {
+	if cloudEnv == "" {
 		_, err = aquaClient.GetAuthToken()
+	} else {
+		_, err = aquaClient.GetUSEAuthToken()
 	}
 
 	if err != nil {
