@@ -68,7 +68,7 @@ func Provider(v string) *schema.Provider {
 				Type:        schema.TypeString,
 				Optional:    true,
 				DefaultFunc: schema.EnvDefaultFunc("AQUA_CLOUD_ENV", nil),
-				Description: "If present, this variables signifies which environment of Aqua Cloud we are using. The default configuration path is `~/.aqua/tf.config`. Can alternatively be sourced from the `AQUA_CLOUD_ENV` environment variable.",
+				Description: "If present, this variables signifies which environment of Aqua Cloud we are using. Can alternatively be sourced from the `AQUA_CLOUD_ENV` environment variable.",
 			},
 		},
 		ResourcesMap: map[string]*schema.Resource{
