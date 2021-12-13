@@ -5,6 +5,8 @@ import (
 	"crypto/x509"
 	"encoding/json"
 	"fmt"
+	"strings"
+	"log"
 	"github.com/parnurzeal/gorequest"
 )
 
@@ -15,12 +17,11 @@ type Client struct {
 	password  	string
 	token     	string
 	name      	string
-	cloud_env   string
 	gorequest *gorequest.SuperAgent
 }
 
 // NewClient - initialize and return the Client
-func NewClient(url, user, password, cloud_env string, verifyTLS bool, caCertByte []byte) *Client {
+func NewClient(url, user, password string, verifyTLS bool, caCertByte []byte) *Client {
 	tlsConfig := &tls.Config{
 		InsecureSkipVerify: !verifyTLS,
 	}
@@ -40,7 +41,6 @@ func NewClient(url, user, password, cloud_env string, verifyTLS bool, caCertByte
 		url:       url,
 		user:      user,
 		password:  password,
-		cloud_env: cloud_env,
 		gorequest: gorequest.New().TLSClientConfig(tlsConfig),
 	}
 	return c
@@ -68,13 +68,17 @@ func (cli *Client) GetAuthToken() (string, error) {
 // GetUSEAuthToken - Connect to Aqua SaaS solution and return a JWT bearerToken (string)
 // Return: bool - successfully connected?
 func (cli *Client) GetUSEAuthToken() (string, error) {
-	saas_url := ""
-	if cli.cloud_env == "test" {
-		saas_url = "https://stage.api.cloudsploit.com" 
+	token_url := ""
+	prov_url := ""
+
+	if (strings.Contains(cli.url, "dev-cloud.aquasec.com")) {
+		token_url = "https://stage.api.cloudsploit.com"
+		prov_url = "https://prov-dev.cloud.aquasec.com"
 	} else {
-		saas_url = "https://api.cloudsploit.com"
+		token_url = "https://api.cloudsploit.com"
+		prov_url = "https://prov.cloud.aquasec.com"
 	}
-	resp, body, errs := cli.gorequest.Post(saas_url + "/v2/signin").
+	resp, body, errs := cli.gorequest.Post(token_url + "/v2/signin").
 		Send(`{"email":"` + cli.user + `", "password":"` + cli.password + `"}`).End()
 	if errs != nil {
 		return "", getMergedError(errs)
@@ -85,6 +89,24 @@ func (cli *Client) GetUSEAuthToken() (string, error) {
 		_ = json.Unmarshal([]byte(body), &raw)
 		data := raw["data"].(map[string]interface {})
 		cli.token = data["token"].(string)
+		//get the ese_url to make the API requests.
+		request := cli.gorequest
+		request.Set("Authorization", "Bearer "+cli.token)
+		events, body, errs := request.Clone().Get(prov_url + "/v1/envs").End()
+
+		if errs != nil {
+			log.Println(events.StatusCode)
+			err := fmt.Errorf("error calling %s", prov_url)
+			return "", err
+		}
+
+		if events.StatusCode == 200 {
+			var raw map[string]interface{}
+			_ = json.Unmarshal([]byte(body), &raw)
+			data := raw["data"].(map[string]interface {})
+			cli.url = "https://" + data["ese_url"].(string)
+		}
+
 		return cli.token, nil
 	}
 
