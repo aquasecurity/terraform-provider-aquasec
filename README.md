@@ -52,6 +52,9 @@ provider "aquasec" {
   password = "@password"
 }
 ```
+## Using the Aquasec provider SaaS solution
+
+To quickly get started using the Aquasec SaaS provider for Terraform, configure the provider as shown above. The aqua_url should point to cloud.aquasec.com for the Aqua Customers and the Dev/QA Teams need to provide their Urls respectively.
 
 ## Contributing
 

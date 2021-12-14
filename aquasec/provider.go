@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"strings"
 
 	"github.com/aquasecurity/terraform-provider-aquasec/client"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
@@ -146,21 +147,21 @@ func providerConfigure(ctx context.Context, d *schema.ResourceData) (interface{}
 	if username == "" {
 		diags = append(diags, diag.Diagnostic{
 			Severity: diag.Error,
-			Summary:  "Initializing provider, username parameter is missing",
+			Summary:  "Initializing provider, username parameter is missing.",
 		})
 	}
 
 	if password == "" {
 		diags = append(diags, diag.Diagnostic{
 			Severity: diag.Error,
-			Summary:  "Initializing provider, password parameter is missing",
+			Summary:  "Initializing provider, password parameter is missing.",
 		})
 	}
 
 	if aquaURL == "" {
 		diags = append(diags, diag.Diagnostic{
 			Severity: diag.Error,
-			Summary:  "Initializing provider, aqua_url parameter is missing",
+			Summary:  "Initializing provider, aqua_url parameter is missing.",
 		})
 	}
 
@@ -184,7 +185,13 @@ func providerConfigure(ctx context.Context, d *schema.ResourceData) (interface{}
 
 	aquaClient := client.NewClient(aquaURL, username, password, verifyTLS, caCertByte)
 
-	_, err = aquaClient.GetAuthToken()
+	saas_flow := strings.Contains(aquaURL, "cloud.aquasec.com")
+	if (saas_flow) {
+		_, err = aquaClient.GetUSEAuthToken()
+	} else {
+		_, err = aquaClient.GetAuthToken() 
+	}
+
 	if err != nil {
 		diags = append(diags, diag.Diagnostic{
 			Severity: diag.Error,
