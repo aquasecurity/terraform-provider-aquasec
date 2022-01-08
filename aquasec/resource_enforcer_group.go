@@ -23,6 +23,25 @@ func resourceEnforcerGroup() *schema.Resource {
 				Required: true,
 				ForceNew: true,
 			},
+			"sync_host_images": {
+				Type:     schema.TypeBool,
+				Optional: true,
+				Default: false,
+			},
+			"risk_explorer_auto_discovery": {
+				Type:     schema.TypeBool,
+				Optional: true,
+				Default: false,
+			},
+			"syscall_enabled": {
+				Type:     schema.TypeBool,
+				Optional: true,
+				Default: false,
+			},
+			"enforcer_image": {
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 			"description": {
 				Type:     schema.TypeString,
 				Optional: true,
@@ -33,7 +52,8 @@ func resourceEnforcerGroup() *schema.Resource {
 			},
 			"logical_name": {
 				Type:     schema.TypeString,
-				Required: true,
+				Optional: true,
+				Default: "default_value",
 			},
 			"type": {
 				Type:     schema.TypeString,
@@ -41,7 +61,7 @@ func resourceEnforcerGroup() *schema.Resource {
 			},
 			"gateways": {
 				Type:     schema.TypeList,
-				Required: true,
+				Optional: true,
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
 				},
@@ -60,11 +80,13 @@ func resourceEnforcerGroup() *schema.Resource {
 			},
 			"container_activity_protection": {
 				Type:     schema.TypeBool,
-				Computed: true,
+				Optional: true,
+				Default: false,
 			},
 			"network_protection": {
 				Type:     schema.TypeBool,
-				Computed: true,
+				Optional: true,
+				Default: false,
 			},
 			"host_network_protection": {
 				Type:     schema.TypeBool,
@@ -193,30 +215,44 @@ func resourceEnforcerGroup() *schema.Resource {
 func resourceEnforcerGroupCreate(d *schema.ResourceData, m interface{}) error {
 	ac := m.(*client.Client)
 
-	var oType string
+	var oType, oNameSpace, oServiceAccount  string
+	var oMaster bool
 
 	if c, ok := d.GetOk("orchestrator"); ok {
 		cList := c.(*schema.Set).List()
 		for _, cat := range cList {
 			if catData, isMap := cat.(map[string]interface{}); isMap {
 				oType = catData["type"].(string)
-				//o_namespace = catData["namespace"].(string)
-				//o_service_account = catData["service_account"].(string)
-				//o_master = catData["master"].(bool)
+				oNameSpace = catData["namespace"].(string)
+				oServiceAccount = catData["service_account"].(string)
+				oMaster = catData["master"].(bool)
 			}
 		}
 	}
 	// Get the Orchestrator
 	orch := client.EnforcerOrchestrator{
 		Type: oType,
+		Namespace: oNameSpace,
+		ServiceAccount: oServiceAccount,
+		Master: oMaster,
 	}
 	// Get the gateways
 	g := d.Get("gateways").([]interface{})
+	
 	// get the required elements
 	group := client.EnforcerGroup{
 		ID:           d.Get("group_id").(string),
 		Logicalname:  d.Get("logical_name").(string),
 		Type:         d.Get("type").(string),
+		Description:  d.Get("description").(string),
+		ImageAssurance: d.Get("image_assurance").(bool),
+		ContainerActivityProtection: d.Get("container_activity_protection").(bool),
+		NetworkProtection: d.Get("network_protection").(bool),
+		SyncHostImages: d.Get("sync_host_images").(bool),
+		RiskExplorerAutoDiscovery: d.Get("risk_explorer_auto_discovery").(bool),
+		SyscallEnabled: d.Get("syscall_enabled").(bool),
+		Enforce: d.Get("enforce").(bool),
+		EnforcerImageName: d.Get("enforcer_image").(string),
 		Gateways:     convertStringArr(g),
 		Orchestrator: orch,
 	}
@@ -267,6 +303,12 @@ func resourceEnforcerGroupRead(d *schema.ResourceData, m interface{}) error {
 		d.Set("admission_control", r.AdmissionControl)
 		d.Set("micro_enforce_injection", r.MicroEnforcerInjection)
 		d.Set("block_admission_control", r.BlockAdmissionControl)
+		d.Set("logical_name", r.Logicalname)
+		d.Set("gateways", r.Gateways)
+		d.Set("risk_explorer_auto_discovery", r.RiskExplorerAutoDiscovery)
+		d.Set("syscall_enabled", r.SyscallEnabled)
+		d.Set("sync_host_images", r.SyncHostImages) 
+		d.Set("enforcer_image", r.EnforcerImageName)
 	} else {
 		log.Print("[ERROR]  error calling ac.GetEnforcerGroup: ", r)
 		return err
@@ -293,7 +335,7 @@ func resourceEnforcerGroupUpdate(d *schema.ResourceData, m interface{}) error {
 		}
 	}
 
-	if d.HasChanges("description", "gateways", "orchestrator") {
+	// if d.HasChanges("description", "gateways", "orchestrator", "logical_name") {
 		// Get the Orchestrator
 
 		orch := client.EnforcerOrchestrator{
@@ -309,6 +351,14 @@ func resourceEnforcerGroupUpdate(d *schema.ResourceData, m interface{}) error {
 			Logicalname:  d.Get("logical_name").(string),
 			Type:         d.Get("type").(string),
 			Gateways:     convertStringArr(d.Get("gateways").([]interface{})),
+			Description:  d.Get("description").(string),
+			ContainerActivityProtection: d.Get("container_activity_protection").(bool),
+			NetworkProtection: d.Get("network_protection").(bool),
+			SyncHostImages: d.Get("sync_host_images").(bool),
+			RiskExplorerAutoDiscovery: d.Get("risk_explorer_auto_discovery").(bool),
+			SyscallEnabled: d.Get("syscall_enabled").(bool),
+			Enforce: d.Get("enforce").(bool),
+			EnforcerImageName: d.Get("enforcer_image").(string),
 			Orchestrator: orch,
 		}
 
@@ -319,7 +369,7 @@ func resourceEnforcerGroupUpdate(d *schema.ResourceData, m interface{}) error {
 			log.Println("[DEBUG]  error while updating enforcer group: ", err)
 			return err
 		}
-	}
+	// }
 	return nil
 }
 

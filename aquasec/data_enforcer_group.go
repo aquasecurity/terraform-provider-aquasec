@@ -19,6 +19,30 @@ func dataSourceEnforcerGroup() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
+			"sync_host_images": {
+				Type:     schema.TypeBool,
+				Computed: true,
+			},
+			"risk_explorer_auto_discovery": {
+				Type:     schema.TypeBool,
+				Computed: true,
+			},
+			"syscall_enabled": {
+				Type:     schema.TypeBool,
+				Computed: true,
+			},
+			"enforcer_image": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"container_activity_protection": {
+				Type:     schema.TypeBool,
+				Computed: true,
+			},
+			"network_protection": {
+				Type:     schema.TypeBool,
+				Computed: true,
+			},
 			"logical_name": {
 				Type:     schema.TypeString,
 				Computed: true,
@@ -128,16 +152,32 @@ func dataEnforcerGroupRead(d *schema.ResourceData, m interface{}) error {
 	name := d.Get("group_id").(string)
 	group, err := ac.GetEnforcerGroup(name)
 	if err == nil {
-		d.Set("group_id", group.ID)
-		d.Set("description", group.Description)
-		d.Set("logical_name", group.Logicalname)
-		d.Set("type", group.Type)
-		d.Set("enforce", group.Enforce)
-		//d.Set("gateways", convertStringArr(gateways))
-		d.Set("gateways", group.Gateways)
 		d.Set("token", group.Token)
-		d.Set("orchestrator", flattenOrchestrators(group.Orchestrator))
+		d.Set("gateway_name", group.GatewayName)
+		d.Set("gateway_address", group.GatewayAddress)
+		d.Set("user_access_control", group.UserAccessControl)
+		d.Set("image_assurance", group.ImageAssurance)
+		d.Set("host_protection", group.HostProtection)
+		d.Set("audit_all", group.AuditAll)
+		d.Set("audit_success_login", group.AuditSuccessLogin)
+		d.Set("audit_failed_login", group.AuditFailedLogin)
+		d.Set("last_update", group.LastUpdate)
 		d.Set("command", flattenCommands(group.Command))
+		d.Set("host_os", group.HostOs)
+		d.Set("install_command", group.InstallCommand)
+		d.Set("allow_kube_enforcer_audit", group.AllowKubeEnforcerAudit)
+		d.Set("auto_discovery_enabled", group.AutoDiscoveryEnabled)
+		d.Set("auto_discover_configure_registries", group.AutoDiscoverConfigureRegistries)
+		d.Set("auto_scan_discovered_images_running_containers", group.AutoScanDiscoveredImagesRunningContainers)
+		d.Set("admission_control", group.AdmissionControl)
+		d.Set("micro_enforce_injection", group.MicroEnforcerInjection)
+		d.Set("block_admission_control", group.BlockAdmissionControl)
+		d.Set("logical_name", group.Logicalname)
+		d.Set("gateways", group.Gateways)
+		d.Set("risk_explorer_auto_discovery", group.RiskExplorerAutoDiscovery)
+		d.Set("syscall_enabled", group.SyscallEnabled)
+		d.Set("sync_host_images", group.SyncHostImages) 
+		d.Set("enforcer_image", group.EnforcerImageName)
 
 		log.Println("[DEBUG]  setting id: ", name)
 		d.SetId(name)
