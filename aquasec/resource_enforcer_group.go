@@ -26,17 +26,14 @@ func resourceEnforcerGroup() *schema.Resource {
 			"sync_host_images": {
 				Type:     schema.TypeBool,
 				Optional: true,
-				Default: false,
 			},
 			"risk_explorer_auto_discovery": {
 				Type:     schema.TypeBool,
 				Optional: true,
-				Default: false,
 			},
 			"syscall_enabled": {
 				Type:     schema.TypeBool,
 				Optional: true,
-				Default: false,
 			},
 			"enforcer_image": {
 				Type:     schema.TypeString,
@@ -53,7 +50,6 @@ func resourceEnforcerGroup() *schema.Resource {
 			"logical_name": {
 				Type:     schema.TypeString,
 				Optional: true,
-				Default: "default_value",
 			},
 			"type": {
 				Type:     schema.TypeString,
@@ -81,12 +77,10 @@ func resourceEnforcerGroup() *schema.Resource {
 			"container_activity_protection": {
 				Type:     schema.TypeBool,
 				Optional: true,
-				Default: false,
 			},
 			"network_protection": {
 				Type:     schema.TypeBool,
 				Optional: true,
-				Default: false,
 			},
 			"host_network_protection": {
 				Type:     schema.TypeBool,
