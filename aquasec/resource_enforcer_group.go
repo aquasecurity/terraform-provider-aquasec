@@ -53,7 +53,6 @@ func resourceEnforcerGroup() *schema.Resource {
 			"logical_name": {
 				Type:     schema.TypeString,
 				Optional: true,
-				Default: "default_value",
 			},
 			"type": {
 				Type:     schema.TypeString,

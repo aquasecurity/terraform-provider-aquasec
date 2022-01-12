@@ -152,6 +152,7 @@ func dataEnforcerGroupRead(d *schema.ResourceData, m interface{}) error {
 	name := d.Get("group_id").(string)
 	group, err := ac.GetEnforcerGroup(name)
 	if err == nil {
+		d.Set("group_id", group.ID)
 		d.Set("token", group.Token)
 		d.Set("gateway_name", group.GatewayName)
 		d.Set("gateway_address", group.GatewayAddress)
