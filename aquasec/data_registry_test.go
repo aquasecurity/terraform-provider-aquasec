@@ -6,28 +6,32 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
+	"github.com/aquasecurity/terraform-provider-aquasec/client"
 )
 
 func TestAquasecRegistryDatasource(t *testing.T) {
-	name := "demo"
+	// name := "demo"
+	image := client.Image{
+		Name: "demo",
+	}
 	resource.Test(t, resource.TestCase{
 		PreCheck:  func() { testAccPreCheck(t) },
 		Providers: testAccProviders,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckAquasecRegistryDataSource(name),
+				Config: testAccCheckAquasecRegistryDataSource(image),
 				Check:  testAccCheckAquasecRegistryDataSourceExists("data.aquasec_integration_registries.testregistries"),
 			},
 		},
 	})
 }
 
-func testAccCheckAquasecRegistryDataSource(name string) string {
+func testAccCheckAquasecRegistryDataSource(image client.Image) string {
 	return fmt.Sprintf(`
 	data "aquasec_integration_registries" "testregistries" {
 		name = "%s"
 	}
-	`, name)
+	`, image.Name)
 
 }
 

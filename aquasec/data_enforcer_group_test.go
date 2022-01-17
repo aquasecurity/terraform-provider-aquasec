@@ -6,28 +6,37 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
+	"github.com/aquasecurity/terraform-provider-aquasec/client"
 )
 
 func TestAquasecEnforcerGroupDatasource(t *testing.T) {
-	groupID := "local"
+	// groupID := "local"
+
+	group := client.EnforcerGroup{
+		ID: "local",
+		Logicalname: "local",
+		Type: "local",
+		EnforcerImageName: "local",
+		Description: "local",
+	}
 	resource.Test(t, resource.TestCase{
 		PreCheck:  func() { testAccPreCheck(t) },
 		Providers: testAccProviders,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckAquasecEnforcerGroupDataSource(groupID),
+				Config: testAccCheckAquasecEnforcerGroupDataSource(group),
 				Check:  testAccCheckAquasecEnforcerGroupDataSourceExists("data.aquasec_enforcer_groups.testegdata"),
 			},
 		},
 	})
 }
 
-func testAccCheckAquasecEnforcerGroupDataSource(groupID string) string {
+func testAccCheckAquasecEnforcerGroupDataSource(group client.EnforcerGroup) string {
 	return fmt.Sprintf(`
 	data "aquasec_enforcer_groups" "testegdata" {
 		group_id = "%s"
 	}
-	`, groupID)
+	`, group.ID)
 
 }
 
