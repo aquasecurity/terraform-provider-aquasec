@@ -14,6 +14,7 @@ var image = client.Image{
 	Registry:   acctest.RandomWithPrefix("terraform-test"),
 	Repository: "elasticsearch",
 	Tag:        "6.4.2",
+	Disallowed: false,
 }
 
 func TestResourceAquasecImageCreate(t *testing.T) {
