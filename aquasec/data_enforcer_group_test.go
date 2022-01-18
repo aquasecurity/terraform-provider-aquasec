@@ -14,9 +14,6 @@ func TestAquasecEnforcerGroupDatasource(t *testing.T) {
 
 	group := client.EnforcerGroup{
 		ID: "local",
-		Logicalname: "local",
-		Type: "local",
-		Description: "local",
 	}
 	resource.Test(t, resource.TestCase{
 		PreCheck:  func() { testAccPreCheck(t) },
@@ -25,25 +22,23 @@ func TestAquasecEnforcerGroupDatasource(t *testing.T) {
 			{
 				Config: testAccCheckAquasecEnforcerGroupDataSource(group),
 				Check:  resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr(dataSourceRef(group.ID), "group_id", group.ID),
-					resource.TestCheckResourceAttr(dataSourceRef(group.Logicalname), "logical_name", group.Logicalname),
-					resource.TestCheckResourceAttr(dataSourceRef(group.Description), "description", group.Description),
-					resource.TestCheckResourceAttr(dataSourceRef(group.Type), "type", group.Type),
+					resource.TestCheckResourceAttr(dataSourceRefEnforcerGroup(group.ID), "group_id", group.ID),
 				),
 			},
 		},
 	})
 }
 
+func dataSourceRefEnforcerGroup(name string) string {
+	return fmt.Sprintf("data.aquasec_enforcer_groups.testegdata.%s", name)
+}
+
 func testAccCheckAquasecEnforcerGroupDataSource(group client.EnforcerGroup) string {
 	return fmt.Sprintf(`
 	data "aquasec_enforcer_groups" "testegdata" {
 		group_id = "%s"
-		description = "%s"
-		logical_name = "%s"
-		type = "%s"
 	}
-	`, group.ID, group.Description, group.Logicalname, group.Type)
+	`, group.ID)
 
 }
 
