@@ -13,7 +13,7 @@ import (
 var imageData = client.Image{
 	Registry:   acctest.RandomWithPrefix("terraform-test"),
 	Repository: "alpine",
-	Tag:        "3.14",
+	Tag:        "3.4",
 }
 
 func TestDataSourceAquasecImage(t *testing.T) {
@@ -43,8 +43,8 @@ func TestDataSourceAquasecImage(t *testing.T) {
 					resource.TestCheckResourceAttrSet(rootRef, "negligible_vulnerabilities"),
 					resource.TestCheckResourceAttrSet(rootRef, "total_vulnerabilities"),
 					resource.TestCheckResourceAttr(rootRef, "author", os.Getenv("AQUA_USER")),
-					resource.TestCheckResourceAttr(rootRef, "os", "centos"),
-					resource.TestCheckResourceAttr(rootRef, "os_version", "7"),
+					resource.TestCheckResourceAttrSet(rootRef, "os"),
+					resource.TestCheckResourceAttrSet(rootRef, "os_version"),
 					resource.TestCheckResourceAttrSet(rootRef, "docker_version"),
 					resource.TestCheckResourceAttrSet(rootRef, "architecture"),
 					resource.TestCheckResourceAttrSet(rootRef, "image_size"),
