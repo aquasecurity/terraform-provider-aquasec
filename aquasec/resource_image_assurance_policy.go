@@ -95,17 +95,17 @@ func resourceImageAssurancePolicy() *schema.Resource {
 			"audit_on_failure": {
 				Type:     schema.TypeBool,
 				Optional: true,
-				Default: true,
+				Default:  true,
 			},
 			"fail_cicd": {
 				Type:     schema.TypeBool,
 				Optional: true,
-				Default: true,
+				Default:  true,
 			},
 			"block_failed": {
 				Type:     schema.TypeBool,
 				Optional: true,
-				Default: true,
+				Default:  true,
 			},
 			"disallow_malware": {
 				Type:     schema.TypeBool,
@@ -214,7 +214,7 @@ func resourceImageAssurancePolicy() *schema.Resource {
 							Computed: true,
 						},
 						"variables": {
-							Type:     schema.TypeSet,
+							Type:     schema.TypeList,
 							Optional: true,
 							Elem: &schema.Resource{
 								Schema: map[string]*schema.Schema{
@@ -582,16 +582,16 @@ func resourceImageAssurancePolicyCreate(d *schema.ResourceData, m interface{}) e
 	iap := expandImageAssurancePolicy(d)
 	err := ac.CreateImageAssurancePolicy(iap)
 
-	if err == nil{
-		err1:= resourceImageAssurancePolicyRead(d,m)
+	if err == nil {
+		err1 := resourceImageAssurancePolicyRead(d, m)
 		if err1 == nil {
 			d.SetId(name)
 		} else {
 			return err1
-		} 
+		}
 	} else {
 		return err
-	} 
+	}
 
 	return nil
 }
@@ -600,25 +600,25 @@ func resourceImageAssurancePolicyUpdate(d *schema.ResourceData, m interface{}) e
 	ac := m.(*client.Client)
 	name := d.Get("name").(string)
 
-	if d.HasChanges("description","registry","cvss_severity_enabled","cvss_severity","cvss_severity_exclude_no_fix","custom_severity_enabled","maximum_score_enabled","maximum_score","control_exclude_no_fix","custom_checks_enabled",
-	"scap_enabled","cves_black_list_enabled","packages_black_list_enabled","packages_white_list_enabled","only_none_root_users","trusted_base_images_enabled","scan_sensitive_data","audit_on_failure","fail_cicd","block_failed",
-	"disallow_malware","monitored_malware_paths","exceptional_monitored_malware_paths","blacklisted_licenses_enabled","blacklisted_licenses","whitelisted_licenses_enabled","whitelisted_licenses","custom_checks","scap_files","scope",
-	"registries","labels","images","cves_black_list","packages_black_list","packages_white_list","allowed_images","trusted_base_images","read_only","force_microenforcer","docker_cis_enabled","kube_cis_enabled","enforce_excessive_permissions",
-	"function_integrity_enabled","dta_enabled","cves_white_list","cves_white_list_enabled","blacklist_permissions_enabled","blacklist_permissions","enabled","enforce","enforce_after_days","ignore_recently_published_vln","ignore_recently_published_vln_period",
-	"ignore_risk_resources_enabled","ignored_risk_resources","application_scopes","auto_scan_enabled","auto_scan_configured","auto_scan_time","required_labels_enabled","required_labels","forbidden_labels_enabled","forbidden_labels","domain_name",
-	"domain","description","dta_severity","scan_nfs_mounts","malware_action","partial_results_image_fail") {
+	if d.HasChanges("description", "registry", "cvss_severity_enabled", "cvss_severity", "cvss_severity_exclude_no_fix", "custom_severity_enabled", "maximum_score_enabled", "maximum_score", "control_exclude_no_fix", "custom_checks_enabled",
+		"scap_enabled", "cves_black_list_enabled", "packages_black_list_enabled", "packages_white_list_enabled", "only_none_root_users", "trusted_base_images_enabled", "scan_sensitive_data", "audit_on_failure", "fail_cicd", "block_failed",
+		"disallow_malware", "monitored_malware_paths", "exceptional_monitored_malware_paths", "blacklisted_licenses_enabled", "blacklisted_licenses", "whitelisted_licenses_enabled", "whitelisted_licenses", "custom_checks", "scap_files", "scope",
+		"registries", "labels", "images", "cves_black_list", "packages_black_list", "packages_white_list", "allowed_images", "trusted_base_images", "read_only", "force_microenforcer", "docker_cis_enabled", "kube_cis_enabled", "enforce_excessive_permissions",
+		"function_integrity_enabled", "dta_enabled", "cves_white_list", "cves_white_list_enabled", "blacklist_permissions_enabled", "blacklist_permissions", "enabled", "enforce", "enforce_after_days", "ignore_recently_published_vln", "ignore_recently_published_vln_period",
+		"ignore_risk_resources_enabled", "ignored_risk_resources", "application_scopes", "auto_scan_enabled", "auto_scan_configured", "auto_scan_time", "required_labels_enabled", "required_labels", "forbidden_labels_enabled", "forbidden_labels", "domain_name",
+		"domain", "description", "dta_severity", "scan_nfs_mounts", "malware_action", "partial_results_image_fail") {
 		iap := expandImageAssurancePolicy(d)
 		err := ac.UpdateImageAssurancePolicy(iap)
-		if err == nil{
-			err1:= resourceImageAssurancePolicyRead(d,m)
+		if err == nil {
+			err1 := resourceImageAssurancePolicyRead(d, m)
 			if err1 == nil {
 				d.SetId(name)
 			} else {
 				return err1
-			} 
+			}
 		} else {
 			return err
-		} 
+		}
 	}
 	return nil
 }
@@ -634,73 +634,73 @@ func resourceImageAssurancePolicyRead(d *schema.ResourceData, m interface{}) err
 		d.Set("application_scopes", iap.ApplicationScopes)
 		d.Set("registry", iap.Registry)
 		d.Set("cvss_severity_enabled", iap.CvssSeverityEnabled)
-		d.Set("cvss_severity",iap.CvssSeverity)
+		d.Set("cvss_severity", iap.CvssSeverity)
 		d.Set("cvss_severity_exclude_no_fix", iap.CvssSeverityExcludeNoFix)
 		d.Set("custom_severity_enabled", iap.CustomSeverityEnabled)
-		d.Set("maximum_score_enabled",iap.MaximumScoreEnabled)
-		d.Set("maximum_score",iap.MaximumScore)
-		d.Set("control_exclude_no_fix",iap.ControlExcludeNoFix)
-		d.Set("custom_checks_enabled",iap.CustomChecksEnabled)
-		d.Set("scap_enabled",iap.ScapEnabled)
-		d.Set("cves_black_list_enabled",iap.CvesBlackListEnabled)
-		d.Set("packages_black_list_enabled",iap.PackagesBlackListEnabled)
-		d.Set("packages_white_list_enabled",iap.PackagesWhiteListEnabled)
-		d.Set("only_none_root_users",iap.OnlyNoneRootUsers)
-		d.Set("trusted_base_images_enabled",iap.TrustedBaseImagesEnabled)
-		d.Set("scan_sensitive_data",iap.ScanSensitiveData)
-		d.Set("audit_on_failure",iap.AuditOnFailure)
-		d.Set("fail_cicd",iap.FailCicd)
-		d.Set("block_failed",iap.BlockFailed)
-		d.Set("disallow_malware",iap.DisallowMalware)
-		d.Set("monitored_malware_paths",iap.MonitoredMalwarePaths)
-		d.Set("exceptional_monitored_malware_paths",iap.ExceptionalMonitoredMalwarePaths)
-		d.Set("blacklisted_licenses_enabled",iap.BlacklistedLicensesEnabled)
-		d.Set("blacklisted_licenses",iap.BlacklistedLicenses)
-		d.Set("whitelisted_licenses_enabled",iap.WhitelistedLicensesEnabled)
-		d.Set("whitelisted_licenses",iap.WhitelistedLicenses)
-		d.Set("custom_checks",flattenCustomChecks(iap.CustomChecks))
-		d.Set("scap_files",iap.ScapFiles)
-		d.Set("scope",flatteniapscope(iap.Scope))
-		d.Set("registries",iap.Registries)
-		d.Set("labels",iap.Labels)
-		d.Set("images",iap.Images)
-		d.Set("cves_black_list",iap.CvesBlackList)
-		d.Set("packages_black_list",flattenpackages(iap.PackagesBlackList))
-		d.Set("packages_white_list",flattenpackages(iap.PackagesWhiteList))
-		d.Set("allowed_images",iap.AllowedImages)
-		d.Set("trusted_base_images",iap.TrustedBaseImages)
-		d.Set("read_only",iap.ReadOnly)
-		d.Set("force_microenforcer",iap.ForceMicroenforcer)
-		d.Set("docker_cis_enabled",iap.DockerCisEnabled)
-		d.Set("kube_cis_enabled",iap.KubeCisEnabled)
-		d.Set("enforce_excessive_permissions",iap.EnforceExcessivePermissions)
-		d.Set("function_integrity_enabled",iap.FunctionIntegrityEnabled)
-		d.Set("dta_enabled",iap.DtaEnabled)
-		d.Set("cves_white_list_enabled",iap.CvesWhiteListEnabled)
-		d.Set("cves_white_list",iap.CvesWhiteList)
-		d.Set("blacklist_permissions_enabled",iap.BlacklistPermissionsEnabled)
-		d.Set("blacklist_permissions",iap.BlacklistPermissions)
-		d.Set("enabled",iap.Enabled)
-		d.Set("enforce",iap.Enforce)
-		d.Set("enforce_after_days",iap.EnforceAfterDays)
-		d.Set("ignore_recently_published_vln",iap.IgnoreRecentlyPublishedVln)
-		d.Set("ignore_recently_published_vln_period",iap.IgnoreRecentlyPublishedVlnPeriod)
-		d.Set("ignore_risk_resources_enabled",iap.IgnoreRiskResourcesEnabled)
-		d.Set("ignored_risk_resources",iap.IgnoredRiskResources)
-		d.Set("application_scopes",iap.ApplicationScopes)
-		d.Set("auto_scan_enabled",iap.AutoScanEnabled)
-		d.Set("auto_scan_configured",iap.AutoScanConfigured)
-		d.Set("auto_scan_time",flattenAutoScanTime(iap.AutoScanTime))
-		d.Set("required_labels_enabled",iap.RequiredLabelsEnabled)
-		d.Set("required_labels",flattenlabels(iap.RequiredLabels))
-		d.Set("forbidden_labels_enabled",iap.ForbiddenLabelsEnabled)
-		d.Set("forbidden_labels",flattenlabels(iap.ForbiddenLabels))
-		d.Set("domain_name",iap.DomainName)
-		d.Set("domain",iap.Domain)
-		d.Set("dta_severity",iap.DtaSeverity)
-		d.Set("scan_nfs_mounts",iap.ScanNfsMounts)
-		d.Set("malware_action",iap.MalwareAction)
-		d.Set("partial_results_image_fail",iap.PartialResultsImageFail)
+		d.Set("maximum_score_enabled", iap.MaximumScoreEnabled)
+		d.Set("maximum_score", iap.MaximumScore)
+		d.Set("control_exclude_no_fix", iap.ControlExcludeNoFix)
+		d.Set("custom_checks_enabled", iap.CustomChecksEnabled)
+		d.Set("scap_enabled", iap.ScapEnabled)
+		d.Set("cves_black_list_enabled", iap.CvesBlackListEnabled)
+		d.Set("packages_black_list_enabled", iap.PackagesBlackListEnabled)
+		d.Set("packages_white_list_enabled", iap.PackagesWhiteListEnabled)
+		d.Set("only_none_root_users", iap.OnlyNoneRootUsers)
+		d.Set("trusted_base_images_enabled", iap.TrustedBaseImagesEnabled)
+		d.Set("scan_sensitive_data", iap.ScanSensitiveData)
+		d.Set("audit_on_failure", iap.AuditOnFailure)
+		d.Set("fail_cicd", iap.FailCicd)
+		d.Set("block_failed", iap.BlockFailed)
+		d.Set("disallow_malware", iap.DisallowMalware)
+		d.Set("monitored_malware_paths", iap.MonitoredMalwarePaths)
+		d.Set("exceptional_monitored_malware_paths", iap.ExceptionalMonitoredMalwarePaths)
+		d.Set("blacklisted_licenses_enabled", iap.BlacklistedLicensesEnabled)
+		d.Set("blacklisted_licenses", iap.BlacklistedLicenses)
+		d.Set("whitelisted_licenses_enabled", iap.WhitelistedLicensesEnabled)
+		d.Set("whitelisted_licenses", iap.WhitelistedLicenses)
+		d.Set("custom_checks", flattenCustomChecks(iap.CustomChecks))
+		d.Set("scap_files", iap.ScapFiles)
+		d.Set("scope", flatteniapscope(iap.Scope))
+		d.Set("registries", iap.Registries)
+		d.Set("labels", iap.Labels)
+		d.Set("images", iap.Images)
+		d.Set("cves_black_list", iap.CvesBlackList)
+		d.Set("packages_black_list", flattenpackages(iap.PackagesBlackList))
+		d.Set("packages_white_list", flattenpackages(iap.PackagesWhiteList))
+		d.Set("allowed_images", iap.AllowedImages)
+		d.Set("trusted_base_images", iap.TrustedBaseImages)
+		d.Set("read_only", iap.ReadOnly)
+		d.Set("force_microenforcer", iap.ForceMicroenforcer)
+		d.Set("docker_cis_enabled", iap.DockerCisEnabled)
+		d.Set("kube_cis_enabled", iap.KubeCisEnabled)
+		d.Set("enforce_excessive_permissions", iap.EnforceExcessivePermissions)
+		d.Set("function_integrity_enabled", iap.FunctionIntegrityEnabled)
+		d.Set("dta_enabled", iap.DtaEnabled)
+		d.Set("cves_white_list_enabled", iap.CvesWhiteListEnabled)
+		d.Set("cves_white_list", iap.CvesWhiteList)
+		d.Set("blacklist_permissions_enabled", iap.BlacklistPermissionsEnabled)
+		d.Set("blacklist_permissions", iap.BlacklistPermissions)
+		d.Set("enabled", iap.Enabled)
+		d.Set("enforce", iap.Enforce)
+		d.Set("enforce_after_days", iap.EnforceAfterDays)
+		d.Set("ignore_recently_published_vln", iap.IgnoreRecentlyPublishedVln)
+		d.Set("ignore_recently_published_vln_period", iap.IgnoreRecentlyPublishedVlnPeriod)
+		d.Set("ignore_risk_resources_enabled", iap.IgnoreRiskResourcesEnabled)
+		d.Set("ignored_risk_resources", iap.IgnoredRiskResources)
+		d.Set("application_scopes", iap.ApplicationScopes)
+		d.Set("auto_scan_enabled", iap.AutoScanEnabled)
+		d.Set("auto_scan_configured", iap.AutoScanConfigured)
+		d.Set("auto_scan_time", flattenAutoScanTime(iap.AutoScanTime))
+		d.Set("required_labels_enabled", iap.RequiredLabelsEnabled)
+		d.Set("required_labels", flattenlabels(iap.RequiredLabels))
+		d.Set("forbidden_labels_enabled", iap.ForbiddenLabelsEnabled)
+		d.Set("forbidden_labels", flattenlabels(iap.ForbiddenLabels))
+		d.Set("domain_name", iap.DomainName)
+		d.Set("domain", iap.Domain)
+		d.Set("dta_severity", iap.DtaSeverity)
+		d.Set("scan_nfs_mounts", iap.ScanNfsMounts)
+		d.Set("malware_action", iap.MalwareAction)
+		d.Set("partial_results_image_fail", iap.PartialResultsImageFail)
 	} else {
 		return err
 	}
@@ -723,8 +723,8 @@ func resourceImageAssurancePolicyDelete(d *schema.ResourceData, m interface{}) e
 func flatteniapscope(scope1 client.Scopes) []map[string]interface{} {
 	return []map[string]interface{}{
 		{
-			"expression":      	scope1.Expression,
-			"variables": 		flattenscopevariables(scope1.Variables),
+			"expression": scope1.Expression,
+			"variables":  flattenscopevariables(scope1.Variables),
 		},
 	}
 }
@@ -733,9 +733,9 @@ func flattenscopevariables(variable []client.VariableI) []interface{} {
 	check := make([]interface{}, len(variable))
 	for i := range variable {
 		check[i] = map[string]interface{}{
-			"attribute": 			variable[i].Attribute,
-			"value": 				variable[i].Value,
-			"name": 				variable[i].Name,
+			"attribute": variable[i].Attribute,
+			"value":     variable[i].Value,
+			"name":      variable[i].Name,
 		}
 	}
 
@@ -745,10 +745,10 @@ func flattenscopevariables(variable []client.VariableI) []interface{} {
 func flattenAutoScanTime(scantime client.ScanTimeAuto) []map[string]interface{} {
 	return []map[string]interface{}{
 		{
-			"iteration_type":      	scantime.IterationType,
-			"time": 				scantime.Time,
-			"iteration": 			scantime.Iteration,
-			"week_days": 			scantime.WeekDays,
+			"iteration_type": scantime.IterationType,
+			"time":           scantime.Time,
+			"iteration":      scantime.Iteration,
+			"week_days":      scantime.WeekDays,
 		},
 	}
 }
@@ -757,16 +757,16 @@ func flattenCustomChecks(checks []client.Checks) []map[string]interface{} {
 	check := make([]map[string]interface{}, len(checks))
 	for i := range checks {
 		check[i] = map[string]interface{}{
-			"script_id":        checks[i].ScriptID,
-			"name": 			checks[i].Name,
-			"path": 			checks[i].Path,
-			"last_modified": 	checks[i].LastModified,
-			"description": 		checks[i].Description,
-			"engine": 			checks[i].Engine,
-			"snippet": 			checks[i].Snippet,
-			"read_only": 		checks[i].ReadOnly,
-			"severity": 		checks[i].Severity,
-			"author": 			checks[i].Author,
+			"script_id":     checks[i].ScriptID,
+			"name":          checks[i].Name,
+			"path":          checks[i].Path,
+			"last_modified": checks[i].LastModified,
+			"description":   checks[i].Description,
+			"engine":        checks[i].Engine,
+			"snippet":       checks[i].Snippet,
+			"read_only":     checks[i].ReadOnly,
+			"severity":      checks[i].Severity,
+			"author":        checks[i].Author,
 		}
 	}
 	return check
@@ -776,8 +776,8 @@ func flattenlabels(labels []client.Labels) []map[string]interface{} {
 	label := make([]map[string]interface{}, len(labels))
 	for i := range labels {
 		label[i] = map[string]interface{}{
-			"key":      labels[i].Key,
-			"value": 	labels[i].Value,
+			"key":   labels[i].Key,
+			"value": labels[i].Value,
 		}
 	}
 	return label
@@ -787,15 +787,15 @@ func flattenpackages(packages []client.ListPackages) []map[string]interface{} {
 	package1 := make([]map[string]interface{}, len(packages))
 	for i := range packages {
 		package1[i] = map[string]interface{}{
-			"format":      		packages[i].Format,
-			"name": 			packages[i].Name,
-			"epoch": 			packages[i].Epoch,
-			"version": 			packages[i].Version,
-			"version_range": 	packages[i].VersionRange,
-			"release": 			packages[i].Release,
-			"arch": 			packages[i].Arch,
-			"license": 			packages[i].License,
-			"display": 			packages[i].Display,
+			"format":        packages[i].Format,
+			"name":          packages[i].Name,
+			"epoch":         packages[i].Epoch,
+			"version":       packages[i].Version,
+			"version_range": packages[i].VersionRange,
+			"release":       packages[i].Release,
+			"arch":          packages[i].Arch,
+			"license":       packages[i].License,
+			"display":       packages[i].Display,
 		}
 	}
 	return package1
@@ -803,9 +803,9 @@ func flattenpackages(packages []client.ListPackages) []map[string]interface{} {
 
 func expandImageAssurancePolicy(d *schema.ResourceData) *client.ImageAssurancePolicy {
 	app_scopes := d.Get("application_scopes").([]interface{})
-	iap:= client.ImageAssurancePolicy {
-		AssuranceType : d.Get("assurance_type").(string),
-		Name : d.Get("name").(string),
+	iap := client.ImageAssurancePolicy{
+		AssuranceType:     d.Get("assurance_type").(string),
+		Name:              d.Get("name").(string),
 		ApplicationScopes: convertStringArr(app_scopes),
 	}
 
@@ -936,7 +936,7 @@ func expandImageAssurancePolicy(d *schema.ResourceData) *client.ImageAssurancePo
 
 	blacklisted_licenses, ok := d.GetOk("blacklisted_licenses")
 	if ok {
-		strArr:= convertStringArr(blacklisted_licenses.([]interface{}))
+		strArr := convertStringArr(blacklisted_licenses.([]interface{}))
 		iap.BlacklistedLicenses = strArr
 	}
 
@@ -947,7 +947,7 @@ func expandImageAssurancePolicy(d *schema.ResourceData) *client.ImageAssurancePo
 
 	whitelisted_licenses, ok := d.GetOk("whitelisted_licenses")
 	if ok {
-		strArr:= convertStringArr(whitelisted_licenses.([]interface{}))
+		strArr := convertStringArr(whitelisted_licenses.([]interface{}))
 		iap.WhitelistedLicenses = strArr
 	}
 
@@ -958,16 +958,16 @@ func expandImageAssurancePolicy(d *schema.ResourceData) *client.ImageAssurancePo
 		for i, Data := range customcheckslist {
 			customChecks := Data.(map[string]interface{})
 			Check := client.Checks{
-				ScriptID:       customChecks["script_id"].(string),
-				Name:    		customChecks["name"].(string),
-				Path: 			customChecks["path"].(string),
-				LastModified: 	customChecks["last_modified"].(int),
-				Description: 	customChecks["description"].(string),
-				Engine: 		customChecks["engine"].(string),
-				Snippet: 		customChecks["snippet"].(string),
-				ReadOnly: 		customChecks["read_only"].(bool),
-				Severity: 		customChecks["severity"].(string),
-				Author: 		customChecks["author"].(string),
+				ScriptID:     customChecks["script_id"].(string),
+				Name:         customChecks["name"].(string),
+				Path:         customChecks["path"].(string),
+				LastModified: customChecks["last_modified"].(int),
+				Description:  customChecks["description"].(string),
+				Engine:       customChecks["engine"].(string),
+				Snippet:      customChecks["snippet"].(string),
+				ReadOnly:     customChecks["read_only"].(bool),
+				Severity:     customChecks["severity"].(string),
+				Author:       customChecks["author"].(string),
 			}
 			custcheckskArr[i] = Check
 		}
@@ -980,24 +980,30 @@ func expandImageAssurancePolicy(d *schema.ResourceData) *client.ImageAssurancePo
 	}
 
 	scope, ok := d.GetOk("scope")
-	if ok {
-		scopeentries := scope.([]interface{})[0].(map[string]interface{})
-		VariablesList := scopeentries["variables"].([]interface{})
-		variablearray := make([]client.VariableI, len(VariablesList))
-		for i, Data := range VariablesList {
-			varLists := Data.(map[string]interface{})
-			VarData := client.VariableI{
-				Attribute:       	varLists["attribute"].(string),
-				Name:    			varLists["name"].(string),
-				Value: 				varLists["value"].(string),
+	if ok && scope.(*schema.Set).Len() > 0 {
+		for _, scopeMap := range scope.(*schema.Set).List() {
+			scopeentries, ok := scopeMap.(map[string]interface{})
+			if !ok {
+				continue
 			}
-			variablearray[i] = VarData
+			VariablesList := scopeentries["variables"].([]interface{})
+			variablearray := make([]client.VariableI, len(VariablesList))
+			for i, Data := range VariablesList {
+				varLists := Data.(map[string]interface{})
+				VarData := client.VariableI{
+					Attribute: varLists["attribute"].(string),
+					Name:      varLists["name"].(string),
+					Value:     varLists["value"].(string),
+				}
+				variablearray[i] = VarData
+			}
+
+			Sc := client.Scopes{
+				Expression: scopeentries["expression"].(string),
+				Variables:  variablearray,
+			}
+			iap.Scope = Sc
 		}
-		Sc := client.Scopes {
-			Expression: scopeentries["expression"].(string),
-			Variables: variablearray,
-		}
-		iap.Scope = Sc
 	}
 
 	registries, ok := d.GetOk("registries")
@@ -1017,7 +1023,7 @@ func expandImageAssurancePolicy(d *schema.ResourceData) *client.ImageAssurancePo
 
 	cves_black_list, ok := d.GetOk("cves_black_list")
 	if ok {
-		strArr:= convertStringArr(cves_black_list.([]interface{}))
+		strArr := convertStringArr(cves_black_list.([]interface{}))
 		iap.CvesBlackList = strArr
 	}
 
@@ -1028,15 +1034,15 @@ func expandImageAssurancePolicy(d *schema.ResourceData) *client.ImageAssurancePo
 		for i, Data := range pkgsblacklist {
 			blackLists := Data.(map[string]interface{})
 			BlackList := client.ListPackages{
-				Format:       	blackLists["format"].(string),
-				Name:    		blackLists["name"].(string),
-				Epoch: 			blackLists["epoch"].(string),
-				Version: 		blackLists["version"].(string),
-				VersionRange: 	blackLists["version_range"].(string),
-				Release: 		blackLists["release"].(string),
-				Arch: 			blackLists["arch"].(string),
-				License: 		blackLists["license"].(string),
-				Display: 		blackLists["display"].(string),
+				Format:       blackLists["format"].(string),
+				Name:         blackLists["name"].(string),
+				Epoch:        blackLists["epoch"].(string),
+				Version:      blackLists["version"].(string),
+				VersionRange: blackLists["version_range"].(string),
+				Release:      blackLists["release"].(string),
+				Arch:         blackLists["arch"].(string),
+				License:      blackLists["license"].(string),
+				Display:      blackLists["display"].(string),
 			}
 			pkgsblacklistarray[i] = BlackList
 		}
@@ -1050,15 +1056,15 @@ func expandImageAssurancePolicy(d *schema.ResourceData) *client.ImageAssurancePo
 		for i, Data := range pkgswhitelist {
 			WhiteLists := Data.(map[string]interface{})
 			WhiteList := client.ListPackages{
-				Format:       	WhiteLists["format"].(string),
-				Name:    		WhiteLists["name"].(string),
-				Epoch: 			WhiteLists["epoch"].(string),
-				Version: 		WhiteLists["version"].(string),
-				VersionRange: 	WhiteLists["version_range"].(string),
-				Release: 		WhiteLists["release"].(string),
-				Arch: 			WhiteLists["arch"].(string),
-				License: 		WhiteLists["license"].(string),
-				Display: 		WhiteLists["display"].(string),
+				Format:       WhiteLists["format"].(string),
+				Name:         WhiteLists["name"].(string),
+				Epoch:        WhiteLists["epoch"].(string),
+				Version:      WhiteLists["version"].(string),
+				VersionRange: WhiteLists["version_range"].(string),
+				Release:      WhiteLists["release"].(string),
+				Arch:         WhiteLists["arch"].(string),
+				License:      WhiteLists["license"].(string),
+				Display:      WhiteLists["display"].(string),
 			}
 			pkgswhitelistarray[i] = WhiteList
 		}
@@ -1077,8 +1083,8 @@ func expandImageAssurancePolicy(d *schema.ResourceData) *client.ImageAssurancePo
 		for i, Data := range trustedbaseimages {
 			baseimages := Data.(map[string]interface{})
 			BImage := client.BaseImagesTrusted{
-				Registry:       	baseimages["registry"].(string),
-				Imagename:    		baseimages["imagename"].(string),
+				Registry:  baseimages["registry"].(string),
+				Imagename: baseimages["imagename"].(string),
 			}
 			baseimagesarray[i] = BImage
 		}
@@ -1122,7 +1128,7 @@ func expandImageAssurancePolicy(d *schema.ResourceData) *client.ImageAssurancePo
 
 	cves_white_list, ok := d.GetOk("cves_white_list")
 	if ok {
-		strArr:= convertStringArr(cves_white_list.([]interface{}))
+		strArr := convertStringArr(cves_white_list.([]interface{}))
 		iap.CvesWhiteList = strArr
 	}
 
@@ -1173,7 +1179,7 @@ func expandImageAssurancePolicy(d *schema.ResourceData) *client.ImageAssurancePo
 
 	ignored_risk_resources, ok := d.GetOk("ignored_risk_resources")
 	if ok {
-		strArr:= convertStringArr(ignored_risk_resources.([]interface{}))
+		strArr := convertStringArr(ignored_risk_resources.([]interface{}))
 		iap.IgnoredRiskResources = strArr
 	}
 
@@ -1188,15 +1194,20 @@ func expandImageAssurancePolicy(d *schema.ResourceData) *client.ImageAssurancePo
 	}
 
 	auto_scan_time, ok := d.GetOk("auto_scan_time")
-	if ok {
-		astentries := auto_scan_time.([]interface{})[0].(map[string]interface{})
-		ScanTime := client.ScanTimeAuto {
-			IterationType: astentries["iteration_type"].(string),
-			Time: astentries["time"].(string),
-			Iteration: astentries["iteration"].(int),
-			WeekDays: astentries["time"].([]interface{}),
+	if ok && auto_scan_time.(*schema.Set).Len() > 0 {
+		for _, astMap := range auto_scan_time.(*schema.Set).List() {
+			astentries, ok := astMap.(map[string]interface{})
+			if !ok {
+				continue
+			}
+			ScanTime := client.ScanTimeAuto{
+				IterationType: astentries["iteration_type"].(string),
+				Time:          astentries["time"].(string),
+				Iteration:     astentries["iteration"].(int),
+				WeekDays:      astentries["week_days"].([]interface{}),
+			}
+			iap.AutoScanTime = ScanTime
 		}
-		iap.AutoScanTime = ScanTime
 	}
 
 	required_labels_enabled, ok := d.GetOk("required_labels_enabled")
@@ -1211,8 +1222,8 @@ func expandImageAssurancePolicy(d *schema.ResourceData) *client.ImageAssurancePo
 		for i, Data := range requiredlabels {
 			labels := Data.(map[string]interface{})
 			RequiredLabel := client.Labels{
-				Key:       		labels["key"].(string),
-				Value:    		labels["value"].(string),
+				Key:   labels["key"].(string),
+				Value: labels["value"].(string),
 			}
 			labelsarray[i] = RequiredLabel
 		}
@@ -1231,8 +1242,8 @@ func expandImageAssurancePolicy(d *schema.ResourceData) *client.ImageAssurancePo
 		for i, Data := range forbiddenlabels {
 			labels := Data.(map[string]interface{})
 			ForbiddenLabel := client.Labels{
-				Key:       		labels["key"].(string),
-				Value:    		labels["value"].(string),
+				Key:   labels["key"].(string),
+				Value: labels["value"].(string),
 			}
 			labelsarray[i] = ForbiddenLabel
 		}
