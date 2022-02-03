@@ -698,11 +698,6 @@ func resourceImageCreate(ctx context.Context, d *schema.ResourceData, m interfac
 		return diag.FromErr(err)
 	}
 
-	err = c.RescanImage(image, true)
-	if err != nil {
-		return diag.FromErr(err)
-	}
-
 	//d.SetId(getImageId(image))
 
 	err1 := resourceImageRead(ctx, d, m)
