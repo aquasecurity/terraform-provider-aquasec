@@ -137,7 +137,7 @@ func (cli *Client) DeleteRegistry(name string) error {
 		return fmt.Errorf("error while calling DELETE on /api/v1/users/%s: %v", name, events.StatusCode)
 	}
 	if events.StatusCode != 204 {
-		return fmt.Errorf("failed deleting user, status code: %v", events.StatusCode)
+		return fmt.Errorf("failed deleting registry, status code: %v", events.StatusCode)
 	}
 	return nil
 }
