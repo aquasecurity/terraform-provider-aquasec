@@ -12,8 +12,8 @@ import (
 
 var imageData = client.Image{
 	Registry:   acctest.RandomWithPrefix("terraform-test"),
-	Repository: "elasticsearch",
-	Tag:        "6.4.2",
+	Repository: "alpine",
+	Tag:        "3.4",
 }
 
 func TestDataSourceAquasecImage(t *testing.T) {
@@ -32,7 +32,7 @@ func TestDataSourceAquasecImage(t *testing.T) {
 					resource.TestCheckResourceAttr(rootRef, "repository", imageData.Repository),
 					resource.TestCheckResourceAttr(rootRef, "tag", imageData.Tag),
 					resource.TestCheckResourceAttr(rootRef, "scan_status", "finished"),
-					resource.TestCheckResourceAttr(rootRef, "disallowed", "false"),
+					resource.TestCheckResourceAttrSet(rootRef, "disallowed"),
 					resource.TestCheckResourceAttrSet(rootRef, "created"),
 					resource.TestCheckResourceAttrSet(rootRef, "scan_date"),
 					resource.TestCheckResourceAttr(rootRef, "scan_error", ""),
@@ -43,8 +43,8 @@ func TestDataSourceAquasecImage(t *testing.T) {
 					resource.TestCheckResourceAttrSet(rootRef, "negligible_vulnerabilities"),
 					resource.TestCheckResourceAttrSet(rootRef, "total_vulnerabilities"),
 					resource.TestCheckResourceAttr(rootRef, "author", os.Getenv("AQUA_USER")),
-					resource.TestCheckResourceAttr(rootRef, "os", "centos"),
-					resource.TestCheckResourceAttr(rootRef, "os_version", "7"),
+					resource.TestCheckResourceAttrSet(rootRef, "os"),
+					resource.TestCheckResourceAttrSet(rootRef, "os_version"),
 					resource.TestCheckResourceAttrSet(rootRef, "docker_version"),
 					resource.TestCheckResourceAttrSet(rootRef, "architecture"),
 					resource.TestCheckResourceAttrSet(rootRef, "image_size"),

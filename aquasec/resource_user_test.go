@@ -11,7 +11,7 @@ import (
 
 func TestAquasecUserManagement(t *testing.T) {
 	userID := acctest.RandomWithPrefix("terraform-test-user")
-	password := "password"
+	password := "Pas5wo-d"
 	name := "terraform"
 	email := "terraform@test.com"
 	role := "Administrator"

@@ -4,16 +4,17 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/acctest"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
 func TestAquasecenforcerGroup(t *testing.T) {
-	group_id := "terraform"
+	group_id := acctest.RandomWithPrefix("terraform-test")
 	description := "Created"
 	logical_name := "terraform-eg"
 	enforce := false
-	gateways := "local-cluster"
+	gateways := "3ef9a43f2693_gateway"
 	etype := "agent"
 	otype := "kubernetes"
 	service_account := "aqua-sa"

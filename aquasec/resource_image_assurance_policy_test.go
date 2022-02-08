@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/acctest"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
@@ -11,7 +12,7 @@ import (
 func TestAquasecImageAssurancePolicy(t *testing.T) {
 	assurance_type := "image"
 	description := "Created using Terraform"
-	name := "terraform-iaptest"
+	name := acctest.RandomWithPrefix("terraform-test")
 	application_scopes := "Global"
 	resource.Test(t, resource.TestCase{
 		PreCheck:  func() { testAccPreCheck(t) },

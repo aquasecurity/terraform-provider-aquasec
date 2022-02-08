@@ -4,12 +4,13 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/acctest"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
 func TestAquasecresourceRegistry(t *testing.T) {
-	name := "testdemo"
+	name := acctest.RandomWithPrefix("terraform-test")
 	url := "https://docker.io"
 	rtype := "HUB"
 	username := ""
