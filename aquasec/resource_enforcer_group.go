@@ -33,7 +33,7 @@ func resourceEnforcerGroup() *schema.Resource {
 			},
 			"logical_name": {
 				Type:     schema.TypeString,
-				Required: true,
+				Optional: true,
 			},
 			"type": {
 				Type:     schema.TypeString,
@@ -213,6 +213,7 @@ func resourceEnforcerGroupCreate(d *schema.ResourceData, m interface{}) error {
 	// Get the gateways
 	g := d.Get("gateways").([]interface{})
 	// get the required elements
+
 	group := client.EnforcerGroup{
 		ID:           d.Get("group_id").(string),
 		Logicalname:  d.Get("logical_name").(string),
@@ -267,6 +268,7 @@ func resourceEnforcerGroupRead(d *schema.ResourceData, m interface{}) error {
 		d.Set("admission_control", r.AdmissionControl)
 		d.Set("micro_enforce_injection", r.MicroEnforcerInjection)
 		d.Set("block_admission_control", r.BlockAdmissionControl)
+		d.Set("logical_name", r.Logicalname)
 	} else {
 		log.Print("[ERROR]  error calling ac.GetEnforcerGroup: ", r)
 		return err

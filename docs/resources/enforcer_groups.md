@@ -19,7 +19,6 @@ description: |-
 
 - **gateways** (List of String)
 - **group_id** (String)
-- **logical_name** (String)
 - **orchestrator** (Block Set, Min: 1) (see [below for nested schema](#nestedblock--orchestrator))
 - **type** (String)
 
@@ -41,6 +40,7 @@ description: |-
 - **id** (String) The ID of this resource.
 - **image_assurance** (Boolean)
 - **last_updated** (String)
+- **logical_name** (String)
 - **micro_enforce_injection** (Boolean)
 - **user_access_control** (Boolean)
 
@@ -76,5 +76,3 @@ Read-only:
 - **kubernetes** (String)
 - **swarm** (String)
 - **windows** (String)
-
-
