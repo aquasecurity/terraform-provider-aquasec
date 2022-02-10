@@ -4,6 +4,7 @@
 name: Tests
 on:
   pull_request_target:
+    types: [safe_to_test]
     paths-ignore:
       - 'README.md'
   push:
