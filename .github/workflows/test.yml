@@ -74,9 +74,9 @@ jobs:
       env:
         TF_ACC: "1"
         TF_ACC_TERRAFORM_VERSION: ${{ matrix.terraform }}
-        AQUA_URL: ${{ secrets.AQUA_URL }}
-        AQUA_USER: ${{ secrets.AQUA_USER }}
-        AQUA_PASSWORD: ${{ secrets.AQUA_PASSWORD }}
+        AQUA_URL: "http://34.89.163.174:8080/"
+        AQUA_USER: "administrator"
+        AQUA_PASSWORD: "@Password1"
         AQUA_TLS_VERIFY: false
 
       run: |
