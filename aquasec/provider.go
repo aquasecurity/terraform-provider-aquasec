@@ -66,29 +66,31 @@ func Provider(v string) *schema.Provider {
 			},
 		},
 		ResourcesMap: map[string]*schema.Resource{
-			"aquasec_user":                     resourceUser(),
-			"aquasec_integration_registry":     resourceRegistry(),
-			"aquasec_firewall_policy":          resourceFirewallPolicy(),
-			"aquasec_enforcer_groups":          resourceEnforcerGroup(),
-			"aquasec_service":                  resourceService(),
-			"aquasec_image":                    resourceImage(),
-			"aquasec_notification_slack":       resourceNotification(),
-			"aquasec_container_runtime_policy": resourceContainerRuntimePolicy(),
-			"aquasec_function_runtime_policy":  resourceFunctionRuntimePolicy(),
-			"aquasec_host_runtime_policy":      resourceHostRuntimePolicy(),
-			"aquasec_image_assurance_policy":   resourceImageAssurancePolicy(),
+			"aquasec_user":                      resourceUser(),
+			"aquasec_integration_registry":      resourceRegistry(),
+			"aquasec_firewall_policy":           resourceFirewallPolicy(),
+			"aquasec_enforcer_groups":           resourceEnforcerGroup(),
+			"aquasec_service":                   resourceService(),
+			"aquasec_image":                     resourceImage(),
+			"aquasec_notification_slack":        resourceNotification(),
+			"aquasec_container_runtime_policy":  resourceContainerRuntimePolicy(),
+			"aquasec_function_runtime_policy":   resourceFunctionRuntimePolicy(),
+			"aquasec_host_runtime_policy":       resourceHostRuntimePolicy(),
+			"aquasec_image_assurance_policy":    resourceImageAssurancePolicy(),
+			"aquasec_function_assurance_policy": resourceFunctionAssurancePolicy(),
 		},
 		DataSourcesMap: map[string]*schema.Resource{
-			"aquasec_users":                    dataSourceUsers(),
-			"aquasec_integration_registries":   dataSourceRegistry(),
-			"aquasec_firewall_policy":          dataSourceFirewallPolicy(),
-			"aquasec_enforcer_groups":          dataSourceEnforcerGroup(),
-			"aquasec_service":                  dataSourceService(),
-			"aquasec_image":                    dataImage(),
-			"aquasec_container_runtime_policy": dataContainerRuntimePolicy(),
-			"aquasec_function_runtime_policy":  dataFunctionRuntimePolicy(),
-			"aquasec_host_runtime_policy":      dataHostRuntimePolicy(),
-			"aquasec_image_assurance_policy":   dataImageAssurancePolicy(),
+			"aquasec_users":                     dataSourceUsers(),
+			"aquasec_integration_registries":    dataSourceRegistry(),
+			"aquasec_firewall_policy":           dataSourceFirewallPolicy(),
+			"aquasec_enforcer_groups":           dataSourceEnforcerGroup(),
+			"aquasec_service":                   dataSourceService(),
+			"aquasec_image":                     dataImage(),
+			"aquasec_container_runtime_policy":  dataContainerRuntimePolicy(),
+			"aquasec_function_runtime_policy":   dataFunctionRuntimePolicy(),
+			"aquasec_host_runtime_policy":       dataHostRuntimePolicy(),
+			"aquasec_image_assurance_policy":    dataImageAssurancePolicy(),
+			"aquasec_function_assurance_policy": dataFunctionAssurancePolicy(),
 		},
 		ConfigureContextFunc: providerConfigure,
 	}
@@ -186,10 +188,10 @@ func providerConfigure(ctx context.Context, d *schema.ResourceData) (interface{}
 	aquaClient := client.NewClient(aquaURL, username, password, verifyTLS, caCertByte)
 
 	saas_flow := strings.Contains(aquaURL, "cloud.aquasec.com")
-	if (saas_flow) {
+	if saas_flow {
 		_, err = aquaClient.GetUSEAuthToken()
 	} else {
-		_, err = aquaClient.GetAuthToken() 
+		_, err = aquaClient.GetAuthToken()
 	}
 
 	if err != nil {

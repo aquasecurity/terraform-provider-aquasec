@@ -277,3 +277,15 @@ resource "aquasec_image_assurance_policy" "newiap" {
         "BSD-2-Clause"
     ]
 }
+
+resource "aquasec_function_assurance_policy" "function_policy" {
+    name = "testfunction"
+    assurance_type = "function"
+    description = "Created using Terraform"
+    application_scopes = [
+        "Global"
+    ]
+    audit_on_failure = true
+    fail_cicd = true
+    block_failed = true
+}
