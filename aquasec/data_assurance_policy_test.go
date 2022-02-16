@@ -8,30 +8,30 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
-func TestDataAquasecImageAssurancePolicy(t *testing.T) {
+func TestDataAquasecAssurancePolicy(t *testing.T) {
 	name := "Default"
 	resource.Test(t, resource.TestCase{
 		PreCheck:  func() { testAccPreCheck(t) },
 		Providers: testAccProviders,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckAquasecImageAssurancePolicyDataSource(name),
-				Check:  testAccCheckAquasecImageAssurancePolicyDataSourceExists("data.aquasec_image_assurance_policy.defaultiap"),
+				Config: testAccCheckAquasecAssurancePolicyDataSource(name),
+				Check:  testAccCheckAquasecAssurancePolicyDataSourceExists("data.aquasec_assurance_policy.defaultiap"),
 			},
 		},
 	})
 }
 
-func testAccCheckAquasecImageAssurancePolicyDataSource(name string) string {
+func testAccCheckAquasecAssurancePolicyDataSource(name string) string {
 	return fmt.Sprintf(`
-	data "aquasec_image_assurance_policy" "defaultiap" {
+	data "aquasec_assurance_policy" "defaultiap" {
 		name = "%s"
 	}
 	`, name)
 
 }
 
-func testAccCheckAquasecImageAssurancePolicyDataSourceExists(n string) resource.TestCheckFunc {
+func testAccCheckAquasecAssurancePolicyDataSourceExists(n string) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 		rs, ok := s.RootModule().Resources[n]
 

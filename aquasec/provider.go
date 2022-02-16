@@ -76,7 +76,7 @@ func Provider(v string) *schema.Provider {
 			"aquasec_container_runtime_policy": resourceContainerRuntimePolicy(),
 			"aquasec_function_runtime_policy":  resourceFunctionRuntimePolicy(),
 			"aquasec_host_runtime_policy":      resourceHostRuntimePolicy(),
-			"aquasec_image_assurance_policy":   resourceImageAssurancePolicy(),
+			"aquasec_assurance_policy":         resourceAssurancePolicy(),
 		},
 		DataSourcesMap: map[string]*schema.Resource{
 			"aquasec_users":                    dataSourceUsers(),
@@ -88,7 +88,7 @@ func Provider(v string) *schema.Provider {
 			"aquasec_container_runtime_policy": dataContainerRuntimePolicy(),
 			"aquasec_function_runtime_policy":  dataFunctionRuntimePolicy(),
 			"aquasec_host_runtime_policy":      dataHostRuntimePolicy(),
-			"aquasec_image_assurance_policy":   dataImageAssurancePolicy(),
+			"aquasec_assurance_policy":         dataAssurancePolicy(),
 		},
 		ConfigureContextFunc: providerConfigure,
 	}
@@ -186,10 +186,10 @@ func providerConfigure(ctx context.Context, d *schema.ResourceData) (interface{}
 	aquaClient := client.NewClient(aquaURL, username, password, verifyTLS, caCertByte)
 
 	saas_flow := strings.Contains(aquaURL, "cloud.aquasec.com")
-	if (saas_flow) {
+	if saas_flow {
 		_, err = aquaClient.GetUSEAuthToken()
 	} else {
-		_, err = aquaClient.GetAuthToken() 
+		_, err = aquaClient.GetAuthToken()
 	}
 
 	if err != nil {
