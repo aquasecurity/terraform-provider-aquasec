@@ -5,12 +5,12 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
-func resourceImageAssurancePolicy() *schema.Resource {
+func resourceAssurancePolicy() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceImageAssurancePolicyCreate,
-		Read:   resourceImageAssurancePolicyRead,
-		Update: resourceImageAssurancePolicyUpdate,
-		Delete: resourceImageAssurancePolicyDelete,
+		Create: resourceAssurancePolicyCreate,
+		Read:   resourceAssurancePolicyRead,
+		Update: resourceAssurancePolicyUpdate,
+		Delete: resourceAssurancePolicyDelete,
 		Schema: map[string]*schema.Schema{
 			"assurance_type": {
 				Type:     schema.TypeString,
@@ -571,19 +571,24 @@ func resourceImageAssurancePolicy() *schema.Resource {
 				Type:     schema.TypeBool,
 				Optional: true,
 			},
+			"maximum_score_exclude_no_fix": {
+				Type:     schema.TypeBool,
+				Optional: true,
+			},
 		},
 	}
 }
 
-func resourceImageAssurancePolicyCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAssurancePolicyCreate(d *schema.ResourceData, m interface{}) error {
 	ac := m.(*client.Client)
 	name := d.Get("name").(string)
+	at := d.Get("assurance_type").(string)
 
-	iap := expandImageAssurancePolicy(d)
-	err := ac.CreateImageAssurancePolicy(iap)
+	iap := expandAssurancePolicy(d)
+	err := ac.CreateAssurancePolicy(iap, at)
 
 	if err == nil {
-		err1 := resourceImageAssurancePolicyRead(d, m)
+		err1 := resourceAssurancePolicyRead(d, m)
 		if err1 == nil {
 			d.SetId(name)
 		} else {
@@ -596,9 +601,10 @@ func resourceImageAssurancePolicyCreate(d *schema.ResourceData, m interface{}) e
 	return nil
 }
 
-func resourceImageAssurancePolicyUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAssurancePolicyUpdate(d *schema.ResourceData, m interface{}) error {
 	ac := m.(*client.Client)
 	name := d.Get("name").(string)
+	at := d.Get("assurance_type").(string)
 
 	if d.HasChanges("description", "registry", "cvss_severity_enabled", "cvss_severity", "cvss_severity_exclude_no_fix", "custom_severity_enabled", "maximum_score_enabled", "maximum_score", "control_exclude_no_fix", "custom_checks_enabled",
 		"scap_enabled", "cves_black_list_enabled", "packages_black_list_enabled", "packages_white_list_enabled", "only_none_root_users", "trusted_base_images_enabled", "scan_sensitive_data", "audit_on_failure", "fail_cicd", "block_failed",
@@ -606,11 +612,11 @@ func resourceImageAssurancePolicyUpdate(d *schema.ResourceData, m interface{}) e
 		"registries", "labels", "images", "cves_black_list", "packages_black_list", "packages_white_list", "allowed_images", "trusted_base_images", "read_only", "force_microenforcer", "docker_cis_enabled", "kube_cis_enabled", "enforce_excessive_permissions",
 		"function_integrity_enabled", "dta_enabled", "cves_white_list", "cves_white_list_enabled", "blacklist_permissions_enabled", "blacklist_permissions", "enabled", "enforce", "enforce_after_days", "ignore_recently_published_vln", "ignore_recently_published_vln_period",
 		"ignore_risk_resources_enabled", "ignored_risk_resources", "application_scopes", "auto_scan_enabled", "auto_scan_configured", "auto_scan_time", "required_labels_enabled", "required_labels", "forbidden_labels_enabled", "forbidden_labels", "domain_name",
-		"domain", "description", "dta_severity", "scan_nfs_mounts", "malware_action", "partial_results_image_fail") {
-		iap := expandImageAssurancePolicy(d)
-		err := ac.UpdateImageAssurancePolicy(iap)
+		"domain", "description", "dta_severity", "scan_nfs_mounts", "malware_action", "partial_results_image_fail", "maximum_score_exclude_no_fix") {
+		iap := expandAssurancePolicy(d)
+		err := ac.UpdateAssurancePolicy(iap, at)
 		if err == nil {
-			err1 := resourceImageAssurancePolicyRead(d, m)
+			err1 := resourceAssurancePolicyRead(d, m)
 			if err1 == nil {
 				d.SetId(name)
 			} else {
@@ -623,11 +629,12 @@ func resourceImageAssurancePolicyUpdate(d *schema.ResourceData, m interface{}) e
 	return nil
 }
 
-func resourceImageAssurancePolicyRead(d *schema.ResourceData, m interface{}) error {
+func resourceAssurancePolicyRead(d *schema.ResourceData, m interface{}) error {
 	ac := m.(*client.Client)
 	name := d.Get("name").(string)
+	at := d.Get("assurance_type").(string)
 
-	iap, err := ac.GetImageAssurancePolicy(name)
+	iap, err := ac.GetAssurancePolicy(name, at)
 	if err == nil {
 		d.Set("description", iap.Description)
 		d.Set("author", iap.Author)
@@ -701,16 +708,18 @@ func resourceImageAssurancePolicyRead(d *schema.ResourceData, m interface{}) err
 		d.Set("scan_nfs_mounts", iap.ScanNfsMounts)
 		d.Set("malware_action", iap.MalwareAction)
 		d.Set("partial_results_image_fail", iap.PartialResultsImageFail)
+		d.Set("maximum_score_exclude_no_fix", iap.PartialResultsImageFail)
 	} else {
 		return err
 	}
 	return nil
 }
 
-func resourceImageAssurancePolicyDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAssurancePolicyDelete(d *schema.ResourceData, m interface{}) error {
 	ac := m.(*client.Client)
 	name := d.Get("name").(string)
-	err := ac.DeleteImageAssurancePolicy(name)
+	at := d.Get("assurance_type").(string)
+	err := ac.DeleteAssurancePolicy(name, at)
 
 	if err == nil {
 		d.SetId("")
@@ -801,9 +810,9 @@ func flattenpackages(packages []client.ListPackages) []map[string]interface{} {
 	return package1
 }
 
-func expandImageAssurancePolicy(d *schema.ResourceData) *client.ImageAssurancePolicy {
+func expandAssurancePolicy(d *schema.ResourceData) *client.AssurancePolicy {
 	app_scopes := d.Get("application_scopes").([]interface{})
-	iap := client.ImageAssurancePolicy{
+	iap := client.AssurancePolicy{
 		AssuranceType:     d.Get("assurance_type").(string),
 		Name:              d.Get("name").(string),
 		ApplicationScopes: convertStringArr(app_scopes),
@@ -1278,6 +1287,11 @@ func expandImageAssurancePolicy(d *schema.ResourceData) *client.ImageAssurancePo
 	partial_results_image_fail, ok := d.GetOk("partial_results_image_fail")
 	if ok {
 		iap.PartialResultsImageFail = partial_results_image_fail.(bool)
+	}
+
+	maximum_score_exclude_no_fix, ok := d.GetOk("maximum_score_exclude_no_fix")
+	if ok {
+		iap.PartialResultsImageFail = maximum_score_exclude_no_fix.(bool)
 	}
 
 	return &iap
