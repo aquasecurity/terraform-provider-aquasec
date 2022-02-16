@@ -4,69 +4,80 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/aquasecurity/terraform-provider-aquasec/client"
+
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/acctest"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
-func TestAquasecenforcerGroup(t *testing.T) {
-	group_id := acctest.RandomWithPrefix("terraform-test")
-	description := "Created"
-	logical_name := "terraform-eg"
-	enforce := false
-	gateways := "3ef9a43f2693_gateway"
-	etype := "agent"
-	otype := "kubernetes"
-	service_account := "aqua-sa"
-	namespace := "aquasec"
-	master := false
+func TestAquasecEnforcerGroupResource(t *testing.T) {
+
+	var basicEnforcerGroup = client.EnforcerGroup{
+		ID:          acctest.RandomWithPrefix("terraform-test"),
+		Description: "Created",
+		LogicalName: "terraform-eg",
+		Enforce:     false,
+		Gateways: []string{
+			"3ef9a43f2693_gateway",
+		},
+		Type:              "agent",
+		EnforcerImageName: "registry.aquasec.com/enforcer:6.5.22034",
+		Orchestrator:      client.EnforcerOrchestrator{},
+	}
+
+	rootRef := enforcerGroupsRef(basicEnforcerGroup.ID)
+
 	resource.Test(t, resource.TestCase{
-		PreCheck:  func() { testAccPreCheck(t) },
+		PreCheck: func() {
+			testAccPreCheck(t)
+		},
 		Providers: testAccProviders,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckEnforcerGroup(group_id, description, logical_name, enforce, gateways, etype, otype, service_account, namespace, master),
-				Check: resource.ComposeTestCheckFunc(
-					testAccCheckEnforcerGroupExists("aquasec_enforcer_groups.terraformeg"),
+				Config: getBasicEnforcerGroupResource(basicEnforcerGroup),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr(rootRef, "group_id", basicEnforcerGroup.ID),
+					resource.TestCheckResourceAttr(rootRef, "description", basicEnforcerGroup.Description),
+					resource.TestCheckResourceAttr(rootRef, "logical_name", basicEnforcerGroup.LogicalName),
+					resource.TestCheckResourceAttr(rootRef, "enforce", fmt.Sprintf("%v", basicEnforcerGroup.Enforce)),
+					resource.TestCheckResourceAttr(rootRef, "gateways.0", basicEnforcerGroup.Gateways[0]),
+					resource.TestCheckResourceAttr(rootRef, "type", basicEnforcerGroup.Type),
 				),
 			},
 		},
 	})
 }
 
-func testAccCheckEnforcerGroup(group_id string, description string, logical_name string, enforce bool, gateways string, etype string, otype string, service_account string, namespace string, master bool) string {
+func getBasicEnforcerGroupResource(enforcerGroup client.EnforcerGroup) string {
 	return fmt.Sprintf(`
-	resource "aquasec_enforcer_groups" "terraformeg" {
+	resource "aquasec_enforcer_groups" "%s" {
 		group_id = "%s"
 		description = "%s"
 		logical_name = "%s"
 		enforce = "%v"
-		gateways = [
-		  "%s"
-		]
+		gateways = ["%s"]
 		type = "%s"
 		orchestrator {
-		  type = "%s"
-		  service_account = "%s"
-		  namespace = "%s"
-		  master = "%v"
+			type = "%s"
+            service_account = "%s"
+			namespace = "%s"
+			master = "%v"
 		}
-	  }`, group_id, description, logical_name, enforce, gateways, etype, otype, service_account, namespace, master)
-
+	}
+	`, enforcerGroup.ID,
+		enforcerGroup.ID,
+		enforcerGroup.Description,
+		enforcerGroup.LogicalName,
+		enforcerGroup.Enforce,
+		enforcerGroup.Gateways[0],
+		enforcerGroup.Type,
+		enforcerGroup.Orchestrator.Type,
+		enforcerGroup.Orchestrator.ServiceAccount,
+		enforcerGroup.Orchestrator.Namespace,
+		enforcerGroup.Orchestrator.Master,
+	)
 }
 
-func testAccCheckEnforcerGroupExists(n string) resource.TestCheckFunc {
-	return func(s *terraform.State) error {
-		rs, ok := s.RootModule().Resources[n]
-
-		if !ok {
-			return NewNotFoundErrorf("%s in state", n)
-		}
-
-		if rs.Primary.ID == "" {
-			return NewNotFoundErrorf("ID for %s in state", n)
-		}
-
-		return nil
-	}
+func enforcerGroupsRef(name string) string {
+	return fmt.Sprintf("aquasec_enforcer_groups.%v", name)
 }
