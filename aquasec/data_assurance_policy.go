@@ -646,7 +646,7 @@ func dataAssurancePolicyRead(d *schema.ResourceData, m interface{}) error {
 		d.Set("scan_nfs_mounts", iap.ScanNfsMounts)
 		d.Set("malware_action", iap.MalwareAction)
 		d.Set("partial_results_image_fail", iap.PartialResultsImageFail)
-		d.Set("maximum_score_exclude_no_fix", iap.PartialResultsImageFail)
+		d.Set("maximum_score_exclude_no_fix", iap.MaximumScoreExcludeNoFix)
 		d.SetId(name)
 	} else {
 		return err
