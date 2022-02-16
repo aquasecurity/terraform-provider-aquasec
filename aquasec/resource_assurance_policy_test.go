@@ -9,7 +9,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
-func TestAquasecImageAssurancePolicy(t *testing.T) {
+func TestAquasecAssurancePolicy(t *testing.T) {
 	assurance_type := "image"
 	description := "Created using Terraform"
 	name := acctest.RandomWithPrefix("terraform-test")
@@ -19,29 +19,29 @@ func TestAquasecImageAssurancePolicy(t *testing.T) {
 		Providers: testAccProviders,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckImageAssurancePolicy(assurance_type, description, name, application_scopes),
+				Config: testAccCheckAssurancePolicy(assurance_type, description, name, application_scopes),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckImageAssurancePolicyExists("aquasec_image_assurance_policy.terraformiap"),
+					testAccCheckAssurancePolicyExists("aquasec_assurance_policy.terraformiap"),
 				),
 			},
 		},
 	})
 }
 
-func testAccCheckImageAssurancePolicy(assurance_type string, description string, name string, application_scopes string) string {
+func testAccCheckAssurancePolicy(assurance_type string, description string, name string, application_scopes string) string {
 	return fmt.Sprintf(`
-	resource "aquasec_image_assurance_policy" "terraformiap" {
+	resource "aquasec_assurance_policy" "terraformiap" {
 		assurance_type = "%s"
 		description = "%s"
 		name = "%s"
 		application_scopes = [
-		  "%s"
+			"%s"
 		]
-	  }`, assurance_type, description, name, application_scopes)
+	}`, assurance_type, description, name, application_scopes)
 
 }
 
-func testAccCheckImageAssurancePolicyExists(n string) resource.TestCheckFunc {
+func testAccCheckAssurancePolicyExists(n string) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 		rs, ok := s.RootModule().Resources[n]
 
