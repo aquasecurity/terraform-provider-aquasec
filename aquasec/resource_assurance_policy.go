@@ -708,7 +708,7 @@ func resourceAssurancePolicyRead(d *schema.ResourceData, m interface{}) error {
 		d.Set("scan_nfs_mounts", iap.ScanNfsMounts)
 		d.Set("malware_action", iap.MalwareAction)
 		d.Set("partial_results_image_fail", iap.PartialResultsImageFail)
-		d.Set("maximum_score_exclude_no_fix", iap.PartialResultsImageFail)
+		d.Set("maximum_score_exclude_no_fix", iap.MaximumScoreExcludeNoFix)
 	} else {
 		return err
 	}
@@ -1291,7 +1291,7 @@ func expandAssurancePolicy(d *schema.ResourceData) *client.AssurancePolicy {
 
 	maximum_score_exclude_no_fix, ok := d.GetOk("maximum_score_exclude_no_fix")
 	if ok {
-		iap.PartialResultsImageFail = maximum_score_exclude_no_fix.(bool)
+		iap.MaximumScoreExcludeNoFix = maximum_score_exclude_no_fix.(bool)
 	}
 
 	return &iap
