@@ -153,6 +153,8 @@ func (cli *Client) GetAssurancePolicy(name string, at string) (*AssurancePolicy,
 		atype = "host"
 	} else if strings.EqualFold(at, "image") {
 		atype = "image"
+	} else if strings.EqualFold(at, "function") {
+		atype = "function"
 	}
 	apiPath := "/api/v2/assurance_policy/" + atype + "/" + name
 	resp, body, errs := cli.gorequest.Clone().Get(cli.url + apiPath).End()
@@ -194,6 +196,8 @@ func (cli *Client) CreateAssurancePolicy(assurancepolicy *AssurancePolicy, at st
 		atype = "host"
 	} else if strings.EqualFold(at, "image") {
 		atype = "image"
+	} else if strings.EqualFold(at, "function") {
+		atype = "function"
 	}
 	apiPath := "/api/v2/assurance_policy/" + atype
 	if err != nil {
@@ -233,6 +237,8 @@ func (cli *Client) UpdateAssurancePolicy(assurancepolicy *AssurancePolicy, at st
 		atype = "host"
 	} else if strings.EqualFold(at, "image") {
 		atype = "image"
+	} else if strings.EqualFold(at, "function") {
+		atype = "function"
 	}
 	apiPath := "/api/v2/assurance_policy/" + atype + "/" + assurancepolicy.Name
 	request := cli.gorequest
@@ -267,6 +273,8 @@ func (cli *Client) DeleteAssurancePolicy(name string, at string) error {
 		atype = "host"
 	} else if strings.EqualFold(at, "image") {
 		atype = "image"
+	} else if strings.EqualFold(at, "function") {
+		atype = "function"
 	}
 	apiPath := "/api/v2/assurance_policy/" + atype + "/" + name
 	resp, _, errs := request.Clone().Delete(cli.url + apiPath).End()

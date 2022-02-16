@@ -53,7 +53,7 @@ func resourceAssurancePolicy() *schema.Resource {
 				Optional: true,
 			},
 			"maximum_score": {
-				Type:     schema.TypeInt,
+				Type:     schema.TypeFloat,
 				Optional: true,
 			},
 			"control_exclude_no_fix": {

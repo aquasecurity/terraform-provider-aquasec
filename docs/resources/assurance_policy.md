@@ -18,7 +18,7 @@ description: |-
 ### Required
 
 - **application_scopes** (List of String)
-- **assurance_type** (String) [Image Assurance Policy: "image", Host Assurance Policy: "host"]
+- **assurance_type** (String) [Image Assurance Policy: "image", Host Assurance Policy: "host", Function Assurance Policy: "function"]
 - **name** (String)
 
 ### Optional
