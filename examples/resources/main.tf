@@ -295,3 +295,17 @@ resource "aquasec_assurance_policy" "newhap" {
         "BSD-2-Clause"
     ]
 }
+
+resource "aquasec_assurance_policy" "newfap" {
+    name = "testprovider"
+    assurance_type = "function"
+    description = "Created using Terraform"
+    application_scopes = [
+        "Global"
+    ]
+    audit_on_failure = true
+    fail_cicd = true
+    block_failed = true
+    maximum_score         = "1.0"
+    maximum_score_enabled = true
+}
