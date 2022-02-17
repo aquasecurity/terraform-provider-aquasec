@@ -18,7 +18,7 @@ description: |-
 ### Required
 
 - **application_scopes** (List of String)
-- **assurance_type** (String) [Image Assurance Policy: "image", Host Assurance Policy: "host", Function Assurance Policy: "function"]
+- **assurance_type** (String)
 - **name** (String)
 
 ### Optional
@@ -70,6 +70,7 @@ description: |-
 - **malware_action** (String)
 - **maximum_score** (Number)
 - **maximum_score_enabled** (Boolean)
+- **maximum_score_exclude_no_fix** (Boolean)
 - **monitored_malware_paths** (List of String)
 - **only_none_root_users** (Boolean)
 - **packages_black_list** (Block Set) (see [below for nested schema](#nestedblock--packages_black_list))
@@ -91,7 +92,6 @@ description: |-
 - **trusted_base_images_enabled** (Boolean)
 - **whitelisted_licenses** (List of String)
 - **whitelisted_licenses_enabled** (Boolean)
-- **maximum_score_exclude_no_fix** (Boolean)
 
 ### Read-only
 
@@ -183,7 +183,7 @@ Optional:
 Optional:
 
 - **expression** (String)
-- **variables** (Block Set) (see [below for nested schema](#nestedblock--scope--variables))
+- **variables** (Block List) (see [below for nested schema](#nestedblock--scope--variables))
 
 <a id="nestedblock--scope--variables"></a>
 ### Nested Schema for `scope.variables`
