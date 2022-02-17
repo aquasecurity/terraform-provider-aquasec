@@ -19,6 +19,10 @@ description: |-
 
 - **name** (String)
 
+### Optional
+
+- **maximum_score_exclude_no_fix** (Boolean)
+
 ### Read-only
 
 - **allowed_images** (List of String)
@@ -94,7 +98,6 @@ description: |-
 - **trusted_base_images_enabled** (Boolean)
 - **whitelisted_licenses** (List of String)
 - **whitelisted_licenses_enabled** (Boolean)
-- **maximum_score_exclude_no_fix** (Boolean)
 
 <a id="nestedatt--auto_scan_time"></a>
 ### Nested Schema for `auto_scan_time`
