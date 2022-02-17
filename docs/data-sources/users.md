@@ -3,15 +3,12 @@
 page_title: "aquasec_users Data Source - terraform-provider-aquasec"
 subcategory: ""
 description: |-
-  The data source aquasec_users provides a method to query all users within the Aqua
-  users database. The fields returned from this query are detailed in the Schema section below.
+  The data source aquasec_users provides a method to query all users within the Aqua users database. The fields returned from this query are detailed in the Schema section below.
 ---
 
 # Data Source `aquasec_users`
 
-The data source `aquasec_users` provides a method to query all users within the Aqua
-
-users database. The fields returned from this query are detailed in the Schema section below.
+The data source `aquasec_users` provides a method to query all users within the Aqua users database. The fields returned from this query are detailed in the Schema section below.
 
 ## Example Usage
 
