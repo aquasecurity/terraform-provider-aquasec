@@ -89,6 +89,7 @@ func Provider(v string) *schema.Provider {
 			"aquasec_function_runtime_policy":  dataFunctionRuntimePolicy(),
 			"aquasec_host_runtime_policy":      dataHostRuntimePolicy(),
 			"aquasec_image_assurance_policy":   dataImageAssurancePolicy(),
+			"aquasec_gateways":                 dataSourceGateways(),
 		},
 		ConfigureContextFunc: providerConfigure,
 	}
@@ -186,10 +187,10 @@ func providerConfigure(ctx context.Context, d *schema.ResourceData) (interface{}
 	aquaClient := client.NewClient(aquaURL, username, password, verifyTLS, caCertByte)
 
 	saas_flow := strings.Contains(aquaURL, "cloud.aquasec.com")
-	if (saas_flow) {
+	if saas_flow {
 		_, err = aquaClient.GetUSEAuthToken()
 	} else {
-		_, err = aquaClient.GetAuthToken() 
+		_, err = aquaClient.GetAuthToken()
 	}
 
 	if err != nil {
