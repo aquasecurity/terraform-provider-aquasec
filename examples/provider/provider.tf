@@ -17,4 +17,7 @@ username = "IaC"                    // Alternatively sourced from $AQUA_USER
 
   // Alternatively, you can provide these configurations from a config file, and configure the provider as below
   // config_path = '/path/to/tf.config' // defaults to '~/.aqua/tf.config' -- Alternatively sourced from $AQUA_CONFIG
+  
+  // (optional) If you are using a USE cloud.aquasec.com environment set this to "USE", valid values are "USE" or "ESE". If you are uncertain contact Aqua Support
+  cloud_auth_mode = "USE"
 }

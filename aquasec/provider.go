@@ -52,6 +52,30 @@ func Provider(v string) *schema.Provider {
 				DefaultFunc: schema.EnvDefaultFunc("AQUA_TLS_VERIFY", true),
 				Description: "If true, server tls certificates will be verified by the client before making a connection. Defaults to true. Can alternatively be sourced from the `AQUA_TLS_VERIFY` environment variable.",
 			},
+			"cloud_auth_mode": {
+				Type:        schema.TypeString,
+				Optional:    true,
+				DefaultFunc: schema.EnvDefaultFunc("CLOUD_AUTH_MODE", "ESE"),
+				DiffSuppressFunc: func(k, old, new string, d *schema.ResourceData) bool {
+					if strings.ToLower(old) == strings.ToLower(new) {
+						return true
+					}
+					return false
+				},
+				ValidateFunc: func(val interface{}, key string) (warns []string, errs []error) {
+					v := val.(string)
+					switch strings.ToLower(v) {
+					case
+						"ese",
+						"use":
+						return
+					}
+
+					errs = append(errs, fmt.Errorf("%q must be either ESE or USE, got: %q", key, v))
+					return
+				},
+				Description: "This is the Authentication method to use for SAAS environments, valid values are USE or ESE",
+			},
 			"ca_certificate_path": {
 				Type:        schema.TypeString,
 				Optional:    true,
@@ -135,6 +159,7 @@ func providerConfigure(ctx context.Context, d *schema.ResourceData) (interface{}
 	password := d.Get("password").(string)
 	aquaURL := d.Get("aqua_url").(string)
 	verifyTLS := d.Get("verify_tls").(bool)
+	cloudAuthMode := d.Get("cloud_auth_mode").(string)
 	caCertPath := d.Get("ca_certificate_path").(string)
 
 	if username == "" && password == "" && aquaURL == "" {
@@ -179,18 +204,18 @@ func providerConfigure(ctx context.Context, d *schema.ResourceData) (interface{}
 		}
 	}
 
+	var isUSE = false
+	if strings.ToLower(cloudAuthMode) == "use" {
+		isUSE = true
+	}
+
 	if diags != nil && len(diags) > 0 {
 		return nil, diags
 	}
 
-	aquaClient := client.NewClient(aquaURL, username, password, verifyTLS, caCertByte)
+	aquaClient := client.NewClient(aquaURL, username, password, verifyTLS, caCertByte, isUSE)
 
-	saas_flow := strings.Contains(aquaURL, "cloud.aquasec.com")
-	if (saas_flow) {
-		_, err = aquaClient.GetUSEAuthToken()
-	} else {
-		_, err = aquaClient.GetAuthToken() 
-	}
+	err = aquaClient.GetAuthToken()
 
 	if err != nil {
 		diags = append(diags, diag.Diagnostic{

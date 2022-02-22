@@ -37,6 +37,9 @@ provider "aquasec" {
 
   // Alternatively, you can provide these configurations from a config file, and configure the provider as below
   // config_path = '/path/to/tf.config' // defaults to '~/.aqua/tf.config' -- Alternatively sourced from $AQUA_CONFIG
+    
+  // (optional) If you are using an USE cloud.aquasec.com environment set this to "USE", valid values are "ESE" and "USE". If you are uncertain container Aqua Support
+  cloud_auth_mode = "ESE"
 }
 ```
 

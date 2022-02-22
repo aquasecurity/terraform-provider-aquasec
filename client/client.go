@@ -5,23 +5,25 @@ import (
 	"crypto/x509"
 	"encoding/json"
 	"fmt"
-	"strings"
 	"log"
+	"strings"
+
 	"github.com/parnurzeal/gorequest"
 )
 
 // Client - API client
 type Client struct {
-	url       	string
-	user      	string
-	password  	string
-	token     	string
-	name      	string
+	url       string
+	user      string
+	password  string
+	token     string
+	name      string
+	isUSE     bool
 	gorequest *gorequest.SuperAgent
 }
 
 // NewClient - initialize and return the Client
-func NewClient(url, user, password string, verifyTLS bool, caCertByte []byte) *Client {
+func NewClient(url, user, password string, verifyTLS bool, caCertByte []byte, isUSE bool) *Client {
 	tlsConfig := &tls.Config{
 		InsecureSkipVerify: !verifyTLS,
 	}
@@ -41,6 +43,7 @@ func NewClient(url, user, password string, verifyTLS bool, caCertByte []byte) *C
 		url:       url,
 		user:      user,
 		password:  password,
+		isUSE:     isUSE,
 		gorequest: gorequest.New().TLSClientConfig(tlsConfig),
 	}
 	return c
@@ -48,7 +51,7 @@ func NewClient(url, user, password string, verifyTLS bool, caCertByte []byte) *C
 
 // GetAuthToken - Connect to Aqua and return a JWT bearerToken (string)
 // Return: bool - successfully connected?
-func (cli *Client) GetAuthToken() (string, error) {
+func (cli *Client) GetESEAuthToken() (string, error) {
 	resp, body, errs := cli.gorequest.Post(cli.url + "/api/v1/login").
 		Send(`{"id":"` + cli.user + `", "password":"` + cli.password + `"}`).End()
 	if errs != nil {
@@ -65,13 +68,24 @@ func (cli *Client) GetAuthToken() (string, error) {
 	return "", fmt.Errorf("request failed. status: %s, response: %s", resp.Status, body)
 }
 
+func (cli *Client) GetAuthToken() error {
+	var err error
+	if cli.isUSE {
+		_, err = cli.GetUSEAuthToken()
+	} else {
+		_, err = cli.GetESEAuthToken()
+	}
+
+	return err
+}
+
 // GetUSEAuthToken - Connect to Aqua SaaS solution and return a JWT bearerToken (string)
 // Return: bool - successfully connected?
 func (cli *Client) GetUSEAuthToken() (string, error) {
 	token_url := ""
 	prov_url := ""
 
-	if (strings.Contains(cli.url, "dev-cloud.aquasec.com")) {
+	if strings.Contains(cli.url, "dev-cloud.aquasec.com") {
 		token_url = "https://stage.api.cloudsploit.com"
 		prov_url = "https://prov-dev.cloud.aquasec.com"
 	} else {
@@ -87,7 +101,7 @@ func (cli *Client) GetUSEAuthToken() (string, error) {
 	if resp.StatusCode == 200 {
 		var raw map[string]interface{}
 		_ = json.Unmarshal([]byte(body), &raw)
-		data := raw["data"].(map[string]interface {})
+		data := raw["data"].(map[string]interface{})
 		cli.token = data["token"].(string)
 		//get the ese_url to make the API requests.
 		request := cli.gorequest
@@ -103,7 +117,7 @@ func (cli *Client) GetUSEAuthToken() (string, error) {
 		if events.StatusCode == 200 {
 			var raw map[string]interface{}
 			_ = json.Unmarshal([]byte(body), &raw)
-			data := raw["data"].(map[string]interface {})
+			data := raw["data"].(map[string]interface{})
 			cli.url = "https://" + data["ese_url"].(string)
 		}
 
