@@ -277,3 +277,16 @@ resource "aquasec_image_assurance_policy" "newiap" {
         "BSD-2-Clause"
     ]
 }
+
+resource "aquasec_permission_set" "my_terraform_perm_set" {
+		name = "my_terraform_perm_set"
+		description     = "created from terraform"
+		author    = "system"
+		ui_access = true
+		is_super = false
+		actions = [
+          "dashboard.read",
+          "risks.vulnerabilities.read",
+          "risks.vulnerabilities.write"
+		]
+}
