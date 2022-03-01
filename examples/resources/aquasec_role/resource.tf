@@ -1,4 +1,4 @@
-resource "aquasec_user" "IaC" {
+resource "aquasec_role" "IaC" {
     role_name = "RoleIaC"
     description = "RoleIaC"
     permission = "PermissionIaC"

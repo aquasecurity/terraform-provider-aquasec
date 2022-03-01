@@ -1,5 +1,6 @@
-data "aquasec_users" "users" {}
+data "aquasec_roles" "roles" {}
 
+//Output the first role
 output "first_user_name" {
-  value = data.aquasec_users.users.users[0].name // output: first_user_name = "administrator"
+  value = data.aquasec_roles.roles.roles[0]
 }

@@ -13,7 +13,7 @@ func TestAquasecRoleManagement(t *testing.T) {
 	roleName := acctest.RandomWithPrefix("roleTest")
 	description := "roleTest1"
 	newDescription := "roleTest2"
-	permission := "Test"
+	permission := "Administrator"
 	scope := "Global"
 	//roleNewName := roleName + "new"
 	resource.Test(t, resource.TestCase{
