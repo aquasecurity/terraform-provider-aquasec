@@ -27,7 +27,7 @@ type EnforcerCommand struct {
 // EnforcerGroup is the request and response format for an Enforcer Group (hostbatch)
 type EnforcerGroup struct {
 	ID                                        string               `json:"id"`
-	Logicalname                               string               `json:"logicalname"`
+	LogicalName                               string               `json:"logicalname"`
 	Type                                      string               `json:"type"`
 	EnforcerImageName                         string               `json:"enforcer_image_name"`
 	Description                               string               `json:"description"`
@@ -36,7 +36,10 @@ type EnforcerGroup struct {
 	GatewayAddress                            string               `json:"gateway_address"`
 	Enforce                                   bool                 `json:"enforce"`
 	ContainerActivityProtection               bool                 `json:"container_activity_protection"`
+	NetworkActivityProtection                 bool                 `json:"network_activity_protection"`
 	NetworkProtection                         bool                 `json:"network_protection"`
+	BehavioralEngine                          bool                 `json:"behavioral_engine"`
+	HostBehavioralEngine                      bool                 `json:"host_behavioral_engine"`
 	HostNetworkProtection                     bool                 `json:"host_network_protection"`
 	UserAccessControl                         bool                 `json:"user_access_control"`
 	ImageAssurance                            bool                 `json:"image_assurance"`
@@ -74,6 +77,16 @@ type EnforcerGroup struct {
 	MicroEnforcerImageName                    string               `json:"micro_enforcer_image_name"`
 	MicroEnforcerSecretsName                  string               `json:"micro_enforcer_secrets_name"`
 	BlockAdmissionControl                     bool                 `json:"block_admission_control"`
+	AutoCopySecrets                           bool                 `json:"auto_copy_secrets"`
+	MicroEnforcerCertsSecretsName             string               `json:"micro_enforcer_certs_secrets_name"`
+	KubeBenchImageName                        string               `json:"kube_bench_image_name"`
+	AntivirusProtection                       bool                 `json:"antivirus_protection"`
+	HostUserProtection                        bool                 `json:"host_user_protection"`
+	ContainerAntivirusProtection              bool                 `json:"container_antivirus_protection"`
+	HostAssurance                             bool                 `json:"host_assurance"`
+	AllowedApplications                       []string             `json:"allowed_applications"`
+	AllowedLabels                             []string             `json:"allowed_labels"`
+	AllowedRegistries                         []string             `json:"allowed_registries"`
 }
 
 // GetEnforcerGroup - returns single Enforcer group
