@@ -14,7 +14,7 @@ func resourceHostAssurancePolicy() *schema.Resource {
 		Schema: map[string]*schema.Schema{
 			"assurance_type": {
 				Type:     schema.TypeString,
-				Required: true,
+				Optional: true,
 			},
 			"id": {
 				Type:     schema.TypeString,
@@ -582,10 +582,10 @@ func resourceHostAssurancePolicy() *schema.Resource {
 func resourceHostAssurancePolicyCreate(d *schema.ResourceData, m interface{}) error {
 	ac := m.(*client.Client)
 	name := d.Get("name").(string)
-	at := d.Get("assurance_type").(string)
+	assurance_type := "host"
 
 	iap := expandAssurancePolicy(d)
-	err := ac.CreateAssurancePolicy(iap, at)
+	err := ac.CreateAssurancePolicy(iap, assurance_type)
 
 	if err == nil {
 		err1 := resourceHostAssurancePolicyRead(d, m)
@@ -604,7 +604,7 @@ func resourceHostAssurancePolicyCreate(d *schema.ResourceData, m interface{}) er
 func resourceHostAssurancePolicyUpdate(d *schema.ResourceData, m interface{}) error {
 	ac := m.(*client.Client)
 	name := d.Get("name").(string)
-	at := d.Get("assurance_type").(string)
+	assurance_type := "host"
 
 	if d.HasChanges("description", "registry", "cvss_severity_enabled", "cvss_severity", "cvss_severity_exclude_no_fix", "custom_severity_enabled", "maximum_score_enabled", "maximum_score", "control_exclude_no_fix", "custom_checks_enabled",
 		"scap_enabled", "cves_black_list_enabled", "packages_black_list_enabled", "packages_white_list_enabled", "only_none_root_users", "trusted_base_images_enabled", "scan_sensitive_data", "audit_on_failure", "fail_cicd", "block_failed",
@@ -614,7 +614,7 @@ func resourceHostAssurancePolicyUpdate(d *schema.ResourceData, m interface{}) er
 		"ignore_risk_resources_enabled", "ignored_risk_resources", "application_scopes", "auto_scan_enabled", "auto_scan_configured", "auto_scan_time", "required_labels_enabled", "required_labels", "forbidden_labels_enabled", "forbidden_labels", "domain_name",
 		"domain", "description", "dta_severity", "scan_nfs_mounts", "malware_action", "partial_results_image_fail", "maximum_score_exclude_no_fix") {
 		iap := expandAssurancePolicy(d)
-		err := ac.UpdateAssurancePolicy(iap, at)
+		err := ac.UpdateAssurancePolicy(iap, assurance_type)
 		if err == nil {
 			err1 := resourceHostAssurancePolicyRead(d, m)
 			if err1 == nil {
@@ -632,9 +632,9 @@ func resourceHostAssurancePolicyUpdate(d *schema.ResourceData, m interface{}) er
 func resourceHostAssurancePolicyRead(d *schema.ResourceData, m interface{}) error {
 	ac := m.(*client.Client)
 	name := d.Get("name").(string)
-	at := d.Get("assurance_type").(string)
+	assurance_type := "host"
 
-	iap, err := ac.GetAssurancePolicy(name, at)
+	iap, err := ac.GetAssurancePolicy(name, assurance_type)
 	if err == nil {
 		d.Set("description", iap.Description)
 		d.Set("author", iap.Author)
@@ -718,8 +718,8 @@ func resourceHostAssurancePolicyRead(d *schema.ResourceData, m interface{}) erro
 func resourceHostAssurancePolicyDelete(d *schema.ResourceData, m interface{}) error {
 	ac := m.(*client.Client)
 	name := d.Get("name").(string)
-	at := d.Get("assurance_type").(string)
-	err := ac.DeleteAssurancePolicy(name, at)
+	assurance_type := "host"
+	err := ac.DeleteAssurancePolicy(name, assurance_type)
 
 	if err == nil {
 		d.SetId("")

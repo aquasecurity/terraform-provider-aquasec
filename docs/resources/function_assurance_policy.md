@@ -18,12 +18,12 @@ description: |-
 ### Required
 
 - **application_scopes** (List of String)
-- **assurance_type** (String)
 - **name** (String)
 
 ### Optional
 
 - **allowed_images** (List of String)
+- **assurance_type** (String)
 - **audit_on_failure** (Boolean)
 - **auto_scan_configured** (Boolean)
 - **auto_scan_enabled** (Boolean)

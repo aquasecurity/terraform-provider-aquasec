@@ -10,7 +10,7 @@ import (
 )
 
 func TestAquasecHostAssurancePolicy(t *testing.T) {
-	assurance_type := "image"
+	assurance_type := "host"
 	description := "Created using Terraform"
 	name := acctest.RandomWithPrefix("terraform-test")
 	application_scopes := "Global"

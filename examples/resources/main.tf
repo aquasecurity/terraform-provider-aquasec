@@ -262,7 +262,6 @@ resource "aquasec_host_runtime_policy" "test" {
 
 resource "aquasec_image_assurance_policy" "newiap" {
     name = "testprovider"
-    assurance_type = "image"
     description = "Created using Terraform"
     application_scopes = [
         "Global"
@@ -280,7 +279,6 @@ resource "aquasec_image_assurance_policy" "newiap" {
 
 resource "aquasec_host_assurance_policy" "newhap" {
     name = "testprovider"
-    assurance_type = "host"
     description = "Created using Terraform"
     application_scopes = [
         "Global"
@@ -298,7 +296,6 @@ resource "aquasec_host_assurance_policy" "newhap" {
 
 resource "aquasec_function_assurance_policy" "newfap" {
     name = "testprovider"
-    assurance_type = "function"
     description = "Created using Terraform"
     application_scopes = [
         "Global"

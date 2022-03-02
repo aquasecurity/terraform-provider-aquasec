@@ -104,3 +104,5 @@ Read-only:
 - **namespace** (String)
 - **service_account** (String)
 - **type** (String)
+
+
