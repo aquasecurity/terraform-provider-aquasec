@@ -24,7 +24,6 @@ func testAccCheckAquasecUserDataSource() string {
 	return `
 	data "aquasec_users" "testusers" {}
 	`
-
 }
 
 func testAccCheckAquasecUsersDataSourceExists(n string) resource.TestCheckFunc {

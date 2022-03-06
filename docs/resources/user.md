@@ -44,8 +44,15 @@ resource "aquasec_user" "IaC" {
 - **email** (String)
 - **first_time** (Boolean)
 - **id** (String) The ID of this resource.
-- **last_updated** (String)
 - **name** (String)
 - **password_confirm** (String)
+
+### Read-only
+
+- **is_super** (Boolean)
+- **plan** (String)
+- **role** (String)
+- **type** (String)
+- **ui_access** (Boolean)
 
 
