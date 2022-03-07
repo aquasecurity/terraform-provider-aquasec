@@ -24,7 +24,7 @@ func TestAquasecPermissionSetManagement(t *testing.T) {
 				// Config returns the test resource
 				Config: testAccCheckAquasecPermissionSet(name, description, author, ui_access, is_super, actions),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckAquasecPermissionSetExists("aquasec_permission_set.new"),
+					testAccCheckAquasecPermissionSetExists("aquasec_permissions_sets.new"),
 				),
 			},
 		},
@@ -33,7 +33,7 @@ func TestAquasecPermissionSetManagement(t *testing.T) {
 
 func testAccCheckAquasecPermissionSet(name string, description string, author string, ui_access bool, is_super bool, actions string) string {
 	return fmt.Sprintf(`
-	resource "aquasec_permission_set" "new" {
+	resource "aquasec_permissions_sets" "new" {
 		name = "%s"
 		description     = "%s"
 		author    = "%s"
@@ -62,7 +62,7 @@ func testAccCheckAquasecPermissionSetExists(n string) resource.TestCheckFunc {
 
 func testAccPermissionSetDestroy(s *terraform.State) error {
 	for _, rs := range s.RootModule().Resources {
-		if rs.Type != "aquasec_permission_set.new" {
+		if rs.Type != "aquasec_permissions_sets.new" {
 			continue
 		}
 

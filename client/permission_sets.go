@@ -10,19 +10,24 @@ import (
 )
 
 // User represents a local Aqua user
-type PermissionSet struct {
+type PermissionsSet struct {
 	ID          string   `json:"id"`
-	Name        string   `json:"name"`
-	Description string   `json:"description"`
-	Author      string   `json:"author"`
-	UI_access   bool     `json:"ui_access"`
-	Is_super    bool     `json:"is_super"`
-	Actions     []string `json:"actions"`
+	Name        string   `json:"name,omitempty"` // Display Name
+	Description string   `json:"description,omitempty"`
+	Actions     []string `json:"actions,omitempty"`
+	Author      string   `json:"author,omitempty"`
+	UiAccess    bool     `json:"ui_access,omitempty"`
+	IsSuper     bool     `json:"is_super,omitempty"`
+	UpdatedAt   string   `json:"updated_at,omitempty"`
 }
 
-func (cli *Client) GetPermissionSet(name string) (*PermissionSet, error) {
+type PermissionsSetList struct {
+	Items []PermissionsSet `json:"result,omitempty"`
+}
+
+func (cli *Client) GetPermissionsSet(name string) (*PermissionsSet, error) {
 	var err error
-	var response PermissionSet
+	var response PermissionsSet
 	cli.gorequest.Set("Authorization", "Bearer "+cli.token)
 	apiPath := fmt.Sprintf("/api/v2/access_management/permissions/%s", name)
 	resp, body, errs := cli.gorequest.Clone().Get(cli.url + apiPath).End()
@@ -56,8 +61,30 @@ func (cli *Client) GetPermissionSet(name string) (*PermissionSet, error) {
 	return &response, err
 }
 
+// GetPermissionsSets - returns all Aqua PermissionsSetList
+func (cli *Client) GetPermissionsSets() ([]PermissionsSet, error) {
+	var err error
+	var response PermissionsSetList
+	request := cli.gorequest
+	request.Set("Authorization", "Bearer "+cli.token)
+	apiPath := fmt.Sprintf("/api/v2/access_management/permissions")
+	events, body, errs := request.Clone().Get(cli.url + apiPath).End()
+	if errs != nil {
+		err = fmt.Errorf("error calling %s", apiPath)
+		return nil, err
+	}
+	if events.StatusCode == 200 {
+		err = json.Unmarshal([]byte(body), &response)
+		if err != nil {
+			log.Printf("Error calling func GetPermissionsSets from %s%s, %v ", cli.url, apiPath, err)
+			return nil, errors.Wrap(err, "could not unmarshal permission sets response")
+		}
+	}
+	return response.Items, err
+}
+
 // CreatePermissionSet - creates single Aqua PermissionSet Assurance Policy
-func (cli *Client) CreatePermissionSet(permissionset *PermissionSet) error {
+func (cli *Client) CreatePermissionsSet(permissionset *PermissionsSet) error {
 	payload, err := json.Marshal(permissionset)
 	if err != nil {
 		return err
@@ -87,7 +114,7 @@ func (cli *Client) CreatePermissionSet(permissionset *PermissionSet) error {
 }
 
 // UpdatePermissionSet updates an existing PermissionSet Assurance Policy
-func (cli *Client) UpdatePermissionSet(permissionset *PermissionSet) error {
+func (cli *Client) UpdatePermissionsSet(permissionset *PermissionsSet) error {
 	payload, err := json.Marshal(permissionset)
 	if err != nil {
 		return err
@@ -117,7 +144,7 @@ func (cli *Client) UpdatePermissionSet(permissionset *PermissionSet) error {
 }
 
 // DeletePermissionSet removes a PermissionSet Assurance Policy
-func (cli *Client) DeletePermissionSet(name string) error {
+func (cli *Client) DeletePermissionsSet(name string) error {
 	request := cli.gorequest
 	request.Set("Authorization", "Bearer "+cli.token)
 	apiPath := fmt.Sprintf("/api/v2/access_management/permissions/%s", name)

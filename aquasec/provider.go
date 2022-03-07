@@ -77,7 +77,7 @@ func Provider(v string) *schema.Provider {
 			"aquasec_function_runtime_policy":  resourceFunctionRuntimePolicy(),
 			"aquasec_host_runtime_policy":      resourceHostRuntimePolicy(),
 			"aquasec_image_assurance_policy":   resourceImageAssurancePolicy(),
-			"aquasec_permission_set":           resourcePermissionSet(),
+			"aquasec_permissions_sets":         resourcePermissionSet(),
 		},
 		DataSourcesMap: map[string]*schema.Resource{
 			"aquasec_users":                    dataSourceUsers(),
@@ -90,6 +90,7 @@ func Provider(v string) *schema.Provider {
 			"aquasec_function_runtime_policy":  dataFunctionRuntimePolicy(),
 			"aquasec_host_runtime_policy":      dataHostRuntimePolicy(),
 			"aquasec_image_assurance_policy":   dataImageAssurancePolicy(),
+			"aquasec_permissions_sets":         dataSourcePermissionsSets(),
 		},
 		ConfigureContextFunc: providerConfigure,
 	}

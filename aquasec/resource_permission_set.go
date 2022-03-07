@@ -7,7 +7,7 @@ import (
 
 func resourcePermissionSet() *schema.Resource {
 	return &schema.Resource{
-		Description: "The `aquasec_permission_set` resource manages your Permission Set within Aqua.",
+		Description: "The `aquasec_permissions_sets` resource manages your Permission Set within Aqua.",
 		Create:      resourcePermissionSetCreate,
 		Read:        resourcePermissionSetRead,
 		Update:      resourcePermissionSetUpdate,
@@ -25,6 +25,10 @@ func resourcePermissionSet() *schema.Resource {
 			"description": {
 				Type:     schema.TypeString,
 				Optional: true,
+			},
+			"updated_at": {
+				Type:     schema.TypeString,
+				Computed: true,
 			},
 			"author": {
 				Type:     schema.TypeString,
@@ -54,7 +58,7 @@ func resourcePermissionSetCreate(d *schema.ResourceData, m interface{}) error {
 	name := d.Get("name").(string)
 
 	iap := expandPermissionSet(d)
-	err := ac.CreatePermissionSet(iap)
+	err := ac.CreatePermissionsSet(iap)
 
 	if err == nil {
 		err1 := resourcePermissionSetRead(d, m)
@@ -76,7 +80,7 @@ func resourcePermissionSetUpdate(d *schema.ResourceData, m interface{}) error {
 
 	if d.HasChanges("description", "author", "ui_access", "is_super", "actions") {
 		iap := expandPermissionSet(d)
-		err := ac.UpdatePermissionSet(iap)
+		err := ac.UpdatePermissionsSet(iap)
 		if err == nil {
 			err1 := resourcePermissionSetRead(d, m)
 			if err1 == nil {
@@ -95,12 +99,12 @@ func resourcePermissionSetRead(d *schema.ResourceData, m interface{}) error {
 	ac := m.(*client.Client)
 	name := d.Get("name").(string)
 
-	iap, err := ac.GetPermissionSet(name)
+	iap, err := ac.GetPermissionsSet(name)
 	if err == nil {
 		d.Set("description", iap.Description)
 		d.Set("author", iap.Author)
-		d.Set("ui_access", iap.UI_access)
-		d.Set("is_super", iap.Is_super)
+		d.Set("ui_access", iap.UiAccess)
+		d.Set("is_super", iap.IsSuper)
 		d.Set("actions", iap.Actions)
 	} else {
 		return err
@@ -111,7 +115,7 @@ func resourcePermissionSetRead(d *schema.ResourceData, m interface{}) error {
 func resourcePermissionSetDelete(d *schema.ResourceData, m interface{}) error {
 	ac := m.(*client.Client)
 	name := d.Get("name").(string)
-	err := ac.DeletePermissionSet(name)
+	err := ac.DeletePermissionsSet(name)
 
 	if err == nil {
 		d.SetId("")
@@ -121,13 +125,13 @@ func resourcePermissionSetDelete(d *schema.ResourceData, m interface{}) error {
 	return nil
 }
 
-func expandPermissionSet(d *schema.ResourceData) *client.PermissionSet {
+func expandPermissionSet(d *schema.ResourceData) *client.PermissionsSet {
 	actions := d.Get("actions").([]interface{})
-	iap := client.PermissionSet{
+	iap := client.PermissionsSet{
 		Description: d.Get("description").(string),
 		Author:      d.Get("author").(string),
-		UI_access:   d.Get("ui_access").(bool),
-		Is_super:    d.Get("is_super").(bool),
+		UiAccess:    d.Get("ui_access").(bool),
+		IsSuper:     d.Get("is_super").(bool),
 		Name:        d.Get("name").(string),
 		Actions:     convertStringArr(actions),
 	}
@@ -144,12 +148,12 @@ func expandPermissionSet(d *schema.ResourceData) *client.PermissionSet {
 
 	ui_access, ok := d.GetOk("ui_access")
 	if ok {
-		iap.UI_access = ui_access.(bool)
+		iap.UiAccess = ui_access.(bool)
 	}
 
 	is_super, ok := d.GetOk("is_super")
 	if ok {
-		iap.Is_super = is_super.(bool)
+		iap.IsSuper = is_super.(bool)
 	}
 
 	return &iap
