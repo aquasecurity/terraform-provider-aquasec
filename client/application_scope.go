@@ -21,7 +21,7 @@ type Category struct {
 	Artifacts      Artifact       `json:"artifacts"`
 	Workloads      Workload       `json:"workloads"`
 	Infrastructure Infrastructure `json:"infrastructure"`
-	EntityScope    EntityScope    `json:"entity_scope"`
+	EntityScope    CommonStruct   `json:"entity_scope"`
 }
 
 type Artifact struct {
@@ -30,33 +30,23 @@ type Artifact struct {
 	CF       CommonStruct `json:"cf"`
 }
 
+type Workload struct {
+	Kubernetes CommonStruct `json:"kubernetes"`
+	OS         CommonStruct `json:"os"`
+	WCF        CommonStruct `json:"cf"`
+}
+
+type Infrastructure struct {
+	IKubernetes CommonStruct `json:"kubernetes"`
+	IOS         CommonStruct `json:"os"`
+}
+
 type CommonStruct struct {
 	Expression string      `json:"expression"`
 	Variables  []Variables `json:"variables"`
 }
 
 type Variables struct {
-	Attribute string `json:"attribute"`
-	Value     string `json:"value"`
-}
-
-type Workload struct {
-	Kubernetes CommonStruct `json:"kubernetes"`
-	OS         CommonStruct `json:"os"`
-	CF         CommonStruct `json:"cf"`
-}
-
-type Infrastructure struct {
-	Kubernetes CommonStruct `json:"kubernetes"`
-	OS         CommonStruct `json:"os"`
-}
-
-type EntityScope struct {
-	Expression     string           `json:"expression"`
-	EntityVariable []EntityVariable `json:"variables"`
-}
-
-type EntityVariable struct {
 	Attribute string `json:"attribute"`
 	Value     string `json:"value"`
 }
@@ -107,8 +97,7 @@ func (cli *Client) CreateApplicationScope(applicationscope *ApplicationScope) er
 	request := cli.gorequest
 	request.Set("Authorization", "Bearer "+cli.token)
 	apiPath := fmt.Sprintf("/api/v2/access_management/scopes")
-	resp, data, errs := request.Clone().Post(cli.url + apiPath).Send(string(payload)).End()
-	fmt.Sprint(data)
+	resp, _, errs := request.Clone().Post(cli.url + apiPath).Send(string(payload)).End()
 	if errs != nil {
 		return errors.Wrap(getMergedError(errs), "failed creating Application Scope.")
 	}

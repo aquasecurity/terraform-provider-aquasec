@@ -28,24 +28,46 @@ func TestAquasecApplicationScope(t *testing.T) {
 
 func testAccCheckApplicationScope(name string, description string) string {
 	return fmt.Sprintf(`
-	resource "aquasec_application_scope" "terraformiap" {
+	resource "aquasec_application_scope" "terraformap" {
 		description = "%s"
 		name = "%s"
 		categories {
 			artifacts {
-			  image {
-				expression = "(v1 && v2)"
-				variables {
-					attribute = "aqua.registry"
-				  	value     = "Docker Hub"
+				image {
+					expression = "v1 && v2"
+					variables {
+						attribute = "aqua.registry"
+						value = "test"
 					}
-				variables {
-					attribute = "image.repo"
-				  	value     = "koppula181809"
+					variables {
+						attribute = "image.repo"
+						value = "test123"
+					}
 				}
-			  }
 			}
-		  }
+			workloads {
+				kubernetes {
+					expression = "v1 && v2"
+					variables {
+						attribute = "kubernetes.cluster"
+						value = "test"
+					}
+					variables {
+						attribute = "kubernetes.namespace"
+						value = "test123"
+					}
+				}
+			}
+			infrastructure {
+				kubernetes {
+					expression = "v1"
+					variables {
+						attribute = "kubernetes.cluster"
+						value = "lion"
+					}
+				}
+			}
+		}
 	}`, description, name)
 
 }

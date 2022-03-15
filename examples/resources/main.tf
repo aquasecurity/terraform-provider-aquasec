@@ -262,6 +262,7 @@ resource "aquasec_host_runtime_policy" "test" {
 
 resource "aquasec_image_assurance_policy" "newiap" {
     name = "testprovider"
+    assurance_type = "image"
     description = "Created using Terraform"
     application_scopes = [
         "Global"
@@ -305,4 +306,53 @@ resource "aquasec_function_assurance_policy" "newfap" {
     block_failed = true
     maximum_score         = "1.0"
     maximum_score_enabled = true
+}
+
+resource "aquasec_application_scope" "terraformiap" {
+  description = "test123"
+  name        = "test18"
+  // Categories is a nested block of artifacts, workloads and infrastructure
+  categories {
+    // Artifacts is a nested block of Image, Function, CF
+    artifacts {
+      // Every object requires expression(logical combinations of variables v1, v2, v3...) and list of variables consists of attribute(pre-defined) and value
+      image {
+        expression = "v1 && v2"
+        variables {
+          attribute = "aqua.registry"
+          value     = "test-registry"
+        }
+        variables {
+          attribute = "image.repo"
+          value     = "nginx"
+        }
+      }
+    }
+    // Workloads is a nested block of Kubernetes, OS, CF
+    workloads {
+      // Every object requires expression(logical combinations of variables v1, v2, v3...) and list of variables consists of attribute(pre-defined) and value
+      kubernetes {
+        expression = "v1 && v2"
+        variables {
+          attribute = "kubernetes.cluster"
+          value     = "aqua"
+        }
+        variables {
+          attribute = "kubernetes.namespace"
+          value     = "aqua"
+        }
+      }
+    }
+    // Infrastructure is a nested block of Kubernetes, OS
+    infrastructure {
+      // Every object requires expression and list of variables consists of attribute(pre-defined) and value
+      kubernetes {
+        expression = "v1"
+        variables {
+          attribute = "kubernetes.cluster"
+          value     = "aqua"
+        }
+      }
+    }
+  }
 }
