@@ -136,6 +136,9 @@ func flattenGroupsData(groups *[]client.Group) ([]interface{}, string) {
 			gr[i] = g
 		}
 		return gr, id
+	}
+	return make([]interface{}, 0), ""
+}
 
 func flattenGatewaysData(gateways *[]client.Gateway) ([]interface{}, string) {
 	id := ""
