@@ -5,18 +5,18 @@ import (
 	"crypto/x509"
 	"encoding/json"
 	"fmt"
-	"strings"
-	"log"
 	"github.com/parnurzeal/gorequest"
+	"log"
+	"strings"
 )
 
 // Client - API client
 type Client struct {
-	url       	string
-	user      	string
-	password  	string
-	token     	string
-	name      	string
+	url       string
+	user      string
+	password  string
+	token     string
+	name      string
 	gorequest *gorequest.SuperAgent
 }
 
@@ -71,7 +71,7 @@ func (cli *Client) GetUSEAuthToken() (string, error) {
 	token_url := ""
 	prov_url := ""
 
-	if (strings.Contains(cli.url, "dev-cloud.aquasec.com")) {
+	if strings.Contains(cli.url, "d.cloud.aquasec.com") {
 		token_url = "https://stage.api.cloudsploit.com"
 		prov_url = "https://prov-dev.cloud.aquasec.com"
 	} else {
@@ -87,7 +87,7 @@ func (cli *Client) GetUSEAuthToken() (string, error) {
 	if resp.StatusCode == 200 {
 		var raw map[string]interface{}
 		_ = json.Unmarshal([]byte(body), &raw)
-		data := raw["data"].(map[string]interface {})
+		data := raw["data"].(map[string]interface{})
 		cli.token = data["token"].(string)
 		//get the ese_url to make the API requests.
 		request := cli.gorequest
@@ -103,7 +103,7 @@ func (cli *Client) GetUSEAuthToken() (string, error) {
 		if events.StatusCode == 200 {
 			var raw map[string]interface{}
 			_ = json.Unmarshal([]byte(body), &raw)
-			data := raw["data"].(map[string]interface {})
+			data := raw["data"].(map[string]interface{})
 			cli.url = "https://" + data["ese_url"].(string)
 		}
 
