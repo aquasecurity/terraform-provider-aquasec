@@ -4,15 +4,13 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
-	"log"
-	"os"
-	"strings"
-
 	"github.com/aquasecurity/terraform-provider-aquasec/client"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/mitchellh/go-homedir"
+	"io/ioutil"
+	"log"
+	"os"
 )
 
 //Config - godoc
@@ -78,6 +76,9 @@ func Provider(v string) *schema.Provider {
 			"aquasec_function_runtime_policy":  resourceFunctionRuntimePolicy(),
 			"aquasec_host_runtime_policy":      resourceHostRuntimePolicy(),
 			"aquasec_image_assurance_policy":   resourceImageAssurancePolicy(),
+			//saas
+			"aquasec_group":     resourceGroup(),
+			"aquasec_user_saas": resourceUserSaas(),
 		},
 		DataSourcesMap: map[string]*schema.Resource{
 			"aquasec_users":                    dataSourceUsers(),
@@ -92,6 +93,9 @@ func Provider(v string) *schema.Provider {
 			"aquasec_host_runtime_policy":      dataHostRuntimePolicy(),
 			"aquasec_image_assurance_policy":   dataImageAssurancePolicy(),
 			"aquasec_gateways":                 dataSourceGateways(),
+      //saas:
+			"aquasec_groups":     dataSourceGroups(),
+			"aquasec_users_saas": dataSourceUsersSaas(),
 		},
 		ConfigureContextFunc: providerConfigure,
 	}
@@ -188,12 +192,7 @@ func providerConfigure(ctx context.Context, d *schema.ResourceData) (interface{}
 
 	aquaClient := client.NewClient(aquaURL, username, password, verifyTLS, caCertByte)
 
-	saas_flow := strings.Contains(aquaURL, "cloud.aquasec.com")
-	if saas_flow {
-		_, err = aquaClient.GetUSEAuthToken()
-	} else {
-		_, err = aquaClient.GetAuthToken()
-	}
+	_, err = aquaClient.GetAuthToken()
 
 	if err != nil {
 		diags = append(diags, diag.Diagnostic{
