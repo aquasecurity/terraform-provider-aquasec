@@ -41,3 +41,29 @@ func flattenUsersData(users *[]client.User) ([]interface{}, string) {
 
 	return make([]interface{}, 0), ""
 }
+
+func flattenGatewaysData(gateways *[]client.Gateway) ([]interface{}, string) {
+	id := ""
+	if gateways != nil {
+		us := make([]interface{}, len(*gateways), len(*gateways))
+
+		for i, gateway := range *gateways {
+			id = id + gateway.ID
+			u := make(map[string]interface{})
+			u["id"] = gateway.ID
+			u["logicalname"] = gateway.Logical_Name
+			u["description"] = gateway.Description
+			u["version"] = gateway.Version
+			u["hostname"] = gateway.Host_Name
+			u["public_address"] = gateway.SSH_Address
+			u["grpc_address"] = gateway.GRPC_Address
+			u["status"] = gateway.Status
+
+			us[i] = u
+		}
+
+		return us, id
+	}
+
+	return make([]interface{}, 0), ""
+}
