@@ -85,3 +85,10 @@ data "aquasec_image_assurance_policy" "default" {
 output "images" {
   value = data.aquasec_image_assurance_policy.default
 }
+
+data "aquasec_gateways" "testgateways" {
+}
+
+output "gateways" {
+  value = data.aquasec_gateways.testgateways
+}
