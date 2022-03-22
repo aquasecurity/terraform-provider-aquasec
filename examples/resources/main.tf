@@ -278,7 +278,7 @@ resource "aquasec_image_assurance_policy" "newiap" {
     ]
 }
 
-resource "aquasec_permission_set" "my_terraform_perm_set" {
+resource "aquasec_permissions_sets" "my_terraform_perm_set" {
 		name = "my_terraform_perm_set"
 		description     = "created from terraform"
 		author    = "system"

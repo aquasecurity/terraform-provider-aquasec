@@ -83,8 +83,25 @@ func (cli *Client) GetPermissionsSets() ([]PermissionsSet, error) {
 	return response.Items, err
 }
 
+func Find(slice []string, val string) bool {
+	for _, item := range slice {
+		if item == val {
+			return true
+		}
+	}
+	return false
+}
+
 // CreatePermissionSet - creates single Aqua PermissionSet Assurance Policy
 func (cli *Client) CreatePermissionsSet(permissionset *PermissionsSet) error {
+	actions_list := []string{"dashboard.read", "risks.vulnerabilities.read", "risks.vulnerabilities.write", "containers.read", "images.read", "image_profiles.read", "risks.host_images.read", "runtime_policies.read", "runtime_policies.write", "functions.read", "audits.read", "risk_explorer.read"}
+	for _, item := range permissionset.Actions {
+
+		found := Find(actions_list, item)
+		if found != true {
+			return errors.New("Valid values for var: actions_list are (dashboard.read, risks.vulnerabilities.read, risks.vulnerabilities.write, containers.read, images.read, image_profiles.read, risks.host_images.read, runtime_policies.read, runtime_policies.write, functions.read, audits.read, risk_explorer.read).")
+		}
+	}
 	payload, err := json.Marshal(permissionset)
 	if err != nil {
 		return err
@@ -115,6 +132,14 @@ func (cli *Client) CreatePermissionsSet(permissionset *PermissionsSet) error {
 
 // UpdatePermissionSet updates an existing PermissionSet Assurance Policy
 func (cli *Client) UpdatePermissionsSet(permissionset *PermissionsSet) error {
+	actions_list := []string{"dashboard.read", "risks.vulnerabilities.read", "risks.vulnerabilities.write", "containers.read", "images.read", "image_profiles.read", "risks.host_images.read", "runtime_policies.read", "runtime_policies.write", "functions.read", "audits.read", "risk_explorer.read"}
+	for _, item := range permissionset.Actions {
+
+		found := Find(actions_list, item)
+		if found != true {
+			return errors.New("Valid values for var: actions_list are (dashboard.read, risks.vulnerabilities.read, risks.vulnerabilities.write, containers.read, images.read, image_profiles.read, risks.host_images.read, runtime_policies.read, runtime_policies.write, functions.read, audits.read, risk_explorer.read).")
+		}
+	}
 	payload, err := json.Marshal(permissionset)
 	if err != nil {
 		return err
