@@ -36,12 +36,32 @@ func dataSourceUsers() *schema.Resource {
 							Type:     schema.TypeBool,
 							Computed: true,
 						},
+						"is_super": {
+							Type:     schema.TypeBool,
+							Computed: true,
+						},
+						"ui_access": {
+							Type:     schema.TypeBool,
+							Computed: true,
+						},
+						"role": {
+							Type:     schema.TypeString,
+							Computed: true,
+						},
 						"roles": {
-							Type:     schema.TypeSet,
+							Type:     schema.TypeList,
 							Computed: true,
 							Elem: &schema.Schema{
 								Type: schema.TypeString,
 							},
+						},
+						"type": {
+							Type:     schema.TypeString,
+							Computed: true,
+						},
+						"plan": {
+							Type:     schema.TypeString,
+							Computed: true,
 						},
 					},
 				},

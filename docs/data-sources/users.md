@@ -41,8 +41,13 @@ Read-only:
 
 - **email** (String)
 - **first_time** (Boolean)
+- **is_super** (Boolean)
 - **name** (String)
-- **roles** (Set of String)
+- **plan** (String)
+- **role** (String)
+- **roles** (List of String)
+- **type** (String)
+- **ui_access** (Boolean)
 - **user_id** (String)
 
 

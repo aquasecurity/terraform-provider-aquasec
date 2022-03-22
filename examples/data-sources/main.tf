@@ -1,7 +1,7 @@
 terraform {
   required_providers {
     aquasec = {
-      //      version = "0.8.6"
+      //      version = "0.8.7"
       source  = "aquasecurity/aquasec"
     }
   }
@@ -94,4 +94,10 @@ output "permissions_sets" {
 
 output "permissions_sets_names" {
   value = data.aquasec_permissions_sets.testpermissionsset[*].permissions_sets[*].name
+}
+data "aquasec_gateways" "testgateways" {
+}
+
+output "gateways" {
+  value = data.aquasec_gateways.testgateways
 }

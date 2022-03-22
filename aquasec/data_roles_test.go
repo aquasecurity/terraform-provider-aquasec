@@ -7,26 +7,27 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
-func TestAquasecUserManagementDatasource(t *testing.T) {
+func TestAquasecRolesDatasource(t *testing.T) {
 	resource.Test(t, resource.TestCase{
 		PreCheck:  func() { testAccPreCheck(t) },
 		Providers: testAccProviders,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckAquasecUserDataSource(),
-				Check:  testAccCheckAquasecUsersDataSourceExists("data.aquasec_users.testusers"),
+				Config: testAccCheckAquasecRolesDataSource(),
+				Check:  testAccCheckAquasecRolesDataSourceExists("data.aquasec_roles.testroles"),
 			},
 		},
 	})
 }
 
-func testAccCheckAquasecUserDataSource() string {
+func testAccCheckAquasecRolesDataSource() string {
 	return `
-	data "aquasec_users" "testusers" {}
+	data "aquasec_roles" "testroles" {}
 	`
+
 }
 
-func testAccCheckAquasecUsersDataSourceExists(n string) resource.TestCheckFunc {
+func testAccCheckAquasecRolesDataSourceExists(n string) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 		rs, ok := s.RootModule().Resources[n]
 
@@ -35,7 +36,7 @@ func testAccCheckAquasecUsersDataSourceExists(n string) resource.TestCheckFunc {
 		}
 
 		if rs.Primary.ID == "" {
-			return NewNotFoundErrorf("ID for %s in state", n)
+			return NewNotFoundErrorf("Id for %s in state", n)
 		}
 
 		return nil
