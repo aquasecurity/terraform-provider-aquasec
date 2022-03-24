@@ -262,7 +262,6 @@ resource "aquasec_host_runtime_policy" "test" {
 
 resource "aquasec_image_assurance_policy" "newiap" {
     name = "testprovider"
-    assurance_type = "image"
     description = "Created using Terraform"
     application_scopes = [
         "Global"
@@ -276,4 +275,34 @@ resource "aquasec_image_assurance_policy" "newiap" {
         "Apache-2.0",
         "BSD-2-Clause"
     ]
+}
+
+resource "aquasec_host_assurance_policy" "newhap" {
+    name = "testprovider"
+    description = "Created using Terraform"
+    application_scopes = [
+        "Global"
+    ]
+    audit_on_failure = true
+    fail_cicd = true
+    block_failed = true
+    whitelisted_licenses_enabled = true
+    whitelisted_licenses = [
+        "AGPL-3.0",
+        "Apache-2.0",
+        "BSD-2-Clause"
+    ]
+}
+
+resource "aquasec_function_assurance_policy" "newfap" {
+    name = "testprovider"
+    description = "Created using Terraform"
+    application_scopes = [
+        "Global"
+    ]
+    audit_on_failure = true
+    fail_cicd = true
+    block_failed = true
+    maximum_score         = "1.0"
+    maximum_score_enabled = true
 }

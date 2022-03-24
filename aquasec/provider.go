@@ -4,13 +4,14 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
+	"log"
+	"os"
+
 	"github.com/aquasecurity/terraform-provider-aquasec/client"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/mitchellh/go-homedir"
-	"io/ioutil"
-	"log"
-	"os"
 )
 
 //Config - godoc
@@ -64,36 +65,40 @@ func Provider(v string) *schema.Provider {
 			},
 		},
 		ResourcesMap: map[string]*schema.Resource{
-			"aquasec_user":                     resourceUser(),
-			"aquasec_role":                     resourceRole(),
-			"aquasec_integration_registry":     resourceRegistry(),
-			"aquasec_firewall_policy":          resourceFirewallPolicy(),
-			"aquasec_enforcer_groups":          resourceEnforcerGroup(),
-			"aquasec_service":                  resourceService(),
-			"aquasec_image":                    resourceImage(),
-			"aquasec_notification_slack":       resourceNotification(),
-			"aquasec_container_runtime_policy": resourceContainerRuntimePolicy(),
-			"aquasec_function_runtime_policy":  resourceFunctionRuntimePolicy(),
-			"aquasec_host_runtime_policy":      resourceHostRuntimePolicy(),
-			"aquasec_image_assurance_policy":   resourceImageAssurancePolicy(),
+			"aquasec_user":                      resourceUser(),
+			"aquasec_role":                      resourceRole(),
+			"aquasec_integration_registry":      resourceRegistry(),
+			"aquasec_firewall_policy":           resourceFirewallPolicy(),
+			"aquasec_enforcer_groups":           resourceEnforcerGroup(),
+			"aquasec_service":                   resourceService(),
+			"aquasec_image":                     resourceImage(),
+			"aquasec_notification_slack":        resourceNotification(),
+			"aquasec_container_runtime_policy":  resourceContainerRuntimePolicy(),
+			"aquasec_function_runtime_policy":   resourceFunctionRuntimePolicy(),
+			"aquasec_host_runtime_policy":       resourceHostRuntimePolicy(),
+			"aquasec_host_assurance_policy":     resourceHostAssurancePolicy(),
+			"aquasec_image_assurance_policy":    resourceImageAssurancePolicy(),
+			"aquasec_function_assurance_policy": resourceFunctionAssurancePolicy(),
 			//saas
 			"aquasec_group":     resourceGroup(),
 			"aquasec_user_saas": resourceUserSaas(),
 		},
 		DataSourcesMap: map[string]*schema.Resource{
-			"aquasec_users":                    dataSourceUsers(),
-			"aquasec_roles":                    dataSourceRoles(),
-			"aquasec_integration_registries":   dataSourceRegistry(),
-			"aquasec_firewall_policy":          dataSourceFirewallPolicy(),
-			"aquasec_enforcer_groups":          dataSourceEnforcerGroup(),
-			"aquasec_service":                  dataSourceService(),
-			"aquasec_image":                    dataImage(),
-			"aquasec_container_runtime_policy": dataContainerRuntimePolicy(),
-			"aquasec_function_runtime_policy":  dataFunctionRuntimePolicy(),
-			"aquasec_host_runtime_policy":      dataHostRuntimePolicy(),
-			"aquasec_image_assurance_policy":   dataImageAssurancePolicy(),
-			"aquasec_gateways":                 dataSourceGateways(),
-      //saas:
+			"aquasec_users":                     dataSourceUsers(),
+			"aquasec_roles":                     dataSourceRoles(),
+			"aquasec_integration_registries":    dataSourceRegistry(),
+			"aquasec_firewall_policy":           dataSourceFirewallPolicy(),
+			"aquasec_enforcer_groups":           dataSourceEnforcerGroup(),
+			"aquasec_service":                   dataSourceService(),
+			"aquasec_image":                     dataImage(),
+			"aquasec_container_runtime_policy":  dataContainerRuntimePolicy(),
+			"aquasec_function_runtime_policy":   dataFunctionRuntimePolicy(),
+			"aquasec_host_runtime_policy":       dataHostRuntimePolicy(),
+			"aquasec_image_assurance_policy":    dataImageAssurancePolicy(),
+			"aquasec_host_assurance_policy":     dataHostAssurancePolicy(),
+			"aquasec_function_assurance_policy": dataFunctionAssurancePolicy(),
+			"aquasec_gateways":                  dataSourceGateways(),
+			//saas:
 			"aquasec_groups":     dataSourceGroups(),
 			"aquasec_users_saas": dataSourceUsersSaas(),
 		},
