@@ -182,7 +182,7 @@ Optional:
 Optional:
 
 - **expression** (String)
-- **variables** (Block Set) (see [below for nested schema](#nestedblock--scope--variables))
+- **variables** (Block List) (see [below for nested schema](#nestedblock--scope--variables))
 
 <a id="nestedblock--scope--variables"></a>
 ### Nested Schema for `scope.variables`

@@ -94,12 +94,41 @@ func Find(slice []string, val string) bool {
 
 // CreatePermissionSet - creates single Aqua PermissionSet Assurance Policy
 func (cli *Client) CreatePermissionsSet(permissionset *PermissionsSet) error {
-	actions_list := []string{"dashboard.read", "risks.vulnerabilities.read", "risks.vulnerabilities.write", "containers.read", "images.read", "image_profiles.read", "risks.host_images.read", "runtime_policies.read", "runtime_policies.write", "functions.read", "audits.read", "risk_explorer.read"}
+	actions_list := []string{
+		"dashboard.read",
+		"risks.vulnerabilities.read",
+		"risks.vulnerabilities.write",
+		"risks.host_images.read",
+		"risks.benchmark.read",
+		"risk_explorer.read",
+		"images.read",
+		"image_profiles.read",
+		"image_assurance.read",
+		"image_assurance.write",
+		"runtime_policies.read",
+		"runtime_policies.write",
+		"functions.read",
+		"gateways.read",
+		"secrets.read",
+		"audits.read",
+		"containers.read",
+		"enforcers.read",
+		"infrastructure.read",
+		"consoles.read",
+		"settings.read",
+		"network_policies.read",
+		"acl_policies.read",
+		"acl_policies.write",
+		"services.read",
+		"integrations.read",
+		"registries_integrations.read",
+		"web_hook.read",
+		"incidents.read"}
 	for _, item := range permissionset.Actions {
 
 		found := Find(actions_list, item)
 		if found != true {
-			return errors.New("Valid values for var: actions_list are (dashboard.read, risks.vulnerabilities.read, risks.vulnerabilities.write, containers.read, images.read, image_profiles.read, risks.host_images.read, runtime_policies.read, runtime_policies.write, functions.read, audits.read, risk_explorer.read).")
+			return errors.New("Valid values for var: actions_list are ( dashboard.read, risks.vulnerabilities.read, risks.vulnerabilities.write, risks.host_images.read, risks.benchmark.read, risk_explorer.read, images.read, image_profiles.read, image_assurance.read, image_assurance.write, runtime_policies.read, runtime_policies.write, functions.read, gateways.read, secrets.read, audits.read, containers.read, enforcers.read, infrastructure.read, consoles.read, settings.read, network_policies.read, acl_policies.read,acl_policies.write, services.read, integrations.read, registries_integrations.read, web_hook.read, incidents.read )")
 		}
 	}
 	payload, err := json.Marshal(permissionset)
@@ -132,12 +161,41 @@ func (cli *Client) CreatePermissionsSet(permissionset *PermissionsSet) error {
 
 // UpdatePermissionSet updates an existing PermissionSet Assurance Policy
 func (cli *Client) UpdatePermissionsSet(permissionset *PermissionsSet) error {
-	actions_list := []string{"dashboard.read", "risks.vulnerabilities.read", "risks.vulnerabilities.write", "containers.read", "images.read", "image_profiles.read", "risks.host_images.read", "runtime_policies.read", "runtime_policies.write", "functions.read", "audits.read", "risk_explorer.read"}
+	actions_list := []string{
+		"dashboard.read",
+		"risks.vulnerabilities.read",
+		"risks.vulnerabilities.write",
+		"risks.host_images.read",
+		"risks.benchmark.read",
+		"risk_explorer.read",
+		"images.read",
+		"image_profiles.read",
+		"image_assurance.read",
+		"image_assurance.write",
+		"runtime_policies.read",
+		"runtime_policies.write",
+		"functions.read",
+		"gateways.read",
+		"secrets.read",
+		"audits.read",
+		"containers.read",
+		"enforcers.read",
+		"infrastructure.read",
+		"consoles.read",
+		"settings.read",
+		"network_policies.read",
+		"acl_policies.read",
+		"acl_policies.write",
+		"services.read",
+		"integrations.read",
+		"registries_integrations.read",
+		"web_hook.read",
+		"incidents.read"}
 	for _, item := range permissionset.Actions {
 
 		found := Find(actions_list, item)
 		if found != true {
-			return errors.New("Valid values for var: actions_list are (dashboard.read, risks.vulnerabilities.read, risks.vulnerabilities.write, containers.read, images.read, image_profiles.read, risks.host_images.read, runtime_policies.read, runtime_policies.write, functions.read, audits.read, risk_explorer.read).")
+			return errors.New("Valid values for var: actions_list are ( dashboard.read, risks.vulnerabilities.read, risks.vulnerabilities.write, risks.host_images.read, risks.benchmark.read, risk_explorer.read, images.read, image_profiles.read, image_assurance.read, image_assurance.write, runtime_policies.read, runtime_policies.write, functions.read, gateways.read, secrets.read, audits.read, containers.read, enforcers.read, infrastructure.read, consoles.read, settings.read, network_policies.read, acl_policies.read,acl_policies.write, services.read, integrations.read, registries_integrations.read, web_hook.read, incidents.read )")
 		}
 	}
 	payload, err := json.Marshal(permissionset)
