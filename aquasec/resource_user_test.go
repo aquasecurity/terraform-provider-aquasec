@@ -14,6 +14,7 @@ func TestAquasecUserManagement(t *testing.T) {
 	password := "Pas5wo-d"
 	name := "terraform"
 	email := "terraform@test.com"
+	newEmail := "terraform1@test.com"
 	role := "Administrator"
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
@@ -23,6 +24,13 @@ func TestAquasecUserManagement(t *testing.T) {
 			{
 				// Config returns the test resource
 				Config: testAccCheckAquasecUser(userID, password, name, email, role),
+				Check: resource.ComposeTestCheckFunc(
+					testAccCheckAquasecUsersExists("aquasec_user.new"),
+				),
+			},
+			{
+				// Config returns the test resource
+				Config: testAccCheckAquasecUser(userID, password, name, newEmail, role),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckAquasecUsersExists("aquasec_user.new"),
 				),

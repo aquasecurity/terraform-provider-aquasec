@@ -1,7 +1,7 @@
 terraform {
   required_providers {
     aquasec = {
-      //      version = "0.8.6"
+      //      version = "0.8.7"
       source  = "aquasecurity/aquasec"
     }
   }
@@ -78,15 +78,16 @@ output "test-hrp" {
   value = data.aquasec_host_runtime_policy.test
 }
 
-data "aquasec_image_assurance_policy" "default-iap" {
-    name = "DTA"
-}
 
 data "aquasec_gateways" "testgateways" {
 }
 
 output "gateways" {
   value = data.aquasec_gateways.testgateways
+}
+
+data "aquasec_image_assurance_policy" "default-iap" {
+    name = "DTA"
 }
 
 output "image-assurance" {

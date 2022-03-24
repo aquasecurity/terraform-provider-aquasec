@@ -7,11 +7,13 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
-
 	"github.com/aquasecurity/terraform-provider-aquasec/client"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/mitchellh/go-homedir"
+	"io/ioutil"
+	"log"
+	"os"
 )
 
 //Config - godoc
