@@ -78,17 +78,32 @@ output "test-hrp" {
   value = data.aquasec_host_runtime_policy.test
 }
 
-data "aquasec_image_assurance_policy" "default" {
-    name = "DTA"
-}
-
-output "images" {
-  value = data.aquasec_image_assurance_policy.default
-}
-
 data "aquasec_gateways" "testgateways" {
 }
 
 output "gateways" {
   value = data.aquasec_gateways.testgateways
+
+data "aquasec_image_assurance_policy" "default-iap" {
+    name = "DTA"
+}
+
+output "image-assurance" {
+  value = data.aquasec_image_assurance_policy.default-iap
+}
+
+data "aquasec_host_assurance_policy" "default-hap" {
+    name = "Default"
+}
+
+output "host-assurance" {
+  value = data.aquasec_host_assurance_policy.default-hap
+}
+
+data "aquasec_function_assurance_policy" "default-fap" {
+    name = "Default"
+}
+
+output "function-assurance" {
+  value = data.aquasec_function_assurance_policy.default-fap
 }

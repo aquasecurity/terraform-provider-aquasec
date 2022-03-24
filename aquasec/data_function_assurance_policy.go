@@ -5,9 +5,9 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
-func dataAssurancePolicy() *schema.Resource {
+func dataFunctionAssurancePolicy() *schema.Resource {
 	return &schema.Resource{
-		Read: dataAssurancePolicyRead,
+		Read: dataFunctionAssurancePolicyRead,
 		Schema: map[string]*schema.Schema{
 			"assurance_type": {
 				Type:     schema.TypeString,
@@ -566,12 +566,12 @@ func dataAssurancePolicy() *schema.Resource {
 	}
 }
 
-func dataAssurancePolicyRead(d *schema.ResourceData, m interface{}) error {
+func dataFunctionAssurancePolicyRead(d *schema.ResourceData, m interface{}) error {
 	ac := m.(*client.Client)
 	name := d.Get("name").(string)
-	at := d.Get("assurance_type").(string)
+	assurance_type := "function"
 
-	iap, err := ac.GetAssurancePolicy(name, at)
+	iap, err := ac.GetAssurancePolicy(name, assurance_type)
 	if err == nil {
 		d.Set("description", iap.Description)
 		d.Set("assurance_type", iap.AssuranceType)
