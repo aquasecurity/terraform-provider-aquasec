@@ -82,6 +82,13 @@ data "aquasec_image_assurance_policy" "default-iap" {
     name = "DTA"
 }
 
+data "aquasec_gateways" "testgateways" {
+}
+
+output "gateways" {
+  value = data.aquasec_gateways.testgateways
+}
+
 output "image-assurance" {
   value = data.aquasec_image_assurance_policy.default-iap
 }
