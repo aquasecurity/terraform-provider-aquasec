@@ -94,6 +94,17 @@ output "image-assurance" {
   value = data.aquasec_image_assurance_policy.default-iap
 }
 
+data "aquasec_permissions_sets" "testpermissionsset" {}
+
+output "permissions_sets" {
+  value = data.aquasec_permissions_sets.testpermissionsset
+}
+
+output "permissions_sets_names" {
+  value = data.aquasec_permissions_sets.testpermissionsset[*].permissions_sets[*].name
+}
+
+
 data "aquasec_host_assurance_policy" "default-hap" {
     name = "Default"
 }
