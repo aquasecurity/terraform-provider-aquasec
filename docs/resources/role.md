@@ -16,7 +16,7 @@ The roles created must have permission set and at least one Role Application Sco
 ## Example Usage
 
 ```terraform
-resource "aquasec_user" "IaC" {
+resource "aquasec_role" "IaC" {
     role_name = "RoleIaC"
     description = "RoleIaC"
     permission = "PermissionIaC"

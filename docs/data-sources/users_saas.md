@@ -3,15 +3,12 @@
 page_title: "aquasec_users_saas Data Source - terraform-provider-aquasec"
 subcategory: ""
 description: |-
-  The data source aquasec_users_saas provides a method to query all saas users within the Aqua users
-  management. The fields returned from this query are detailed in the Schema section below.
+  The data source aquasec_users_saas provides a method to query all saas users within the Aqua users management. The fields returned from this query are detailed in the Schema section below.
 ---
 
 # Data Source `aquasec_users_saas`
 
-The data source `aquasec_users_saas` provides a method to query all saas users within the Aqua users
-
-management. The fields returned from this query are detailed in the Schema section below.
+The data source `aquasec_users_saas` provides a method to query all saas users within the Aqua users management. The fields returned from this query are detailed in the Schema section below.
 
 ## Example Usage
 
