@@ -120,3 +120,11 @@ data "aquasec_function_assurance_policy" "default-fap" {
 output "function-assurance" {
   value = data.aquasec_function_assurance_policy.default-fap
 }
+
+data "aquasec_application_scope" "default" {
+    name = "Global"
+}
+
+output "scopes" {
+  value = data.aquasec_application_scope.default
+}

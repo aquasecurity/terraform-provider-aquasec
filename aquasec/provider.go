@@ -79,6 +79,7 @@ func Provider(v string) *schema.Provider {
 			"aquasec_host_assurance_policy":     resourceHostAssurancePolicy(),
 			"aquasec_image_assurance_policy":    resourceImageAssurancePolicy(),
 			"aquasec_function_assurance_policy": resourceFunctionAssurancePolicy(),
+			"aquasec_application_scope":         resourceApplicationScope(),
 			"aquasec_permissions_sets":          resourcePermissionSet(),
 			//saas
 			"aquasec_group":     resourceGroup(),
@@ -99,6 +100,7 @@ func Provider(v string) *schema.Provider {
 			"aquasec_host_assurance_policy":     dataHostAssurancePolicy(),
 			"aquasec_function_assurance_policy": dataFunctionAssurancePolicy(),
 			"aquasec_gateways":                  dataSourceGateways(),
+			"aquasec_application_scope":         dataApplicationScope(),
 			"aquasec_permissions_sets":          dataSourcePermissionsSets(),
 			//saas:
 			"aquasec_groups":     dataSourceGroups(),
