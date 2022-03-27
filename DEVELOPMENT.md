@@ -32,7 +32,7 @@ git clone https://github.com/aquasecurity/terraform-provider-aquasec.git
 
 cd terraform-provider-aquasec
 
-git checkout v0.8.7
+git checkout v0.8.8
 ```
 
 **Build the provider**
@@ -49,11 +49,11 @@ After a successful build, the generated binary will need to be installed into th
 We'll use here the [example Terraform resources](examples/resources/main.tf) provided in this repo.
 
 ```
-mkdir -p examples/resources/.terraform/plugins/terraform-provider-aquasec/aquasec/aquasec/0.8.7/darwin_amd64/
+mkdir -p examples/resources/.terraform/plugins/terraform-provider-aquasec/aquasec/aquasec/0.8.8/darwin_amd64/
 
-mv terraform-provider-aquasec examples/resources/.terraform/plugins/terraform-provider-aquasec/aquasec/aquasec/0.8.7/darwin_amd64/terraform-provider-aquasec
+mv terraform-provider-aquasec examples/resources/.terraform/plugins/terraform-provider-aquasec/aquasec/aquasec/0.8.8/darwin_amd64/terraform-provider-aquasec
 ```
-Make sure to replace the version `0.8.7` and the architecture `darwin_amd64` in the path as relevant for your system.
+Make sure to replace the version `0.8.8` and the architecture `darwin_amd64` in the path as relevant for your system.
 
 **Terraform configuration**
 
@@ -62,7 +62,7 @@ In order to test the provider installed locally, the provider block will have to
 terraform {
   required_providers {
     aquasec = {
-      version = "0.8.7"
+      version = "0.8.8"
       source  = "terraform-provider-aquasec/aquasec/aquasec"
     }
   }
