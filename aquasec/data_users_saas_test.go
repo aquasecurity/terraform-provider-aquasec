@@ -7,26 +7,26 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
-func TestAquasecPermissionsSetDatasource(t *testing.T) {
+func TestAquasecUserSaasManagementDatasource(t *testing.T) {
 	resource.Test(t, resource.TestCase{
 		PreCheck:  func() { testAccPreCheck(t) },
 		Providers: testAccProviders,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckAquasecPermissionsSetDataSource(),
-				Check:  testAccCheckAquasecPermissionsSetDataSourceExists("data.aquasec_permissions_sets.testpermissionsset"),
+				Config: testAccCheckAquasecUserSaasDataSource(),
+				Check:  testAccCheckAquasecUsersSaasDataSourceExists("data.aquasec_users_saas.testusers"),
 			},
 		},
 	})
 }
 
-func testAccCheckAquasecPermissionsSetDataSource() string {
+func testAccCheckAquasecUserSaasDataSource() string {
 	return `
-	data "aquasec_permissions_sets" "testpermissionsset" {}
+	data "aquasec_users_saas" "testusers" {}
 	`
 }
 
-func testAccCheckAquasecPermissionsSetDataSourceExists(n string) resource.TestCheckFunc {
+func testAccCheckAquasecUsersSaasDataSourceExists(n string) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 		rs, ok := s.RootModule().Resources[n]
 

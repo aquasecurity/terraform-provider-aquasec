@@ -7,27 +7,27 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
-func TestAquasecRolesDatasource(t *testing.T) {
+func TestAquasecGroupsDatasource(t *testing.T) {
 	resource.Test(t, resource.TestCase{
 		PreCheck:  func() { testAccPreCheck(t) },
 		Providers: testAccProviders,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckAquasecRolesDataSource(),
-				Check:  testAccCheckAquasecRolesDataSourceExists("data.aquasec_roles.testroles"),
+				Config: testAccCheckAquasecGroupsDataSource(),
+				Check:  testAccCheckAquasecGroupsDataSourceExists("data.aquasec_groups.testgroups"),
 			},
 		},
 	})
 }
 
-func testAccCheckAquasecRolesDataSource() string {
+func testAccCheckAquasecGroupsDataSource() string {
 	return `
-	data "aquasec_roles" "testroles" {}
+	data "aquasec_groups" "testgroups" {}
 	`
 
 }
 
-func testAccCheckAquasecRolesDataSourceExists(n string) resource.TestCheckFunc {
+func testAccCheckAquasecGroupsDataSourceExists(n string) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 		rs, ok := s.RootModule().Resources[n]
 
