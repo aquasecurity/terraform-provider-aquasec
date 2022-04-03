@@ -40,7 +40,7 @@ To quickly get started using the Aquasec provider for Terraform, configure the p
 terraform {
   required_providers {
     aquasec = {
-      version = "0.8.8"
+      version = "0.8.9"
       source  = "aquasecurity/aquasec"
     }
   }
