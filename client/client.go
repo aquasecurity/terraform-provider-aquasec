@@ -8,7 +8,6 @@ import (
 	"github.com/aquasecurity/terraform-provider-aquasec/consts"
 	"github.com/parnurzeal/gorequest"
 	"log"
-	"strings"
 )
 
 // Client - API client
@@ -50,15 +49,17 @@ func NewClient(url, user, password string, verifyTLS bool, caCertByte []byte) *C
 		gorequest: gorequest.New().TLSClientConfig(tlsConfig),
 	}
 
-	if strings.Contains(url, "cloud.aquasec.com") {
+	switch url {
+	case "https://cloud.aquasec.com":
 		c.clientType = Saas
-		if strings.Contains(url, "d.cloud.aquasec.com") {
-			c.clientType = SaasDev
-		}
-	} else {
+		break
+	case "https://cloud-dev.aquasec.com":
+		c.clientType = SaasDev
+		break
+	default:
 		c.clientType = Csp
+		break
 	}
-
 	return c
 }
 

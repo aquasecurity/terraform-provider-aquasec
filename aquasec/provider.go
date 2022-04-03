@@ -212,6 +212,5 @@ func providerConfigure(ctx context.Context, d *schema.ResourceData) (interface{}
 
 		return nil, diags
 	}
-
 	return aquaClient, diags
 }
