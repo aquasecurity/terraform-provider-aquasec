@@ -337,8 +337,16 @@ func resourceEnforcerGroupCreate(d *schema.ResourceData, m interface{}) error {
 }
 
 func resourceEnforcerGroupRead(d *schema.ResourceData, m interface{}) error {
+	var name string
+
 	ac := m.(*client.Client)
-	name := d.Get("group_id").(string)
+	groupId, ok := d.GetOk("group_id")
+
+	if ok {
+		name = groupId.(string)
+	} else {
+		name = d.Id()
+	}
 
 	r, err := ac.GetEnforcerGroup(name)
 	if err == nil {
