@@ -6,6 +6,7 @@ import (
 
 	"github.com/aquasecurity/terraform-provider-aquasec/client"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceEnforcerGroup() *schema.Resource {
@@ -167,8 +168,11 @@ func resourceEnforcerGroup() *schema.Resource {
 				Optional: true,
 			},
 			"host_os": {
-				Type:     schema.TypeString,
-				Computed: true,
+				Type:         schema.TypeString,
+				Computed:     true,
+				Optional:     true,
+				ForceNew:     true,
+				ValidateFunc: validation.StringInSlice([]string{"Linux", "Windows"}, false),
 			},
 			"host_protection": {
 				Type:     schema.TypeBool,
