@@ -412,9 +412,12 @@ func resourceEnforcerGroupRead(d *schema.ResourceData, m interface{}) error {
 
 func resourceEnforcerGroupUpdate(d *schema.ResourceData, m interface{}) error {
 
-	if d.HasChanges("admission_control",
+	if d.HasChanges(
+		"admission_control",
 		"allow_kube_enforcer_audit",
+		"allowed_applications",
 		"allowed_labels",
+		"allowed_registries",
 		"antivirus_protection",
 		"audit_all",
 		"auto_copy_secrets",
@@ -430,14 +433,19 @@ func resourceEnforcerGroupUpdate(d *schema.ResourceData, m interface{}) error {
 		"gateways",
 		"host_assurance",
 		"host_behavioral_engine",
+		"host_network_protection",
 		"host_os",
 		"host_protection",
 		"host_user_protection",
 		"image_assurance",
 		"kube_bench_image_name",
 		"logical_name",
+		"micro_enforcer_certs_secrets_name",
+		"micro_enforcer_image_name",
 		"micro_enforcer_injection",
+		"micro_enforcer_secrets_name",
 		"network_protection",
+		"permission",
 		"risk_explorer_auto_discovery",
 		"sync_host_images",
 		"syscall_enabled",
@@ -489,9 +497,19 @@ func expandEnforcerGroup(d *schema.ResourceData) client.EnforcerGroup {
 		enforcerGroup.AllowKubeEnforcerAudit = allowKubeEnforcerAudit.(bool)
 	}
 
+	allowedApplications, ok := d.GetOk("allowed_applications")
+	if ok {
+		enforcerGroup.AllowedApplications = convertStringArr(allowedApplications.(*schema.Set).List())
+	}
+
 	allowedLabels, ok := d.GetOk("allowed_labels")
 	if ok {
-		enforcerGroup.AllowedLabels = allowedLabels.([]string)
+		enforcerGroup.AllowedLabels = convertStringArr(allowedLabels.(*schema.Set).List())
+	}
+
+	allowedRegistries, ok := d.GetOk("allowed_registries")
+	if ok {
+		enforcerGroup.AllowedRegistries = convertStringArr(allowedRegistries.(*schema.Set).List())
 	}
 
 	antivirusProtection, ok := d.GetOk("antivirus_protection")
@@ -563,9 +581,6 @@ func expandEnforcerGroup(d *schema.ResourceData) client.EnforcerGroup {
 	if ok {
 		enforcerGroup.Gateways = convertStringArr(gateways.([]interface{}))
 	}
-	if ok {
-		enforcerGroup.AutoDiscoveryEnabled = autoDiscoveryEnabled.(bool)
-	}
 
 	hostAssurance, ok := d.GetOk("host_assurance")
 	if ok {
@@ -575,6 +590,11 @@ func expandEnforcerGroup(d *schema.ResourceData) client.EnforcerGroup {
 	hostBehavioralEngine, ok := d.GetOk("host_behavioral_engine")
 	if ok {
 		enforcerGroup.HostBehavioralEngine = hostBehavioralEngine.(bool)
+	}
+
+	hostNetworkProtection, ok := d.GetOk("host_network_protection")
+	if ok {
+		enforcerGroup.HostNetworkProtection = hostNetworkProtection.(bool)
 	}
 
 	hostOs, ok := d.GetOk("host_os")
@@ -607,14 +627,34 @@ func expandEnforcerGroup(d *schema.ResourceData) client.EnforcerGroup {
 		enforcerGroup.LogicalName = logicalName.(string)
 	}
 
+	microEnforcerCertsSecretsName, ok := d.GetOk("micro_enforcer_certs_secrets_name")
+	if ok {
+		enforcerGroup.MicroEnforcerCertsSecretsName = microEnforcerCertsSecretsName.(string)
+	}
+
+	microEnforcerImageName, ok := d.GetOk("micro_enforcer_image_name")
+	if ok {
+		enforcerGroup.MicroEnforcerImageName = microEnforcerImageName.(string)
+	}
+
 	microEnforcerInjection, ok := d.GetOk("micro_enforcer_injection")
 	if ok {
 		enforcerGroup.MicroEnforcerInjection = microEnforcerInjection.(bool)
 	}
 
+	microEnforcerSecretsName, ok := d.GetOk("micro_enforcer_secrets_name")
+	if ok {
+		enforcerGroup.MicroEnforcerSecretsName = microEnforcerSecretsName.(string)
+	}
+
 	networkProtection, ok := d.GetOk("network_protection")
 	if ok {
 		enforcerGroup.NetworkProtection = networkProtection.(bool)
+	}
+
+	permission, ok := d.GetOk("permission")
+	if ok {
+		enforcerGroup.Permission = permission.(string)
 	}
 
 	riskExplorerAutoDiscovery, ok := d.GetOk("risk_explorer_auto_discovery")
