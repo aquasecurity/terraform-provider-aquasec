@@ -3,7 +3,7 @@
 page_title: "aquasec_enforcer_groups Resource - terraform-provider-aquasec"
 subcategory: ""
 description: |-
-  
+
 ---
 
 # Resource `aquasec_enforcer_groups`
@@ -54,7 +54,6 @@ description: |-
 - **micro_enforcer_image_name** (String)
 - **micro_enforcer_injection** (Boolean)
 - **micro_enforcer_secrets_name** (String)
-- **network_activity_protection** (Boolean)
 - **network_protection** (Boolean)
 - **permission** (String)
 - **risk_explorer_auto_discovery** (Boolean)
@@ -73,7 +72,6 @@ description: |-
 - **gateway_name** (String)
 - **high_vulns** (Number)
 - **host_os** (String)
-- **hostname** (String)
 - **hosts_count** (Number)
 - **install_command** (String)
 - **last_update** (Number)

@@ -47,10 +47,6 @@ func dataSourceEnforcerGroup() *schema.Resource {
 				Type:     schema.TypeBool,
 				Computed: true,
 			},
-			"network_activity_protection": {
-				Type:     schema.TypeBool,
-				Computed: true,
-			},
 			"network_protection": {
 				Type:     schema.TypeBool,
 				Computed: true,
@@ -332,7 +328,6 @@ func dataEnforcerGroupRead(d *schema.ResourceData, m interface{}) error {
 		d.Set("gateway_address", group.GatewayAddress)
 		d.Set("enforce", group.Enforce)
 		d.Set("container_activity_protection", group.ContainerAntivirusProtection)
-		d.Set("network_activity_protection", group.NetworkActivityProtection)
 		d.Set("network_protection", group.NetworkProtection)
 		d.Set("behavioral_engine", group.BehavioralEngine)
 		d.Set("host_behavioral_engine", group.BehavioralEngine)

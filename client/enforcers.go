@@ -36,7 +36,6 @@ type EnforcerGroup struct {
 	GatewayAddress                            string               `json:"gateway_address"`
 	Enforce                                   bool                 `json:"enforce"`
 	ContainerActivityProtection               bool                 `json:"container_activity_protection"`
-	NetworkActivityProtection                 bool                 `json:"network_activity_protection"`
 	NetworkProtection                         bool                 `json:"network_protection"`
 	BehavioralEngine                          bool                 `json:"behavioral_engine"`
 	HostBehavioralEngine                      bool                 `json:"host_behavioral_engine"`

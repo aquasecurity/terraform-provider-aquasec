@@ -3,7 +3,7 @@
 page_title: "aquasec_enforcer_groups Data Source - terraform-provider-aquasec"
 subcategory: ""
 description: |-
-  
+
 ---
 
 # Data Source `aquasec_enforcer_groups`
@@ -70,7 +70,6 @@ description: |-
 - **micro_enforcer_injection** (Boolean)
 - **micro_enforcer_secrets_name** (String)
 - **neg_vulns** (Number)
-- **network_activity_protection** (Boolean)
 - **network_protection** (Boolean)
 - **orchestrator** (List of Object) (see [below for nested schema](#nestedatt--orchestrator))
 - **pas_deployment_link** (String)

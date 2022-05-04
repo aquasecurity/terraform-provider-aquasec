@@ -178,10 +178,6 @@ func resourceEnforcerGroup() *schema.Resource {
 				Type:     schema.TypeBool,
 				Optional: true,
 			},
-			"hostname": {
-				Type:     schema.TypeString,
-				Computed: true,
-			},
 			"hosts_count": {
 				Type:     schema.TypeInt,
 				Computed: true,
@@ -238,10 +234,6 @@ func resourceEnforcerGroup() *schema.Resource {
 			"neg_vulns": {
 				Type:     schema.TypeInt,
 				Computed: true,
-			},
-			"network_activity_protection": {
-				Type:     schema.TypeBool,
-				Optional: true,
 			},
 			"network_protection": {
 				Type:     schema.TypeBool,
@@ -351,7 +343,6 @@ func resourceEnforcerGroupRead(d *schema.ResourceData, m interface{}) error {
 		d.Set("gateway_address", r.GatewayAddress)
 		d.Set("enforce", r.Enforce)
 		d.Set("container_activity_protection", r.ContainerAntivirusProtection)
-		d.Set("network_activity_protection", r.NetworkActivityProtection)
 		d.Set("network_protection", r.NetworkProtection)
 		d.Set("behavioral_engine", r.BehavioralEngine)
 		d.Set("host_behavioral_engine", r.BehavioralEngine)
