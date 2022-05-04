@@ -6,6 +6,7 @@ import (
 
 	"github.com/aquasecurity/terraform-provider-aquasec/client"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceEnforcerGroup() *schema.Resource {
@@ -288,8 +289,10 @@ func resourceEnforcerGroup() *schema.Resource {
 				Computed: true,
 			},
 			"runtime_type": {
-				Type:     schema.TypeString,
-				Computed: true,
+				Type:         schema.TypeString,
+				Computed:     true,
+				Optional:     true,
+				ValidateFunc: validation.StringInSlice([]string{"docker", "crio", "containerd", "garden"}, false),
 			},
 			"sync_host_images": {
 				Type:     schema.TypeBool,
@@ -304,8 +307,10 @@ func resourceEnforcerGroup() *schema.Resource {
 				Computed: true,
 			},
 			"type": {
-				Type:     schema.TypeString,
-				Required: true,
+				Type:         schema.TypeString,
+				Required:     true,
+				ForceNew:     true,
+				ValidateFunc: validation.StringInSlice([]string{"agent", "host_enforcer", "kube_enforcer", "micro_enforcer", "nano_enforcer"}, false),
 			},
 			"user_access_control": {
 				Type:     schema.TypeBool,
@@ -364,7 +369,6 @@ func resourceEnforcerGroupRead(d *schema.ResourceData, m interface{}) error {
 		d.Set("token", r.Token)
 		d.Set("command", flattenCommands(r.Command))
 		d.Set("orchestrator", flattenOrchestrators(r.Orchestrator))
-		d.Set("type", r.Type)
 		d.Set("host_os", r.HostOs)
 		d.Set("install_command", r.InstallCommand)
 		d.Set("hosts_count", r.HostsCount)
@@ -439,8 +443,10 @@ func resourceEnforcerGroupUpdate(d *schema.ResourceData, m interface{}) error {
 		"micro_enforcer_injection",
 		"network_protection",
 		"risk_explorer_auto_discovery",
+		"runtime_type",
 		"sync_host_images",
 		"syscall_enabled",
+		"type",
 		"user_access_control",
 		"orchestrator",
 	) {
@@ -477,6 +483,15 @@ func expandEnforcerGroup(d *schema.ResourceData) client.EnforcerGroup {
 
 	enforcerGroup := client.EnforcerGroup{
 		ID: d.Get("group_id").(string),
+	}
+
+	enforcerType, ok := d.GetOk("type")
+	if ok {
+		enforcerGroup.Type = enforcerType.(string)
+
+		if enforcerType.(string) == "kube_enforcer" {
+			enforcerGroup.RuntimeType = "docker"
+		}
 	}
 
 	admissionControl, ok := d.GetOk("admission_control")

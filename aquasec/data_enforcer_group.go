@@ -345,7 +345,6 @@ func dataEnforcerGroupRead(d *schema.ResourceData, m interface{}) error {
 		d.Set("token", group.Token)
 		d.Set("command", flattenCommands(group.Command))
 		d.Set("orchestrator", flattenOrchestrators(group.Orchestrator))
-		d.Set("type", group.Type)
 		d.Set("host_os", group.HostOs)
 		d.Set("install_command", group.InstallCommand)
 		d.Set("hosts_count", group.HostsCount)
