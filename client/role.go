@@ -104,11 +104,8 @@ func (cli *Client) CreateRole(role *Role) error {
 	if errs != nil {
 		return errors.Wrap(err, "failed creating role")
 	}
-	if resp.StatusCode != 201 {
-		if err == nil {
-			err = fmt.Errorf(data)
-		}
-		return err
+	if resp.StatusCode != 201 && resp.StatusCode != 204 && resp.StatusCode != 200 {
+		return errors.Errorf(data)
 	}
 	return nil
 }
@@ -125,11 +122,8 @@ func (cli *Client) UpdateRole(role *Role) error {
 	if errs != nil {
 		return errors.Wrap(err, "failed modifying role")
 	}
-	if resp.StatusCode != 201 && resp.StatusCode != 204 {
-		if err == nil {
-			err = fmt.Errorf(data)
-		}
-		return err
+	if resp.StatusCode != 201 && resp.StatusCode != 204 && resp.StatusCode != 200 {
+		return errors.Errorf(data)
 	}
 	return nil
 }
