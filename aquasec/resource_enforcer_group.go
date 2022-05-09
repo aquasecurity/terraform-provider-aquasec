@@ -6,6 +6,7 @@ import (
 
 	"github.com/aquasecurity/terraform-provider-aquasec/client"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceEnforcerGroup() *schema.Resource {
@@ -167,8 +168,11 @@ func resourceEnforcerGroup() *schema.Resource {
 				Optional: true,
 			},
 			"host_os": {
-				Type:     schema.TypeString,
-				Computed: true,
+				Type:         schema.TypeString,
+				Computed:     true,
+				Optional:     true,
+				ForceNew:     true,
+				ValidateFunc: validation.StringInSlice([]string{"Linux", "Windows"}, false),
 			},
 			"host_protection": {
 				Type:     schema.TypeBool,
@@ -239,10 +243,6 @@ func resourceEnforcerGroup() *schema.Resource {
 				Type:     schema.TypeInt,
 				Computed: true,
 			},
-			"network_activity_protection": {
-				Type:     schema.TypeBool,
-				Optional: true,
-			},
 			"network_protection": {
 				Type:     schema.TypeBool,
 				Optional: true,
@@ -288,8 +288,10 @@ func resourceEnforcerGroup() *schema.Resource {
 				Computed: true,
 			},
 			"runtime_type": {
-				Type:     schema.TypeString,
-				Computed: true,
+				Type:         schema.TypeString,
+				Computed:     true,
+				Optional:     true,
+				ValidateFunc: validation.StringInSlice([]string{"docker", "crio", "containerd", "garden"}, false),
 			},
 			"sync_host_images": {
 				Type:     schema.TypeBool,
@@ -304,8 +306,10 @@ func resourceEnforcerGroup() *schema.Resource {
 				Computed: true,
 			},
 			"type": {
-				Type:     schema.TypeString,
-				Required: true,
+				Type:         schema.TypeString,
+				Required:     true,
+				ForceNew:     true,
+				ValidateFunc: validation.StringInSlice([]string{"agent", "host_enforcer", "kube_enforcer", "micro_enforcer", "nano_enforcer"}, false),
 			},
 			"user_access_control": {
 				Type:     schema.TypeBool,
@@ -337,8 +341,15 @@ func resourceEnforcerGroupCreate(d *schema.ResourceData, m interface{}) error {
 }
 
 func resourceEnforcerGroupRead(d *schema.ResourceData, m interface{}) error {
+	var name string
 	ac := m.(*client.Client)
-	name := d.Get("group_id").(string)
+	groupId, ok := d.GetOk("group_id")
+
+	if ok {
+		name = groupId.(string)
+	} else {
+		name = d.Id()
+	}
 
 	r, err := ac.GetEnforcerGroup(name)
 	if err == nil {
@@ -350,21 +361,19 @@ func resourceEnforcerGroupRead(d *schema.ResourceData, m interface{}) error {
 		d.Set("gateway_name", r.GatewayName)
 		d.Set("gateway_address", r.GatewayAddress)
 		d.Set("enforce", r.Enforce)
-		d.Set("container_activity_protection", r.ContainerAntivirusProtection)
-		d.Set("network_activity_protection", r.NetworkActivityProtection)
+		d.Set("container_activity_protection", r.ContainerActivityProtection)
 		d.Set("network_protection", r.NetworkProtection)
 		d.Set("behavioral_engine", r.BehavioralEngine)
 		d.Set("host_behavioral_engine", r.BehavioralEngine)
 		d.Set("host_network_protection", r.HostNetworkProtection)
 		d.Set("user_access_control", r.UserAccessControl)
 		d.Set("image_assurance", r.ImageAssurance)
-		d.Set("host_protection", r.HostNetworkProtection)
+		d.Set("host_protection", r.HostProtection)
 		d.Set("audit_all", r.AuditAll)
 		d.Set("last_update", r.LastUpdate)
 		d.Set("token", r.Token)
 		d.Set("command", flattenCommands(r.Command))
 		d.Set("orchestrator", flattenOrchestrators(r.Orchestrator))
-		d.Set("type", r.Type)
 		d.Set("host_os", r.HostOs)
 		d.Set("install_command", r.InstallCommand)
 		d.Set("hosts_count", r.HostsCount)
@@ -383,7 +392,7 @@ func resourceEnforcerGroupRead(d *schema.ResourceData, m interface{}) error {
 		d.Set("aqua_version", r.AquaVersion)
 		d.Set("allow_kube_enforcer_audit", r.AllowKubeEnforcerAudit)
 		d.Set("auto_discovery_enabled", r.AutoDiscoveryEnabled)
-		d.Set("auto_discover_configure_registries", r.AllowKubeEnforcerAudit)
+		d.Set("auto_discover_configure_registries", r.AutoDiscoverConfigureRegistries)
 		d.Set("auto_scan_discovered_images_running_containers", r.AutoScanDiscoveredImagesRunningContainers)
 		d.Set("admission_control", r.AdmissionControl)
 		d.Set("micro_enforcer_injection", r.MicroEnforcerInjection)
@@ -414,7 +423,9 @@ func resourceEnforcerGroupUpdate(d *schema.ResourceData, m interface{}) error {
 
 	if d.HasChanges("admission_control",
 		"allow_kube_enforcer_audit",
+		"allowed_applications",
 		"allowed_labels",
+		"allowed_registries",
 		"antivirus_protection",
 		"audit_all",
 		"auto_copy_secrets",
@@ -430,17 +441,24 @@ func resourceEnforcerGroupUpdate(d *schema.ResourceData, m interface{}) error {
 		"gateways",
 		"host_assurance",
 		"host_behavioral_engine",
+		"host_network_protection",
 		"host_os",
 		"host_protection",
 		"host_user_protection",
 		"image_assurance",
 		"kube_bench_image_name",
 		"logical_name",
+		"micro_enforcer_certs_secrets_name",
+		"micro_enforcer_image_name",
 		"micro_enforcer_injection",
+		"micro_enforcer_secrets_name",
 		"network_protection",
+		"permission",
 		"risk_explorer_auto_discovery",
+		"runtime_type",
 		"sync_host_images",
 		"syscall_enabled",
+		"type",
 		"user_access_control",
 		"orchestrator",
 	) {
@@ -479,6 +497,11 @@ func expandEnforcerGroup(d *schema.ResourceData) client.EnforcerGroup {
 		ID: d.Get("group_id").(string),
 	}
 
+	enforcerType, ok := d.GetOk("type")
+	if ok {
+		enforcerGroup.Type = enforcerType.(string)
+	}
+
 	admissionControl, ok := d.GetOk("admission_control")
 	if ok {
 		enforcerGroup.AdmissionControl = admissionControl.(bool)
@@ -489,9 +512,19 @@ func expandEnforcerGroup(d *schema.ResourceData) client.EnforcerGroup {
 		enforcerGroup.AllowKubeEnforcerAudit = allowKubeEnforcerAudit.(bool)
 	}
 
+	allowedApplications, ok := d.GetOk("allowed_applications")
+	if ok {
+		enforcerGroup.AllowedApplications = convertStringArr(allowedApplications.(*schema.Set).List())
+	}
+
 	allowedLabels, ok := d.GetOk("allowed_labels")
 	if ok {
-		enforcerGroup.AllowedLabels = allowedLabels.([]string)
+		enforcerGroup.AllowedLabels = convertStringArr(allowedLabels.(*schema.Set).List())
+	}
+
+	allowedRegistries, ok := d.GetOk("allowed_registries")
+	if ok {
+		enforcerGroup.AllowedRegistries = convertStringArr(allowedRegistries.(*schema.Set).List())
 	}
 
 	antivirusProtection, ok := d.GetOk("antivirus_protection")
@@ -563,9 +596,6 @@ func expandEnforcerGroup(d *schema.ResourceData) client.EnforcerGroup {
 	if ok {
 		enforcerGroup.Gateways = convertStringArr(gateways.([]interface{}))
 	}
-	if ok {
-		enforcerGroup.AutoDiscoveryEnabled = autoDiscoveryEnabled.(bool)
-	}
 
 	hostAssurance, ok := d.GetOk("host_assurance")
 	if ok {
@@ -575,6 +605,11 @@ func expandEnforcerGroup(d *schema.ResourceData) client.EnforcerGroup {
 	hostBehavioralEngine, ok := d.GetOk("host_behavioral_engine")
 	if ok {
 		enforcerGroup.HostBehavioralEngine = hostBehavioralEngine.(bool)
+	}
+
+	hostNetworkProtection, ok := d.GetOk("host_network_protection")
+	if ok {
+		enforcerGroup.HostNetworkProtection = hostNetworkProtection.(bool)
 	}
 
 	hostOs, ok := d.GetOk("host_os")
@@ -607,14 +642,34 @@ func expandEnforcerGroup(d *schema.ResourceData) client.EnforcerGroup {
 		enforcerGroup.LogicalName = logicalName.(string)
 	}
 
+	microEnforcerCertsSecretsName, ok := d.GetOk("micro_enforcer_certs_secrets_name")
+	if ok {
+		enforcerGroup.MicroEnforcerCertsSecretsName = microEnforcerCertsSecretsName.(string)
+	}
+
+	microEnforcerImageName, ok := d.GetOk("micro_enforcer_image_name")
+	if ok {
+		enforcerGroup.MicroEnforcerImageName = microEnforcerImageName.(string)
+	}
+
 	microEnforcerInjection, ok := d.GetOk("micro_enforcer_injection")
 	if ok {
 		enforcerGroup.MicroEnforcerInjection = microEnforcerInjection.(bool)
 	}
 
+	microEnforcerSecretsName, ok := d.GetOk("micro_enforcer_secrets_name")
+	if ok {
+		enforcerGroup.MicroEnforcerSecretsName = microEnforcerSecretsName.(string)
+	}
+
 	networkProtection, ok := d.GetOk("network_protection")
 	if ok {
 		enforcerGroup.NetworkProtection = networkProtection.(bool)
+	}
+
+	permission, ok := d.GetOk("permission")
+	if ok {
+		enforcerGroup.Permission = permission.(string)
 	}
 
 	riskExplorerAutoDiscovery, ok := d.GetOk("risk_explorer_auto_discovery")

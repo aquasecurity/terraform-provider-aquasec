@@ -36,7 +36,6 @@ type EnforcerGroup struct {
 	GatewayAddress                            string               `json:"gateway_address"`
 	Enforce                                   bool                 `json:"enforce"`
 	ContainerActivityProtection               bool                 `json:"container_activity_protection"`
-	NetworkActivityProtection                 bool                 `json:"network_activity_protection"`
 	NetworkProtection                         bool                 `json:"network_protection"`
 	BehavioralEngine                          bool                 `json:"behavioral_engine"`
 	HostBehavioralEngine                      bool                 `json:"host_behavioral_engine"`
@@ -148,13 +147,15 @@ func (cli *Client) CreateEnforcerGroup(group EnforcerGroup) error {
 	request := cli.gorequest
 	request.Set("Authorization", "Bearer "+cli.token)
 	apiPath := fmt.Sprintf("/api/v1/hostsbatch")
-	resp, _, errs := request.Clone().Post(cli.url + apiPath).Send(string(payload)).End()
+	resp, data, errs := request.Clone().Post(cli.url + apiPath).Send(string(payload)).End()
 	if errs != nil {
 		return errors.Wrap(err, "failed creating enforcer group")
 	}
-	if resp.StatusCode != 201 || resp.StatusCode != 204 {
-		return err
+
+	if resp.StatusCode != 201 && resp.StatusCode != 204 && resp.StatusCode != 200 {
+		return errors.Errorf(data)
 	}
+
 	return nil
 }
 
@@ -175,7 +176,7 @@ func (cli *Client) UpdateEnforcerGroup(group EnforcerGroup) error {
 	if errs != nil {
 		return errors.Wrap(err, "failed modifying enforcer group")
 	}
-	if resp.StatusCode != 201 || resp.StatusCode != 204 {
+	if resp.StatusCode != 201 && resp.StatusCode != 204 && resp.StatusCode != 200 {
 		return err
 	}
 	return nil
