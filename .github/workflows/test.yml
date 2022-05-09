@@ -4,7 +4,7 @@
 name: Tests
 on:
   pull_request_target:
-    types: [safe_to_test]
+    types: [labeled]
     paths-ignore:
       - 'README.md'
   push:
@@ -19,6 +19,7 @@ on:
 jobs:
   # ensure the code builds...
   build:
+    if: contains(github.event.pull_request.labels.*.name, 'safe_to_test')
     name: Build
     runs-on: ubuntu-latest
     timeout-minutes: 5
@@ -43,6 +44,7 @@ jobs:
 
   # run acceptance tests in a matrix with Terraform core versions
   test:
+    if: contains(github.event.pull_request.labels.*.name, 'safe_to_test')
     name: Matrix Test
     needs: build
     runs-on: ubuntu-latest
