@@ -221,11 +221,8 @@ func (cli *Client) CreateUser(user *FullUser) error {
 	if errs != nil {
 		return errors.Wrap(err, "failed creating user")
 	}
-	if resp.StatusCode != 201 && resp.StatusCode != 204 {
-		if err == nil {
-			err = fmt.Errorf(data)
-		}
-		return err
+	if resp.StatusCode != 201 && resp.StatusCode != 204 && resp.StatusCode != 200 {
+		return errors.Errorf(data)
 	}
 	if sass {
 		dataUser, err := getUserResponse(cli, data, "CreateUser", baseUrl, apiPath)
@@ -267,10 +264,7 @@ func (cli *Client) UpdateUser(user *FullUser) error {
 		return errors.Wrap(err, "failed modifying user")
 	}
 	if resp.StatusCode != 201 && resp.StatusCode != 204 && resp.StatusCode != 200 {
-		if err == nil {
-			err = fmt.Errorf(data)
-		}
-		return err
+		return errors.Errorf(data)
 	}
 	return nil
 }
