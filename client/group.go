@@ -134,11 +134,8 @@ func (cli *Client) CreateGroup(group *Group) error {
 	if errs != nil {
 		return errors.Wrap(err, "failed creating user")
 	}
-	if resp.StatusCode != 201 && resp.StatusCode != 204 {
-		if err == nil {
-			err = fmt.Errorf(data)
-		}
-		return err
+	if resp.StatusCode != 201 && resp.StatusCode != 204 && resp.StatusCode != 200 {
+		return errors.Errorf(data)
 	}
 	dataGroup, err := getGroupResponse(data, "CreateGroup", baseUrl, apiPath)
 
@@ -179,10 +176,7 @@ func (cli *Client) UpdateGroup(group *Group) error {
 		return errors.Wrap(err, "failed modifying user")
 	}
 	if resp.StatusCode != 201 && resp.StatusCode != 204 && resp.StatusCode != 200 {
-		if err == nil {
-			err = fmt.Errorf(data)
-		}
-		return err
+		return errors.Errorf(data)
 	}
 	return nil
 }
@@ -252,10 +246,7 @@ func (cli *Client) ManageUserGroups(groupId, userId int, groupAdmin bool, operat
 		return errors.Wrap(err, "failed modifying user")
 	}
 	if resp.StatusCode != 201 && resp.StatusCode != 204 && resp.StatusCode != 200 {
-		if err == nil {
-			err = fmt.Errorf(data)
-		}
-		return err
+		return errors.Errorf(data)
 	}
 	return nil
 }

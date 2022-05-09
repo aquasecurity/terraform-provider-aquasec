@@ -30,13 +30,13 @@ func (cli *Client) SlackNotificationCreate(notf Notification) error {
 	request := cli.gorequest
 	request.Set("Authorization", "Bearer "+cli.token)
 	apiPath := fmt.Sprintf("/api/v1/settings/notifiers/Slack")
-	resp, _, errs := request.Clone().Put(cli.url + apiPath).Send(string(payload)).End()
+	resp, data, errs := request.Clone().Put(cli.url + apiPath).Send(string(payload)).End()
 	if errs != nil {
 		return errors.Wrap(err, "failed creating Slack notification")
 	}
 
-	if resp.StatusCode != 201 || resp.StatusCode != 204 {
-		return err
+	if resp.StatusCode != 201 && resp.StatusCode != 204 && resp.StatusCode != 200 {
+		return errors.Errorf(data)
 	}
 	return nil
 }
@@ -51,12 +51,12 @@ func (cli *Client) SlackNotificationUpdate(notf Notification) error {
 	request.Set("Authorization", "Bearer "+cli.token)
 	apiPath := fmt.Sprintf("/api/v1/settings/notifiers/Slack")
 
-	resp, _, errs := request.Clone().Put(cli.url + apiPath).Send(string(payload)).End()
+	resp, data, errs := request.Clone().Put(cli.url + apiPath).Send(string(payload)).End()
 	if errs != nil {
 		return errors.Wrap(err, "failed creating Slack notification")
 	}
-	if resp.StatusCode != 201 || resp.StatusCode != 204 {
-		return err
+	if resp.StatusCode != 201 && resp.StatusCode != 204 && resp.StatusCode != 200 {
+		return errors.Errorf(data)
 	}
 	return nil
 }
@@ -95,12 +95,12 @@ func (cli *Client) SlackNotificationDelete(notf Notification) error {
 	request := cli.gorequest
 	request.Set("Authorization", "Bearer "+cli.token)
 	apiPath := fmt.Sprintf("/api/v1/settings/notifiers/Slack")
-	resp, _, errs := request.Clone().Put(cli.url + apiPath).Send(string(payload)).End()
+	resp, data, errs := request.Clone().Put(cli.url + apiPath).Send(string(payload)).End()
 	if errs != nil {
 		return errors.Wrap(err, "failed deleting Slack notification")
 	}
-	if resp.StatusCode != 201 || resp.StatusCode != 204 {
-		return err
+	if resp.StatusCode != 201 && resp.StatusCode != 204 && resp.StatusCode != 200 {
+		return errors.Errorf(data)
 	}
 	return nil
 }
