@@ -500,6 +500,16 @@ func expandEnforcerGroup(d *schema.ResourceData) client.EnforcerGroup {
 	enforcerType, ok := d.GetOk("type")
 	if ok {
 		enforcerGroup.Type = enforcerType.(string)
+		if enforcerType != "agent" {
+			enforcerGroup.RuntimeType = "docker"
+		} else {
+			runtimeType, ok := d.GetOk("runtime_type")
+			if ok {
+				enforcerGroup.RuntimeType = runtimeType.(string)
+			} else {
+				enforcerGroup.RuntimeType = "docker"
+			}
+		}
 	}
 
 	admissionControl, ok := d.GetOk("admission_control")
@@ -675,11 +685,6 @@ func expandEnforcerGroup(d *schema.ResourceData) client.EnforcerGroup {
 	riskExplorerAutoDiscovery, ok := d.GetOk("risk_explorer_auto_discovery")
 	if ok {
 		enforcerGroup.RiskExplorerAutoDiscovery = riskExplorerAutoDiscovery.(bool)
-	}
-
-	runtimeType, ok := d.GetOk("runtime_type")
-	if ok {
-		enforcerGroup.RuntimeType = runtimeType.(string)
 	}
 
 	syncHostImages, ok := d.GetOk("sync_host_images")
