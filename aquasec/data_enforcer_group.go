@@ -301,7 +301,7 @@ func dataSourceEnforcerGroup() *schema.Resource {
 			},
 			"allowed_applications": {
 				Type:     schema.TypeSet,
-				Description: "List of application names to allow on the hosts. if provided, only containers of the listed applications will be allowed to run."
+				Description: "List of application names to allow on the hosts. if provided, only containers of the listed applications will be allowed to run.",
 				Computed: true,
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
@@ -309,7 +309,7 @@ func dataSourceEnforcerGroup() *schema.Resource {
 			},
 			"allowed_labels": {
 				Type:     schema.TypeSet,
-				Description: "List of label names to allow on the hosts."
+				Description: "List of label names to allow on the hosts.",
 				Computed: true,
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
@@ -317,7 +317,7 @@ func dataSourceEnforcerGroup() *schema.Resource {
 			},
 			"allowed_registries": {
 				Type:     schema.TypeSet,
-				Description: "List of registry names to allow on the hosts."
+				Description: "List of registry names to allow on the hosts.",
 				Computed: true,
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
