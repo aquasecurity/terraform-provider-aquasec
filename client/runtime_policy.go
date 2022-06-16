@@ -11,79 +11,92 @@ import (
 )
 
 type RuntimePolicy struct {
-	Name                         string                       `json:"name"`
-	Description                  string                       `json:"description"`
-	Author                       string                       `json:"author"`
-	Version                      string                       `json:"version"`
-	Lastupdate                   int                          `json:"lastupdate"`
-	Enabled                      bool                         `json:"enabled"`
-	Type                         string                       `json:"type"`
-	RuntimeType                  string                       `json:"runtime_type"`
-	Enforce                      bool                         `json:"enforce"`
 	AllowedExecutables           AllowedExecutables           `json:"allowed_executables"`
-	ExecutableBlacklist          ExecutableBlacklist          `json:"executable_blacklist"`
-	DriftPrevention              DriftPrevention              `json:"drift_prevention"`
-	RestrictedVolumes            RestrictedVolumes            `json:"restricted_volumes"`
-	NoNewPrivileges              bool                         `json:"no_new_privileges"`
-	BypassScope                  BypassScope                  `json:"bypass_scope"`
-	LimitContainerPrivileges     LimitContainerPrivileges     `json:"limit_container_privileges"`
-	PreventOverrideDefaultConfig PreventOverrideDefaultConfig `json:"prevent_override_default_config"`
-	Scope                        Scope                        `json:"scope"`
-	OnlyRegisteredImages         bool                         `json:"only_registered_images"`
-	BlockDisallowedImages        bool                         `json:"block_disallowed_images"`
-	BlockNonCompliantWorkloads   bool                         `json:"block_non_compliant_workloads"` //
+	AllowedRegistries            AllowedRegistries            `json:"allowed_registries"`
+	ApplicationScopes            []string                     `json:"application_scopes"`
+	AuditBruteForceLogin         bool                         `json:"audit_brute_force_login"`
+	AuditOnFailure               bool                         `json:"audit_on_failure"`
 	Auditing                     Auditing                     `json:"auditing"`
+	Author                       string                       `json:"author"`
 	BlacklistedOsUsers           BlacklistedOsUsers           `json:"blacklisted_os_users"`
-	WhitelistedOsUsers           WhitelistedOsUsers           `json:"whitelisted_os_users"`
+	BlockDisallowedImages        bool                         `json:"block_disallowed_images"`
+	BlockFailed                  bool                         `json:"block_failed"`
+	BlockFilelessExec            bool                         `json:"block_fileless_exec"`
+	BlockNonCompliantWorkloads   bool                         `json:"block_non_compliant_workloads"`
+	BlockNonK8sContainers        bool                         `json:"block_non_k8s_containers"`
+	BlockNwUnlinkCont            bool                         `json:"block_nw_unlink_cont"`
+	BypassScope                  BypassScope                  `json:"bypass_scope"`
+	ContainerExec                ContainerExec                `json:"container_exec"`
+	Created                      time.Time                    `json:"created"`
+	Cve                          string                       `json:"cve"`
 	DefaultSecurityProfile       string                       `json:"default_security_profile"`
+	Description                  string                       `json:"description"`
+	Digest                       string                       `json:"digest"`
+	Domain                       string                       `json:"domain"`
+	DomainName                   string                       `json:"domain_name"`
+	DriftPrevention              DriftPrevention              `json:"drift_prevention"`
+	EnableCryptoMiningDns        bool                         `json:"enable_crypto_mining_dns"`
 	EnableForkGuard              bool                         `json:"enable_fork_guard"`
-	ForkGuardProcessLimit        int                          `json:"fork_guard_process_limit"`
 	EnableIPReputation           bool                         `json:"enable_ip_reputation"`
 	EnablePortScanProtection     bool                         `json:"enable_port_scan_protection"`
-	BlockNwUnlinkCont            bool                         `json:"block_nw_unlink_cont"`
+	Enabled                      bool                         `json:"enabled"`
+	Enforce                      bool                         `json:"enforce"`
+	EnforceAfterDays             int                          `json:"enforce_after_days"`
+	EnforceSchedulerAddedOn      int                          `json:"enforce_scheduler_added_on"`
+	ExecutableBlacklist          ExecutableBlacklist          `json:"executable_blacklist"`
+	FailCicd                     bool                         `json:"fail_cicd"`
+	FailedKubernetesChecks       FailedKubernetesChecks       `json:"failed_kubernetes_checks"`
 	FileBlock                    FileBlock                    `json:"file_block"`
-	PackageBlock                 PackageBlock                 `json:"package_block"`
-	LinuxCapabilities            LinuxCapabilities            `json:"linux_capabilities"`
-	PortBlock                    PortBlock                    `json:"port_block"`
-	Tripwire                     Tripwire                     `json:"tripwire"`
 	FileIntegrityMonitoring      FileIntegrityMonitoring      `json:"file_integrity_monitoring"`
-	RegistryAccessMonitoring     RegistryAccessMonitoring     `json:"registry_access_monitoring"`
-	ReadonlyRegistry             ReadonlyRegistry             `json:"readonly_registry"`
-	SystemIntegrityProtection    SystemIntegrityProtection    `json:"system_integrity_protection"`
-	BlockContainerExec           bool                         `json:"block_container_exec"`
-	VulnID                       int                          `json:"vuln_id"`
-	RepoID                       int                          `json:"repo_id"`
+	ForkGuardProcessLimit        int                          `json:"fork_guard_process_limit"`
 	HeuristicRefID               int                          `json:"heuristic_ref_id"`
 	ImageID                      int                          `json:"image_id"`
-	IsAutoGenerated              bool                         `json:"is_auto_generated"`
-	ApplicationScopes            []string                     `json:"application_scopes"`
-	Registry                     string                       `json:"registry"`
-	AuditOnFailure               bool                         `json:"audit_on_failure"`
-	FailCicd                     bool                         `json:"fail_cicd"`
-	BlockFailed                  bool                         `json:"block_failed"`
-	EnforceAfterDays             int                          `json:"enforce_after_days"`
-	DomainName                   string                       `json:"domain_name"`
-	Domain                       string                       `json:"domain"`
-	ReadonlyFiles                ReadonlyFiles                `json:"readonly_files"`
-	Updated                      time.Time                    `json:"updated"`
-	EnforceSchedulerAddedOn      int                          `json:"enforce_scheduler_added_on"`
-	IsAuditChecked               bool                         `json:"is_audit_checked"`
-	Permission                   string                       `json:"permission"`
 	ImageName                    string                       `json:"image_name"`
+	IsAuditChecked               bool                         `json:"is_audit_checked"`
+	IsAutoGenerated              bool                         `json:"is_auto_generated"`
+	Lastupdate                   int                          `json:"lastupdate"`
+	LimitContainerPrivileges     LimitContainerPrivileges     `json:"limit_container_privileges"`
+	LinuxCapabilities            LinuxCapabilities            `json:"linux_capabilities"`
+	MalwareScanOptions           MalwareScanOptions           `json:"malware_scan_options"`
+	Name                         string                       `json:"name"`
+	NoNewPrivileges              bool                         `json:"no_new_privileges"`
+	OnlyRegisteredImages         bool                         `json:"only_registered_images"`
+	PackageBlock                 PackageBlock                 `json:"package_block"`
+	Permission                   string                       `json:"permission"`
+	PortBlock                    PortBlock                    `json:"port_block"`
+	PreventOverrideDefaultConfig PreventOverrideDefaultConfig `json:"prevent_override_default_config"`
+	ReadonlyFiles                ReadonlyFiles                `json:"readonly_files"`
+	ReadonlyRegistry             ReadonlyRegistry             `json:"readonly_registry"`
+	Registry                     string                       `json:"registry"`
+	RegistryAccessMonitoring     RegistryAccessMonitoring     `json:"registry_access_monitoring"`
+	RepoID                       int                          `json:"repo_id"`
 	RepoName                     string                       `json:"repo_name"`
-	Cve                          string                       `json:"cve"`
-	ResourceType                 string                       `json:"resource_type"`
 	ResourceName                 string                       `json:"resource_name"`
+	ResourceType                 string                       `json:"resource_type"`
+	RestrictedVolumes            RestrictedVolumes            `json:"restricted_volumes"`
+	ReverseShell                 ReverseShell                 `json:"reverse_shell"`
+	RuntimeType                  string                       `json:"runtime_type"`
+	Scope                        Scope                        `json:"scope"`
+	SystemIntegrityProtection    SystemIntegrityProtection    `json:"system_integrity_protection"`
+	Tripwire                     Tripwire                     `json:"tripwire"`
+	Type                         string                       `json:"type"`
+	Updated                      time.Time                    `json:"updated"`
+	Version                      string                       `json:"version"`
 	VpatchVersion                string                       `json:"vpatch_version"`
-	Digest                       string                       `json:"digest"`
-	Created                      time.Time                    `json:"created"`
+	VulnID                       int                          `json:"vuln_id"`
+	WhitelistedOsUsers           WhitelistedOsUsers           `json:"whitelisted_os_users"`
 }
 
 type AllowedExecutables struct {
-	Enabled              bool     `json:"enabled"`
 	AllowExecutables     []string `json:"allow_executables"`
-	SeparateExecutables  bool     `json:"separate_executables"`
 	AllowRootExecutables []string `json:"allow_root_executables"`
+	Enabled              bool     `json:"enabled"`
+	SeparateExecutables  bool     `json:"separate_executables"`
+}
+
+type AllowedRegistries struct {
+	AllowedRegistries []string `json:"allowed_registries"`
+	Enabled           bool     `json:"enabled"`
 }
 
 type ExecutableBlacklist struct {
@@ -91,11 +104,16 @@ type ExecutableBlacklist struct {
 	Executables []string `json:"executables"`
 }
 
+type FailedKubernetesChecks struct {
+	Enabled      bool     `json:"enabled"`
+	FailedChecks []string `json:"failed_checks"`
+}
 type DriftPrevention struct {
-	Enabled           bool `json:"enabled"`
-	ExecLockdown      bool `json:"exec_lockdown"`
-	ImageLockdown     bool `json:"image_lockdown"`
-	PreventPrivileged bool `json:"prevent_privileged"`
+	Enabled               bool     `json:"enabled"`
+	ExecLockdown          bool     `json:"exec_lockdown"`
+	ImageLockdown         bool     `json:"image_lockdown"`
+	PreventPrivileged     bool     `json:"prevent_privileged"`
+	ExecLockdownWhiteList []string `json:"exec_lockdown_white_list"`
 }
 
 type RestrictedVolumes struct {
@@ -130,11 +148,14 @@ type PreventOverrideDefaultConfig struct {
 }
 
 type Auditing struct {
-	Enabled             bool `json:"enabled"`
-	AuditAllProcesses   bool `json:"audit_all_processes"`
-	AuditProcessCmdline bool `json:"audit_process_cmdline"`
-	AuditAllNetwork     bool `json:"audit_all_network"`
-	AuditOsUserActivity bool `json:"audit_os_user_activity"`
+	AuditAllNetwork            bool `json:"audit_all_network"`
+	AuditAllProcesses          bool `json:"audit_all_processes"`
+	AuditFailedLogin           bool `json:"audit_failed_login"`
+	AuditOsUserActivity        bool `json:"audit_os_user_activity"`
+	AuditProcessCmdline        bool `json:"audit_process_cmdline"`
+	AuditSuccessLogin          bool `json:"audit_success_login"`
+	AuditUserAccountManagement bool `json:"audit_user_account_management"`
+	Enabled                    bool `json:"enabled"`
 }
 
 type BlacklistedOsUsers struct {
@@ -162,6 +183,14 @@ type PackageBlock struct {
 type LinuxCapabilities struct {
 	Enabled                 bool     `json:"enabled"`
 	RemoveLinuxCapabilities []string `json:"remove_linux_capabilities"`
+}
+
+type MalwareScanOptions struct {
+	Action             string   `json:"action"`
+	Enabled            bool     `json:"enabled"`
+	ExcludeDirectories []string `json:"exclude_directories"`
+	ExcludeProcess     []string `json:"exclude_process"`
+	IncludeDirectories []string `json:"include_directories"`
 }
 
 type PortBlock struct {
@@ -195,22 +224,23 @@ type FileIntegrityMonitoring struct {
 
 type RegistryAccessMonitoring struct {
 	Enabled                               bool     `json:"enabled"`
-	MonitoredRegistryPaths                []string `json:"monitored_registry_paths"`
 	ExceptionalMonitoredRegistryPaths     []string `json:"exceptional_monitored_registry_paths"`
-	MonitoredRegistryProcesses            []string `json:"monitored_registry_processes"`
 	ExceptionalMonitoredRegistryProcesses []string `json:"exceptional_monitored_registry_processes"`
-	MonitoredRegistryUsers                []string `json:"monitored_registry_users"`
 	ExceptionalMonitoredRegistryUsers     []string `json:"exceptional_monitored_registry_users"`
-	MonitoredRegistryCreate               bool     `json:"monitored_registry_create"`
-	MonitoredRegistryRead                 bool     `json:"monitored_registry_read"`
-	MonitoredRegistryModify               bool     `json:"monitored_registry_modify"`
-	MonitoredRegistryDelete               bool     `json:"monitored_registry_delete"`
 	MonitoredRegistryAttributes           bool     `json:"monitored_registry_attributes"`
+	MonitoredRegistryCreate               bool     `json:"monitored_registry_create"`
+	MonitoredRegistryDelete               bool     `json:"monitored_registry_delete"`
+	MonitoredRegistryModify               bool     `json:"monitored_registry_modify"`
+	MonitoredRegistryPaths                []string `json:"monitored_registry_paths"`
+	MonitoredRegistryProcesses            []string `json:"monitored_registry_processes"`
+	MonitoredRegistryRead                 bool     `json:"monitored_registry_read"`
+	MonitoredRegistryUsers                []string `json:"monitored_registry_users"`
 }
 
 type SystemIntegrityProtection struct {
-	Enabled                   bool `json:"enabled"`
 	AuditSystemtimeChange     bool `json:"audit_systemtime_change"`
+	Enabled                   bool `json:"enabled"`
+	MonitorAuditLogIntegrity  bool `json:"monitor_audit_log_integrity"`
 	WindowsServicesMonitoring bool `json:"windows_services_monitoring"`
 }
 
@@ -222,12 +252,25 @@ type ReadonlyFiles struct {
 
 type ReadonlyRegistry struct {
 	Enabled                              bool     `json:"enabled"`
-	ReadonlyRegistryPaths                []string `json:"readonly_registry_paths"`
 	ExceptionalReadonlyRegistryPaths     []string `json:"exceptional_readonly_registry_paths"`
-	ReadonlyRegistryProcesses            []string `json:"readonly_registry_processes"`
 	ExceptionalReadonlyRegistryProcesses []string `json:"exceptional_readonly_registry_processes"`
-	ReadonlyRegistryUsers                []string `json:"readonly_registry_users"`
 	ExceptionalReadonlyRegistryUsers     []string `json:"exceptional_readonly_registry_users"`
+	ReadonlyRegistryPaths                []string `json:"readonly_registry_paths"`
+	ReadonlyRegistryProcesses            []string `json:"readonly_registry_processes"`
+	ReadonlyRegistryUsers                []string `json:"readonly_registry_users"`
+}
+
+type ContainerExec struct {
+	BlockContainerExec         bool     `json:"block_container_exec"`
+	ContainerExecProcWhiteList []string `json:"container_exec_proc_white_list"`
+	Enabled                    bool     `json:"enabled"`
+}
+
+type ReverseShell struct {
+	BlockReverseShell         bool     `json:"block_reverse_shell"`
+	Enabled                   bool     `json:"enabled"`
+	ReverseShellIpWhiteList   []string `json:"reverse_shell_ip_white_list"`
+	ReverseShellProcWhiteList []string `json:"reverse_shell_proc_white_list"`
 }
 
 // CreateRuntimePolicy creates an Aqua RuntimePolicy

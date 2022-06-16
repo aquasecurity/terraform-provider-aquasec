@@ -6,7 +6,7 @@ HOSTNAME	 := github.com
 NAMESPACE	 := aquasec
 NAME 		 := aquasec
 BINARY		 := terraform-provider-${NAME}
-VERSION      := 0.8.11
+VERSION      := 0.8.12
 OS_ARCH      := $(shell go env GOOS)_$(shell go env GOARCH)
 
 default: build

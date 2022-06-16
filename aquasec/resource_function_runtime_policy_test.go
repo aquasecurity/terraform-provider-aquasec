@@ -79,6 +79,8 @@ func TestResourceAquasecFunctionRuntimePolicyUpgrade(t *testing.T) {
 					resource.TestCheckResourceAttr(rootRef, "enforce", fmt.Sprintf("%v", runtimePolicy.Enforce)),
 					resource.TestCheckResourceAttr(rootRef, "author", os.Getenv("AQUA_USER")),
 					resource.TestCheckResourceAttr(rootRef, "block_malicious_executables", "true"),
+					resource.TestCheckResourceAttr(rootRef, "block_running_executables_in_tmp_folder", "true"),
+					resource.TestCheckResourceAttr(rootRef, "block_malicious_executables_allowed_processes.#", "2"),
 					resource.TestCheckResourceAttr(rootRef, "blocked_executables.#", "2"),
 				),
 			},
@@ -109,6 +111,11 @@ func getUpdatedFunctionRuntimePolicyResource(policy client.RuntimePolicy) string
 		enabled = "%v"
 		enforce = "%v"
 		block_malicious_executables = true
+		block_running_executables_in_tmp_folder = true
+		block_malicious_executables_allowed_processes = [
+			"proc1",
+			"proc2"
+		]
 		blocked_executables = [
 			"exe1",
 			"exe2",
