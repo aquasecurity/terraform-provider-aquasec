@@ -14,12 +14,12 @@ func dataFunctionRuntimePolicy() *schema.Resource {
 		Schema: map[string]*schema.Schema{
 			"name": {
 				Type:        schema.TypeString,
-				Description: "Name of the container runtime policy",
+				Description: "Name of the function runtime policy",
 				Required:    true,
 			},
 			"description": {
 				Type:        schema.TypeString,
-				Description: "The description of the container runtime policy",
+				Description: "The description of the function runtime policy",
 				Computed:    true,
 			},
 			"application_scopes": {
@@ -74,6 +74,19 @@ func dataFunctionRuntimePolicy() *schema.Resource {
 				Description: "If true, prevent creation of malicious executables in functions during their runtime post invocation.",
 				Computed:    true,
 			},
+			"block_running_executables_in_tmp_folder": {
+				Type:        schema.TypeBool,
+				Description: "If true, prevent running of executables in functions locate in /tmp folder during their runtime post invocation.",
+				Computed:    true,
+			},
+			"block_malicious_executables_allowed_processes": {
+				Type:        schema.TypeList,
+				Description: "List of processes that will be allowed",
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+				Computed: true,
+			},
 			"blocked_executables": {
 				Type:        schema.TypeList,
 				Description: "List of executables that are prevented from running in containers.",
@@ -123,7 +136,9 @@ func dataFunctionRuntimePolicyRead(ctx context.Context, d *schema.ResourceData, 
 		d.Set("scope_expression", crp.Scope.Expression)
 		d.Set("enabled", crp.Enabled)
 		d.Set("enforce", crp.Enforce)
-		d.Set("block_malicious_executables", crp.DriftPrevention.Enabled && crp.DriftPrevention.ExecLockdown)
+		d.Set("block_malicious_executables", crp.DriftPrevention.Enabled)
+		d.Set("block_running_executables_in_tmp_folder", crp.DriftPrevention.ExecLockdown)
+		d.Set("block_malicious_executables_allowed_processes", crp.DriftPrevention.ExecLockdownWhiteList)
 		d.Set("blocked_executables", crp.ExecutableBlacklist.Executables)
 		d.Set("honeypot_access_key", crp.Tripwire.UserID)
 		d.Set("honeypot_secret_key", crp.Tripwire.UserPassword)

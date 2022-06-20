@@ -83,6 +83,22 @@ func resourceFunctionRuntimePolicy() *schema.Resource {
 				Default:     false,
 				Optional:    true,
 			},
+			"block_running_executables_in_tmp_folder": {
+				Type:         schema.TypeBool,
+				Description:  "If true, prevent running of executables in functions locate in /tmp folder during their runtime post invocation.",
+				RequiredWith: []string{"block_malicious_executables"},
+				Default:      false,
+				Optional:     true,
+			},
+			"block_malicious_executables_allowed_processes": {
+				Type:         schema.TypeList,
+				Description:  "List of processes that will be allowed",
+				RequiredWith: []string{"block_malicious_executables"},
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+				Optional: true,
+			},
 			"blocked_executables": {
 				Type:        schema.TypeList,
 				Description: "List of executables that are prevented from running in containers.",
@@ -155,7 +171,9 @@ func resourceFunctionRuntimePolicyRead(ctx context.Context, d *schema.ResourceDa
 		d.Set("scope_expression", crp.Scope.Expression)
 		d.Set("enabled", crp.Enabled)
 		d.Set("enforce", crp.Enforce)
-		d.Set("block_malicious_executables", crp.DriftPrevention.Enabled && crp.DriftPrevention.ExecLockdown)
+		d.Set("block_malicious_executables", crp.DriftPrevention.Enabled)
+		d.Set("block_running_executables_in_tmp_folder", crp.DriftPrevention.ExecLockdown)
+		d.Set("block_malicious_executables_allowed_processes", crp.DriftPrevention.ExecLockdownWhiteList)
 		d.Set("blocked_executables", crp.ExecutableBlacklist.Executables)
 		d.Set("honeypot_access_key", crp.Tripwire.UserID)
 		d.Set("honeypot_secret_key", crp.Tripwire.UserPassword)
@@ -173,16 +191,30 @@ func resourceFunctionRuntimePolicyRead(ctx context.Context, d *schema.ResourceDa
 func resourceFunctionRuntimePolicyUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	c := m.(*client.Client)
 	name := d.Get("name").(string)
+	if d.HasChanges("description",
+		"author",
+		"application_scopes",
+		"scope_variables",
+		"scope_expression",
+		"enabled",
+		"enforce",
+		"block_malicious_executables",
+		"block_running_executables_in_tmp_folder",
+		"block_malicious_executables_allowed_processes",
+		"blocked_executables",
+		"honeypot_access_key",
+		"honeypot_secret_key",
+		"honeypot_apply_on",
+		"honeypot_serverless_app_name") {
 
-	crp := expandFunctionRuntimePolicy(d)
-	err := c.UpdateRuntimePolicy(crp)
-	if err == nil {
-		d.SetId(name)
-	} else {
-		return diag.FromErr(err)
+		crp := expandFunctionRuntimePolicy(d)
+		err := c.UpdateRuntimePolicy(crp)
+		if err == nil {
+			d.SetId(name)
+		} else {
+			return diag.FromErr(err)
+		}
 	}
-
-	//d.SetId(name)
 
 	return nil
 }
@@ -255,7 +287,14 @@ func expandFunctionRuntimePolicy(d *schema.ResourceData) *client.RuntimePolicy {
 	blockMalicious, ok := d.GetOk("block_malicious_executables")
 	if ok {
 		crp.DriftPrevention.Enabled = blockMalicious.(bool)
-		crp.DriftPrevention.ExecLockdown = blockMalicious.(bool)
+		blockRunningExecutablesInTmpFolder, ok := d.GetOk("block_running_executables_in_tmp_folder")
+		if ok {
+			crp.DriftPrevention.ExecLockdown = blockRunningExecutablesInTmpFolder.(bool)
+		}
+		blockMaliciousExecutablesAllowedProcesses, ok := d.GetOk("block_malicious_executables_allowed_processes")
+		if ok {
+			crp.DriftPrevention.ExecLockdownWhiteList = convertStringArr(blockMaliciousExecutablesAllowedProcesses.([]interface{}))
+		}
 	}
 
 	blockedExecutables, ok := d.GetOk("blocked_executables")

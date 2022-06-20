@@ -82,14 +82,29 @@ func resourceContainerRuntimePolicy() *schema.Resource {
 				Description: "Username of the account that created the service.",
 				Computed:    true,
 			},
+			//controls
 			"block_container_exec": {
 				Type:        schema.TypeBool,
 				Description: "If true, exec into a container is prevented.",
 				Optional:    true,
 			},
-			"block_non_compliant_workloads": {
+			"container_exec_allowed_processes": {
+				Type:        schema.TypeList,
+				Description: "List of processes that will be allowed.",
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+				RequiredWith: []string{"block_container_exec"},
+				Optional:     true,
+			},
+			"block_cryptocurrency_mining": {
 				Type:        schema.TypeBool,
-				Description: "If true, running containers in non-compliant pods is prevented.",
+				Description: "Detect and prevent communication to DNS/IP addresses known to be used for Cryptocurrency Mining",
+				Optional:    true,
+			},
+			"block_fileless_exec": {
+				Type:        schema.TypeBool,
+				Description: "Detect and prevent running in-memory execution",
 				Optional:    true,
 			},
 			"block_non_compliant_images": {
@@ -97,9 +112,55 @@ func resourceContainerRuntimePolicy() *schema.Resource {
 				Description: "If true, running non-compliant image in the container is prevented.",
 				Optional:    true,
 			},
+			"block_non_compliant_workloads": {
+				Type:        schema.TypeBool,
+				Description: "If true, running containers in non-compliant pods is prevented.",
+				Optional:    true,
+			},
+			"block_non_k8s_containers": {
+				Type:        schema.TypeBool,
+				Description: "If true, running non-kubernetes containers is prevented.",
+				Optional:    true,
+			},
+			"block_reverse_shell": {
+				Type:        schema.TypeBool,
+				Description: "If true, reverse shell is prevented.",
+				Optional:    true,
+			},
+			"reverse_shell_allowed_processes": {
+				Type:        schema.TypeList,
+				Description: "List of processes that will be allowed",
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+				RequiredWith: []string{"reverse_shell_allowed_processes"},
+				Optional:     true,
+			},
+			"reverse_shell_allowed_ips": {
+				Type:        schema.TypeList,
+				Description: "List of IPs/ CIDRs that will be allowed",
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+				RequiredWith: []string{"reverse_shell_allowed_processes"},
+				Optional:     true,
+			},
 			"block_unregistered_images": {
 				Type:        schema.TypeBool,
 				Description: "If true, running images in the container that are not registered in Aqua is prevented.",
+				Optional:    true,
+			},
+			"blocked_capabilities": {
+				Type:        schema.TypeList,
+				Description: "If true, prevents containers from using specific Unix capabilities.",
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+				Optional: true,
+			},
+			"enable_ip_reputation_security": {
+				Type:        schema.TypeBool,
+				Description: "If true, detect and prevent communication from containers to IP addresses known to have a bad reputation.",
 				Optional:    true,
 			},
 			"enable_drift_prevention": {
@@ -131,6 +192,99 @@ func resourceContainerRuntimePolicy() *schema.Resource {
 				},
 				Optional: true,
 			},
+			"file_integrity_monitoring": {
+				Type:        schema.TypeList,
+				MaxItems:    1,
+				Description: "Configuration for file integrity monitoring.",
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"monitor_create": {
+							Type:         schema.TypeBool,
+							Description:  "If true, create operations will be monitored.",
+							Optional:     true,
+							RequiredWith: []string{"file_integrity_monitoring.0.monitored_paths"},
+						},
+						"monitor_read": {
+							Type:         schema.TypeBool,
+							Description:  "If true, read operations will be monitored.",
+							Optional:     true,
+							RequiredWith: []string{"file_integrity_monitoring.0.monitored_paths"},
+						},
+						"monitor_modify": {
+							Type:         schema.TypeBool,
+							Description:  "If true, modification operations will be monitored.",
+							Optional:     true,
+							RequiredWith: []string{"file_integrity_monitoring.0.monitored_paths"},
+						},
+						"monitor_delete": {
+							Type:         schema.TypeBool,
+							Description:  "If true, deletion operations will be monitored.",
+							Optional:     true,
+							RequiredWith: []string{"file_integrity_monitoring.0.monitored_paths"},
+						},
+						"monitor_attributes": {
+							Type:         schema.TypeBool,
+							Description:  "If true, add attributes operations will be monitored.",
+							Optional:     true,
+							RequiredWith: []string{"file_integrity_monitoring.0.monitored_paths"},
+						},
+						"monitored_paths": {
+							Type:        schema.TypeList,
+							Description: "List of paths to be monitored.",
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+							Optional: true,
+						},
+						"excluded_paths": {
+							Type:        schema.TypeList,
+							Description: "List of paths to be excluded from being monitored.",
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+							Optional:     true,
+							RequiredWith: []string{"file_integrity_monitoring.0.monitored_paths"},
+						},
+						"monitored_processes": {
+							Type:        schema.TypeList,
+							Description: "List of processes to be monitored.",
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+							Optional:     true,
+							RequiredWith: []string{"file_integrity_monitoring.0.monitored_paths"},
+						},
+						"excluded_processes": {
+							Type:        schema.TypeList,
+							Description: "List of processes to be excluded from being monitored.",
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+							Optional:     true,
+							RequiredWith: []string{"file_integrity_monitoring.0.monitored_paths"},
+						},
+						"monitored_users": {
+							Type:        schema.TypeList,
+							Description: "List of users to be monitored.",
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+							Optional:     true,
+							RequiredWith: []string{"file_integrity_monitoring.0.monitored_paths"},
+						},
+						"excluded_users": {
+							Type:        schema.TypeList,
+							Description: "List of users to be excluded from being monitored.",
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+							Optional:     true,
+							RequiredWith: []string{"file_integrity_monitoring.0.monitored_paths"},
+						},
+					},
+				},
+				Optional: true,
+			},
 			"audit_all_processes_activity": {
 				Type:        schema.TypeBool,
 				Description: "If true, all process activity will be audited.",
@@ -156,9 +310,49 @@ func resourceContainerRuntimePolicy() *schema.Resource {
 				Description: "Process limit for the fork guard.",
 				Optional:    true,
 			},
-			"enable_ip_reputation_security": {
+			"block_access_host_network": {
 				Type:        schema.TypeBool,
-				Description: "If true, detect and prevent communication from containers to IP addresses known to have a bad reputation.",
+				Description: "If true, prevent containers from running with access to host network.",
+				Optional:    true,
+			},
+			"block_adding_capabilities": {
+				Type:        schema.TypeBool,
+				Description: "If true, prevent containers from running with adding capabilities with `--cap-add` privilege.",
+				Optional:    true,
+			},
+			"block_root_user": {
+				Type:        schema.TypeBool,
+				Description: "If true, prevent containers from running with root user.",
+				Optional:    true,
+			},
+			"block_privileged_containers": {
+				Type:        schema.TypeBool,
+				Description: "If true, prevent containers from running with privileged container capability.",
+				Optional:    true,
+			},
+			"block_use_ipc_namespace": {
+				Type:        schema.TypeBool,
+				Description: "If true, prevent containers from running with the privilege to use the IPC namespace.",
+				Optional:    true,
+			},
+			"block_use_pid_namespace": {
+				Type:        schema.TypeBool,
+				Description: "If true, prevent containers from running with the privilege to use the PID namespace.",
+				Optional:    true,
+			},
+			"block_use_user_namespace": {
+				Type:        schema.TypeBool,
+				Description: "If true, prevent containers from running with the privilege to use the user namespace.",
+				Optional:    true,
+			},
+			"block_use_uts_namespace": {
+				Type:        schema.TypeBool,
+				Description: "If true, prevent containers from running with the privilege to use the UTS namespace.",
+				Optional:    true,
+			},
+			"block_low_port_binding": {
+				Type:        schema.TypeBool,
+				Description: "If true, prevent containers from running with the capability to bind in port lower than 1024.",
 				Optional:    true,
 			},
 			"limit_new_privileges": {
@@ -169,14 +363,6 @@ func resourceContainerRuntimePolicy() *schema.Resource {
 			"blocked_packages": {
 				Type:        schema.TypeList,
 				Description: "Prevent containers from reading, writing, or executing all files in the list of packages.",
-				Elem: &schema.Schema{
-					Type: schema.TypeString,
-				},
-				Optional: true,
-			},
-			"blocked_capabilities": {
-				Type:        schema.TypeList,
-				Description: "If true, prevents containers from using specific Unix capabilities.",
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
 				},
@@ -203,14 +389,6 @@ func resourceContainerRuntimePolicy() *schema.Resource {
 				Description: "If true, detects port scanning behavior in the container.",
 				Optional:    true,
 			},
-			"blocked_volumes": {
-				Type:        schema.TypeList,
-				Description: "List of volumes that are prevented from being mounted in the containers.",
-				Elem: &schema.Schema{
-					Type: schema.TypeString,
-				},
-				Optional: true,
-			},
 			"readonly_files_and_directories": {
 				Type:        schema.TypeList,
 				Description: "List of files and directories to be restricted as read-only",
@@ -228,50 +406,26 @@ func resourceContainerRuntimePolicy() *schema.Resource {
 				RequiredWith: []string{"readonly_files_and_directories"},
 				Optional:     true,
 			},
-			"block_access_host_network": {
+			"allowed_registries": {
+				Type:        schema.TypeList,
+				Description: "List of registries that allowed for running containers.",
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+				Optional: true,
+			},
+			"monitor_system_time_changes": {
 				Type:        schema.TypeBool,
-				Description: "If true, prevent containers from running with access to host network.",
+				Description: "If true, system time changes will be monitored.",
 				Optional:    true,
 			},
-			"block_adding_capabilities": {
-				Type:        schema.TypeBool,
-				Description: "If true, prevent containers from running with adding capabilities with `--cap-add` privilege.",
-				Optional:    true,
-			},
-			"block_use_pid_namespace": {
-				Type:        schema.TypeBool,
-				Description: "If true, prevent containers from running with the privilege to use the PID namespace.",
-				Optional:    true,
-			},
-			"block_use_ipc_namespace": {
-				Type:        schema.TypeBool,
-				Description: "If true, prevent containers from running with the privilege to use the IPC namespace.",
-				Optional:    true,
-			},
-			"block_use_user_namespace": {
-				Type:        schema.TypeBool,
-				Description: "If true, prevent containers from running with the privilege to use the user namespace.",
-				Optional:    true,
-			},
-			"block_use_uts_namespace": {
-				Type:        schema.TypeBool,
-				Description: "If true, prevent containers from running with the privilege to use the UTS namespace.",
-				Optional:    true,
-			},
-			"block_privileged_containers": {
-				Type:        schema.TypeBool,
-				Description: "If true, prevent containers from running with privileged container capability.",
-				Optional:    true,
-			},
-			"block_root_user": {
-				Type:        schema.TypeBool,
-				Description: "If true, prevent containers from running with root user.",
-				Optional:    true,
-			},
-			"block_low_port_binding": {
-				Type:        schema.TypeBool,
-				Description: "If true, prevent containers from running with the capability to bind in port lower than 1024.",
-				Optional:    true,
+			"blocked_volumes": {
+				Type:        schema.TypeList,
+				Description: "List of volumes that are prevented from being mounted in the containers.",
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+				Optional: true,
 			},
 		},
 	}
@@ -307,46 +461,56 @@ func resourceContainerRuntimePolicyRead(ctx context.Context, d *schema.ResourceD
 	crp, err := c.GetRuntimePolicy(name)
 	if err == nil {
 		d.Set("description", crp.Description)
-		d.Set("author", crp.Author)
 		d.Set("application_scopes", crp.ApplicationScopes)
-		d.Set("scope_variables", flattenScopeVariables(crp.Scope.Variables))
 		d.Set("scope_expression", crp.Scope.Expression)
+		d.Set("scope_variables", flattenScopeVariables(crp.Scope.Variables))
 		d.Set("enabled", crp.Enabled)
 		d.Set("enforce", crp.Enforce)
 		d.Set("enforce_after_days", crp.EnforceAfterDays)
-		d.Set("block_container_exec", crp.BlockContainerExec)
-		d.Set("block_non_compliant_workloads", crp.BlockNonCompliantWorkloads)
+		d.Set("author", crp.Author)
+		//controls
+		d.Set("block_container_exec", crp.ContainerExec.BlockContainerExec)
+		d.Set("container_exec_allowed_processes", crp.ContainerExec.ContainerExecProcWhiteList)
+		d.Set("block_cryptocurrency_mining", crp.EnableCryptoMiningDns)
+		d.Set("block_fileless_exec", crp.BlockFilelessExec)
 		d.Set("block_non_compliant_images", crp.BlockDisallowedImages)
+		d.Set("block_non_compliant_workloads", crp.BlockNonCompliantWorkloads)
+		d.Set("block_non_k8s_containers", crp.BlockNonK8sContainers)
+		d.Set("block_reverse_shell", crp.ReverseShell.BlockReverseShell)
+		d.Set("reverse_shell_allowed_processes", crp.ReverseShell.ReverseShellProcWhiteList)
+		d.Set("reverse_shell_allowed_ips", crp.ReverseShell.ReverseShellIpWhiteList)
 		d.Set("block_unregistered_images", crp.OnlyRegisteredImages)
+		d.Set("blocked_capabilities", crp.LinuxCapabilities.RemoveLinuxCapabilities)
+		d.Set("enable_ip_reputation_security", crp.EnableIPReputation)
 		d.Set("enable_drift_prevention", crp.DriftPrevention.Enabled && crp.DriftPrevention.ExecLockdown)
 		d.Set("allowed_executables", crp.AllowedExecutables.AllowExecutables)
 		d.Set("blocked_executables", crp.ExecutableBlacklist.Executables)
 		d.Set("blocked_files", crp.FileBlock.FilenameBlockList)
+		d.Set("file_integrity_monitoring", flattenFileIntegrityMonitoring(crp.FileIntegrityMonitoring))
 		d.Set("audit_all_processes_activity", crp.Auditing.AuditAllProcesses)
-		d.Set("audit_all_network_activity", crp.Auditing.AuditAllNetwork)
 		d.Set("audit_full_command_arguments", crp.Auditing.AuditProcessCmdline)
+		d.Set("audit_all_network_activity", crp.Auditing.AuditAllNetwork)
 		d.Set("enable_fork_guard", crp.EnableForkGuard)
 		d.Set("fork_guard_process_limit", crp.ForkGuardProcessLimit)
-		d.Set("enable_ip_reputation_security", crp.EnableIPReputation)
+		d.Set("block_access_host_network", crp.LimitContainerPrivileges.Netmode)
+		d.Set("block_adding_capabilities", crp.LimitContainerPrivileges.BlockAddCapabilities)
+		d.Set("block_root_user", crp.LimitContainerPrivileges.PreventRootUser)
+		d.Set("block_privileged_containers", crp.LimitContainerPrivileges.Privileged)
+		d.Set("block_use_ipc_namespace", crp.LimitContainerPrivileges.Ipcmode)
+		d.Set("block_use_pid_namespace", crp.LimitContainerPrivileges.Pidmode)
+		d.Set("block_use_user_namespace", crp.LimitContainerPrivileges.Usermode)
+		d.Set("block_use_uts_namespace", crp.LimitContainerPrivileges.Utsmode)
+		d.Set("block_low_port_binding", crp.LimitContainerPrivileges.PreventLowPortBinding)
 		d.Set("limit_new_privileges", crp.NoNewPrivileges)
 		d.Set("blocked_packages", crp.PackageBlock.PackagesBlackList)
 		d.Set("blocked_inbound_ports", crp.PortBlock.BlockInboundPorts)
 		d.Set("blocked_outbound_ports", crp.PortBlock.BlockOutboundPorts)
 		d.Set("enable_port_scan_detection", crp.EnablePortScanProtection)
-		d.Set("blocked_volumes", crp.RestrictedVolumes.Volumes)
 		d.Set("readonly_files_and_directories", crp.ReadonlyFiles.ReadonlyFiles)
 		d.Set("exceptional_readonly_files_and_directories", crp.ReadonlyFiles.ExceptionalReadonlyFiles)
-		d.Set("block_access_host_network", crp.LimitContainerPrivileges.Netmode)
-		d.Set("block_adding_capabilities", crp.LimitContainerPrivileges.BlockAddCapabilities)
-		d.Set("block_use_pid_namespace", crp.LimitContainerPrivileges.Pidmode)
-		d.Set("block_use_ipc_namespace", crp.LimitContainerPrivileges.Ipcmode)
-		d.Set("block_use_user_namespace", crp.LimitContainerPrivileges.Usermode)
-		d.Set("block_use_uts_namespace", crp.LimitContainerPrivileges.Utsmode)
-		d.Set("block_privileged_containers", crp.LimitContainerPrivileges.Privileged)
-		d.Set("block_root_user", crp.LimitContainerPrivileges.PreventRootUser)
-		d.Set("block_low_port_binding", crp.LimitContainerPrivileges.PreventLowPortBinding)
-		d.Set("blocked_capabilities", crp.LinuxCapabilities.RemoveLinuxCapabilities)
-
+		d.Set("allowed_registries", crp.AllowedRegistries.AllowedRegistries)
+		d.Set("monitor_system_time_changes", crp.SystemIntegrityProtection.MonitorAuditLogIntegrity)
+		d.Set("blocked_volumes", crp.RestrictedVolumes.Volumes)
 		d.SetId(name)
 	} else {
 		return diag.FromErr(err)
@@ -359,15 +523,65 @@ func resourceContainerRuntimePolicyUpdate(ctx context.Context, d *schema.Resourc
 	c := m.(*client.Client)
 	name := d.Get("name").(string)
 
-	crp := expandContainerRuntimePolicy(d)
-	err := c.UpdateRuntimePolicy(crp)
-	if err == nil {
-		d.SetId(name)
-	} else {
-		return diag.FromErr(err)
-	}
+	if d.HasChanges("description",
+		"application_scopes",
+		"scope_expression",
+		"scope_variables",
+		"enabled",
+		"enforce",
+		"enforce_after_days",
+		"author",
+		"block_container_exec",
+		"container_exec_allowed_processes",
+		"block_cryptocurrency_mining",
+		"block_fileless_exec",
+		"block_non_compliant_images",
+		"block_non_compliant_workloads",
+		"block_non_k8s_containers",
+		"block_reverse_shell",
+		"reverse_shell_allowed_processes",
+		"reverse_shell_allowed_ips",
+		"block_unregistered_images",
+		"blocked_capabilities",
+		"enable_ip_reputation_security",
+		"enable_drift_prevention",
+		"allowed_executables",
+		"blocked_executables",
+		"blocked_files",
+		"file_integrity_monitoring",
+		"audit_all_processes_activity",
+		"audit_full_command_arguments",
+		"audit_all_network_activity",
+		"enable_fork_guard",
+		"fork_guard_process_limit",
+		"block_access_host_network",
+		"block_adding_capabilities",
+		"block_root_user",
+		"block_privileged_containers",
+		"block_use_ipc_namespace",
+		"block_use_pid_namespace",
+		"block_use_user_namespace",
+		"block_use_uts_namespace",
+		"block_low_port_binding",
+		"limit_new_privileges",
+		"blocked_packages",
+		"blocked_inbound_ports",
+		"blocked_outbound_ports",
+		"enable_port_scan_detection",
+		"readonly_files_and_directories",
+		"exceptional_readonly_files_and_directories",
+		"allowed_registries",
+		"monitor_system_time_changes",
+		"blocked_volumes") {
 
-	//d.SetId(name)
+		crp := expandContainerRuntimePolicy(d)
+		err := c.UpdateRuntimePolicy(crp)
+		if err == nil {
+			d.SetId(name)
+		} else {
+			return diag.FromErr(err)
+		}
+	}
 
 	return nil
 }
@@ -444,12 +658,29 @@ func expandContainerRuntimePolicy(d *schema.ResourceData) *client.RuntimePolicy 
 
 	blockContainerExec, ok := d.GetOk("block_container_exec")
 	if ok {
-		crp.BlockContainerExec = blockContainerExec.(bool)
+		crp.ContainerExec.Enabled = blockContainerExec.(bool)
+		crp.ContainerExec.BlockContainerExec = blockContainerExec.(bool)
+		allowedProcesses, ok := d.GetOk("container_exec_allowed_processes")
+
+		if ok {
+			tmpList := convertStringArr(allowedProcesses.([]interface{}))
+			//tmpList = append(tmpList, "/ecs-execute-command-*/amazon-ssm-agent")
+			//tmpList = append(tmpList, "/ecs-execute-command-*/ssm-session-worker")
+			//tmpList = append(tmpList, "/ecs-execute-command-*/ssm-agent-worker")
+
+			crp.ContainerExec.ContainerExecProcWhiteList = tmpList
+
+		}
 	}
 
-	blockNonComplaintWorkloads, ok := d.GetOk("block_non_compliant_workloads")
+	blockCryptocurrencyMining, ok := d.GetOk("block_cryptocurrency_mining")
 	if ok {
-		crp.BlockNonCompliantWorkloads = blockNonComplaintWorkloads.(bool)
+		crp.EnableCryptoMiningDns = blockCryptocurrencyMining.(bool)
+	}
+
+	blockFilelessExec, ok := d.GetOk("block_fileless_exec")
+	if ok {
+		crp.BlockFilelessExec = blockFilelessExec.(bool)
 	}
 
 	blockNonComplaintImage, ok := d.GetOk("block_non_compliant_images")
@@ -457,9 +688,44 @@ func expandContainerRuntimePolicy(d *schema.ResourceData) *client.RuntimePolicy 
 		crp.BlockDisallowedImages = blockNonComplaintImage.(bool)
 	}
 
+	blockNonComplaintWorkloads, ok := d.GetOk("block_non_compliant_workloads")
+	if ok {
+		crp.BlockNonCompliantWorkloads = blockNonComplaintWorkloads.(bool)
+	}
+
+	blockNonK8sContainers, ok := d.GetOk("block_non_k8s_containers")
+	if ok {
+		crp.BlockNonK8sContainers = blockNonK8sContainers.(bool)
+	}
+
+	blockReverseShell, ok := d.GetOk("block_reverse_shell")
+	if ok {
+		crp.ReverseShell.BlockReverseShell = blockReverseShell.(bool)
+		reverseShellAllowedProcesses, ok := d.GetOk("reverse_shell_allowed_processes")
+		if ok {
+			crp.ReverseShell.ReverseShellProcWhiteList = convertStringArr(reverseShellAllowedProcesses.([]interface{}))
+		}
+		reverseShellAllowedIps, ok := d.GetOk("reverse_shell_allowed_ips")
+		if ok {
+			crp.ReverseShell.ReverseShellIpWhiteList = convertStringArr(reverseShellAllowedIps.([]interface{}))
+		}
+
+	}
+
 	blockUnregisteredImage, ok := d.GetOk("block_unregistered_images")
 	if ok {
 		crp.OnlyRegisteredImages = blockUnregisteredImage.(bool)
+	}
+
+	blockedCap, ok := d.GetOk("blocked_capabilities")
+	if ok {
+		crp.LinuxCapabilities.Enabled = true
+		crp.LinuxCapabilities.RemoveLinuxCapabilities = convertStringArr(blockedCap.([]interface{}))
+	}
+
+	enableIpReputation, ok := d.GetOk("enable_ip_reputation_security")
+	if ok {
+		crp.EnableIPReputation = enableIpReputation.(bool)
 	}
 
 	enableDriftPrevention, ok := d.GetOk("enable_drift_prevention")
@@ -494,6 +760,27 @@ func expandContainerRuntimePolicy(d *schema.ResourceData) *client.RuntimePolicy 
 		crp.FileBlock.FilenameBlockList = strArr
 	}
 
+	crp.FileIntegrityMonitoring = client.FileIntegrityMonitoring{}
+	fileIntegrityMonitoringMap, ok := d.GetOk("file_integrity_monitoring")
+	if ok {
+		v := fileIntegrityMonitoringMap.([]interface{})[0].(map[string]interface{})
+
+		crp.FileIntegrityMonitoring = client.FileIntegrityMonitoring{
+			Enabled:                            true,
+			MonitoredFiles:                     convertStringArr(v["monitored_paths"].([]interface{})),
+			ExceptionalMonitoredFiles:          convertStringArr(v["excluded_paths"].([]interface{})),
+			MonitoredFilesProcesses:            convertStringArr(v["monitored_processes"].([]interface{})),
+			ExceptionalMonitoredFilesProcesses: convertStringArr(v["excluded_processes"].([]interface{})),
+			MonitoredFilesUsers:                convertStringArr(v["monitored_users"].([]interface{})),
+			ExceptionalMonitoredFilesUsers:     convertStringArr(v["excluded_users"].([]interface{})),
+			MonitoredFilesCreate:               v["monitor_create"].(bool),
+			MonitoredFilesRead:                 v["monitor_read"].(bool),
+			MonitoredFilesModify:               v["monitor_modify"].(bool),
+			MonitoredFilesDelete:               v["monitor_delete"].(bool),
+			MonitoredFilesAttributes:           v["monitor_attributes"].(bool),
+		}
+	}
+
 	auditAllProcessesActivity, ok := d.GetOk("audit_all_processes_activity")
 	if ok {
 		crp.Auditing.Enabled = true
@@ -522,9 +809,58 @@ func expandContainerRuntimePolicy(d *schema.ResourceData) *client.RuntimePolicy 
 		crp.ForkGuardProcessLimit = forkGuardProcessLimit.(int)
 	}
 
-	enableIpReputation, ok := d.GetOk("enable_ip_reputation_security")
+	blockHost, ok := d.GetOk("block_access_host_network")
 	if ok {
-		crp.EnableIPReputation = enableIpReputation.(bool)
+		crp.LimitContainerPrivileges.Enabled = true
+		crp.LimitContainerPrivileges.Netmode = blockHost.(bool)
+	}
+
+	blockAddCapabilities, ok := d.GetOk("block_adding_capabilities")
+	if ok {
+		crp.LimitContainerPrivileges.Enabled = true
+		crp.LimitContainerPrivileges.BlockAddCapabilities = blockAddCapabilities.(bool)
+	}
+
+	rootUser, ok := d.GetOk("block_root_user")
+	if ok {
+		crp.LimitContainerPrivileges.Enabled = true
+		crp.LimitContainerPrivileges.PreventRootUser = rootUser.(bool)
+	}
+
+	privileged, ok := d.GetOk("block_privileged_containers")
+	if ok {
+		crp.LimitContainerPrivileges.Enabled = true
+		crp.LimitContainerPrivileges.Privileged = privileged.(bool)
+	}
+
+	ipcMode, ok := d.GetOk("block_use_ipc_namespace")
+	if ok {
+		crp.LimitContainerPrivileges.Enabled = true
+		crp.LimitContainerPrivileges.Ipcmode = ipcMode.(bool)
+	}
+
+	pidMode, ok := d.GetOk("block_use_pid_namespace")
+	if ok {
+		crp.LimitContainerPrivileges.Enabled = true
+		crp.LimitContainerPrivileges.Pidmode = pidMode.(bool)
+	}
+
+	userMode, ok := d.GetOk("block_use_user_namespace")
+	if ok {
+		crp.LimitContainerPrivileges.Enabled = true
+		crp.LimitContainerPrivileges.Usermode = userMode.(bool)
+	}
+
+	utsMode, ok := d.GetOk("block_use_uts_namespace")
+	if ok {
+		crp.LimitContainerPrivileges.Enabled = true
+		crp.LimitContainerPrivileges.Utsmode = utsMode.(bool)
+	}
+
+	lowPort, ok := d.GetOk("block_low_port_binding")
+	if ok {
+		crp.LimitContainerPrivileges.Enabled = true
+		crp.LimitContainerPrivileges.PreventLowPortBinding = lowPort.(bool)
 	}
 
 	limitNewPrivileges, ok := d.GetOk("limit_new_privileges")
@@ -555,18 +891,6 @@ func expandContainerRuntimePolicy(d *schema.ResourceData) *client.RuntimePolicy 
 		crp.EnablePortScanProtection = portScan.(bool)
 	}
 
-	blockedVol, ok := d.GetOk("blocked_volumes")
-	if ok {
-		crp.RestrictedVolumes.Enabled = true
-		crp.RestrictedVolumes.Volumes = convertStringArr(blockedVol.([]interface{}))
-	}
-
-	blockedCap, ok := d.GetOk("blocked_capabilities")
-	if ok {
-		crp.LinuxCapabilities.Enabled = true
-		crp.LinuxCapabilities.RemoveLinuxCapabilities = convertStringArr(blockedCap.([]interface{}))
-	}
-
 	readOnly, ok := d.GetOk("readonly_files_and_directories")
 	if ok {
 		crp.ReadonlyFiles.Enabled = true
@@ -578,58 +902,24 @@ func expandContainerRuntimePolicy(d *schema.ResourceData) *client.RuntimePolicy 
 		}
 	}
 
-	blockHost, ok := d.GetOk("block_access_host_network")
+	allowedRegistries, ok := d.GetOk("allowed_registries")
 	if ok {
-		crp.LimitContainerPrivileges.Enabled = true
-		crp.LimitContainerPrivileges.Netmode = blockHost.(bool)
+		crp.AllowedRegistries.Enabled = true
+		crp.AllowedRegistries.AllowedRegistries = convertStringArr(allowedRegistries.([]interface{}))
 	}
 
-	blockAddCapabilities, ok := d.GetOk("block_adding_capabilities")
+	systemTime, ok := d.GetOk("monitor_system_time_changes")
 	if ok {
-		crp.LimitContainerPrivileges.Enabled = true
-		crp.LimitContainerPrivileges.BlockAddCapabilities = blockAddCapabilities.(bool)
+		crp.SystemIntegrityProtection.Enabled = systemTime.(bool)
+		crp.SystemIntegrityProtection.AuditSystemtimeChange = systemTime.(bool)
+		crp.SystemIntegrityProtection.WindowsServicesMonitoring = systemTime.(bool)
+		crp.SystemIntegrityProtection.MonitorAuditLogIntegrity = systemTime.(bool)
 	}
 
-	pidMode, ok := d.GetOk("block_use_pid_namespace")
+	blockedVol, ok := d.GetOk("blocked_volumes")
 	if ok {
-		crp.LimitContainerPrivileges.Enabled = true
-		crp.LimitContainerPrivileges.Pidmode = pidMode.(bool)
-	}
-
-	ipcMode, ok := d.GetOk("block_use_ipc_namespace")
-	if ok {
-		crp.LimitContainerPrivileges.Enabled = true
-		crp.LimitContainerPrivileges.Ipcmode = ipcMode.(bool)
-	}
-
-	usermode, ok := d.GetOk("block_use_user_namespace")
-	if ok {
-		crp.LimitContainerPrivileges.Enabled = true
-		crp.LimitContainerPrivileges.Usermode = usermode.(bool)
-	}
-
-	utsMode, ok := d.GetOk("block_use_uts_namespace")
-	if ok {
-		crp.LimitContainerPrivileges.Enabled = true
-		crp.LimitContainerPrivileges.Utsmode = utsMode.(bool)
-	}
-
-	privileged, ok := d.GetOk("block_privileged_containers")
-	if ok {
-		crp.LimitContainerPrivileges.Enabled = true
-		crp.LimitContainerPrivileges.Privileged = privileged.(bool)
-	}
-
-	rootUser, ok := d.GetOk("block_root_user")
-	if ok {
-		crp.LimitContainerPrivileges.Enabled = true
-		crp.LimitContainerPrivileges.PreventRootUser = rootUser.(bool)
-	}
-
-	lowPort, ok := d.GetOk("block_low_port_binding")
-	if ok {
-		crp.LimitContainerPrivileges.Enabled = true
-		crp.LimitContainerPrivileges.PreventLowPortBinding = lowPort.(bool)
+		crp.RestrictedVolumes.Enabled = true
+		crp.RestrictedVolumes.Volumes = convertStringArr(blockedVol.([]interface{}))
 	}
 
 	return &crp

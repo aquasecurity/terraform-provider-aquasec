@@ -2,7 +2,6 @@ package aquasec
 
 import (
 	"context"
-
 	"github.com/aquasecurity/terraform-provider-aquasec/client"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -82,11 +81,120 @@ func resourceHostRuntimePolicy() *schema.Resource {
 				Description: "Username of the account that created the service.",
 				Computed:    true,
 			},
+			// controls
+			"block_cryptocurrency_mining": {
+				Type:        schema.TypeBool,
+				Description: "Detect and prevent communication to DNS/IP addresses known to be used for Cryptocurrency Mining",
+				Optional:    true,
+			},
+			"audit_brute_force_login": {
+				Type:        schema.TypeBool,
+				Description: "Detects brute force login attempts",
+				Optional:    true,
+			},
+			"enable_ip_reputation_security": {
+				Type:        schema.TypeBool,
+				Description: "If true, detect and prevent communication from containers to IP addresses known to have a bad reputation.",
+				Optional:    true,
+			},
 			"blocked_files": {
 				Type:        schema.TypeList,
 				Description: "List of files that are prevented from being read, modified and executed in the containers.",
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
+				},
+				Optional: true,
+			},
+			"file_integrity_monitoring": {
+				Type:        schema.TypeList,
+				MaxItems:    1,
+				Description: "Configuration for file integrity monitoring.",
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"monitor_create": {
+							Type:         schema.TypeBool,
+							Description:  "If true, create operations will be monitored.",
+							Optional:     true,
+							RequiredWith: []string{"file_integrity_monitoring.0.monitored_paths"},
+						},
+						"monitor_read": {
+							Type:         schema.TypeBool,
+							Description:  "If true, read operations will be monitored.",
+							Optional:     true,
+							RequiredWith: []string{"file_integrity_monitoring.0.monitored_paths"},
+						},
+						"monitor_modify": {
+							Type:         schema.TypeBool,
+							Description:  "If true, modification operations will be monitored.",
+							Optional:     true,
+							RequiredWith: []string{"file_integrity_monitoring.0.monitored_paths"},
+						},
+						"monitor_delete": {
+							Type:         schema.TypeBool,
+							Description:  "If true, deletion operations will be monitored.",
+							Optional:     true,
+							RequiredWith: []string{"file_integrity_monitoring.0.monitored_paths"},
+						},
+						"monitor_attributes": {
+							Type:         schema.TypeBool,
+							Description:  "If true, add attributes operations will be monitored.",
+							Optional:     true,
+							RequiredWith: []string{"file_integrity_monitoring.0.monitored_paths"},
+						},
+						"monitored_paths": {
+							Type:        schema.TypeList,
+							Description: "List of paths to be monitored.",
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+							Optional: true,
+						},
+						"excluded_paths": {
+							Type:        schema.TypeList,
+							Description: "List of paths to be excluded from being monitored.",
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+							Optional:     true,
+							RequiredWith: []string{"file_integrity_monitoring.0.monitored_paths"},
+						},
+						"monitored_processes": {
+							Type:        schema.TypeList,
+							Description: "List of processes to be monitored.",
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+							Optional:     true,
+							RequiredWith: []string{"file_integrity_monitoring.0.monitored_paths"},
+						},
+						"excluded_processes": {
+							Type:        schema.TypeList,
+							Description: "List of processes to be excluded from being monitored.",
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+							Optional:     true,
+							RequiredWith: []string{"file_integrity_monitoring.0.monitored_paths"},
+						},
+						"monitored_users": {
+							Type:        schema.TypeList,
+							Description: "List of users to be monitored.",
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+							Optional:     true,
+							RequiredWith: []string{"file_integrity_monitoring.0.monitored_paths"},
+						},
+						"excluded_users": {
+							Type:        schema.TypeList,
+							Description: "List of users to be excluded from being monitored.",
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+							Optional:     true,
+							RequiredWith: []string{"file_integrity_monitoring.0.monitored_paths"},
+						},
+					},
 				},
 				Optional: true,
 			},
@@ -100,9 +208,19 @@ func resourceHostRuntimePolicy() *schema.Resource {
 				Description: "If true, full command arguments will be audited.",
 				Optional:    true,
 			},
-			"enable_ip_reputation_security": {
+			"audit_host_successful_login_events": {
 				Type:        schema.TypeBool,
-				Description: "If true, detect and prevent communication from containers to IP addresses known to have a bad reputation.",
+				Description: "If true, host successful logins will be audited.",
+				Optional:    true,
+			},
+			"audit_host_failed_login_events": {
+				Type:        schema.TypeBool,
+				Description: "If true, host failed logins will be audited.",
+				Optional:    true,
+			},
+			"audit_user_account_management": {
+				Type:        schema.TypeBool,
+				Description: "If true, account management will be audited.",
 				Optional:    true,
 			},
 			"os_users_allowed": {
@@ -137,6 +255,19 @@ func resourceHostRuntimePolicy() *schema.Resource {
 				},
 				Optional: true,
 			},
+			"package_block": {
+				Type:        schema.TypeList,
+				Description: "List of packages that are not allowed read, write or execute all files that under the packages.",
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+				Optional: true,
+			},
+			"port_scanning_detection": {
+				Type:        schema.TypeBool,
+				Description: "If true, port scanning behaviors will be audited.",
+				Optional:    true,
+			},
 			"monitor_system_time_changes": {
 				Type:        schema.TypeBool,
 				Description: "If true, system time changes will be monitored.",
@@ -145,6 +276,11 @@ func resourceHostRuntimePolicy() *schema.Resource {
 			"monitor_windows_services": {
 				Type:        schema.TypeBool,
 				Description: "If true, windows service operations will be monitored.",
+				Optional:    true,
+			},
+			"monitor_system_log_integrity": {
+				Type:        schema.TypeBool,
+				Description: "If true, system log will be monitored.",
 				Optional:    true,
 			},
 			"windows_registry_monitoring": {
@@ -303,99 +439,6 @@ func resourceHostRuntimePolicy() *schema.Resource {
 				},
 				Optional: true,
 			},
-			"file_integrity_monitoring": {
-				Type:        schema.TypeList,
-				MaxItems:    1,
-				Description: "Configuration for file integrity monitoring.",
-				Elem: &schema.Resource{
-					Schema: map[string]*schema.Schema{
-						"monitor_create": {
-							Type:         schema.TypeBool,
-							Description:  "If true, create operations will be monitored.",
-							Optional:     true,
-							RequiredWith: []string{"file_integrity_monitoring.0.monitored_paths"},
-						},
-						"monitor_read": {
-							Type:         schema.TypeBool,
-							Description:  "If true, read operations will be monitored.",
-							Optional:     true,
-							RequiredWith: []string{"file_integrity_monitoring.0.monitored_paths"},
-						},
-						"monitor_modify": {
-							Type:         schema.TypeBool,
-							Description:  "If true, modification operations will be monitored.",
-							Optional:     true,
-							RequiredWith: []string{"file_integrity_monitoring.0.monitored_paths"},
-						},
-						"monitor_delete": {
-							Type:         schema.TypeBool,
-							Description:  "If true, deletion operations will be monitored.",
-							Optional:     true,
-							RequiredWith: []string{"file_integrity_monitoring.0.monitored_paths"},
-						},
-						"monitor_attributes": {
-							Type:         schema.TypeBool,
-							Description:  "If true, add attributes operations will be monitored.",
-							Optional:     true,
-							RequiredWith: []string{"file_integrity_monitoring.0.monitored_paths"},
-						},
-						"monitored_paths": {
-							Type:        schema.TypeList,
-							Description: "List of paths to be monitored.",
-							Elem: &schema.Schema{
-								Type: schema.TypeString,
-							},
-							Optional: true,
-						},
-						"excluded_paths": {
-							Type:        schema.TypeList,
-							Description: "List of paths to be excluded from being monitored.",
-							Elem: &schema.Schema{
-								Type: schema.TypeString,
-							},
-							Optional:     true,
-							RequiredWith: []string{"file_integrity_monitoring.0.monitored_paths"},
-						},
-						"monitored_processes": {
-							Type:        schema.TypeList,
-							Description: "List of processes to be monitored.",
-							Elem: &schema.Schema{
-								Type: schema.TypeString,
-							},
-							Optional:     true,
-							RequiredWith: []string{"file_integrity_monitoring.0.monitored_paths"},
-						},
-						"excluded_processes": {
-							Type:        schema.TypeList,
-							Description: "List of processes to be excluded from being monitored.",
-							Elem: &schema.Schema{
-								Type: schema.TypeString,
-							},
-							Optional:     true,
-							RequiredWith: []string{"file_integrity_monitoring.0.monitored_paths"},
-						},
-						"monitored_users": {
-							Type:        schema.TypeList,
-							Description: "List of users to be monitored.",
-							Elem: &schema.Schema{
-								Type: schema.TypeString,
-							},
-							Optional:     true,
-							RequiredWith: []string{"file_integrity_monitoring.0.monitored_paths"},
-						},
-						"excluded_users": {
-							Type:        schema.TypeList,
-							Description: "List of users to be excluded from being monitored.",
-							Elem: &schema.Schema{
-								Type: schema.TypeString,
-							},
-							Optional:     true,
-							RequiredWith: []string{"file_integrity_monitoring.0.monitored_paths"},
-						},
-					},
-				},
-				Optional: true,
-			},
 		},
 	}
 }
@@ -418,7 +461,6 @@ func resourceHostRuntimePolicyCreate(ctx context.Context, d *schema.ResourceData
 		return err1
 	}
 
-	//return resourceHostRuntimePolicyRead(ctx, d, m)
 	return nil
 }
 
@@ -429,17 +471,22 @@ func resourceHostRuntimePolicyRead(ctx context.Context, d *schema.ResourceData, 
 	crp, err := c.GetRuntimePolicy(name)
 	if err == nil {
 		d.Set("description", crp.Description)
-		d.Set("author", crp.Author)
 		d.Set("application_scopes", crp.ApplicationScopes)
-		d.Set("scope_variables", flattenScopeVariables(crp.Scope.Variables))
 		d.Set("scope_expression", crp.Scope.Expression)
+		d.Set("scope_variables", flattenScopeVariables(crp.Scope.Variables))
 		d.Set("enabled", crp.Enabled)
 		d.Set("enforce", crp.Enforce)
 		d.Set("enforce_after_days", crp.EnforceAfterDays)
+		d.Set("author", crp.Author)
+		d.Set("block_cryptocurrency_mining", crp.EnableCryptoMiningDns)
+		d.Set("audit_brute_force_login", crp.AuditBruteForceLogin)
+		d.Set("enable_ip_reputation_security", crp.EnableIPReputation)
 		d.Set("blocked_files", crp.FileBlock.FilenameBlockList)
+		d.Set("file_integrity_monitoring", flattenFileIntegrityMonitoring(crp.FileIntegrityMonitoring))
 		d.Set("audit_all_os_user_activity", crp.Auditing.AuditOsUserActivity)
 		d.Set("audit_full_command_arguments", crp.Auditing.AuditProcessCmdline)
-		d.Set("enable_ip_reputation_security", crp.EnableIPReputation)
+		d.Set("audit_host_successful_login_events", crp.Auditing.AuditSuccessLogin)
+		d.Set("audit_host_failed_login_events", crp.Auditing.AuditFailedLogin)
 		d.Set("os_users_allowed", crp.WhitelistedOsUsers.UserWhiteList)
 		d.Set("os_groups_allowed", crp.WhitelistedOsUsers.GroupWhiteList)
 		d.Set("os_users_blocked", crp.BlacklistedOsUsers.UserBlackList)
@@ -447,7 +494,6 @@ func resourceHostRuntimePolicyRead(ctx context.Context, d *schema.ResourceData, 
 		d.Set("monitor_system_time_changes", crp.SystemIntegrityProtection.AuditSystemtimeChange)
 		d.Set("monitor_windows_services", crp.SystemIntegrityProtection.WindowsServicesMonitoring)
 		d.Set("windows_registry_monitoring", flattenWindowsRegistryMonitoring(crp.RegistryAccessMonitoring))
-		d.Set("file_integrity_monitoring", flattenFileIntegrityMonitoring(crp.FileIntegrityMonitoring))
 		d.Set("windows_registry_protection", flattenWindowsRegistryProtection(crp.ReadonlyRegistry))
 
 		d.SetId(name)
@@ -462,7 +508,35 @@ func resourceHostRuntimePolicyUpdate(ctx context.Context, d *schema.ResourceData
 	c := m.(*client.Client)
 	name := d.Get("name").(string)
 
-	if d.HasChanges("description", "application_scopes", "scope_variables", "enabled", "enforce_after_days", "blocked_files", "audit_all_os_user_activity", "audit_full_command_arguments", "enable_ip_reputation_security", "os_users_allowed", "os_groups_allowed", "os_users_blocked", "os_groups_blocked", "monitor_system_time_changes", "monitor_windows_services", "windows_registry_monitoring", "file_integrity_monitoring", "windows_registry_protection") {
+	if d.HasChanges("description",
+		"application_scopes",
+		"scope_expression",
+		"scope_variables",
+		"enabled",
+		"enforce",
+		"enforce_after_days",
+		"author",
+		"block_cryptocurrency_mining",
+		"audit_brute_force_login",
+		"enable_ip_reputation_security",
+		"blocked_files",
+		"file_integrity_monitoring",
+		"audit_all_os_user_activity",
+		"audit_full_command_arguments",
+		"audit_host_successful_login_events",
+		"audit_host_failed_login_events",
+		"audit_user_account_management",
+		"os_users_allowed",
+		"os_groups_allowed",
+		"os_users_blocked",
+		"os_groups_blocked",
+		"package_block",
+		"port_scanning_detection",
+		"monitor_system_time_changes",
+		"monitor_windows_services",
+		"monitor_system_log_integrity",
+		"windows_registry_monitoring",
+		"windows_registry_protection") {
 		crp := expandHostRuntimePolicy(d)
 		err := c.UpdateRuntimePolicy(crp)
 		if err == nil {
@@ -547,11 +621,49 @@ func expandHostRuntimePolicy(d *schema.ResourceData) *client.RuntimePolicy {
 		crp.Author = author.(string)
 	}
 
+	// controls
+
+	blockCryptocurrencyMining, ok := d.GetOk("block_cryptocurrency_mining")
+	if ok {
+		crp.EnableCryptoMiningDns = blockCryptocurrencyMining.(bool)
+	}
+
+	auditBruteForceLogin, ok := d.GetOk("audit_brute_force_login")
+	if ok {
+		crp.AuditBruteForceLogin = auditBruteForceLogin.(bool)
+	}
+
+	enableIpReputation, ok := d.GetOk("enable_ip_reputation_security")
+	if ok {
+		crp.EnableIPReputation = enableIpReputation.(bool)
+	}
+
 	blockedFiles, ok := d.GetOk("blocked_files")
 	if ok {
 		strArr := convertStringArr(blockedFiles.([]interface{}))
 		crp.FileBlock.Enabled = len(strArr) != 0
 		crp.FileBlock.FilenameBlockList = strArr
+	}
+
+	crp.FileIntegrityMonitoring = client.FileIntegrityMonitoring{}
+	fileIntegrityMonitoringMap, ok := d.GetOk("file_integrity_monitoring")
+	if ok {
+		v := fileIntegrityMonitoringMap.([]interface{})[0].(map[string]interface{})
+
+		crp.FileIntegrityMonitoring = client.FileIntegrityMonitoring{
+			Enabled:                            true,
+			MonitoredFiles:                     convertStringArr(v["monitored_paths"].([]interface{})),
+			ExceptionalMonitoredFiles:          convertStringArr(v["excluded_paths"].([]interface{})),
+			MonitoredFilesProcesses:            convertStringArr(v["monitored_processes"].([]interface{})),
+			ExceptionalMonitoredFilesProcesses: convertStringArr(v["excluded_processes"].([]interface{})),
+			MonitoredFilesUsers:                convertStringArr(v["monitored_users"].([]interface{})),
+			ExceptionalMonitoredFilesUsers:     convertStringArr(v["excluded_users"].([]interface{})),
+			MonitoredFilesCreate:               v["monitor_create"].(bool),
+			MonitoredFilesRead:                 v["monitor_read"].(bool),
+			MonitoredFilesModify:               v["monitor_modify"].(bool),
+			MonitoredFilesDelete:               v["monitor_delete"].(bool),
+			MonitoredFilesAttributes:           v["monitor_attributes"].(bool),
+		}
 	}
 
 	auditOsUserActivity, ok := d.GetOk("audit_all_os_user_activity")
@@ -566,9 +678,22 @@ func expandHostRuntimePolicy(d *schema.ResourceData) *client.RuntimePolicy {
 		crp.Auditing.AuditProcessCmdline = auditFullCommandArguments.(bool)
 	}
 
-	enableIpReputation, ok := d.GetOk("enable_ip_reputation_security")
+	auditHostSuccessfulLoginEvents, ok := d.GetOk("audit_host_successful_login_events")
 	if ok {
-		crp.EnableIPReputation = enableIpReputation.(bool)
+		crp.Auditing.Enabled = true
+		crp.Auditing.AuditSuccessLogin = auditHostSuccessfulLoginEvents.(bool)
+	}
+
+	auditHostFailedLoginEvents, ok := d.GetOk("audit_host_failed_login_events")
+	if ok {
+		crp.Auditing.Enabled = true
+		crp.Auditing.AuditFailedLogin = auditHostFailedLoginEvents.(bool)
+	}
+
+	auditUserAccountManagement, ok := d.GetOk("audit_user_account_management")
+	if ok {
+		crp.Enabled = true
+		crp.Auditing.AuditUserAccountManagement = auditUserAccountManagement.(bool)
 	}
 
 	crp.WhitelistedOsUsers.UserWhiteList = []string{}
@@ -603,9 +728,22 @@ func expandHostRuntimePolicy(d *schema.ResourceData) *client.RuntimePolicy {
 		crp.BlacklistedOsUsers.GroupBlackList = strArr
 	}
 
+	crp.PackageBlock.PackagesBlackList = []string{}
+	packageBlock, ok := d.GetOk("package_block")
+	if ok {
+		strArr := convertStringArr(packageBlock.([]interface{}))
+		crp.PackageBlock.Enabled = len(strArr) != 0
+		crp.PackageBlock.PackagesBlackList = strArr
+	}
+
+	portScanningDetection, ok := d.GetOk("port_scanning_detection")
+	if ok {
+		crp.EnablePortScanProtection = portScanningDetection.(bool)
+	}
+
 	systemTime, ok := d.GetOk("monitor_system_time_changes")
 	if ok {
-		crp.SystemIntegrityProtection.Enabled = true
+		crp.SystemIntegrityProtection.Enabled = systemTime.(bool)
 		crp.SystemIntegrityProtection.AuditSystemtimeChange = systemTime.(bool)
 	}
 
@@ -613,6 +751,12 @@ func expandHostRuntimePolicy(d *schema.ResourceData) *client.RuntimePolicy {
 	if ok {
 		crp.SystemIntegrityProtection.Enabled = true
 		crp.SystemIntegrityProtection.WindowsServicesMonitoring = windowsServices.(bool)
+	}
+
+	systemLogIntegrity, ok := d.GetOk("monitor_system_log_integrity")
+	if ok {
+		crp.SystemIntegrityProtection.Enabled = true
+		crp.SystemIntegrityProtection.MonitorAuditLogIntegrity = systemLogIntegrity.(bool)
 	}
 
 	crp.RegistryAccessMonitoring = client.RegistryAccessMonitoring{}
@@ -649,27 +793,6 @@ func expandHostRuntimePolicy(d *schema.ResourceData) *client.RuntimePolicy {
 			ExceptionalReadonlyRegistryProcesses: convertStringArr(v["excluded_processes"].([]interface{})),
 			ReadonlyRegistryUsers:                convertStringArr(v["protected_users"].([]interface{})),
 			ExceptionalReadonlyRegistryUsers:     convertStringArr(v["excluded_users"].([]interface{})),
-		}
-	}
-
-	crp.FileIntegrityMonitoring = client.FileIntegrityMonitoring{}
-	fileIntegrityMonitoringMap, ok := d.GetOk("file_integrity_monitoring")
-	if ok {
-		v := fileIntegrityMonitoringMap.([]interface{})[0].(map[string]interface{})
-
-		crp.FileIntegrityMonitoring = client.FileIntegrityMonitoring{
-			Enabled:                            true,
-			MonitoredFiles:                     convertStringArr(v["monitored_paths"].([]interface{})),
-			ExceptionalMonitoredFiles:          convertStringArr(v["excluded_paths"].([]interface{})),
-			MonitoredFilesProcesses:            convertStringArr(v["monitored_processes"].([]interface{})),
-			ExceptionalMonitoredFilesProcesses: convertStringArr(v["excluded_processes"].([]interface{})),
-			MonitoredFilesUsers:                convertStringArr(v["monitored_users"].([]interface{})),
-			ExceptionalMonitoredFilesUsers:     convertStringArr(v["excluded_users"].([]interface{})),
-			MonitoredFilesCreate:               v["monitor_create"].(bool),
-			MonitoredFilesRead:                 v["monitor_read"].(bool),
-			MonitoredFilesModify:               v["monitor_modify"].(bool),
-			MonitoredFilesDelete:               v["monitor_delete"].(bool),
-			MonitoredFilesAttributes:           v["monitor_attributes"].(bool),
 		}
 	}
 
