@@ -69,8 +69,9 @@ func TestResourceAquasecComplexHostRuntimePolicyCreate(t *testing.T) {
 					resource.TestCheckResourceAttr(rootRef, "enforce", fmt.Sprintf("%v", complexRuntimePolicy.Enforce)),
 					resource.TestCheckResourceAttr(rootRef, "enforce_after_days", fmt.Sprintf("%v", complexRuntimePolicy.EnforceAfterDays)),
 					resource.TestCheckResourceAttr(rootRef, "author", os.Getenv("AQUA_USER")),
-					resource.TestCheckResourceAttr(rootRef, "block_cryptocurrency_mining", "true"),
-					resource.TestCheckResourceAttr(rootRef, "audit_brute_force_login", "true"),
+					//todo: bring back after we upgrade the testing env
+					//resource.TestCheckResourceAttr(rootRef, "block_cryptocurrency_mining", "true"),
+					//resource.TestCheckResourceAttr(rootRef, "audit_brute_force_login", "true"),
 					resource.TestCheckResourceAttr(rootRef, "enable_ip_reputation_security", "true"),
 					resource.TestCheckResourceAttr(rootRef, "blocked_files.#", "1"),
 					resource.TestCheckResourceAttr(rootRef, "file_integrity_monitoring.0.monitor_create", "true"),
@@ -86,8 +87,9 @@ func TestResourceAquasecComplexHostRuntimePolicyCreate(t *testing.T) {
 					resource.TestCheckResourceAttr(rootRef, "file_integrity_monitoring.0.excluded_users.#", "1"),
 					resource.TestCheckResourceAttr(rootRef, "audit_all_os_user_activity", "true"),
 					resource.TestCheckResourceAttr(rootRef, "audit_full_command_arguments", "true"),
-					resource.TestCheckResourceAttr(rootRef, "audit_host_successful_login_events", "true"),
-					resource.TestCheckResourceAttr(rootRef, "audit_host_failed_login_events", "true"),
+					//todo: bring back after we upgrade the testing env
+					//resource.TestCheckResourceAttr(rootRef, "audit_host_successful_login_events", "true"),
+					//resource.TestCheckResourceAttr(rootRef, "audit_host_failed_login_events", "true"),
 					resource.TestCheckResourceAttr(rootRef, "audit_user_account_management", "true"),
 					resource.TestCheckResourceAttr(rootRef, "os_users_allowed.#", "1"),
 					resource.TestCheckResourceAttr(rootRef, "os_groups_allowed.#", "1"),
@@ -144,8 +146,8 @@ func getComplexHostRuntimePolicyResource(policy client.RuntimePolicy) string {
 		description = "%s"
 		enabled = "%v"
 		enforce = "%v"
-		block_cryptocurrency_mining = true
-		audit_brute_force_login = true
+		# block_cryptocurrency_mining = true
+		# audit_brute_force_login = true
 		enable_ip_reputation_security = true
 		blocked_files = [
 			"blocked",
@@ -165,8 +167,8 @@ func getComplexHostRuntimePolicyResource(policy client.RuntimePolicy) string {
 		}
 		audit_all_os_user_activity    = true
 		audit_full_command_arguments  = true
-		audit_host_successful_login_events = true
-		audit_host_failed_login_events = true
+		# audit_host_successful_login_events = true
+		# audit_host_failed_login_events = true
 		audit_user_account_management = true
 		os_users_allowed = [
 			"user1",

@@ -12,17 +12,35 @@ import (
 
 func TestAquasecEnforcerGroupResource(t *testing.T) {
 
+	//var basicEnforcerGroup = client.EnforcerGroup{
+	//	ID:          acctest.RandomWithPrefix("terraform-test"),
+	//	Description: "Created",
+	//	LogicalName: "terraform-eg",
+	//	Enforce:     false,
+	//	Gateways: []string{
+	//		"3ef9a43f2693_gateway",
+	//	},
+	//	Type:              "agent",
+	//	EnforcerImageName: "registry.aquasec.com/enforcer:6.5.22034",
+	//	Orchestrator:      client.EnforcerOrchestrator{},
+	//	AutoCopySecrets: true,
+	//}
 	var basicEnforcerGroup = client.EnforcerGroup{
-		ID:          acctest.RandomWithPrefix("terraform-test"),
+		ID:          acctest.RandomWithPrefix("terraform-test-k"),
 		Description: "Created",
 		LogicalName: "terraform-eg",
 		Enforce:     false,
 		Gateways: []string{
 			"3ef9a43f2693_gateway",
 		},
-		Type:              "agent",
+		Type:              "kube_enforcer",
 		EnforcerImageName: "registry.aquasec.com/enforcer:6.5.22034",
-		Orchestrator:      client.EnforcerOrchestrator{},
+		Orchestrator: client.EnforcerOrchestrator{
+			Type:      "kubernetes",
+			Master:    false,
+			Namespace: "aqua",
+		},
+		AutoCopySecrets: false,
 	}
 
 	rootRef := enforcerGroupsRef(basicEnforcerGroup.ID)
@@ -42,6 +60,7 @@ func TestAquasecEnforcerGroupResource(t *testing.T) {
 					resource.TestCheckResourceAttr(rootRef, "enforce", fmt.Sprintf("%v", basicEnforcerGroup.Enforce)),
 					resource.TestCheckResourceAttr(rootRef, "gateways.0", basicEnforcerGroup.Gateways[0]),
 					resource.TestCheckResourceAttr(rootRef, "type", basicEnforcerGroup.Type),
+					resource.TestCheckResourceAttr(rootRef, "auto_copy_secrets", fmt.Sprintf("%v", basicEnforcerGroup.AutoCopySecrets)),
 				),
 			},
 		},
@@ -63,6 +82,7 @@ func getBasicEnforcerGroupResource(enforcerGroup client.EnforcerGroup) string {
 			namespace = "%s"
 			master = "%v"
 		}
+		auto_copy_secrets = "%v"
 	}
 	`, enforcerGroup.ID,
 		enforcerGroup.ID,
@@ -75,6 +95,7 @@ func getBasicEnforcerGroupResource(enforcerGroup client.EnforcerGroup) string {
 		enforcerGroup.Orchestrator.ServiceAccount,
 		enforcerGroup.Orchestrator.Namespace,
 		enforcerGroup.Orchestrator.Master,
+		enforcerGroup.AutoCopySecrets,
 	)
 }
 
