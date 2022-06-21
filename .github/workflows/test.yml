@@ -33,6 +33,8 @@ jobs:
 
     - name: Check out code into the Go module directory
       uses: actions/checkout@v2.3.3
+      with:
+        ref: ${{ github.event.pull_request.head.sha }}
 
     - name: Get dependencies
       run: |
@@ -67,7 +69,8 @@ jobs:
 
     - name: Check out code into the Go module directory
       uses: actions/checkout@v2.3.3
-
+      with:
+        ref: ${{ github.event.pull_request.head.sha }}
     - name: Get dependencies
       run: |
         go mod download
