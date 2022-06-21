@@ -106,6 +106,11 @@ func resourceUserCreate(d *schema.ResourceData, m interface{}) error {
 		basicUser.Roles = convertStringArr(roles.([]interface{}))
 	}
 
+	firstTime, ok := d.GetOk("first_time")
+	if ok {
+		basicUser.FirstTime = firstTime.(bool)
+	}
+
 	user := client.FullUser{
 		BasicId:   basicId,
 		BasicUser: basicUser,
