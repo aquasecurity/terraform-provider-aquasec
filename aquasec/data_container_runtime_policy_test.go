@@ -163,7 +163,7 @@ func getComplexContainerRuntimePolicyData(policy client.RuntimePolicy) string {
 			"proc1",
 			"proc2"
 		]
-		block_cryptocurrency_mining = true
+		# block_cryptocurrency_mining = true
 		# block_fileless_exec = true
 		block_non_compliant_images    = true
 		block_non_compliant_workloads = true
