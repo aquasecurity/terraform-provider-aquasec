@@ -35,24 +35,24 @@ resource "aquasec_user" "IaC" {
 
 ### Required
 
-- **password** (String)
-- **roles** (List of String)
-- **user_id** (String)
+- **password** (String) Login password for the user; string, required, at least 8 characters long.
+- **roles** (List of String) The roles that will be assigned to the user.
+- **user_id** (String) The user ID.
 
 ### Optional
 
-- **email** (String)
-- **first_time** (Boolean)
+- **email** (String) The user Email.
+- **first_time** (Boolean) If the user must change password at next login.
 - **id** (String) The ID of this resource.
-- **name** (String)
-- **password_confirm** (String)
+- **name** (String) The user name.
+- **password_confirm** (String) Password confirmation.
 
 ### Read-only
 
-- **is_super** (Boolean)
-- **plan** (String)
-- **role** (String)
-- **type** (String)
-- **ui_access** (Boolean)
+- **is_super** (Boolean) Give the Permission Set full access, meaning all actions are allowed without restriction.
+- **plan** (String) User's Aqua plan (Developer / Team / Advanced).
+- **role** (String) The first role that assigned to the user for backward compatibility.
+- **type** (String) The user type (Aqua, LDAP, SAML, OAuth2, OpenID, Tenant Manager).
+- **ui_access** (Boolean) Whether to allow UI access for users with this Permission Set.
 
 

@@ -26,7 +26,7 @@ resource "aquasec_group" "group" {
 
 ### Required
 
-- **name** (String)
+- **name** (String) The desired name of the group.
 
 ### Optional
 
@@ -34,7 +34,7 @@ resource "aquasec_group" "group" {
 
 ### Read-only
 
-- **created** (String)
-- **group_id** (Number)
+- **created** (String) The creation date of the group.
+- **group_id** (Number) The ID of the created group.
 
 
