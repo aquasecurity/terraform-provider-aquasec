@@ -186,7 +186,7 @@ func (cli *Client) UpdateEnforcerGroup(group EnforcerGroup) error {
 func (cli *Client) DeleteEnforcerGroup(name string) error {
 	request := cli.gorequest
 	request.Set("Authorization", "Bearer "+cli.token)
-	apiPath := fmt.Sprintf("/api/v1/hostsbatch/%s", name)
+	apiPath := fmt.Sprintf("/api/v1/hostsbatch/%s?delete_related=true", name)
 	events, _, errs := request.Clone().Delete(cli.url + apiPath).End()
 	if errs != nil {
 		return fmt.Errorf("error while calling DELETE on /api/v1/hostsbatch/%s: %v", name, events.StatusCode)
