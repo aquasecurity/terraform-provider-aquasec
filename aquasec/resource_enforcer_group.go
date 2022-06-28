@@ -28,22 +28,25 @@ func resourceEnforcerGroup() *schema.Resource {
 				Optional: true,
 			},
 			"allowed_labels": {
-				Type:     schema.TypeSet,
-				Optional: true,
+				Type:        schema.TypeSet,
+				Optional:    true,
+				Description: "list of label names to allow on the hosts; array of strings, optional",
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
 				},
 			},
 			"allowed_applications": {
-				Type:     schema.TypeSet,
-				Optional: true,
+				Type:        schema.TypeSet,
+				Optional:    true,
+				Description: "list of application names to allow on the hosts; array of strings, optional",
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
 				},
 			},
 			"allowed_registries": {
-				Type:     schema.TypeSet,
-				Optional: true,
+				Type:        schema.TypeSet,
+				Optional:    true,
+				Description: "list of registry names to allow on the hosts; array of strings, optional",
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
 				},
@@ -85,8 +88,9 @@ func resourceEnforcerGroup() *schema.Resource {
 				Optional: true,
 			},
 			"command": {
-				Type:     schema.TypeList,
-				Computed: true,
+				Type:        schema.TypeList,
+				Computed:    true,
+				Description: "The installation command; string, required",
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"default": {
@@ -129,24 +133,28 @@ func resourceEnforcerGroup() *schema.Resource {
 				Computed: true,
 			},
 			"enforce": {
-				Type:     schema.TypeBool,
-				Optional: true,
+				Type:        schema.TypeBool,
+				Optional:    true,
+				Description: "Whether to enable enforce mode on the Enforcers; boolean, defaults to false",
 			},
 			"enforcer_image_name": {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
 			"gateway_address": {
-				Type:     schema.TypeString,
-				Computed: true,
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: "public IP address of the main Aqua gateway; string, optional",
 			},
 			"gateway_name": {
-				Type:     schema.TypeString,
-				Computed: true,
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: "name of the main Aqua gateway; string, optional",
 			},
 			"gateways": {
-				Type:     schema.TypeList,
-				Optional: true,
+				Type:        schema.TypeList,
+				Optional:    true,
+				Description: "List of Aqua gateway IDs; array of strings, required",
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
 				},

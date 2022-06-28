@@ -15,16 +15,19 @@ func resourceApplicationScope() *schema.Resource {
 		Delete: resourceApplicationScopeDelete,
 		Schema: map[string]*schema.Schema{
 			"name": {
-				Type:     schema.TypeString,
-				Required: true,
+				Type:        schema.TypeString,
+				Required:    true,
+				Description: "The name of the Application Scope, comprised of alphanumeric characters and '-', '_', ' ', ':', '.', '@', '!', '^'",
 			},
 			"description": {
-				Type:     schema.TypeString,
-				Optional: true,
+				Type:        schema.TypeString,
+				Optional:    true,
+				Description: "Free text description for the Application Scope",
 			},
 			"author": {
-				Type:     schema.TypeString,
-				Computed: true,
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: "The name of the user who created the Application Scope. Only returned from the API for existing Application Scopes, and not as part of the Application Scope creation/modification structure.",
 			},
 			"owner_email": {
 				Type:     schema.TypeString,
