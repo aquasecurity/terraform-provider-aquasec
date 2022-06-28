@@ -1,9 +1,10 @@
 package aquasec
 
 import (
+	"log"
+
 	"github.com/aquasecurity/terraform-provider-aquasec/client"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-	"log"
 )
 
 func resourceUser() *schema.Resource {
@@ -20,52 +21,62 @@ func resourceUser() *schema.Resource {
 		},
 		Schema: map[string]*schema.Schema{
 			"user_id": {
-				Type:     schema.TypeString,
-				Required: true,
-				ForceNew: true,
+				Type:        schema.TypeString,
+				Required:    true,
+				ForceNew:    true,
+				Description: "The user login id",
 			},
 			"password": {
-				Type:     schema.TypeString,
-				Required: true,
+				Type:        schema.TypeString,
+				Required:    true,
+				Description: "The user password",
 			},
 			"password_confirm": {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
 			"name": {
-				Type:     schema.TypeString,
-				Optional: true,
+				Type:        schema.TypeString,
+				Optional:    true,
+				Description: "The user name",
 			},
 			"email": {
-				Type:     schema.TypeString,
-				Optional: true,
+				Type:        schema.TypeString,
+				Optional:    true,
+				Description: "The user must change password at next login",
 			},
 			"first_time": {
-				Type:     schema.TypeBool,
-				Optional: true,
+				Type:        schema.TypeBool,
+				Optional:    true,
+				Description: "Force password reset on log in",
 			},
 			"is_super": {
-				Type:     schema.TypeBool,
-				Computed: true,
+				Type:        schema.TypeBool,
+				Computed:    true,
+				Description: "The user is a super user",
 			},
 			"ui_access": {
-				Type:     schema.TypeBool,
-				Computed: true,
+				Type:        schema.TypeBool,
+				Computed:    true,
+				Description: "The user can access UI",
 			},
 			"role": {
-				Type:     schema.TypeString,
-				Computed: true,
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: "The first role that assigned to the user for backward compatibility",
 			},
 			"roles": {
-				Type:     schema.TypeList,
-				Required: true,
+				Type:        schema.TypeList,
+				Required:    true,
+				Description: "The roles that assigned to the user",
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
 				},
 			},
 			"type": {
-				Type:     schema.TypeString,
-				Computed: true,
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: "The user type (Aqua, LDAP, SAML, OAuth2, OpenID, Tenant Manager)",
 			},
 			"plan": {
 				Type:     schema.TypeString,

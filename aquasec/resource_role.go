@@ -1,10 +1,11 @@
 package aquasec
 
 import (
-	"github.com/aquasecurity/terraform-provider-aquasec/client"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"log"
 	"time"
+
+	"github.com/aquasecurity/terraform-provider-aquasec/client"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func resourceRole() *schema.Resource {
@@ -21,29 +22,35 @@ func resourceRole() *schema.Resource {
 		},
 		Schema: map[string]*schema.Schema{
 			"role_name": {
-				Type:     schema.TypeString,
-				Required: true,
+				Type:        schema.TypeString,
+				Required:    true,
+				Description: "The name of the role, comprised of alphanumeric characters and '-', '_', ' ', ':', '.', '@', '!', '^'",
 			},
 			"author": {
-				Type:     schema.TypeString,
-				Computed: true,
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: "The name of the user who created the role. Only returned from the API for existing permissions, not part of the permission creation/modification structure.",
 			},
 			"description": {
-				Type:     schema.TypeString,
-				Optional: true,
+				Type:        schema.TypeString,
+				Optional:    true,
+				Description: "Free text description for the role",
 			},
 			"updated_at": {
-				Type:     schema.TypeString,
-				Computed: true,
-				Optional: true,
+				Type:        schema.TypeString,
+				Computed:    true,
+				Optional:    true,
+				Description: "The date of the last modification of the role.",
 			},
 			"permission": {
-				Type:     schema.TypeString,
-				Required: true,
+				Type:        schema.TypeString,
+				Required:    true,
+				Description: "The name of the Permission Set that will affect the users assigned to this specific Role.",
 			},
 			"scopes": {
-				Type:     schema.TypeList,
-				Required: true,
+				Type:        schema.TypeList,
+				Required:    true,
+				Description: "List of Application Scopes that will affect the users assigned to this specific Role.",
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
 				},
