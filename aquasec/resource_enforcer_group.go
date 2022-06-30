@@ -63,6 +63,7 @@ func resourceEnforcerGroup() *schema.Resource {
 			"auto_copy_secrets": {
 				Type:     schema.TypeBool,
 				Optional: true,
+				Computed: true,
 			},
 			"auto_discover_configure_registries": {
 				Type:     schema.TypeBool,
@@ -206,6 +207,7 @@ func resourceEnforcerGroup() *schema.Resource {
 			"kube_bench_image_name": {
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"last_update": {
 				Type:     schema.TypeInt,
@@ -230,6 +232,7 @@ func resourceEnforcerGroup() *schema.Resource {
 			"micro_enforcer_image_name": {
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"micro_enforcer_injection": {
 				Type:     schema.TypeBool,
@@ -238,6 +241,7 @@ func resourceEnforcerGroup() *schema.Resource {
 			"micro_enforcer_secrets_name": {
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"neg_vulns": {
 				Type:     schema.TypeInt,
