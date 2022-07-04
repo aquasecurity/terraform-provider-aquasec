@@ -58,19 +58,19 @@ resource "aquasec_permissions_sets" "my_terraform_perm_set" {
 
 ### Required
 
-- **actions** (List of String)
-- **name** (String)
-- **ui_access** (Boolean)
+- **actions** (List of String) List of allowed actions for the Permission Set (not relevant if 'is_super' is true).
+- **name** (String) The name of the Permission Set, comprised of alphanumeric characters and '-', '_', ' ', ':', '.', '@', '!', '^'.
+- **ui_access** (Boolean) Whether to allow UI access for users with this Permission Set.
 
 ### Optional
 
-- **author** (String)
-- **description** (String)
+- **author** (String) The name of the user who created the Permission Set.
+- **description** (String) Free text description for the Permission Set.
 - **id** (String) The ID of this resource.
-- **is_super** (Boolean)
+- **is_super** (Boolean) Give the Permission Set full access, meaning all actions are allowed without restriction.
 
 ### Read-only
 
-- **updated_at** (String)
+- **updated_at** (String) The date of the last modification of the Role.
 
 

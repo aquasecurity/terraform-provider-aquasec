@@ -22,14 +22,17 @@ func resourceGroup() *schema.Resource {
 		Schema: map[string]*schema.Schema{
 			"group_id": {
 				Type:     schema.TypeInt,
+				Description: "The ID of the created group.",
 				Computed: true,
 			},
 			"name": {
 				Type:     schema.TypeString,
+				Description: "The desired name of the group.",
 				Required: true,
 			},
 			"created": {
 				Type:     schema.TypeString,
+				Description: "The creation date of the group.",
 				Computed: true,
 			},
 		},

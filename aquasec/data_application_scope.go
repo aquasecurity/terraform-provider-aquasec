@@ -11,23 +11,28 @@ func dataApplicationScope() *schema.Resource {
 		Schema: map[string]*schema.Schema{
 			"name": {
 				Type:     schema.TypeString,
+				Description: "Name of an application scope.",
 				Required: true,
 			},
 			"description": {
 				Type:     schema.TypeString,
+				Description: "Description of the application scope.",
 				Optional: true,
 			},
 			"author": {
 				Type:     schema.TypeString,
+				Description: "Username of the account that created the service.",
 				Computed: true,
 			},
 			"owner_email": {
 				Type:     schema.TypeString,
+				Description: "Name of an application scope.",
 				Optional: true,
 			},
 			"categories": {
 				Type:     schema.TypeSet,
 				Optional: true,
+				Description: "Artifacts (of applications) / Workloads (containers) / Infrastructure (elements).",
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"artifacts": {

@@ -25,17 +25,17 @@ resource "aquasec_enforcer_groups" "group" {
 
 ### Required
 
-- **group_id** (String) Enforcer group name
+- **group_id** (String) The ID of the Enforcer group.
 - **orchestrator** (Block Set, Min: 1) (see [below for nested schema](#nestedblock--orchestrator))
-- **type** (String) Enforcer type
+- **type** (String) Select the OS type for the host.
 
 ### Optional
 
 - **admission_control** (Boolean)
 - **allow_kube_enforcer_audit** (Boolean)
-- **allowed_applications** (Set of String)
-- **allowed_labels** (Set of String)
-- **allowed_registries** (Set of String)
+- **allowed_applications** (Set of String) List of application names to allow on the hosts. if provided, only containers of the listed applications will be allowed to run.
+- **allowed_labels** (Set of String) List of label names to allow on the hosts.
+- **allowed_registries** (Set of String) List of registry names to allow on the hosts.
 - **antivirus_protection** (Boolean)
 - **audit_all** (Boolean)
 - **auto_copy_secrets** (Boolean)
@@ -46,9 +46,9 @@ resource "aquasec_enforcer_groups" "group" {
 - **block_admission_control** (Boolean)
 - **container_activity_protection** (Boolean)
 - **container_antivirus_protection** (Boolean)
-- **description** (String)
-- **enforce** (Boolean)
-- **gateways** (List of String)
+- **description** (String) A description of the Aqua Enforcer group.
+- **enforce** (Boolean) Whether to enable enforce mode on the Enforcers, defaults to False.
+- **gateways** (List of String) List of Aqua gateway IDs for the Enforcers.
 - **host_assurance** (Boolean)
 - **host_behavioral_engine** (Boolean)
 - **host_network_protection** (Boolean)
@@ -58,7 +58,7 @@ resource "aquasec_enforcer_groups" "group" {
 - **id** (String) The ID of this resource.
 - **image_assurance** (Boolean)
 - **kube_bench_image_name** (String)
-- **logical_name** (String)
+- **logical_name** (String) Name for the batch install record.
 - **micro_enforcer_certs_secrets_name** (String)
 - **micro_enforcer_image_name** (String)
 - **micro_enforcer_injection** (Boolean)
@@ -74,7 +74,7 @@ resource "aquasec_enforcer_groups" "group" {
 ### Read-only
 
 - **aqua_version** (String)
-- **command** (List of Object) (see [below for nested schema](#nestedatt--command))
+- **command** (List of Object) The installation command. (see [below for nested schema](#nestedatt--command))
 - **connected_count** (Number)
 - **disconnected_count** (Number)
 - **enforcer_image_name** (String)
@@ -84,13 +84,13 @@ resource "aquasec_enforcer_groups" "group" {
 - **hostname** (String)
 - **hosts_count** (Number)
 - **install_command** (String)
-- **last_update** (Number)
+- **last_update** (Number) The last date and time the batch token was updated in UNIX time.
 - **low_vulns** (Number)
 - **med_vulns** (Number)
 - **neg_vulns** (Number)
 - **pas_deployment_link** (String)
 - **runtime_policy_name** (String)
-- **token** (String)
+- **token** (String) The batch install token.
 
 <a id="nestedblock--orchestrator"></a>
 ### Nested Schema for `orchestrator`
@@ -98,8 +98,8 @@ resource "aquasec_enforcer_groups" "group" {
 Optional:
 
 - **master** (Boolean)
-- **namespace** (String)
-- **service_account** (String)
+- **namespace** (String) May be specified for these orchestrators: Kubernetes, Kubernetes GKE, VMware Tanzu Kubernetes Grid Integrated Edition (PKS).
+- **service_account** (String) May be specified for these orchestrators: Kubernetes, Kubernetes GKE, OpenShift, VMware Tanzu Kubernetes Grid Integrated Edition (PKS).
 - **type** (String)
 
 

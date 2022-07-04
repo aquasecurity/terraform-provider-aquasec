@@ -27,18 +27,18 @@ output "scopes" {
 
 ### Required
 
-- **name** (String)
+- **name** (String) Name of an application scope.
 
 ### Optional
 
-- **categories** (Block Set) (see [below for nested schema](#nestedblock--categories))
-- **description** (String)
+- **categories** (Block Set) Artifacts (of applications) / Workloads (containers) / Infrastructure (elements). (see [below for nested schema](#nestedblock--categories))
+- **description** (String) Description of the application scope.
 - **id** (String) The ID of this resource.
-- **owner_email** (String)
+- **owner_email** (String) Name of an application scope.
 
 ### Read-only
 
-- **author** (String)
+- **author** (String) Username of the account that created the service.
 
 <a id="nestedblock--categories"></a>
 ### Nested Schema for `categories`

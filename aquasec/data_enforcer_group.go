@@ -13,10 +13,12 @@ func dataSourceEnforcerGroup() *schema.Resource {
 		Schema: map[string]*schema.Schema{
 			"group_id": {
 				Type:     schema.TypeString,
+				Description: "The ID of the Enforcer group.",
 				Required: true,
 			},
 			"logical_name": {
 				Type:     schema.TypeString,
+				Description: "Name for the batch install record.",
 				Computed: true,
 			},
 			"type": {
@@ -29,6 +31,7 @@ func dataSourceEnforcerGroup() *schema.Resource {
 			},
 			"description": {
 				Type:     schema.TypeString,
+				Description: "A description for the Aqua Enforcer group.",
 				Computed: true,
 			},
 			"gateway_name": {
@@ -41,6 +44,7 @@ func dataSourceEnforcerGroup() *schema.Resource {
 			},
 			"enforce": {
 				Type:     schema.TypeBool,
+				Description: "Whether to enable enforce mode on the Enforcers, defaults to False.",
 				Computed: true,
 			},
 			"container_activity_protection": {
@@ -84,14 +88,17 @@ func dataSourceEnforcerGroup() *schema.Resource {
 			},
 			"last_update": {
 				Type:     schema.TypeInt,
+				Description: "The last date and time the batch token was updated in UNIX time.",
 				Computed: true,
 			},
 			"token": {
 				Type:     schema.TypeString,
+				Description: "The batch install token.",
 				Computed: true,
 			},
 			"command": {
 				Type:     schema.TypeList,
+				Description: "The installation command.",
 				Computed: true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
@@ -129,10 +136,12 @@ func dataSourceEnforcerGroup() *schema.Resource {
 						},
 						"service_account": {
 							Type:     schema.TypeString,
+							Description: "May be specified for these orchestrators: Kubernetes, Kubernetes GKE, OpenShift, VMware Tanzu Kubernetes Grid Integrated Edition (PKS).",
 							Computed: true,
 						},
 						"namespace": {
 							Type:     schema.TypeString,
+							Description: "May be specified for these orchestrators: Kubernetes, Kubernetes GKE, VMware Tanzu Kubernetes Grid Integrated Edition (PKS).",
 							Computed: true,
 						},
 					},
@@ -284,6 +293,7 @@ func dataSourceEnforcerGroup() *schema.Resource {
 			},
 			"gateways": {
 				Type:     schema.TypeList,
+				Description: "List of Aqua gateway IDs for the Enforcers.",
 				Computed: true,
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
@@ -291,6 +301,7 @@ func dataSourceEnforcerGroup() *schema.Resource {
 			},
 			"allowed_applications": {
 				Type:     schema.TypeSet,
+				Description: "List of application names to allow on the hosts. if provided, only containers of the listed applications will be allowed to run.",
 				Computed: true,
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
@@ -298,6 +309,7 @@ func dataSourceEnforcerGroup() *schema.Resource {
 			},
 			"allowed_labels": {
 				Type:     schema.TypeSet,
+				Description: "List of label names to allow on the hosts.",
 				Computed: true,
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
@@ -305,6 +317,7 @@ func dataSourceEnforcerGroup() *schema.Resource {
 			},
 			"allowed_registries": {
 				Type:     schema.TypeSet,
+				Description: "List of registry names to allow on the hosts.",
 				Computed: true,
 				Elem: &schema.Schema{
 					Type: schema.TypeString,

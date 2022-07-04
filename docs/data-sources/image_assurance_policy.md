@@ -21,38 +21,38 @@ description: |-
 
 ### Optional
 
-- **maximum_score_exclude_no_fix** (Boolean)
+- **maximum_score_exclude_no_fix** (Boolean) Indicates that policy should ignore cases that do not have a known fix.
 
 ### Read-only
 
-- **allowed_images** (List of String)
+- **allowed_images** (List of String) List of explicitly allowed images.
 - **application_scopes** (List of String)
-- **assurance_type** (String)
-- **audit_on_failure** (Boolean)
-- **author** (String)
+- **assurance_type** (String) What type of assurance policy is described.
+- **audit_on_failure** (Boolean) Indicates if auditing for failures.
+- **author** (String) Name of user account that created the policy.
 - **auto_scan_configured** (Boolean)
 - **auto_scan_enabled** (Boolean)
 - **auto_scan_time** (Set of Object) (see [below for nested schema](#nestedatt--auto_scan_time))
-- **blacklist_permissions** (List of String)
-- **blacklist_permissions_enabled** (Boolean)
-- **blacklisted_licenses** (List of String)
-- **blacklisted_licenses_enabled** (Boolean)
-- **block_failed** (Boolean)
+- **blacklist_permissions** (List of String) List of function's forbidden permissions.
+- **blacklist_permissions_enabled** (Boolean) Indicates if blacklist permissions is relevant.
+- **blacklisted_licenses** (List of String) List of blacklisted licenses.
+- **blacklisted_licenses_enabled** (Boolean) Lndicates if license blacklist is relevant.
+- **block_failed** (Boolean) Indicates if failed images are blocked.
 - **control_exclude_no_fix** (Boolean)
-- **custom_checks** (List of Object) (see [below for nested schema](#nestedatt--custom_checks))
-- **custom_checks_enabled** (Boolean)
+- **custom_checks** (List of Object) List of Custom user scripts for checks. (see [below for nested schema](#nestedatt--custom_checks))
+- **custom_checks_enabled** (Boolean) Indicates if scanning should include custom checks.
 - **custom_severity_enabled** (Boolean)
-- **cves_black_list** (List of String)
-- **cves_black_list_enabled** (Boolean)
-- **cves_white_list** (List of String)
-- **cves_white_list_enabled** (Boolean)
-- **cvss_severity** (String)
-- **cvss_severity_enabled** (Boolean)
-- **cvss_severity_exclude_no_fix** (Boolean)
+- **cves_black_list** (List of String) List of cves blacklisted items.
+- **cves_black_list_enabled** (Boolean) Indicates if cves blacklist is relevant.
+- **cves_white_list** (List of String) List of cves whitelisted licenses
+- **cves_white_list_enabled** (Boolean) Indicates if cves whitelist is relevant.
+- **cvss_severity** (String) Identifier of the cvss severity.
+- **cvss_severity_enabled** (Boolean) Indicates if the cvss severity is scanned.
+- **cvss_severity_exclude_no_fix** (Boolean) Indicates that policy should ignore cvss cases that do not have a known fix.
 - **description** (String)
-- **disallow_malware** (Boolean)
+- **disallow_malware** (Boolean) Indicates if malware should block the image.
 - **docker_cis_enabled** (Boolean)
-- **domain** (String)
+- **domain** (String) Name of the container image.
 - **domain_name** (String)
 - **dta_enabled** (Boolean)
 - **dta_severity** (String)
@@ -61,7 +61,7 @@ description: |-
 - **enforce_after_days** (Number)
 - **enforce_excessive_permissions** (Boolean)
 - **exceptional_monitored_malware_paths** (List of String)
-- **fail_cicd** (Boolean)
+- **fail_cicd** (Boolean) Indicates if cicd failures will fail the image.
 - **forbidden_labels** (Set of Object) (see [below for nested schema](#nestedatt--forbidden_labels))
 - **forbidden_labels_enabled** (Boolean)
 - **force_microenforcer** (Boolean)
@@ -69,35 +69,35 @@ description: |-
 - **id** (String) The ID of this resource.
 - **ignore_recently_published_vln** (Boolean)
 - **ignore_recently_published_vln_period** (Number)
-- **ignore_risk_resources_enabled** (Boolean)
-- **ignored_risk_resources** (List of String)
-- **images** (List of String)
+- **ignore_risk_resources_enabled** (Boolean) Indicates if risk resources are ignored.
+- **ignored_risk_resources** (List of String) List of ignored risk resources.
+- **images** (List of String) List of images.
 - **kube_cis_enabled** (Boolean)
-- **labels** (List of String)
+- **labels** (List of String) List of labels.
 - **malware_action** (String)
-- **maximum_score** (Number)
-- **maximum_score_enabled** (Boolean)
+- **maximum_score** (Number) Value of allowed maximum score.
+- **maximum_score_enabled** (Boolean) Indicates if exceeding the maximum score is scanned.
 - **monitored_malware_paths** (List of String)
-- **only_none_root_users** (Boolean)
-- **packages_black_list** (Set of Object) (see [below for nested schema](#nestedatt--packages_black_list))
-- **packages_black_list_enabled** (Boolean)
-- **packages_white_list** (Set of Object) (see [below for nested schema](#nestedatt--packages_white_list))
-- **packages_white_list_enabled** (Boolean)
+- **only_none_root_users** (Boolean) Indicates if raise a warning for images that should only be run as root.
+- **packages_black_list** (Set of Object) List of backlisted images. (see [below for nested schema](#nestedatt--packages_black_list))
+- **packages_black_list_enabled** (Boolean) Indicates if packages blacklist is relevant.
+- **packages_white_list** (Set of Object) List of whitelisted images. (see [below for nested schema](#nestedatt--packages_white_list))
+- **packages_white_list_enabled** (Boolean) Indicates if packages whitelist is relevant.
 - **partial_results_image_fail** (Boolean)
 - **read_only** (Boolean)
-- **registries** (List of String)
+- **registries** (List of String) List of registries.
 - **registry** (String)
 - **required_labels** (Set of Object) (see [below for nested schema](#nestedatt--required_labels))
 - **required_labels_enabled** (Boolean)
 - **scan_nfs_mounts** (Boolean)
-- **scan_sensitive_data** (Boolean)
-- **scap_enabled** (Boolean)
-- **scap_files** (List of String)
+- **scan_sensitive_data** (Boolean) Indicates if scan should include sensitive data in the image.
+- **scap_enabled** (Boolean) Indicates if scanning should include scap.
+- **scap_files** (List of String) List of SCAP user scripts for checks.
 - **scope** (Set of Object) (see [below for nested schema](#nestedatt--scope))
-- **trusted_base_images** (Set of Object) (see [below for nested schema](#nestedatt--trusted_base_images))
-- **trusted_base_images_enabled** (Boolean)
-- **whitelisted_licenses** (List of String)
-- **whitelisted_licenses_enabled** (Boolean)
+- **trusted_base_images** (Set of Object) List of trusted images. (see [below for nested schema](#nestedatt--trusted_base_images))
+- **trusted_base_images_enabled** (Boolean) Indicates if list of trusted base images is relevant.
+- **whitelisted_licenses** (List of String) List of whitelisted licenses.
+- **whitelisted_licenses_enabled** (Boolean) Indicates if license blacklist is relevant.
 
 <a id="nestedatt--auto_scan_time"></a>
 ### Nested Schema for `auto_scan_time`
