@@ -13,9 +13,9 @@ func resourceImageAssurancePolicy() *schema.Resource {
 		Delete: resourceImageAssurancePolicyDelete,
 		Schema: map[string]*schema.Schema{
 			"assurance_type": {
-				Type:     schema.TypeString,
+				Type:        schema.TypeString,
 				Description: "What type of assurance policy is described.",
-				Optional: true,
+				Optional:    true,
 			},
 			"id": {
 				Type:     schema.TypeString,
@@ -26,109 +26,109 @@ func resourceImageAssurancePolicy() *schema.Resource {
 				Required: true,
 			},
 			"author": {
-				Type:     schema.TypeString,
+				Type:        schema.TypeString,
 				Description: "Name of user account that created the policy.",
-				Computed: true,
+				Computed:    true,
 			},
 			"registry": {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
 			"cvss_severity_enabled": {
-				Type:     schema.TypeBool,
+				Type:        schema.TypeBool,
 				Description: "Indicates if the cvss severity is scanned.",
-				Optional: true,
+				Optional:    true,
 			},
 			"cvss_severity": {
-				Type:     schema.TypeString,
+				Type:        schema.TypeString,
 				Description: "Identifier of the cvss severity.",
-				Optional: true,
+				Optional:    true,
 			},
 			"cvss_severity_exclude_no_fix": {
-				Type:     schema.TypeBool,
+				Type:        schema.TypeBool,
 				Description: "Indicates that policy should ignore cvss cases that do not have a known fix.",
-				Optional: true,
+				Optional:    true,
 			},
 			"custom_severity_enabled": {
 				Type:     schema.TypeBool,
 				Optional: true,
 			},
 			"maximum_score_enabled": {
-				Type:     schema.TypeBool,
+				Type:        schema.TypeBool,
 				Description: "Indicates if exceeding the maximum score is scanned.",
-				Optional: true,
+				Optional:    true,
 			},
 			"maximum_score": {
-				Type:     schema.TypeFloat,
+				Type:        schema.TypeFloat,
 				Description: "Value of allowed maximum score.",
-				Optional: true,
+				Optional:    true,
 			},
 			"control_exclude_no_fix": {
 				Type:     schema.TypeBool,
 				Optional: true,
 			},
 			"custom_checks_enabled": {
-				Type:     schema.TypeBool,
+				Type:        schema.TypeBool,
 				Description: "Indicates if scanning should include custom checks.",
-				Optional: true,
+				Optional:    true,
 			},
 			"scap_enabled": {
-				Type:     schema.TypeBool,
+				Type:        schema.TypeBool,
 				Description: "Indicates if scanning should include scap.",
-				Optional: true,
+				Optional:    true,
 			},
 			"cves_black_list_enabled": {
-				Type:     schema.TypeBool,
+				Type:        schema.TypeBool,
 				Description: "Indicates if cves blacklist is relevant.",
-				Optional: true,
+				Optional:    true,
 			},
 			"packages_black_list_enabled": {
-				Type:     schema.TypeBool,
+				Type:        schema.TypeBool,
 				Description: "Indicates if packages blacklist is relevant.",
-				Optional: true,
+				Optional:    true,
 			},
 			"packages_white_list_enabled": {
-				Type:     schema.TypeBool,
+				Type:        schema.TypeBool,
 				Description: "Indicates if packages whitelist is relevant.",
-				Optional: true,
+				Optional:    true,
 			},
 			"only_none_root_users": {
-				Type:     schema.TypeBool,
+				Type:        schema.TypeBool,
 				Description: "Indicates if raise a warning for images that should only be run as root.",
-				Optional: true,
+				Optional:    true,
 			},
 			"trusted_base_images_enabled": {
-				Type:     schema.TypeBool,
+				Type:        schema.TypeBool,
 				Description: "Indicates if list of trusted base images is relevant.",
-				Optional: true,
+				Optional:    true,
 			},
 			"scan_sensitive_data": {
-				Type:     schema.TypeBool,
+				Type:        schema.TypeBool,
 				Description: "Indicates if scan should include sensitive data in the image.",
-				Optional: true,
+				Optional:    true,
 			},
 			"audit_on_failure": {
-				Type:     schema.TypeBool,
+				Type:        schema.TypeBool,
 				Description: "Indicates if auditing for failures.",
-				Optional: true,
-				Default:  true,
+				Optional:    true,
+				Default:     true,
 			},
 			"fail_cicd": {
-				Type:     schema.TypeBool,
+				Type:        schema.TypeBool,
 				Description: "Indicates if cicd failures will fail the image.",
-				Optional: true,
-				Default:  true,
+				Optional:    true,
+				Default:     true,
 			},
 			"block_failed": {
-				Type:     schema.TypeBool,
+				Type:        schema.TypeBool,
 				Description: "Indicates if failed images are blocked.",
-				Optional: true,
-				Default:  true,
+				Optional:    true,
+				Default:     true,
 			},
 			"disallow_malware": {
-				Type:     schema.TypeBool,
+				Type:        schema.TypeBool,
 				Description: "Indicates if malware should block the image.",
-				Optional: true,
+				Optional:    true,
 			},
 			"monitored_malware_paths": {
 				Type:     schema.TypeList,
@@ -145,35 +145,35 @@ func resourceImageAssurancePolicy() *schema.Resource {
 				},
 			},
 			"blacklisted_licenses_enabled": {
-				Type:     schema.TypeBool,
+				Type:        schema.TypeBool,
 				Description: "Lndicates if license blacklist is relevant.",
-				Optional: true,
+				Optional:    true,
 			},
 			"blacklisted_licenses": {
-				Type:     schema.TypeList,
+				Type:        schema.TypeList,
 				Description: "List of blacklisted licenses.",
-				Optional: true,
+				Optional:    true,
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
 				},
 			},
 			"whitelisted_licenses_enabled": {
-				Type:     schema.TypeBool,
+				Type:        schema.TypeBool,
 				Description: "Indicates if license blacklist is relevant.",
-				Optional: true,
+				Optional:    true,
 			},
 			"whitelisted_licenses": {
-				Type:     schema.TypeList,
+				Type:        schema.TypeList,
 				Description: "List of whitelisted licenses.",
-				Optional: true,
+				Optional:    true,
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
 				},
 			},
 			"custom_checks": {
-				Type:     schema.TypeList,
+				Type:        schema.TypeList,
 				Description: "List of Custom user scripts for checks.",
-				Optional: true,
+				Optional:    true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"script_id": {
@@ -213,17 +213,17 @@ func resourceImageAssurancePolicy() *schema.Resource {
 							Optional: true,
 						},
 						"author": {
-							Type:     schema.TypeString,
+							Type:        schema.TypeString,
 							Description: "Name of user account that created the policy.",
-							Optional: true,
+							Optional:    true,
 						},
 					},
 				},
 			},
 			"scap_files": {
-				Type:     schema.TypeList,
+				Type:        schema.TypeList,
 				Description: "List of SCAP user scripts for checks.",
-				Optional: true,
+				Optional:    true,
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
 				},
@@ -265,41 +265,41 @@ func resourceImageAssurancePolicy() *schema.Resource {
 				},
 			},
 			"registries": {
-				Type:     schema.TypeList,
+				Type:        schema.TypeList,
 				Description: "List of registries.",
-				Optional: true,
+				Optional:    true,
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
 				},
 			},
 			"labels": {
-				Type:     schema.TypeList,
+				Type:        schema.TypeList,
 				Description: "List of labels.",
-				Optional: true,
+				Optional:    true,
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
 				},
 			},
 			"images": {
-				Type:     schema.TypeList,
+				Type:        schema.TypeList,
 				Description: "List of images.",
-				Optional: true,
+				Optional:    true,
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
 				},
 			},
 			"cves_black_list": {
-				Type:     schema.TypeList,
+				Type:        schema.TypeList,
 				Description: "List of cves blacklisted items.",
-				Optional: true,
+				Optional:    true,
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
 				},
 			},
 			"packages_black_list": {
-				Type:     schema.TypeSet,
+				Type:        schema.TypeSet,
 				Description: "List of backlisted images.",
-				Optional: true,
+				Optional:    true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"format": {
@@ -342,9 +342,9 @@ func resourceImageAssurancePolicy() *schema.Resource {
 				},
 			},
 			"packages_white_list": {
-				Type:     schema.TypeSet,
+				Type:        schema.TypeSet,
 				Description: "List of whitelisted images.",
-				Optional: true,
+				Optional:    true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"format": {
@@ -387,17 +387,17 @@ func resourceImageAssurancePolicy() *schema.Resource {
 				},
 			},
 			"allowed_images": {
-				Type:     schema.TypeList,
+				Type:        schema.TypeList,
 				Description: "List of explicitly allowed images.",
-				Optional: true,
+				Optional:    true,
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
 				},
 			},
 			"trusted_base_images": {
-				Type:     schema.TypeSet,
+				Type:        schema.TypeSet,
 				Description: "List of trusted images.",
-				Optional: true,
+				Optional:    true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"registry": {
@@ -440,27 +440,27 @@ func resourceImageAssurancePolicy() *schema.Resource {
 				Optional: true,
 			},
 			"cves_white_list_enabled": {
-				Type:     schema.TypeBool,
+				Type:        schema.TypeBool,
 				Description: "Indicates if cves whitelist is relevant.",
-				Optional: true,
+				Optional:    true,
 			},
 			"cves_white_list": {
-				Type:     schema.TypeList,
+				Type:        schema.TypeList,
 				Description: "List of cves whitelisted licenses",
-				Optional: true,
+				Optional:    true,
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
 				},
 			},
 			"blacklist_permissions_enabled": {
-				Type:     schema.TypeBool,
+				Type:        schema.TypeBool,
 				Description: "Indicates if blacklist permissions is relevant.",
-				Optional: true,
+				Optional:    true,
 			},
 			"blacklist_permissions": {
-				Type:     schema.TypeList,
+				Type:        schema.TypeList,
 				Description: "List of function's forbidden permissions.",
-				Optional: true,
+				Optional:    true,
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
 				},
@@ -486,14 +486,14 @@ func resourceImageAssurancePolicy() *schema.Resource {
 				Computed: true,
 			},
 			"ignore_risk_resources_enabled": {
-				Type:     schema.TypeBool,
+				Type:        schema.TypeBool,
 				Description: "Indicates if risk resources are ignored.",
-				Optional: true,
+				Optional:    true,
 			},
 			"ignored_risk_resources": {
-				Type:     schema.TypeList,
+				Type:        schema.TypeList,
 				Description: "List of ignored risk resources.",
-				Optional: true,
+				Optional:    true,
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
 				},
@@ -588,9 +588,9 @@ func resourceImageAssurancePolicy() *schema.Resource {
 				Optional: true,
 			},
 			"domain": {
-				Type:     schema.TypeString,
+				Type:        schema.TypeString,
 				Description: "Name of the container image.",
-				Optional: true,
+				Optional:    true,
 			},
 			"description": {
 				Type:     schema.TypeString,
@@ -613,9 +613,9 @@ func resourceImageAssurancePolicy() *schema.Resource {
 				Optional: true,
 			},
 			"maximum_score_exclude_no_fix": {
-				Type:     schema.TypeBool,
+				Type:        schema.TypeBool,
 				Description: "Indicates that policy should ignore cases that do not have a known fix.",
-				Optional: true,
+				Optional:    true,
 			},
 		},
 	}
@@ -717,7 +717,7 @@ func resourceImageAssurancePolicyRead(d *schema.ResourceData, m interface{}) err
 		d.Set("packages_black_list", flattenpackages(iap.PackagesBlackList))
 		d.Set("packages_white_list", flattenpackages(iap.PackagesWhiteList))
 		d.Set("allowed_images", iap.AllowedImages)
-		d.Set("trusted_base_images", iap.TrustedBaseImages)
+		d.Set("trusted_base_images", flattenTrusteBaseImages(iap.TrustedBaseImages))
 		d.Set("read_only", iap.ReadOnly)
 		d.Set("force_microenforcer", iap.ForceMicroenforcer)
 		d.Set("docker_cis_enabled", iap.DockerCisEnabled)
@@ -850,6 +850,17 @@ func flattenpackages(packages []client.ListPackages) []map[string]interface{} {
 		}
 	}
 	return package1
+}
+
+func flattenTrusteBaseImages(TrustedBaseImages []client.BaseImagesTrusted) []map[string]interface{} {
+	tbi := make([]map[string]interface{}, len(TrustedBaseImages))
+	for i, v := range TrustedBaseImages {
+		tbi[i] = map[string]interface{}{
+			"registry":  v.Registry,
+			"imagename": v.Imagename,
+		}
+	}
+	return tbi
 }
 
 func expandAssurancePolicy(d *schema.ResourceData) *client.AssurancePolicy {
