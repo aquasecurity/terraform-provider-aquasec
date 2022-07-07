@@ -38,6 +38,7 @@ type Registry struct {
 	PullImageAge        string        `json:"pull_image_age"`
 	PullImageTagPattern []interface{} `json:"pull_image_tag_pattern"`
 	AlwaysPullPatterns  []interface{} `json:"always_pull_patterns"`
+	ScannerType         string        `json:"scanner_type"`
 }
 
 func (cli *Client) GetRegistry(name string) (*Registry, error) {
@@ -91,6 +92,7 @@ func (cli *Client) GetRegistries() (*[]Registry, error) {
 
 // CreateRegistry - creates single Aqua registry
 func (cli *Client) CreateRegistry(reg Registry) error {
+
 	payload, err := json.Marshal(reg)
 	if err != nil {
 		return err
