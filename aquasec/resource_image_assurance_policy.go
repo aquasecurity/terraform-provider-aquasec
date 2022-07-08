@@ -717,7 +717,7 @@ func resourceImageAssurancePolicyRead(d *schema.ResourceData, m interface{}) err
 		d.Set("packages_black_list", flattenpackages(iap.PackagesBlackList))
 		d.Set("packages_white_list", flattenpackages(iap.PackagesWhiteList))
 		d.Set("allowed_images", iap.AllowedImages)
-		d.Set("trusted_base_images", flattenTrusteBaseImages(iap.TrustedBaseImages))
+		d.Set("trusted_base_images", flattenTrustedBaseImages(iap.TrustedBaseImages))
 		d.Set("read_only", iap.ReadOnly)
 		d.Set("force_microenforcer", iap.ForceMicroenforcer)
 		d.Set("docker_cis_enabled", iap.DockerCisEnabled)
@@ -852,7 +852,7 @@ func flattenpackages(packages []client.ListPackages) []map[string]interface{} {
 	return package1
 }
 
-func flattenTrusteBaseImages(TrustedBaseImages []client.BaseImagesTrusted) []map[string]interface{} {
+func flattenTrustedBaseImages(TrustedBaseImages []client.BaseImagesTrusted) []map[string]interface{} {
 	tbi := make([]map[string]interface{}, len(TrustedBaseImages))
 	for i, v := range TrustedBaseImages {
 		tbi[i] = map[string]interface{}{
