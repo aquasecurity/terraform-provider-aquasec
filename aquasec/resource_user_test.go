@@ -2,6 +2,7 @@ package aquasec
 
 import (
 	"fmt"
+	"os"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/acctest"
@@ -17,7 +18,13 @@ func TestAquasecUserManagement(t *testing.T) {
 	newEmail := "terraform1@test.com"
 	role := "Administrator"
 	resource.Test(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
+		PreCheck: func() {
+			testAccPreCheck(t)
+			//Skip if saas
+			if os.Getenv("AQUA_URL") == "https://cloud.aquasec.com" {
+				t.SkipNow()
+			}
+		},
 		Providers:    testAccProviders,
 		CheckDestroy: testAccUserDestroy,
 		Steps: []resource.TestStep{
