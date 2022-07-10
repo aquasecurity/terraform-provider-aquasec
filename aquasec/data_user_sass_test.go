@@ -7,10 +7,10 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
-func TestAquasecUserManagementDatasource(t *testing.T) {
+func TestAquasecUserSaasManagementDatasource(t *testing.T) {
 
-	if isSaasEnv() {
-		t.Skip("Skipping user test because its saas env")
+	if !isSaasEnv() {
+		t.Skip("Skipping saas user test because its on prem env")
 	}
 
 	resource.Test(t, resource.TestCase{
@@ -18,20 +18,20 @@ func TestAquasecUserManagementDatasource(t *testing.T) {
 		Providers: testAccProviders,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckAquasecUserDataSource(),
-				Check:  testAccCheckAquasecUsersDataSourceExists("data.aquasec_users.testusers"),
+				Config: testAccCheckAquasecUserSaasDataSource(),
+				Check:  testAccCheckAquasecUsersSaasDataSourceExists("data.aquasec_users_saas.testusers"),
 			},
 		},
 	})
 }
 
-func testAccCheckAquasecUserDataSource() string {
+func testAccCheckAquasecUserSaasDataSource() string {
 	return `
-	data "aquasec_users" "testusers" {}
+	data "aquasec_users_saas" "testusers" {}
 	`
 }
 
-func testAccCheckAquasecUsersDataSourceExists(n string) resource.TestCheckFunc {
+func testAccCheckAquasecUsersSaasDataSourceExists(n string) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 		rs, ok := s.RootModule().Resources[n]
 
@@ -40,7 +40,7 @@ func testAccCheckAquasecUsersDataSourceExists(n string) resource.TestCheckFunc {
 		}
 
 		if rs.Primary.ID == "" {
-			return NewNotFoundErrorf("ID for %s in state", n)
+			return NewNotFoundErrorf("Id for %s in state", n)
 		}
 
 		return nil

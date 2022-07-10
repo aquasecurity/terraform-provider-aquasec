@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/aquasecurity/terraform-provider-aquasec/client"
+	os "os"
 )
 
 func convertStringArr(ifaceArr []interface{}) []string {
@@ -164,4 +165,13 @@ func flattenGatewaysData(gateways *[]client.Gateway) ([]interface{}, string) {
 	}
 
 	return make([]interface{}, 0), ""
+}
+
+func isSaasEnv() bool {
+	url := os.Getenv("AQUA_URL")
+	if url == "https://cloud.aquasec.com" || url == "https://cloud-dev.aquasec.com" {
+		return true
+	} else {
+		return false
+	}
 }

@@ -9,7 +9,7 @@ import (
 )
 
 func TestAquasecRegistryDatasource(t *testing.T) {
-	name := "demo"
+	name := "Docker Hub"
 	resource.Test(t, resource.TestCase{
 		PreCheck:  func() { testAccPreCheck(t) },
 		Providers: testAccProviders,
