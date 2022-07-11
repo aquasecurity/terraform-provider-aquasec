@@ -2,7 +2,6 @@ package aquasec
 
 import (
 	"fmt"
-	"os"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
@@ -17,13 +16,6 @@ func TestAquasecPermissionSetManagement(t *testing.T) {
 	is_super := false
 	actions := "risks.vulnerabilities.read"
 
-<<<<<<< HEAD
-=======
-	if isSaasEnv() {
-		author = os.Getenv("AQUA_USER")
-	}
-
->>>>>>> 33cad2fb8bd1d16cfdf2e3ca04d8c5a8f583f1a6
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,
