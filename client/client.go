@@ -60,22 +60,31 @@ func NewClient(url, user, password string, verifyTLS bool, caCertByte []byte) *C
 		c.clientType = Csp
 		break
 	}
+
 	return c
 }
 
-func (cli *Client) GetAuthToken() (string, error) {
+func (cli *Client) SetAuthToken(token string) {
+	cli.token = token
+}
+
+func (cli *Client) SetUrl(url string) {
+	cli.url = url
+}
+
+func (cli *Client) GetAuthToken() (string, string, error) {
 	var err error
 
 	if cli.clientType == "csp" {
 		_, err = cli.GetCspAuthToken()
 	} else {
-		_, err = cli.GetUSEAuthToken()
+		_, _, err = cli.GetUSEAuthToken()
 	}
 
 	if err != nil {
-		return "", err
+		return "", "", err
 	}
-	return cli.token, nil
+	return cli.token, cli.url, nil
 }
 
 // GetAuthToken - Connect to Aqua and return a JWT bearerToken (string)
@@ -97,7 +106,7 @@ func (cli *Client) GetCspAuthToken() (string, error) {
 }
 
 // GetUSEAuthToken - Connect to Aqua SaaS solution and return a JWT bearerToken (string)
-func (cli *Client) GetUSEAuthToken() (string, error) {
+func (cli *Client) GetUSEAuthToken() (string, string, error) {
 	tokenUrl := consts.SaasTokenUrl
 	provUrl := consts.SaasProvUrl
 
@@ -109,7 +118,7 @@ func (cli *Client) GetUSEAuthToken() (string, error) {
 	resp, body, errs := cli.gorequest.Post(tokenUrl + "/v2/signin").
 		Send(`{"email":"` + cli.user + `", "password":"` + cli.password + `"}`).End()
 	if errs != nil {
-		return "", getMergedError(errs)
+		return "", "", getMergedError(errs)
 	}
 
 	if resp.StatusCode == 200 {
@@ -125,7 +134,7 @@ func (cli *Client) GetUSEAuthToken() (string, error) {
 		if errs != nil {
 			log.Println(events.StatusCode)
 			err := fmt.Errorf("error calling %s", provUrl)
-			return "", err
+			return "", "", err
 		}
 
 		if events.StatusCode == 200 {
@@ -135,8 +144,8 @@ func (cli *Client) GetUSEAuthToken() (string, error) {
 			cli.url = "https://" + data["ese_url"].(string)
 		}
 
-		return cli.token, nil
+		return cli.token, cli.url, nil
 	}
 
-	return "", fmt.Errorf("request failed. status: %s, response: %s", resp.Status, body)
+	return "", "", fmt.Errorf("request failed. status: %s, response: %s", resp.Status, body)
 }

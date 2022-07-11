@@ -45,4 +45,5 @@ func testAccPreCheck(t *testing.T) {
 	if err := os.Getenv("AQUA_URL"); err == "" {
 		t.Fatal("AQUA_URL must be set for acceptance tests")
 	}
+
 }

@@ -4,14 +4,13 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
-	"log"
-	"os"
-
 	"github.com/aquasecurity/terraform-provider-aquasec/client"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/mitchellh/go-homedir"
+	"io/ioutil"
+	"log"
+	"os"
 )
 
 //Config - godoc
@@ -201,16 +200,27 @@ func providerConfigure(ctx context.Context, d *schema.ResourceData) (interface{}
 
 	aquaClient := client.NewClient(aquaURL, username, password, verifyTLS, caCertByte)
 
-	_, err = aquaClient.GetAuthToken()
+	token, tokenPresent := os.LookupEnv("TESTING_AUTH_TOKEN")
 
-	if err != nil {
-		diags = append(diags, diag.Diagnostic{
-			Severity: diag.Error,
-			Summary:  "Unable to fetch token",
-			Detail:   err.Error(),
-		})
+	url, urlPresent := os.LookupEnv("TESTING_URL")
 
-		return nil, diags
+	if !tokenPresent || !urlPresent {
+		_, _, err = aquaClient.GetAuthToken()
+
+		if err != nil {
+			diags = append(diags, diag.Diagnostic{
+				Severity: diag.Error,
+				Summary:  "Unable to fetch token",
+				Detail:   err.Error(),
+			})
+
+			return nil, diags
+		}
+	} else {
+		aquaClient.SetAuthToken(token)
+		aquaClient.SetUrl(url)
+
 	}
+
 	return aquaClient, diags
 }

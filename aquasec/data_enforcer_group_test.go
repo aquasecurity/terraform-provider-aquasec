@@ -9,7 +9,9 @@ import (
 )
 
 func TestAquasecEnforcerGroupDatasource(t *testing.T) {
-	groupID := "local"
+
+	groupID := "default"
+
 	resource.Test(t, resource.TestCase{
 		PreCheck:  func() { testAccPreCheck(t) },
 		Providers: testAccProviders,
@@ -24,6 +26,7 @@ func TestAquasecEnforcerGroupDatasource(t *testing.T) {
 
 func testAccCheckAquasecEnforcerGroupDataSource(groupID string) string {
 	return fmt.Sprintf(`
+	
 	data "aquasec_enforcer_groups" "testegdata" {
 		group_id = "%s"
 	}

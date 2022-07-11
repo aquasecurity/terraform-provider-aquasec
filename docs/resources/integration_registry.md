@@ -30,6 +30,7 @@ description: |-
 - **id** (String) The ID of this resource.
 - **last_updated** (String) The last time the registry was modified in UNIX time
 - **password** (String) The password for registry authentication
+- **scanner_type** (String) The Scanner type
 - **url** (String) The URL, address or region of the registry
 - **username** (String) The username for registry authentication.
 
