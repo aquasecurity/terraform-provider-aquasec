@@ -34,7 +34,6 @@ func TestResourceAquasecImageCreate(t *testing.T) {
 					resource.TestCheckResourceAttr(rootRef, "tag", image.Tag),
 					resource.TestCheckResourceAttr(rootRef, "scan_status", "pending"),
 					resource.TestCheckResourceAttrSet(rootRef, "disallowed"),
-					//resource.TestCheckResourceAttrSet(rootRef, "created"),
 					resource.TestCheckResourceAttrSet(rootRef, "scan_date"),
 					resource.TestCheckResourceAttr(rootRef, "scan_error", ""),
 					resource.TestCheckResourceAttrSet(rootRef, "critical_vulnerabilities"),
@@ -186,6 +185,7 @@ func getRegistry(name string) string {
 	resource "aquasec_integration_registry" "demo" {
 		name = "%s"
 		type = "HUB"
+		scanner_type = "any"
 		prefixes = [
 			""
 		]

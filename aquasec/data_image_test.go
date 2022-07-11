@@ -13,7 +13,7 @@ import (
 var imageData = client.Image{
 	Registry:   acctest.RandomWithPrefix("terraform-test"),
 	Repository: "alpine",
-	Tag:        "3.4",
+	Tag:        "3.13",
 }
 
 func TestDataSourceAquasecImage(t *testing.T) {

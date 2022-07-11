@@ -199,7 +199,7 @@ func resourceUserSaasCreate(d *schema.ResourceData, m interface{}) error {
 
 	err = resourceUserSaasRead(d, m)
 	if err == nil {
-		d.SetId(user.Id)
+		d.SetId(user.BasicId.Id)
 	} else {
 		return err
 	}

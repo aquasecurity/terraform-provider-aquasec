@@ -14,6 +14,7 @@ func TestAquasecPermissionSetManagement(t *testing.T) {
 	ui_access := true
 	is_super := false
 	actions := "risks.vulnerabilities.read"
+
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,

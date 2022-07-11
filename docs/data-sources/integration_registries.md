@@ -22,6 +22,7 @@ description: |-
 ### Optional
 
 - **id** (String) The ID of this resource.
+- **scanner_type** (String) Scanner type
 
 ### Read-only
 

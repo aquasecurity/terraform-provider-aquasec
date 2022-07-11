@@ -71,6 +71,11 @@ func resourceRegistry() *schema.Resource {
 				Description: "The time of day to start pulling new images from the registry, in the format HH:MM (24-hour clock), defaults to 03:00",
 				Optional:    true,
 			},
+			"scanner_type": {
+				Type:        schema.TypeString,
+				Description: "The Scanner type",
+				Optional:    true,
+			},
 			"prefixes": {
 				Type:        schema.TypeList,
 				Description: "List of possible prefixes to image names pulled from the registry",
@@ -85,7 +90,10 @@ func resourceRegistry() *schema.Resource {
 
 func resourceRegistryCreate(d *schema.ResourceData, m interface{}) error {
 	ac := m.(*client.Client)
-
+	scannerType := d.Get("scanner_type").(string)
+	if scannerType == "" {
+		scannerType = "any"
+	}
 	// Get and Convert Roles
 	prefixes := d.Get("prefixes").([]interface{})
 	registry := client.Registry{
@@ -97,8 +105,8 @@ func resourceRegistryCreate(d *schema.ResourceData, m interface{}) error {
 		AutoPull:     d.Get("auto_pull").(bool),
 		AutoPullMax:  d.Get("auto_pull_max").(int),
 		AutoPullTime: d.Get("auto_pull_time").(string),
+		ScannerType:  scannerType,
 		Prefixes:     convertStringArr(prefixes),
-		ScannerType:  "any",
 	}
 
 	err := ac.CreateRegistry(registry)
@@ -133,7 +141,10 @@ func resourceRegistryRead(d *schema.ResourceData, m interface{}) error {
 
 func resourceRegistryUpdate(d *schema.ResourceData, m interface{}) error {
 	c := m.(*client.Client)
-
+	scannerType := d.Get("scanner_type").(string)
+	if scannerType == "" {
+		scannerType = "any"
+	}
 	if d.HasChanges("name", "username", "password", "url", "type", "auto_pull", "auto_pull_max", "auto_pull_time", "prefixes") {
 		prefixes := d.Get("prefixes").([]interface{})
 		registry := client.Registry{
@@ -145,8 +156,8 @@ func resourceRegistryUpdate(d *schema.ResourceData, m interface{}) error {
 			AutoPull:     d.Get("auto_pull").(bool),
 			AutoPullMax:  d.Get("auto_pull_max").(int),
 			AutoPullTime: d.Get("auto_pull_time").(string),
+			ScannerType:  scannerType,
 			Prefixes:     convertStringArr(prefixes),
-			ScannerType:  "any",
 		}
 
 		err := c.UpdateRegistry(registry)

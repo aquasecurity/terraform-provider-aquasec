@@ -201,7 +201,7 @@ func (cli *Client) CreateUser(user *FullUser) error {
 	if cli.clientType == Saas {
 		sass = true
 		baseUrl = consts.SaasTokenUrl
-		apiPath = "v2/users"
+		apiPath = "/v2/users"
 	}
 
 	if cli.clientType == SaasDev {
