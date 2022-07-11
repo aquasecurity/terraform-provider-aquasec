@@ -57,6 +57,7 @@ func TestResourceAquasecImageAllow(t *testing.T) {
 	t.Parallel()
 	image := newTestImage()
 	rootRef := imageResourceRef("test")
+	t.Skip("Skipping Image Allow test because dockerhub blocking to scan images")
 	resource.Test(t, resource.TestCase{
 		PreCheck: func() {
 			testAccPreCheck(t)
@@ -87,6 +88,7 @@ func TestResourceAquasecImageBlock(t *testing.T) {
 	t.Parallel()
 	image := newTestImage()
 	rootRef := imageResourceRef("test")
+	t.Skip("Skipping Image Block test because dockerhub blocking to scan images")
 	resource.Test(t, resource.TestCase{
 		PreCheck: func() {
 			testAccPreCheck(t)
@@ -117,6 +119,7 @@ func TestResourceAquasecImageAllowAndBlock(t *testing.T) {
 	t.Parallel()
 	image := newTestImage()
 	rootRef := imageResourceRef("test")
+	t.Skip("Skipping Image Allow and Block test because dockerhub blocking to scan images")
 	resource.Test(t, resource.TestCase{
 		PreCheck: func() {
 			testAccPreCheck(t)

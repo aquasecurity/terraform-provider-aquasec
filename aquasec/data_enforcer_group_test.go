@@ -39,7 +39,8 @@ func TestAquasecEnforcerGroupDatasource(t *testing.T) {
 
 func testAccCheckAquasecEnforcerGroupDataSource(enforcerGroup client.EnforcerGroup) string {
 	return fmt.Sprintf(`
-	resource "aquasec_enforcer_groups" new {
+	
+	data "aquasec_enforcer_groups" "testegdata" {
 		group_id = "%s"
 		description = "%s"
 		logical_name = "%s"
