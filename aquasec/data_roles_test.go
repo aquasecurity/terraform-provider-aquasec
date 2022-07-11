@@ -10,7 +10,7 @@ import (
 func TestAquasecRolesDatasource(t *testing.T) {
 
 	if isSaasEnv() {
-		t.Skip("Skipping prem user test because its on saas env")
+		t.Skip("Skipping prem roles test because its on saas env")
 	}
 	t.Parallel()
 	resource.Test(t, resource.TestCase{

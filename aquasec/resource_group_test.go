@@ -12,7 +12,7 @@ import (
 func TestAquasecGroupManagement(t *testing.T) {
 
 	if !isSaasEnv() {
-		t.Skip("Skipping saas user test because its on prem env")
+		t.Skip("Skipping saas groups test because its on prem env")
 	}
 	t.Parallel()
 	groupName := acctest.RandomWithPrefix("groupTest")
