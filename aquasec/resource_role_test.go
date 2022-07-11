@@ -10,6 +10,11 @@ import (
 )
 
 func TestAquasecRoleManagement(t *testing.T) {
+
+	if isSaasEnv() {
+		t.Skip("Skipping prem user test because its on saas env")
+	}
+	t.Parallel()
 	roleName := acctest.RandomWithPrefix("roleTest")
 	description := "roleTest1"
 	newDescription := "roleTest2"

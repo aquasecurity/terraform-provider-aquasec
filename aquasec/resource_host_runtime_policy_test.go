@@ -11,6 +11,7 @@ import (
 )
 
 func TestResourceAquasecBasicHostRuntimePolicyCreate(t *testing.T) {
+	t.Parallel()
 	var basicRuntimePolicy = client.RuntimePolicy{
 		Name:             acctest.RandomWithPrefix("test-host-runtime-policy"),
 		Description:      "This is a test description of host runtime policy",
@@ -44,6 +45,7 @@ func TestResourceAquasecBasicHostRuntimePolicyCreate(t *testing.T) {
 }
 
 func TestResourceAquasecComplexHostRuntimePolicyCreate(t *testing.T) {
+	t.Parallel()
 	var complexRuntimePolicy = client.RuntimePolicy{
 		Name:        acctest.RandomWithPrefix("test-host-runtime-policy"),
 		Description: "This is a test description of host runtime policy",

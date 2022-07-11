@@ -9,6 +9,7 @@ import (
 )
 
 func TestAquasecNotification(t *testing.T) {
+	t.Parallel()
 	user_name := "Aquasec"
 	channel := "#general"
 	webhook_url := "terraform-eg"

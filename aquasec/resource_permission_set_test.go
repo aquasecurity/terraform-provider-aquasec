@@ -9,6 +9,7 @@ import (
 )
 
 func TestAquasecPermissionSetManagement(t *testing.T) {
+	t.Parallel()
 	name := "terraform"
 	description := "created from terraform "
 	ui_access := true

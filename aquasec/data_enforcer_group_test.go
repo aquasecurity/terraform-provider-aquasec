@@ -11,6 +11,7 @@ import (
 )
 
 func TestAquasecEnforcerGroupDatasource(t *testing.T) {
+	t.Parallel()
 	var basicEnforcerGroup = client.EnforcerGroup{
 		ID:          acctest.RandomWithPrefix("terraform-test"),
 		Description: "Created",

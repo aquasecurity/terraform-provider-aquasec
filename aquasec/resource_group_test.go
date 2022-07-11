@@ -10,12 +10,13 @@ import (
 )
 
 func TestAquasecGroupManagement(t *testing.T) {
-	groupName := acctest.RandomWithPrefix("groupTest")
-	groupNewName := groupName + "new"
 
 	if !isSaasEnv() {
 		t.Skip("Skipping saas user test because its on prem env")
 	}
+	t.Parallel()
+	groupName := acctest.RandomWithPrefix("groupTest")
+	groupNewName := groupName + "new"
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },

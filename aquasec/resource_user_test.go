@@ -10,16 +10,18 @@ import (
 )
 
 func TestAquasecUserManagement(t *testing.T) {
+
+	if isSaasEnv() {
+		t.Skip("Skipping user test because its saas env")
+	}
+
+	t.Parallel()
 	userID := acctest.RandomWithPrefix("terraform-test-user")
 	password := "Pas5wo-d"
 	name := "terraform"
 	email := "terraform@test.com"
 	newEmail := "terraform1@test.com"
 	role := "Administrator"
-
-	if isSaasEnv() {
-		t.Skip("Skipping user test because its saas env")
-	}
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },

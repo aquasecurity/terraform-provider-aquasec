@@ -17,6 +17,7 @@ var imageData = client.Image{
 }
 
 func TestDataSourceAquasecImage(t *testing.T) {
+	t.Parallel()
 	rootRef := imageDataRef("test")
 	resource.Test(t, resource.TestCase{
 		PreCheck: func() {

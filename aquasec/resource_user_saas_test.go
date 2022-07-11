@@ -10,14 +10,16 @@ import (
 )
 
 func TestAquasecUsersSaasManagement(t *testing.T) {
-	userID := acctest.RandomWithPrefix("terrafrom.user")
-	email := fmt.Sprintf("%s@aquasec.com", userID)
-	groups := acctest.RandomWithPrefix("firstGroup")
-	newGroups := acctest.RandomWithPrefix("secondGroup")
 
 	if !isSaasEnv() {
 		t.Skip("Skipping saas user test because its on prem env")
 	}
+
+	t.Parallel()
+	userID := acctest.RandomWithPrefix("terrafrom.user")
+	email := fmt.Sprintf("%s@aquasec.com", userID)
+	groups := acctest.RandomWithPrefix("firstGroup")
+	newGroups := acctest.RandomWithPrefix("secondGroup")
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },

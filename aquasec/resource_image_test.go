@@ -10,14 +10,17 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 )
 
-var image = client.Image{
-	Registry:   acctest.RandomWithPrefix("terraform-test"),
-	Repository: "alpine",
-	Tag:        "3.4",
+func newTestImage() client.Image {
+	return client.Image{
+		Registry:   acctest.RandomWithPrefix("terraform-test"),
+		Repository: "alpine",
+		Tag:        "3.4",
+	}
 }
 
 func TestResourceAquasecImageCreate(t *testing.T) {
-
+	t.Parallel()
+	image := newTestImage()
 	rootRef := imageResourceRef("test")
 	resource.Test(t, resource.TestCase{
 		PreCheck: func() {
@@ -51,6 +54,8 @@ func TestResourceAquasecImageCreate(t *testing.T) {
 }
 
 func TestResourceAquasecImageAllow(t *testing.T) {
+	t.Parallel()
+	image := newTestImage()
 	rootRef := imageResourceRef("test")
 	resource.Test(t, resource.TestCase{
 		PreCheck: func() {
@@ -79,6 +84,8 @@ func TestResourceAquasecImageAllow(t *testing.T) {
 }
 
 func TestResourceAquasecImageBlock(t *testing.T) {
+	t.Parallel()
+	image := newTestImage()
 	rootRef := imageResourceRef("test")
 	resource.Test(t, resource.TestCase{
 		PreCheck: func() {
@@ -107,6 +114,8 @@ func TestResourceAquasecImageBlock(t *testing.T) {
 }
 
 func TestResourceAquasecImageAllowAndBlock(t *testing.T) {
+	t.Parallel()
+	image := newTestImage()
 	rootRef := imageResourceRef("test")
 	resource.Test(t, resource.TestCase{
 		PreCheck: func() {

@@ -20,12 +20,14 @@ func init() {
 }
 
 func TestProvider(t *testing.T) {
+	t.Parallel()
 	if err := Provider(testVersion).InternalValidate(); err != nil {
 		t.Fatalf("err: %s", err)
 	}
 }
 
 func TestProvider_impl(t *testing.T) {
+	t.Parallel()
 	var _ *schema.Provider = Provider(testVersion)
 }
 
