@@ -2,17 +2,25 @@ package aquasec
 
 import (
 	"fmt"
-	"github.com/aquasecurity/terraform-provider-aquasec/client"
 	"io/ioutil"
 	"log"
 	"os"
 	"strconv"
+
+	"github.com/aquasecurity/terraform-provider-aquasec/client"
 )
 
 func init() {
+	tfacc, present := os.LookupEnv("TF_ACC")
+	if !present {
+		return
+	}
+	if tfacc != "1" {
+		return
+	}
 	log.Println("setup suite")
 	var (
-		present, verifyTLS                                       bool
+		verifyTLS                                                bool
 		username, password, aquaURL, verifyTLSString, caCertPath string
 		err                                                      error
 		caCertByte                                               []byte
