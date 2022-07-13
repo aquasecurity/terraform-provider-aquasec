@@ -15,35 +15,43 @@ func resourcePermissionSet() *schema.Resource {
 		Schema: map[string]*schema.Schema{
 			"id": {
 				Type:     schema.TypeString,
+				Description: "The ID of this resource.",
 				Optional: true,
 				Computed: true,
 			},
 			"name": {
 				Type:     schema.TypeString,
+				Description: "The name of the Permission Set, comprised of alphanumeric characters and '-', '_', ' ', ':', '.', '@', '!', '^'.",
 				Required: true,
 			},
 			"description": {
 				Type:     schema.TypeString,
+				Description: "Free text description for the Permission Set.",
 				Optional: true,
 			},
 			"updated_at": {
 				Type:     schema.TypeString,
+				Description: "The date of the last modification of the Role.",
 				Computed: true,
 			},
 			"author": {
 				Type:     schema.TypeString,
+				Description: "The name of the user who created the Permission Set.",
 				Optional: true,
 			},
 			"ui_access": {
 				Type:     schema.TypeBool,
+				Description: "Whether to allow UI access for users with this Permission Set.",
 				Required: true,
 			},
 			"is_super": {
 				Type:     schema.TypeBool,
+				Description: "Give the Permission Set full access, meaning all actions are allowed without restriction.",
 				Optional: true,
 			},
 			"actions": {
 				Type:     schema.TypeList,
+				Description: "List of allowed actions for the Permission Set (not relevant if 'is_super' is true).",
 				Required: true,
 				Elem: &schema.Schema{
 					Type: schema.TypeString,

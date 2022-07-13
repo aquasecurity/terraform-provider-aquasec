@@ -29,6 +29,7 @@ func resourceEnforcerGroup() *schema.Resource {
 			},
 			"allowed_labels": {
 				Type:     schema.TypeSet,
+				Description: "List of label names to allow on the hosts.",
 				Optional: true,
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
@@ -36,6 +37,7 @@ func resourceEnforcerGroup() *schema.Resource {
 			},
 			"allowed_applications": {
 				Type:     schema.TypeSet,
+				Description: "List of application names to allow on the hosts. if provided, only containers of the listed applications will be allowed to run.",
 				Optional: true,
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
@@ -43,6 +45,7 @@ func resourceEnforcerGroup() *schema.Resource {
 			},
 			"allowed_registries": {
 				Type:     schema.TypeSet,
+				Description: "List of registry names to allow on the hosts.",
 				Optional: true,
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
@@ -87,6 +90,7 @@ func resourceEnforcerGroup() *schema.Resource {
 			},
 			"command": {
 				Type:     schema.TypeList,
+				Description: "The installation command.",
 				Computed: true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
@@ -123,6 +127,7 @@ func resourceEnforcerGroup() *schema.Resource {
 			},
 			"description": {
 				Type:     schema.TypeString,
+				Description: "A description of the Aqua Enforcer group.",
 				Optional: true,
 			},
 			"disconnected_count": {
@@ -131,6 +136,7 @@ func resourceEnforcerGroup() *schema.Resource {
 			},
 			"enforce": {
 				Type:     schema.TypeBool,
+				Description: "Whether to enable enforce mode on the Enforcers, defaults to False.",
 				Optional: true,
 			},
 			"enforcer_image_name": {
@@ -147,6 +153,7 @@ func resourceEnforcerGroup() *schema.Resource {
 			},
 			"gateways": {
 				Type:     schema.TypeList,
+				Description: "List of Aqua gateway IDs for the Enforcers.",
 				Optional: true,
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
@@ -197,6 +204,7 @@ func resourceEnforcerGroup() *schema.Resource {
 			},
 			"group_id": {
 				Type:     schema.TypeString,
+				Description: "The ID of the Enforcer group.",
 				Required: true,
 				ForceNew: true,
 			},
@@ -211,10 +219,12 @@ func resourceEnforcerGroup() *schema.Resource {
 			},
 			"last_update": {
 				Type:     schema.TypeInt,
+				Description: "The last date and time the batch token was updated in UNIX time.",
 				Computed: true,
 			},
 			"logical_name": {
 				Type:     schema.TypeString,
+				Description: "Name for the batch install record.",
 				Optional: true,
 			},
 			"low_vulns": {
@@ -266,10 +276,12 @@ func resourceEnforcerGroup() *schema.Resource {
 						},
 						"service_account": {
 							Type:     schema.TypeString,
+							Description: "May be specified for these orchestrators: Kubernetes, Kubernetes GKE, OpenShift, VMware Tanzu Kubernetes Grid Integrated Edition (PKS).",
 							Optional: true,
 						},
 						"namespace": {
 							Type:     schema.TypeString,
+							Description: "May be specified for these orchestrators: Kubernetes, Kubernetes GKE, VMware Tanzu Kubernetes Grid Integrated Edition (PKS).",
 							Optional: true,
 						},
 					},
@@ -307,10 +319,12 @@ func resourceEnforcerGroup() *schema.Resource {
 			},
 			"token": {
 				Type:     schema.TypeString,
+				Description: "The batch install token.",
 				Computed: true,
 			},
 			"type": {
 				Type:         schema.TypeString,
+				Description: "Select the OS type for the host.",
 				Required:     true,
 				ForceNew:     true,
 				ValidateFunc: validation.StringInSlice([]string{"agent", "host_enforcer", "kube_enforcer", "micro_enforcer", "nano_enforcer"}, false),

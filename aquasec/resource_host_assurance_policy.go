@@ -14,6 +14,7 @@ func resourceHostAssurancePolicy() *schema.Resource {
 		Schema: map[string]*schema.Schema{
 			"assurance_type": {
 				Type:     schema.TypeString,
+				Description: "What type of assurance policy is described.",
 				Optional: true,
 			},
 			"id": {
@@ -26,6 +27,7 @@ func resourceHostAssurancePolicy() *schema.Resource {
 			},
 			"author": {
 				Type:     schema.TypeString,
+				Description: "Name of user account that created the policy.",
 				Computed: true,
 			},
 			"registry": {
@@ -34,14 +36,17 @@ func resourceHostAssurancePolicy() *schema.Resource {
 			},
 			"cvss_severity_enabled": {
 				Type:     schema.TypeBool,
+				Description: "Indicates if the cvss severity is scanned.",
 				Optional: true,
 			},
 			"cvss_severity": {
 				Type:     schema.TypeString,
+				Description: "Identifier of the cvss severity.",
 				Optional: true,
 			},
 			"cvss_severity_exclude_no_fix": {
 				Type:     schema.TypeBool,
+				Description: "Indicates that policy should ignore cvss cases that do not have a known fix.",
 				Optional: true,
 			},
 			"custom_severity_enabled": {
@@ -50,10 +55,12 @@ func resourceHostAssurancePolicy() *schema.Resource {
 			},
 			"maximum_score_enabled": {
 				Type:     schema.TypeBool,
+				Description: "Indicates if exceeding the maximum score is scanned.",
 				Optional: true,
 			},
 			"maximum_score": {
 				Type:     schema.TypeFloat,
+				Description: "Value of allowed maximum score.",
 				Optional: true,
 			},
 			"control_exclude_no_fix": {
@@ -62,53 +69,65 @@ func resourceHostAssurancePolicy() *schema.Resource {
 			},
 			"custom_checks_enabled": {
 				Type:     schema.TypeBool,
+				Description: "Indicates if scanning should include custom checks.",
 				Optional: true,
 			},
 			"scap_enabled": {
 				Type:     schema.TypeBool,
+				Description: "Indicates if scanning should include scap.",
 				Optional: true,
 			},
 			"cves_black_list_enabled": {
 				Type:     schema.TypeBool,
+				Description: "Indicates if cves blacklist is relevant.",
 				Optional: true,
 			},
 			"packages_black_list_enabled": {
 				Type:     schema.TypeBool,
+				Description: "Indicates if packages blacklist is relevant.",
 				Optional: true,
 			},
 			"packages_white_list_enabled": {
 				Type:     schema.TypeBool,
+				Description: "Indicates if packages whitelist is relevant.",
 				Optional: true,
 			},
 			"only_none_root_users": {
 				Type:     schema.TypeBool,
+				Description: "Indicates if raise a warning for images that should only be run as root.",
 				Optional: true,
 			},
 			"trusted_base_images_enabled": {
 				Type:     schema.TypeBool,
+				Description: "Indicates if list of trusted base images is relevant.",
 				Optional: true,
 			},
 			"scan_sensitive_data": {
 				Type:     schema.TypeBool,
+				Description: "Indicates if scan should include sensitive data in the image.",
 				Optional: true,
 			},
 			"audit_on_failure": {
 				Type:     schema.TypeBool,
+				Description: "Indicates if auditing for failures.",
 				Optional: true,
 				Default:  true,
 			},
 			"fail_cicd": {
 				Type:     schema.TypeBool,
+				Description: "Indicates if cicd failures will fail the image.",
 				Optional: true,
 				Default:  true,
 			},
 			"block_failed": {
 				Type:     schema.TypeBool,
+				Description: "Indicates if failed images are blocked.",
 				Optional: true,
 				Default:  true,
 			},
 			"disallow_malware": {
 				Type:     schema.TypeBool,
+				Description: "Indicates if malware should block the image.",
 				Optional: true,
 			},
 			"monitored_malware_paths": {
@@ -127,10 +146,12 @@ func resourceHostAssurancePolicy() *schema.Resource {
 			},
 			"blacklisted_licenses_enabled": {
 				Type:     schema.TypeBool,
+				Description: "Lndicates if license blacklist is relevant.",
 				Optional: true,
 			},
 			"blacklisted_licenses": {
 				Type:     schema.TypeList,
+				Description: "List of blacklisted licenses.",
 				Optional: true,
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
@@ -138,10 +159,12 @@ func resourceHostAssurancePolicy() *schema.Resource {
 			},
 			"whitelisted_licenses_enabled": {
 				Type:     schema.TypeBool,
+				Description: "Indicates if license blacklist is relevant.",
 				Optional: true,
 			},
 			"whitelisted_licenses": {
 				Type:     schema.TypeList,
+				Description: "List of whitelisted licenses.",
 				Optional: true,
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
@@ -149,6 +172,7 @@ func resourceHostAssurancePolicy() *schema.Resource {
 			},
 			"custom_checks": {
 				Type:     schema.TypeList,
+				Description: "List of Custom user scripts for checks.",
 				Optional: true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
@@ -190,6 +214,7 @@ func resourceHostAssurancePolicy() *schema.Resource {
 						},
 						"author": {
 							Type:     schema.TypeString,
+							Description: "Name of user account that created the policy.",
 							Optional: true,
 						},
 					},
@@ -197,6 +222,7 @@ func resourceHostAssurancePolicy() *schema.Resource {
 			},
 			"scap_files": {
 				Type:     schema.TypeList,
+				Description: "List of SCAP user scripts for checks.",
 				Optional: true,
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
@@ -240,6 +266,7 @@ func resourceHostAssurancePolicy() *schema.Resource {
 			},
 			"registries": {
 				Type:     schema.TypeList,
+				Description: "List of registries.",
 				Optional: true,
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
@@ -247,6 +274,7 @@ func resourceHostAssurancePolicy() *schema.Resource {
 			},
 			"labels": {
 				Type:     schema.TypeList,
+				Description: "List of labels.",
 				Optional: true,
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
@@ -254,6 +282,7 @@ func resourceHostAssurancePolicy() *schema.Resource {
 			},
 			"images": {
 				Type:     schema.TypeList,
+				Description: "List of images.",
 				Optional: true,
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
@@ -261,6 +290,7 @@ func resourceHostAssurancePolicy() *schema.Resource {
 			},
 			"cves_black_list": {
 				Type:     schema.TypeList,
+				Description: "List of cves blacklisted items.",
 				Optional: true,
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
@@ -268,6 +298,7 @@ func resourceHostAssurancePolicy() *schema.Resource {
 			},
 			"packages_black_list": {
 				Type:     schema.TypeSet,
+				Description: "List of backlisted images.",
 				Optional: true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
@@ -312,6 +343,7 @@ func resourceHostAssurancePolicy() *schema.Resource {
 			},
 			"packages_white_list": {
 				Type:     schema.TypeSet,
+				Description: "List of whitelisted images.",
 				Optional: true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
@@ -356,6 +388,7 @@ func resourceHostAssurancePolicy() *schema.Resource {
 			},
 			"allowed_images": {
 				Type:     schema.TypeList,
+				Description: "List of explicitly allowed images.",
 				Optional: true,
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
@@ -363,6 +396,7 @@ func resourceHostAssurancePolicy() *schema.Resource {
 			},
 			"trusted_base_images": {
 				Type:     schema.TypeSet,
+				Description: "List of trusted images.",
 				Optional: true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
@@ -407,10 +441,12 @@ func resourceHostAssurancePolicy() *schema.Resource {
 			},
 			"cves_white_list_enabled": {
 				Type:     schema.TypeBool,
+				Description: "Indicates if cves whitelist is relevant.",
 				Optional: true,
 			},
 			"cves_white_list": {
 				Type:     schema.TypeList,
+				Description: "List of cves whitelisted licenses",
 				Optional: true,
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
@@ -418,10 +454,12 @@ func resourceHostAssurancePolicy() *schema.Resource {
 			},
 			"blacklist_permissions_enabled": {
 				Type:     schema.TypeBool,
+				Description: "Indicates if blacklist permissions is relevant.",
 				Optional: true,
 			},
 			"blacklist_permissions": {
 				Type:     schema.TypeList,
+				Description: "List of function's forbidden permissions.",
 				Optional: true,
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
@@ -449,10 +487,12 @@ func resourceHostAssurancePolicy() *schema.Resource {
 			},
 			"ignore_risk_resources_enabled": {
 				Type:     schema.TypeBool,
+				Description: "Indicates if risk resources are ignored.",
 				Optional: true,
 			},
 			"ignored_risk_resources": {
 				Type:     schema.TypeList,
+				Description: "List of ignored risk resources.",
 				Optional: true,
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
@@ -549,6 +589,7 @@ func resourceHostAssurancePolicy() *schema.Resource {
 			},
 			"domain": {
 				Type:     schema.TypeString,
+				Description: "Name of the container image.",
 				Optional: true,
 			},
 			"description": {
@@ -573,6 +614,7 @@ func resourceHostAssurancePolicy() *schema.Resource {
 			},
 			"maximum_score_exclude_no_fix": {
 				Type:     schema.TypeBool,
+				Description: "Indicates that policy should ignore cases that do not have a known fix.",
 				Optional: true,
 			},
 		},

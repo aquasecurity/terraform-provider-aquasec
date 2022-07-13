@@ -17,21 +17,22 @@ description: |-
 
 ### Required
 
-- **name** (String)
+- **name** (String) The name of the registry; string, required - this will be treated as the registry's ID, so choose a simple alphanumerical name without special signs and spaces
 
 ### Optional
 
 - **id** (String) The ID of this resource.
+- **scanner_type** (String) Scanner type
 
 ### Read-only
 
-- **auto_pull** (Boolean)
-- **auto_pull_max** (Number)
-- **auto_pull_time** (String)
-- **password** (String)
-- **prefixes** (List of String)
-- **type** (String)
-- **url** (String)
-- **username** (String)
+- **auto_pull** (Boolean) Whether to automatically pull images from the registry on creation and daily
+- **auto_pull_max** (Number) Maximum number of repositories to pull every day, defaults to 100
+- **auto_pull_time** (String) The time of day to start pulling new images from the registry, in the format HH:MM (24-hour clock), defaults to 03:00
+- **password** (String) The password for registry authentication
+- **prefixes** (List of String) List of possible prefixes to image names pulled from the registry
+- **type** (String) Registry type (HUB / V1 / V2 / ENGINE / AWS / GCR).
+- **url** (String) The URL, address or region of the registry
+- **username** (String) The username for registry authentication.
 
 

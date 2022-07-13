@@ -50,7 +50,7 @@ output "gateway_grpc_address" {
 
 ### Read-only
 
-- **gateways** (List of Object) (see [below for nested schema](#nestedatt--gateways))
+- **gateways** (List of Object) A list of existing gateways' parameters. (see [below for nested schema](#nestedatt--gateways))
 
 <a id="nestedatt--gateways"></a>
 ### Nested Schema for `gateways`

@@ -22,30 +22,37 @@ func dataSourcePermissionsSets() *schema.Resource {
 					Schema: map[string]*schema.Schema{
 						"name": {
 							Type:     schema.TypeString,
+							Description: "The name of the Permission Set, comprised of alphanumeric characters and '-', '_', ' ', ':', '.', '@', '!', '^'.",
 							Computed: true,
 						},
 						"description": {
 							Type:     schema.TypeString,
+							Description: "Free text description for the Permission Set.",
 							Computed: true,
 						},
 						"author": {
 							Type:     schema.TypeString,
+							Description: "The name of the user who created the Permission Set.",
 							Computed: true,
 						},
 						"updated_at": {
 							Type:     schema.TypeString,
+							Description: "The date of the last modification of the Role.",
 							Computed: true,
 						},
 						"ui_access": {
 							Type:     schema.TypeBool,
+							Description: "Whether to allow UI access for users with this Permission Set.",
 							Computed: true,
 						},
 						"is_super": {
 							Type:     schema.TypeBool,
+							Description: "Give the Permission Set full access, meaning all actions are allowed without restriction.",
 							Computed: true,
 						},
 						"actions": {
 							Type:     schema.TypeList,
+							Description: "List of allowed actions for the Permission Set (not relevant if 'is_super' is true).",
 							Computed: true,
 							Elem: &schema.Schema{
 								Type: schema.TypeString,

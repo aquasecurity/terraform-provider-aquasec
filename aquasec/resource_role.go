@@ -22,27 +22,33 @@ func resourceRole() *schema.Resource {
 		Schema: map[string]*schema.Schema{
 			"role_name": {
 				Type:     schema.TypeString,
+				Description: "The name of the role, comprised of alphanumeric characters and '-', '_', ' ', ':', '.', '@', '!', '^'.",
 				Required: true,
 			},
 			"author": {
 				Type:     schema.TypeString,
+				Description: "The name of the user who created the role. Only returned from the API for existing permissions, not part of the permission creation/modification structure.",
 				Computed: true,
 			},
 			"description": {
 				Type:     schema.TypeString,
+				Description: "Free text description for the role.",
 				Optional: true,
 			},
 			"updated_at": {
 				Type:     schema.TypeString,
+				Description: "The date of the last modification of the role.",
 				Computed: true,
 				Optional: true,
 			},
 			"permission": {
 				Type:     schema.TypeString,
+				Description: "The name of the Permission Set that will affect the users assigned to this specific Role.",
 				Required: true,
 			},
 			"scopes": {
 				Type:     schema.TypeList,
+				Description: "List of Application Scopes that will affect the users assigned to this specific Role.",
 				Required: true,
 				Elem: &schema.Schema{
 					Type: schema.TypeString,

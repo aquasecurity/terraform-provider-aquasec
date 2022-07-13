@@ -27,7 +27,7 @@ output "group_details" {
 
 ### Required
 
-- **group_id** (String) Enforcer group name
+- **group_id** (String) The ID of the Enforcer group.
 
 ### Optional
 
@@ -37,9 +37,9 @@ output "group_details" {
 
 - **admission_control** (Boolean)
 - **allow_kube_enforcer_audit** (Boolean)
-- **allowed_applications** (Set of String)
-- **allowed_labels** (Set of String)
-- **allowed_registries** (Set of String)
+- **allowed_applications** (Set of String) List of application names to allow on the hosts. if provided, only containers of the listed applications will be allowed to run.
+- **allowed_labels** (Set of String) List of label names to allow on the hosts.
+- **allowed_registries** (Set of String) List of registry names to allow on the hosts.
 - **antivirus_protection** (Boolean)
 - **aqua_version** (String)
 - **audit_all** (Boolean)
@@ -49,17 +49,17 @@ output "group_details" {
 - **auto_scan_discovered_images_running_containers** (Boolean)
 - **behavioral_engine** (Boolean)
 - **block_admission_control** (Boolean)
-- **command** (List of Object) (see [below for nested schema](#nestedatt--command))
+- **command** (List of Object) The installation command. (see [below for nested schema](#nestedatt--command))
 - **connected_count** (Number)
 - **container_activity_protection** (Boolean)
 - **container_antivirus_protection** (Boolean)
-- **description** (String)
+- **description** (String) A description for the Aqua Enforcer group.
 - **disconnected_count** (Number)
-- **enforce** (Boolean)
+- **enforce** (Boolean) Whether to enable enforce mode on the Enforcers, defaults to False.
 - **enforcer_image_name** (String)
 - **gateway_address** (String)
 - **gateway_name** (String)
-- **gateways** (List of String)
+- **gateways** (List of String) List of Aqua gateway IDs for the Enforcers.
 - **high_vulns** (Number)
 - **host_assurance** (Boolean)
 - **host_behavioral_engine** (Boolean)
@@ -71,8 +71,8 @@ output "group_details" {
 - **image_assurance** (Boolean)
 - **install_command** (String)
 - **kube_bench_image_name** (String)
-- **last_update** (Number)
-- **logical_name** (String)
+- **last_update** (Number) The last date and time the batch token was updated in UNIX time.
+- **logical_name** (String) Name for the batch install record.
 - **low_vulns** (Number)
 - **med_vulns** (Number)
 - **micro_enforcer_certs_secrets_name** (String)
@@ -89,7 +89,7 @@ output "group_details" {
 - **runtime_type** (String)
 - **sync_host_images** (Boolean)
 - **syscall_enabled** (Boolean)
-- **token** (String)
+- **token** (String) The batch install token.
 - **type** (String)
 - **user_access_control** (Boolean)
 
