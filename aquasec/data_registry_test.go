@@ -46,6 +46,9 @@ func testAccCheckAquasecRegistryDataSource(name, url, rtype, username, password,
 
 	data "aquasec_integration_registries" "testregistries" {
 		name = aquasec_integration_registry.new.name
+		depends_on = [
+			aquasec_integration_registry.new
+        ]
 	}
 	`, name, url, rtype, username, password, prefix, autopull)
 

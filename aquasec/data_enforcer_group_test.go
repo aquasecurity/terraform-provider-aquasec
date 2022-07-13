@@ -56,6 +56,9 @@ func testAccCheckAquasecEnforcerGroupDataSource(enforcerGroup client.EnforcerGro
 	}
 	data "aquasec_enforcer_groups" "testegdata" {
 		group_id = aquasec_enforcer_groups.testegdata.group_id
+		depends_on = [
+          aquasec_enforcer_groups.testegdata
+        ]
 	}
 	`,
 		enforcerGroup.ID,
