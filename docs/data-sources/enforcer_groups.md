@@ -55,7 +55,7 @@ output "group_details" {
 - **block_admission_control** (Boolean) This applies only if both `Enable admission control` and Enforce mode are set. This additional option must be selected for admission control to work if the KubeEnforcer is not connected to any Gateway. If this option is not selected, admission control will be disabled; this will have no effect on containers already running.
 - **command** (List of Object) The installation command. (see [below for nested schema](#nestedatt--command))
 - **connected_count** (Number) Number of connected enforcers in the enforcer group.
-- **container_activity_protection** (Boolean) When set to `true` applies Container Runtime Policies, Image Profiles, and Firewall Policies to containers.
+- **container_activity_protection** (Boolean) When set to `True` applies Container Runtime Policies, Image Profiles, and Firewall Policies to containers.
 - **container_antivirus_protection** (Boolean) This setting is available only when you have license for `Advanced Malware Protection`. Send true to make use of the license and enable the `Real-time Malware Protection` control in the Container Runtime policies.
 - **description** (String) A description for the Aqua Enforcer group.
 - **disconnected_count** (Number) Number of disconnected enforcers in the enforcer group.
@@ -66,8 +66,8 @@ output "group_details" {
 - **gateways** (List of String) List of Aqua gateway IDs for the Enforcers.
 - **high_vulns** (Number) Number of high vulnerabilities in the enforcers that in this enforcer group.
 - **host_assurance** (Boolean) When set to `True` enables host scanning and respective Host Assurance controls.
-- **host_behavioral_engine** (Boolean) When set to `true` enables these Host Runtime Policy controls: `OS Users and Groups Allowed` and `OS Users and Groups Blocked`
-- **host_network_protection** (Boolean) When set to `true` applies Firewall Policies to hosts, and allows recording network maps for Aqua services. The Network Firewall setting must be disabled when deploying the Aqua Enforcer on a machine running Rocky Linux. See https://docs.aquasec.com/docs/platform-support-limitations-rocky-linux for further information
+- **host_behavioral_engine** (Boolean) When set to `True` enables these Host Runtime Policy controls: `OS Users and Groups Allowed` and `OS Users and Groups Blocked`
+- **host_network_protection** (Boolean) When set to `True` applies Firewall Policies to hosts, and allows recording network maps for Aqua services. The Network Firewall setting must be disabled when deploying the Aqua Enforcer on a machine running Rocky Linux. See https://docs.aquasec.com/docs/platform-support-limitations-rocky-linux for further information
 - **host_os** (String) The OS type for the host
 - **host_protection** (Boolean) When set to `True` enables all Host Runtime Policy controls except for `OS Users and Groups Allowed` and `OS Users and Groups Blocked`.
 - **host_user_protection** (Boolean) When set to `True` enables these Host Runtime Policy controls: `OS Users and Groups Allowed` and `OS Users and Groups Blocked`
@@ -85,18 +85,18 @@ output "group_details" {
 - **micro_enforcer_injection** (Boolean) This applies only if both `Enable admission control` and Enforce mode are set. This additional option must be selected for admission control to work if the KubeEnforcer is not connected to any Gateway. If this option is not selected, admission control will be disabled; this will have no effect on containers already running.
 - **micro_enforcer_secrets_name** (String) This option is applicable only if `Enable Pod Enforcer injection` is selected.
 - **neg_vulns** (Number) Number of negligible vulnerabilities in the enforcers that in this enforcer group.
-- **network_protection** (Boolean) When set to `true` applies Firewall Policies to containers, and allows recording network maps for Aqua services. The Network Firewall setting must be disabled when deploying the Aqua Enforcer on a machine running Rocky Linux. See https://docs.aquasec.com/docs/platform-support-limitations-rocky-linux for further information.
+- **network_protection** (Boolean) When set to `True` applies Firewall Policies to containers, and allows recording network maps for Aqua services. The Network Firewall setting must be disabled when deploying the Aqua Enforcer on a machine running Rocky Linux. See https://docs.aquasec.com/docs/platform-support-limitations-rocky-linux for further information.
 - **orchestrator** (List of Object) The orchestrator for which you are creating the Enforcer group. (see [below for nested schema](#nestedatt--orchestrator))
 - **pas_deployment_link** (String) pas deployment link
 - **permission** (String) Permission Action
-- **risk_explorer_auto_discovery** (Boolean) When set to `true` allows Enforcers to be discovered in the Risk Explorer.
+- **risk_explorer_auto_discovery** (Boolean) When set to `True` allows Enforcers to be discovered in the Risk Explorer.
 - **runtime_policy_name** (String) Function Runtime Policy that will applay on the nano enforcer.
 - **runtime_type** (String) The container runtime environment.
-- **sync_host_images** (Boolean) When set to `true` configures Enforcers to discover local host images. Discovered images will be listed under Images > Host Images, as well as under Infrastructure (in the Images tab for applicable hosts).
-- **syscall_enabled** (Boolean) When set to `true` allows profiling and monitoring system calls made by running containers.
+- **sync_host_images** (Boolean) When set to `True` configures Enforcers to discover local host images. Discovered images will be listed under Images > Host Images, as well as under Infrastructure (in the Images tab for applicable hosts).
+- **syscall_enabled** (Boolean) When set to `True` allows profiling and monitoring system calls made by running containers.
 - **token** (String) The batch install token.
 - **type** (String) Enforcer Type.
-- **user_access_control** (Boolean) When set to `true` applies User Access Control Policies to containers. Note that Aqua Enforcers must be deployed with the AQUA_RUNC_INTERCEPTION environment variable set to 0 in order to use User Access Control Policies.
+- **user_access_control** (Boolean) When set to `True` applies User Access Control Policies to containers. Note that Aqua Enforcers must be deployed with the AQUA_RUNC_INTERCEPTION environment variable set to 0 in order to use User Access Control Policies.
 
 <a id="nestedatt--command"></a>
 ### Nested Schema for `command`

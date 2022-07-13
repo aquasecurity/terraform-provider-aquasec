@@ -53,12 +53,12 @@ func dataSourceEnforcerGroup() *schema.Resource {
 			},
 			"container_activity_protection": {
 				Type:        schema.TypeBool,
-				Description: "When set to `true` applies Container Runtime Policies, Image Profiles, and Firewall Policies to containers.",
+				Description: "When set to `True` applies Container Runtime Policies, Image Profiles, and Firewall Policies to containers.",
 				Computed:    true,
 			},
 			"network_protection": {
 				Type:        schema.TypeBool,
-				Description: "When set to `true` applies Firewall Policies to containers, and allows recording network maps for Aqua services. The Network Firewall setting must be disabled when deploying the Aqua Enforcer on a machine running Rocky Linux. See https://docs.aquasec.com/docs/platform-support-limitations-rocky-linux for further information.",
+				Description: "When set to `True` applies Firewall Policies to containers, and allows recording network maps for Aqua services. The Network Firewall setting must be disabled when deploying the Aqua Enforcer on a machine running Rocky Linux. See https://docs.aquasec.com/docs/platform-support-limitations-rocky-linux for further information.",
 				Computed:    true,
 			},
 			"behavioral_engine": {
@@ -68,7 +68,7 @@ func dataSourceEnforcerGroup() *schema.Resource {
 			},
 			"host_behavioral_engine": {
 				Type:        schema.TypeBool,
-				Description: "When set to `true` enables these Host Runtime Policy controls: `OS Users and Groups Allowed` and `OS Users and Groups Blocked`",
+				Description: "When set to `True` enables these Host Runtime Policy controls: `OS Users and Groups Allowed` and `OS Users and Groups Blocked`",
 				Computed:    true,
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
@@ -76,12 +76,12 @@ func dataSourceEnforcerGroup() *schema.Resource {
 			},
 			"host_network_protection": {
 				Type:        schema.TypeBool,
-				Description: "When set to `true` applies Firewall Policies to hosts, and allows recording network maps for Aqua services. The Network Firewall setting must be disabled when deploying the Aqua Enforcer on a machine running Rocky Linux. See https://docs.aquasec.com/docs/platform-support-limitations-rocky-linux for further information",
+				Description: "When set to `True` applies Firewall Policies to hosts, and allows recording network maps for Aqua services. The Network Firewall setting must be disabled when deploying the Aqua Enforcer on a machine running Rocky Linux. See https://docs.aquasec.com/docs/platform-support-limitations-rocky-linux for further information",
 				Computed:    true,
 			},
 			"user_access_control": {
 				Type:        schema.TypeBool,
-				Description: "When set to `true` applies User Access Control Policies to containers. Note that Aqua Enforcers must be deployed with the AQUA_RUNC_INTERCEPTION environment variable set to 0 in order to use User Access Control Policies.",
+				Description: "When set to `True` applies User Access Control Policies to containers. Note that Aqua Enforcers must be deployed with the AQUA_RUNC_INTERCEPTION environment variable set to 0 in order to use User Access Control Policies.",
 				Computed:    true,
 			},
 			"image_assurance": {
@@ -211,7 +211,7 @@ func dataSourceEnforcerGroup() *schema.Resource {
 			},
 			"syscall_enabled": {
 				Type:        schema.TypeBool,
-				Description: "When set to `true` allows profiling and monitoring system calls made by running containers.",
+				Description: "When set to `True` allows profiling and monitoring system calls made by running containers.",
 				Computed:    true,
 			},
 			"runtime_type": {
@@ -221,12 +221,12 @@ func dataSourceEnforcerGroup() *schema.Resource {
 			},
 			"sync_host_images": {
 				Type:        schema.TypeBool,
-				Description: "When set to `true` configures Enforcers to discover local host images. Discovered images will be listed under Images > Host Images, as well as under Infrastructure (in the Images tab for applicable hosts).",
+				Description: "When set to `True` configures Enforcers to discover local host images. Discovered images will be listed under Images > Host Images, as well as under Infrastructure (in the Images tab for applicable hosts).",
 				Computed:    true,
 			},
 			"risk_explorer_auto_discovery": {
 				Type:        schema.TypeBool,
-				Description: "When set to `true` allows Enforcers to be discovered in the Risk Explorer.",
+				Description: "When set to `True` allows Enforcers to be discovered in the Risk Explorer.",
 				Computed:    true,
 			},
 			"runtime_policy_name": {

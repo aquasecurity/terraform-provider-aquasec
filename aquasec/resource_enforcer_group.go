@@ -134,7 +134,7 @@ func resourceEnforcerGroup() *schema.Resource {
 			},
 			"container_activity_protection": {
 				Type:        schema.TypeBool,
-				Description: "Set `true` to apply Container Runtime Policies, Image Profiles, and Firewall Policies to containers.",
+				Description: "Set `True` to apply Container Runtime Policies, Image Profiles, and Firewall Policies to containers.",
 				Optional:    true,
 			},
 			"container_antivirus_protection": {
@@ -339,7 +339,7 @@ func resourceEnforcerGroup() *schema.Resource {
 			},
 			"risk_explorer_auto_discovery": {
 				Type:        schema.TypeBool,
-				Description: "Set `true` to allow Enforcers to be discovered in the Risk Explorer.",
+				Description: "Set `True` to allow Enforcers to be discovered in the Risk Explorer.",
 				Optional:    true,
 			},
 			"runtime_policy_name": {
@@ -356,12 +356,12 @@ func resourceEnforcerGroup() *schema.Resource {
 			},
 			"sync_host_images": {
 				Type:        schema.TypeBool,
-				Description: "Set `true` to configure Enforcers to discover local host images. Discovered images will be listed under Images > Host Images, as well as under Infrastructure (in the Images tab for applicable hosts).",
+				Description: "Set `True` to configure Enforcers to discover local host images. Discovered images will be listed under Images > Host Images, as well as under Infrastructure (in the Images tab for applicable hosts).",
 				Optional:    true,
 			},
 			"syscall_enabled": {
 				Type:        schema.TypeBool,
-				Description: "Set `true` will allow profiling and monitoring system calls made by running containers.",
+				Description: "Set `True` will allow profiling and monitoring system calls made by running containers.",
 				Optional:    true,
 			},
 			"token": {
@@ -378,7 +378,7 @@ func resourceEnforcerGroup() *schema.Resource {
 			},
 			"user_access_control": {
 				Type:        schema.TypeBool,
-				Description: "Set `true` to apply User Access Control Policies to containers. Note that Aqua Enforcers must be deployed with the AQUA_RUNC_INTERCEPTION environment variable set to 0 in order to use User Access Control Policies.",
+				Description: "Set `True` to apply User Access Control Policies to containers. Note that Aqua Enforcers must be deployed with the AQUA_RUNC_INTERCEPTION environment variable set to 0 in order to use User Access Control Policies.",
 				Optional:    true,
 			},
 		},

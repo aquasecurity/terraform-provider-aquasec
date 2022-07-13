@@ -97,7 +97,7 @@ resource "aquasec_enforcer_groups" "group-kube_enforcer" {
 - **auto_scan_discovered_images_running_containers** (Boolean) This option is available only if `Enable workload discovery` is selected. If selected, the KubeEnforcer will automatically register images running as workloads (and scan the discovered images for security issues).
 - **behavioral_engine** (Boolean) Select Enabled to detect suspicious activity in your containers and display potential security threats in the Incidents and Audit pages.
 - **block_admission_control** (Boolean) This applies only if both `Enable admission control` and Enforce mode are set. This additional option must be selected for admission control to work if the KubeEnforcer is not connected to any Gateway. If this option is not selected, admission control will be disabled; this will have no effect on containers already running.
-- **container_activity_protection** (Boolean) Set `true` to apply Container Runtime Policies, Image Profiles, and Firewall Policies to containers.
+- **container_activity_protection** (Boolean) Set `True` to apply Container Runtime Policies, Image Profiles, and Firewall Policies to containers.
 - **container_antivirus_protection** (Boolean) This setting is available only when you have license for `Advanced Malware Protection`. Send true to make use of the license and enable the `Real-time Malware Protection` control in the Container Runtime policies.
 - **description** (String) A description of the Aqua Enforcer group.
 - **enforce** (Boolean) Whether to enable enforce mode on the Enforcers, defaults to False.
@@ -119,11 +119,11 @@ resource "aquasec_enforcer_groups" "group-kube_enforcer" {
 - **micro_enforcer_secrets_name** (String) You can specify the name of the secret (in the Aqua namespace) that Aqua copies into the Pod Enforcer namespace and kube-bench, allowing them access to the Pod Enforcer and kube-bench product images, respectively.
 - **network_protection** (Boolean) Send true to apply Firewall Policies to containers, and allow recording network maps for Aqua services. The Network Firewall setting must be disabled when deploying the Aqua Enforcer on a machine running Rocky Linux. See https://docs.aquasec.com/docs/platform-support-limitations-rocky-linux for further information.
 - **permission** (String) Permission Action
-- **risk_explorer_auto_discovery** (Boolean) Set `true` to allow Enforcers to be discovered in the Risk Explorer.
+- **risk_explorer_auto_discovery** (Boolean) Set `True` to allow Enforcers to be discovered in the Risk Explorer.
 - **runtime_type** (String) The container runtime environment.
-- **sync_host_images** (Boolean) Set `true` to configure Enforcers to discover local host images. Discovered images will be listed under Images > Host Images, as well as under Infrastructure (in the Images tab for applicable hosts).
-- **syscall_enabled** (Boolean) Set `true` will allow profiling and monitoring system calls made by running containers.
-- **user_access_control** (Boolean) Set `true` to apply User Access Control Policies to containers. Note that Aqua Enforcers must be deployed with the AQUA_RUNC_INTERCEPTION environment variable set to 0 in order to use User Access Control Policies.
+- **sync_host_images** (Boolean) Set `True` to configure Enforcers to discover local host images. Discovered images will be listed under Images > Host Images, as well as under Infrastructure (in the Images tab for applicable hosts).
+- **syscall_enabled** (Boolean) Set `True` will allow profiling and monitoring system calls made by running containers.
+- **user_access_control** (Boolean) Set `True` to apply User Access Control Policies to containers. Note that Aqua Enforcers must be deployed with the AQUA_RUNC_INTERCEPTION environment variable set to 0 in order to use User Access Control Policies.
 
 ### Read-only
 
