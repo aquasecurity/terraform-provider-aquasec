@@ -4,13 +4,14 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/acctest"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
 func TestAquasecPermissionSetManagement(t *testing.T) {
 	t.Parallel()
-	name := "terraform"
+	name := acctest.RandomWithPrefix("terraform")
 	description := "created from terraform "
 	ui_access := true
 	is_super := false
