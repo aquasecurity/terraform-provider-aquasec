@@ -9,46 +9,52 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
-func TestAquasecGroupManagement(t *testing.T) {
+func TestAquasecRoleManagement(t *testing.T) {
 
-	if !isSaasEnv() {
-		t.Skip("Skipping saas groups test because its on prem env")
+	if isSaasEnv() {
+		t.Skip("Skipping prem role test because its on saas env")
 	}
 	t.Parallel()
-	groupName := acctest.RandomWithPrefix("groupTest")
-	groupNewName := groupName + "new"
-
+	roleName := acctest.RandomWithPrefix("roleTest")
+	description := "roleTest1"
+	newDescription := "roleTest2"
+	permission := "Administrator"
+	scope := "Global"
+	//roleNewName := roleName + "new"
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,
-		CheckDestroy: testAccGroupDestroy,
+		CheckDestroy: testAccRoleDestroy,
 		Steps: []resource.TestStep{
 			{
 				// Config returns the test resource
-				Config: testAccCheckAquasecGroup(groupName),
+				Config: testAccCheckAquasecRole(roleName, description, permission, scope),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckAquasecGroupsExists("aquasec_group.new"),
+					testAccCheckAquasecRolesExists("aquasec_role.new"),
 				),
 			},
 			{
 				// Config returns the test resource
-				Config: testAccCheckAquasecGroup(groupNewName),
+				Config: testAccCheckAquasecRole(roleName, newDescription, permission, scope),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckAquasecGroupsExists("aquasec_group.new"),
+					testAccCheckAquasecRolesExists("aquasec_role.new"),
 				),
 			},
 		},
 	})
 }
 
-func testAccCheckAquasecGroup(groupName string) string {
+func testAccCheckAquasecRole(roleName, description, permission, scope string) string {
 	return fmt.Sprintf(`
-	resource "aquasec_group" "new" {
-		name    = "%s"
-    }`, groupName)
+	resource "aquasec_role" "new" {
+		role_name   = "%s"
+		description = "%s"
+		permission = "%s"
+		scopes = ["%s"]
+    }`, roleName, description, permission, scope)
 }
 
-func testAccCheckAquasecGroupsExists(n string) resource.TestCheckFunc {
+func testAccCheckAquasecRolesExists(n string) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 		rs, ok := s.RootModule().Resources[n]
 
@@ -63,9 +69,9 @@ func testAccCheckAquasecGroupsExists(n string) resource.TestCheckFunc {
 	}
 }
 
-func testAccGroupDestroy(s *terraform.State) error {
+func testAccRoleDestroy(s *terraform.State) error {
 	for _, rs := range s.RootModule().Resources {
-		if rs.Type != "aquasec_group.new" {
+		if rs.Type != "aquasec_role.new" {
 			continue
 		}
 

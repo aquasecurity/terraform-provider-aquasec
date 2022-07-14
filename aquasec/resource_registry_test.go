@@ -10,6 +10,7 @@ import (
 )
 
 func TestAquasecresourceRegistry(t *testing.T) {
+	t.Parallel()
 	name := acctest.RandomWithPrefix("terraform-test")
 	url := "https://docker.io"
 	rtype := "HUB"

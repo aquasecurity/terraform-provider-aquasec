@@ -10,13 +10,17 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 )
 
-var image = client.Image{
-	Registry:   acctest.RandomWithPrefix("terraform-test"),
-	Repository: "alpine",
-	Tag:        "3.4",
+func newTestImage() client.Image {
+	return client.Image{
+		Registry:   acctest.RandomWithPrefix("terraform-test"),
+		Repository: "alpine",
+		Tag:        "3.4",
+	}
 }
 
 func TestResourceAquasecImageCreate(t *testing.T) {
+	t.Parallel()
+	image := newTestImage()
 	rootRef := imageResourceRef("test")
 	resource.Test(t, resource.TestCase{
 		PreCheck: func() {
@@ -31,9 +35,8 @@ func TestResourceAquasecImageCreate(t *testing.T) {
 					resource.TestCheckResourceAttr(rootRef, "registry_type", "HUB"),
 					resource.TestCheckResourceAttr(rootRef, "repository", image.Repository),
 					resource.TestCheckResourceAttr(rootRef, "tag", image.Tag),
-					resource.TestCheckResourceAttr(rootRef, "scan_status", "finished"),
+					resource.TestCheckResourceAttrSet(rootRef, "scan_status"),
 					resource.TestCheckResourceAttrSet(rootRef, "disallowed"),
-					resource.TestCheckResourceAttrSet(rootRef, "created"),
 					resource.TestCheckResourceAttrSet(rootRef, "scan_date"),
 					resource.TestCheckResourceAttr(rootRef, "scan_error", ""),
 					resource.TestCheckResourceAttrSet(rootRef, "critical_vulnerabilities"),
@@ -43,15 +46,7 @@ func TestResourceAquasecImageCreate(t *testing.T) {
 					resource.TestCheckResourceAttrSet(rootRef, "negligible_vulnerabilities"),
 					resource.TestCheckResourceAttrSet(rootRef, "total_vulnerabilities"),
 					resource.TestCheckResourceAttr(rootRef, "author", os.Getenv("AQUA_USER")),
-					resource.TestCheckResourceAttrSet(rootRef, "os"),
-					resource.TestCheckResourceAttrSet(rootRef, "os_version"),
-					resource.TestCheckResourceAttrSet(rootRef, "docker_version"),
-					resource.TestCheckResourceAttrSet(rootRef, "architecture"),
 					resource.TestCheckResourceAttrSet(rootRef, "image_size"),
-					resource.TestCheckResourceAttrSet(rootRef, "environment_variables.0"),
-					//resource.TestCheckResourceAttr(rootRef, "vulnerabilities.0.name", "test"),
-					resource.TestCheckResourceAttrSet(rootRef, "history.0.created"),
-					resource.TestCheckResourceAttrSet(rootRef, "disallowed_by_assurance_checks"),
 				),
 			},
 		},
@@ -59,8 +54,9 @@ func TestResourceAquasecImageCreate(t *testing.T) {
 }
 
 func TestResourceAquasecImageAllow(t *testing.T) {
+	t.Parallel()
+	image := newTestImage()
 	rootRef := imageResourceRef("test")
-	t.Skip("Skipping Image Allow test because dockerhub blocking to scan images")
 	resource.Test(t, resource.TestCase{
 		PreCheck: func() {
 			testAccPreCheck(t)
@@ -70,61 +66,14 @@ func TestResourceAquasecImageAllow(t *testing.T) {
 			{
 				Config: getImageResource(&image),
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr(rootRef, "registry", image.Registry),
-					resource.TestCheckResourceAttr(rootRef, "registry_type", "HUB"),
-					resource.TestCheckResourceAttr(rootRef, "repository", image.Repository),
-					resource.TestCheckResourceAttr(rootRef, "tag", image.Tag),
-					resource.TestCheckResourceAttr(rootRef, "scan_status", "finished"),
-					resource.TestCheckResourceAttrSet(rootRef, "disallowed"),
-					resource.TestCheckResourceAttrSet(rootRef, "created"),
-					resource.TestCheckResourceAttrSet(rootRef, "scan_date"),
-					resource.TestCheckResourceAttr(rootRef, "scan_error", ""),
-					resource.TestCheckResourceAttrSet(rootRef, "critical_vulnerabilities"),
-					resource.TestCheckResourceAttrSet(rootRef, "high_vulnerabilities"),
-					resource.TestCheckResourceAttrSet(rootRef, "medium_vulnerabilities"),
-					resource.TestCheckResourceAttrSet(rootRef, "low_vulnerabilities"),
-					resource.TestCheckResourceAttrSet(rootRef, "negligible_vulnerabilities"),
-					resource.TestCheckResourceAttrSet(rootRef, "total_vulnerabilities"),
-					resource.TestCheckResourceAttr(rootRef, "author", os.Getenv("AQUA_USER")),
-					resource.TestCheckResourceAttrSet(rootRef, "os"),
-					resource.TestCheckResourceAttrSet(rootRef, "os_version"),
-					resource.TestCheckResourceAttrSet(rootRef, "docker_version"),
-					resource.TestCheckResourceAttrSet(rootRef, "architecture"),
-					resource.TestCheckResourceAttrSet(rootRef, "image_size"),
-					resource.TestCheckResourceAttrSet(rootRef, "environment_variables.0"),
-					resource.TestCheckResourceAttrSet(rootRef, "vulnerabilities.0.name"),
-					resource.TestCheckResourceAttrSet(rootRef, "history.0.created"),
-					resource.TestCheckResourceAttrSet(rootRef, "disallowed_by_assurance_checks"),
+					resource.TestCheckResourceAttr(rootRef, "whitelisted", "false"),
+					resource.TestCheckResourceAttr(rootRef, "blacklisted", "false"),
+					resource.TestCheckResourceAttr(rootRef, "permission_comment", ""),
 				),
 			},
 			{
 				Config: getImageResourceAllow(&image, "This image is whitelisted from terraform test."),
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr(rootRef, "registry", image.Registry),
-					resource.TestCheckResourceAttr(rootRef, "registry_type", "HUB"),
-					resource.TestCheckResourceAttr(rootRef, "repository", image.Repository),
-					resource.TestCheckResourceAttr(rootRef, "tag", image.Tag),
-					resource.TestCheckResourceAttr(rootRef, "scan_status", "finished"),
-					resource.TestCheckResourceAttrSet(rootRef, "created"),
-					resource.TestCheckResourceAttrSet(rootRef, "scan_date"),
-					resource.TestCheckResourceAttr(rootRef, "scan_error", ""),
-					resource.TestCheckResourceAttrSet(rootRef, "critical_vulnerabilities"),
-					resource.TestCheckResourceAttrSet(rootRef, "high_vulnerabilities"),
-					resource.TestCheckResourceAttrSet(rootRef, "medium_vulnerabilities"),
-					resource.TestCheckResourceAttrSet(rootRef, "low_vulnerabilities"),
-					resource.TestCheckResourceAttrSet(rootRef, "negligible_vulnerabilities"),
-					resource.TestCheckResourceAttrSet(rootRef, "total_vulnerabilities"),
-					resource.TestCheckResourceAttr(rootRef, "author", os.Getenv("AQUA_USER")),
-					resource.TestCheckResourceAttrSet(rootRef, "os"),
-					resource.TestCheckResourceAttrSet(rootRef, "os_version"),
-					resource.TestCheckResourceAttrSet(rootRef, "docker_version"),
-					resource.TestCheckResourceAttrSet(rootRef, "architecture"),
-					resource.TestCheckResourceAttrSet(rootRef, "image_size"),
-					resource.TestCheckResourceAttrSet(rootRef, "environment_variables.0"),
-					resource.TestCheckResourceAttrSet(rootRef, "vulnerabilities.0.name"),
-					resource.TestCheckResourceAttrSet(rootRef, "history.0.created"),
-					resource.TestCheckResourceAttrSet(rootRef, "disallowed_by_assurance_checks"),
-					resource.TestCheckResourceAttr(rootRef, "disallowed", "false"),
 					resource.TestCheckResourceAttr(rootRef, "whitelisted", "true"),
 					resource.TestCheckResourceAttr(rootRef, "blacklisted", "false"),
 					resource.TestCheckResourceAttr(rootRef, "permission_comment", "This image is whitelisted from terraform test."),
@@ -135,8 +84,9 @@ func TestResourceAquasecImageAllow(t *testing.T) {
 }
 
 func TestResourceAquasecImageBlock(t *testing.T) {
+	t.Parallel()
+	image := newTestImage()
 	rootRef := imageResourceRef("test")
-	t.Skip("Skipping Image Block test because dockerhub blocking to scan images")
 	resource.Test(t, resource.TestCase{
 		PreCheck: func() {
 			testAccPreCheck(t)
@@ -146,61 +96,14 @@ func TestResourceAquasecImageBlock(t *testing.T) {
 			{
 				Config: getImageResource(&image),
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr(rootRef, "registry", image.Registry),
-					resource.TestCheckResourceAttr(rootRef, "registry_type", "HUB"),
-					resource.TestCheckResourceAttr(rootRef, "repository", image.Repository),
-					resource.TestCheckResourceAttr(rootRef, "tag", image.Tag),
-					resource.TestCheckResourceAttr(rootRef, "scan_status", "finished"),
-					resource.TestCheckResourceAttrSet(rootRef, "disallowed"),
-					resource.TestCheckResourceAttrSet(rootRef, "created"),
-					resource.TestCheckResourceAttrSet(rootRef, "scan_date"),
-					resource.TestCheckResourceAttr(rootRef, "scan_error", ""),
-					resource.TestCheckResourceAttrSet(rootRef, "critical_vulnerabilities"),
-					resource.TestCheckResourceAttrSet(rootRef, "high_vulnerabilities"),
-					resource.TestCheckResourceAttrSet(rootRef, "medium_vulnerabilities"),
-					resource.TestCheckResourceAttrSet(rootRef, "low_vulnerabilities"),
-					resource.TestCheckResourceAttrSet(rootRef, "negligible_vulnerabilities"),
-					resource.TestCheckResourceAttrSet(rootRef, "total_vulnerabilities"),
-					resource.TestCheckResourceAttr(rootRef, "author", os.Getenv("AQUA_USER")),
-					resource.TestCheckResourceAttrSet(rootRef, "os"),
-					resource.TestCheckResourceAttrSet(rootRef, "os_version"),
-					resource.TestCheckResourceAttrSet(rootRef, "docker_version"),
-					resource.TestCheckResourceAttrSet(rootRef, "architecture"),
-					resource.TestCheckResourceAttrSet(rootRef, "image_size"),
-					resource.TestCheckResourceAttrSet(rootRef, "environment_variables.0"),
-					resource.TestCheckResourceAttrSet(rootRef, "vulnerabilities.0.name"),
-					resource.TestCheckResourceAttrSet(rootRef, "history.0.created"),
-					resource.TestCheckResourceAttrSet(rootRef, "disallowed_by_assurance_checks"),
+					resource.TestCheckResourceAttr(rootRef, "whitelisted", "false"),
+					resource.TestCheckResourceAttr(rootRef, "blacklisted", "false"),
+					resource.TestCheckResourceAttr(rootRef, "permission_comment", ""),
 				),
 			},
 			{
 				Config: getImageResourceBlock(&image, "This image is blacklisted from terraform test."),
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr(rootRef, "registry", image.Registry),
-					resource.TestCheckResourceAttr(rootRef, "registry_type", "HUB"),
-					resource.TestCheckResourceAttr(rootRef, "repository", image.Repository),
-					resource.TestCheckResourceAttr(rootRef, "tag", image.Tag),
-					resource.TestCheckResourceAttr(rootRef, "scan_status", "finished"),
-					resource.TestCheckResourceAttrSet(rootRef, "created"),
-					resource.TestCheckResourceAttrSet(rootRef, "scan_date"),
-					resource.TestCheckResourceAttr(rootRef, "scan_error", ""),
-					resource.TestCheckResourceAttrSet(rootRef, "critical_vulnerabilities"),
-					resource.TestCheckResourceAttrSet(rootRef, "high_vulnerabilities"),
-					resource.TestCheckResourceAttrSet(rootRef, "medium_vulnerabilities"),
-					resource.TestCheckResourceAttrSet(rootRef, "low_vulnerabilities"),
-					resource.TestCheckResourceAttrSet(rootRef, "negligible_vulnerabilities"),
-					resource.TestCheckResourceAttrSet(rootRef, "total_vulnerabilities"),
-					resource.TestCheckResourceAttr(rootRef, "author", os.Getenv("AQUA_USER")),
-					resource.TestCheckResourceAttrSet(rootRef, "os"),
-					resource.TestCheckResourceAttrSet(rootRef, "os_version"),
-					resource.TestCheckResourceAttrSet(rootRef, "docker_version"),
-					resource.TestCheckResourceAttrSet(rootRef, "architecture"),
-					resource.TestCheckResourceAttrSet(rootRef, "image_size"),
-					resource.TestCheckResourceAttrSet(rootRef, "environment_variables.0"),
-					resource.TestCheckResourceAttrSet(rootRef, "vulnerabilities.0.name"),
-					resource.TestCheckResourceAttrSet(rootRef, "history.0.created"),
-					resource.TestCheckResourceAttrSet(rootRef, "disallowed_by_assurance_checks"),
-					resource.TestCheckResourceAttr(rootRef, "disallowed", "true"),
 					resource.TestCheckResourceAttr(rootRef, "blacklisted", "true"),
 					resource.TestCheckResourceAttr(rootRef, "whitelisted", "false"),
 					resource.TestCheckResourceAttr(rootRef, "permission_comment", "This image is blacklisted from terraform test."),
@@ -211,8 +114,9 @@ func TestResourceAquasecImageBlock(t *testing.T) {
 }
 
 func TestResourceAquasecImageAllowAndBlock(t *testing.T) {
+	t.Parallel()
+	image := newTestImage()
 	rootRef := imageResourceRef("test")
-	t.Skip("Skipping Image Allow and Block test because dockerhub blocking to scan images")
 	resource.Test(t, resource.TestCase{
 		PreCheck: func() {
 			testAccPreCheck(t)
@@ -222,61 +126,14 @@ func TestResourceAquasecImageAllowAndBlock(t *testing.T) {
 			{
 				Config: getImageResource(&image),
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr(rootRef, "registry", image.Registry),
-					resource.TestCheckResourceAttr(rootRef, "registry_type", "HUB"),
-					resource.TestCheckResourceAttr(rootRef, "repository", image.Repository),
-					resource.TestCheckResourceAttr(rootRef, "tag", image.Tag),
-					resource.TestCheckResourceAttr(rootRef, "scan_status", "finished"),
-					resource.TestCheckResourceAttrSet(rootRef, "disallowed"),
-					resource.TestCheckResourceAttrSet(rootRef, "created"),
-					resource.TestCheckResourceAttrSet(rootRef, "scan_date"),
-					resource.TestCheckResourceAttr(rootRef, "scan_error", ""),
-					resource.TestCheckResourceAttrSet(rootRef, "critical_vulnerabilities"),
-					resource.TestCheckResourceAttrSet(rootRef, "high_vulnerabilities"),
-					resource.TestCheckResourceAttrSet(rootRef, "medium_vulnerabilities"),
-					resource.TestCheckResourceAttrSet(rootRef, "low_vulnerabilities"),
-					resource.TestCheckResourceAttrSet(rootRef, "negligible_vulnerabilities"),
-					resource.TestCheckResourceAttrSet(rootRef, "total_vulnerabilities"),
-					resource.TestCheckResourceAttr(rootRef, "author", os.Getenv("AQUA_USER")),
-					resource.TestCheckResourceAttrSet(rootRef, "os"),
-					resource.TestCheckResourceAttrSet(rootRef, "os_version"),
-					resource.TestCheckResourceAttrSet(rootRef, "docker_version"),
-					resource.TestCheckResourceAttrSet(rootRef, "architecture"),
-					resource.TestCheckResourceAttrSet(rootRef, "image_size"),
-					resource.TestCheckResourceAttrSet(rootRef, "environment_variables.0"),
-					resource.TestCheckResourceAttrSet(rootRef, "vulnerabilities.0.name"),
-					resource.TestCheckResourceAttrSet(rootRef, "history.0.created"),
-					resource.TestCheckResourceAttrSet(rootRef, "disallowed_by_assurance_checks"),
+					resource.TestCheckResourceAttr(rootRef, "whitelisted", "false"),
+					resource.TestCheckResourceAttr(rootRef, "blacklisted", "false"),
+					resource.TestCheckResourceAttr(rootRef, "permission_comment", ""),
 				),
 			},
 			{
 				Config: getImageResourceAllow(&image, "This image is whitelisted from terraform test."),
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr(rootRef, "registry", image.Registry),
-					resource.TestCheckResourceAttr(rootRef, "registry_type", "HUB"),
-					resource.TestCheckResourceAttr(rootRef, "repository", image.Repository),
-					resource.TestCheckResourceAttr(rootRef, "tag", image.Tag),
-					resource.TestCheckResourceAttr(rootRef, "scan_status", "finished"),
-					resource.TestCheckResourceAttrSet(rootRef, "created"),
-					resource.TestCheckResourceAttrSet(rootRef, "scan_date"),
-					resource.TestCheckResourceAttr(rootRef, "scan_error", ""),
-					resource.TestCheckResourceAttrSet(rootRef, "critical_vulnerabilities"),
-					resource.TestCheckResourceAttrSet(rootRef, "high_vulnerabilities"),
-					resource.TestCheckResourceAttrSet(rootRef, "medium_vulnerabilities"),
-					resource.TestCheckResourceAttrSet(rootRef, "low_vulnerabilities"),
-					resource.TestCheckResourceAttrSet(rootRef, "negligible_vulnerabilities"),
-					resource.TestCheckResourceAttrSet(rootRef, "total_vulnerabilities"),
-					resource.TestCheckResourceAttr(rootRef, "author", os.Getenv("AQUA_USER")),
-					resource.TestCheckResourceAttrSet(rootRef, "os"),
-					resource.TestCheckResourceAttrSet(rootRef, "os_version"),
-					resource.TestCheckResourceAttrSet(rootRef, "docker_version"),
-					resource.TestCheckResourceAttrSet(rootRef, "architecture"),
-					resource.TestCheckResourceAttrSet(rootRef, "image_size"),
-					resource.TestCheckResourceAttrSet(rootRef, "environment_variables.0"),
-					resource.TestCheckResourceAttrSet(rootRef, "vulnerabilities.0.name"),
-					resource.TestCheckResourceAttrSet(rootRef, "history.0.created"),
-					resource.TestCheckResourceAttrSet(rootRef, "disallowed_by_assurance_checks"),
-					resource.TestCheckResourceAttr(rootRef, "disallowed", "false"),
 					resource.TestCheckResourceAttr(rootRef, "whitelisted", "true"),
 					resource.TestCheckResourceAttr(rootRef, "blacklisted", "false"),
 					resource.TestCheckResourceAttr(rootRef, "permission_comment", "This image is whitelisted from terraform test."),
@@ -285,31 +142,6 @@ func TestResourceAquasecImageAllowAndBlock(t *testing.T) {
 			{
 				Config: getImageResourceBlock(&image, "This image is blacklisted from terraform test."),
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr(rootRef, "registry", image.Registry),
-					resource.TestCheckResourceAttr(rootRef, "registry_type", "HUB"),
-					resource.TestCheckResourceAttr(rootRef, "repository", image.Repository),
-					resource.TestCheckResourceAttr(rootRef, "tag", image.Tag),
-					resource.TestCheckResourceAttr(rootRef, "scan_status", "finished"),
-					resource.TestCheckResourceAttrSet(rootRef, "created"),
-					resource.TestCheckResourceAttrSet(rootRef, "scan_date"),
-					resource.TestCheckResourceAttr(rootRef, "scan_error", ""),
-					resource.TestCheckResourceAttrSet(rootRef, "critical_vulnerabilities"),
-					resource.TestCheckResourceAttrSet(rootRef, "high_vulnerabilities"),
-					resource.TestCheckResourceAttrSet(rootRef, "medium_vulnerabilities"),
-					resource.TestCheckResourceAttrSet(rootRef, "low_vulnerabilities"),
-					resource.TestCheckResourceAttrSet(rootRef, "negligible_vulnerabilities"),
-					resource.TestCheckResourceAttrSet(rootRef, "total_vulnerabilities"),
-					resource.TestCheckResourceAttr(rootRef, "author", os.Getenv("AQUA_USER")),
-					resource.TestCheckResourceAttrSet(rootRef, "os"),
-					resource.TestCheckResourceAttrSet(rootRef, "os_version"),
-					resource.TestCheckResourceAttrSet(rootRef, "docker_version"),
-					resource.TestCheckResourceAttrSet(rootRef, "architecture"),
-					resource.TestCheckResourceAttrSet(rootRef, "image_size"),
-					resource.TestCheckResourceAttrSet(rootRef, "environment_variables.0"),
-					resource.TestCheckResourceAttrSet(rootRef, "vulnerabilities.0.name"),
-					resource.TestCheckResourceAttrSet(rootRef, "history.0.created"),
-					resource.TestCheckResourceAttrSet(rootRef, "disallowed_by_assurance_checks"),
-					resource.TestCheckResourceAttr(rootRef, "disallowed", "true"),
 					resource.TestCheckResourceAttr(rootRef, "blacklisted", "true"),
 					resource.TestCheckResourceAttr(rootRef, "whitelisted", "false"),
 					resource.TestCheckResourceAttr(rootRef, "permission_comment", "This image is blacklisted from terraform test."),

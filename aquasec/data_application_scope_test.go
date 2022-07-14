@@ -9,7 +9,7 @@ import (
 )
 
 func TestDataApplicationScopePolicy(t *testing.T) {
-
+	t.Parallel()
 	name := "Global"
 	resource.Test(t, resource.TestCase{
 		PreCheck:  func() { testAccPreCheck(t) },

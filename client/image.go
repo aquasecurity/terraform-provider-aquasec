@@ -126,7 +126,7 @@ func (cli *Client) CreateImage(image *Image) error {
 		return fmt.Errorf("failed creating image. status: %v. error message: %v", resp.Status, errorResponse.Message)
 	}
 
-	return cli.WaitUntilScanCompleted(image)
+	return nil
 }
 
 // GetImage gets an Aqua image by registry, name and tag

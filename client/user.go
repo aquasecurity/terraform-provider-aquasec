@@ -3,9 +3,10 @@ package client
 import (
 	"encoding/json"
 	"fmt"
+	"log"
+
 	"github.com/aquasecurity/terraform-provider-aquasec/consts"
 	"github.com/pkg/errors"
-	"log"
 )
 
 type BasicId struct {
@@ -63,7 +64,7 @@ type BasicUser struct {
 	UserGroups        []UserGroups `json:"user_groups,omitempty"`
 }
 
-// UserList contains a list of UserSass
+// UserList contains a list of UserSaas
 type UserList struct {
 	Items []interface{} `json:"data,omitempty"`
 }
@@ -142,16 +143,16 @@ func (cli *Client) GetUsers() ([]FullUser, error) {
 
 	if events.StatusCode == 200 {
 		if cli.clientType == Saas || cli.clientType == SaasDev {
-			var sassResponse UserList
+			var saasResponse UserList
 
-			err = json.Unmarshal([]byte(body), &sassResponse)
+			err = json.Unmarshal([]byte(body), &saasResponse)
 
 			if err != nil {
 				log.Printf("Error calling func GetUser from %s%s, %v ", cli.url, apiPath, err)
 				return nil, errors.Wrap(err, "could not unmarshal users response")
 			}
 
-			for _, item := range sassResponse.Items {
+			for _, item := range saasResponse.Items {
 				//var fullUser FullUser
 				fullUser, err := BuildFullUser(item)
 				if err != nil {
@@ -195,21 +196,21 @@ func (cli *Client) GetUsers() ([]FullUser, error) {
 
 // CreateUser - creates single Aqua user
 func (cli *Client) CreateUser(user *FullUser) error {
-	sass := false
+	saas := false
 	baseUrl := cli.url
 	apiPath := "/api/v1/users"
 	if cli.clientType == Saas {
-		sass = true
+		saas = true
 		baseUrl = consts.SaasTokenUrl
 		apiPath = "/v2/users"
 	}
 
 	if cli.clientType == SaasDev {
-		sass = true
+		saas = true
 		baseUrl = consts.SaasDevTokenUrl
 		apiPath = "/v2/users"
 	}
-	payload, err := json.Marshal(UpdatePayload(sass, false, user))
+	payload, err := json.Marshal(UpdatePayload(saas, false, user))
 
 	if err != nil {
 		return err
@@ -224,7 +225,7 @@ func (cli *Client) CreateUser(user *FullUser) error {
 	if resp.StatusCode != 201 && resp.StatusCode != 204 && resp.StatusCode != 200 {
 		return errors.Errorf(data)
 	}
-	if sass {
+	if saas {
 		dataUser, err := getUserResponse(cli, data, "CreateUser", baseUrl, apiPath)
 
 		if err != nil {
@@ -237,22 +238,22 @@ func (cli *Client) CreateUser(user *FullUser) error {
 
 // UpdateUser updates an existing user
 func (cli *Client) UpdateUser(user *FullUser) error {
-	sass := false
+	saas := false
 	baseUrl := cli.url
 	apiPath := fmt.Sprintf("/api/v1/users/%s", user.Id)
 
 	if cli.clientType == Saas {
-		sass = true
+		saas = true
 		baseUrl = consts.SaasTokenUrl
 		apiPath = fmt.Sprintf("/v2/users/%s", user.Id)
 	}
 
 	if cli.clientType == SaasDev {
-		sass = true
+		saas = true
 		baseUrl = consts.SaasDevTokenUrl
 		apiPath = fmt.Sprintf("/v2/users/%s", user.Id)
 	}
-	payload, err := json.Marshal(UpdatePayload(sass, true, user))
+	payload, err := json.Marshal(UpdatePayload(saas, true, user))
 
 	if err != nil {
 		return err
@@ -404,16 +405,16 @@ func getUserResponse(cli *Client, body string, operation, baseUrl, apiPath strin
 	var response FullUser
 
 	if cli.clientType == Saas || cli.clientType == SaasDev {
-		var sassResponse map[string]interface{}
+		var saasResponse map[string]interface{}
 
-		err = json.Unmarshal([]byte(body), &sassResponse)
+		err = json.Unmarshal([]byte(body), &saasResponse)
 
 		if err != nil {
 			log.Printf("Error calling func %s from %s%s, %v ", operation, baseUrl, apiPath, err)
 			return response, errors.Wrap(err, "could not unmarshal users response")
 		}
 
-		fullUser, err := BuildFullUser(sassResponse["data"])
+		fullUser, err := BuildFullUser(saasResponse["data"])
 
 		if err != nil {
 			log.Printf("Error calling func %s from %s%s, %v ", operation, baseUrl, apiPath, err)

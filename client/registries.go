@@ -92,6 +92,7 @@ func (cli *Client) GetRegistries() (*[]Registry, error) {
 
 // CreateRegistry - creates single Aqua registry
 func (cli *Client) CreateRegistry(reg Registry) error {
+
 	payload, err := json.Marshal(reg)
 	if err != nil {
 		return err

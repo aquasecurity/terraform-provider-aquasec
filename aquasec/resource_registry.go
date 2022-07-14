@@ -90,7 +90,10 @@ func resourceRegistry() *schema.Resource {
 
 func resourceRegistryCreate(d *schema.ResourceData, m interface{}) error {
 	ac := m.(*client.Client)
-
+	scannerType := d.Get("scanner_type").(string)
+	if scannerType == "" {
+		scannerType = "any"
+	}
 	// Get and Convert Roles
 	prefixes := d.Get("prefixes").([]interface{})
 	registry := client.Registry{
@@ -102,7 +105,7 @@ func resourceRegistryCreate(d *schema.ResourceData, m interface{}) error {
 		AutoPull:     d.Get("auto_pull").(bool),
 		AutoPullMax:  d.Get("auto_pull_max").(int),
 		AutoPullTime: d.Get("auto_pull_time").(string),
-		ScannerType:  d.Get("scanner_type").(string),
+		ScannerType:  scannerType,
 		Prefixes:     convertStringArr(prefixes),
 	}
 
@@ -138,7 +141,10 @@ func resourceRegistryRead(d *schema.ResourceData, m interface{}) error {
 
 func resourceRegistryUpdate(d *schema.ResourceData, m interface{}) error {
 	c := m.(*client.Client)
-
+	scannerType := d.Get("scanner_type").(string)
+	if scannerType == "" {
+		scannerType = "any"
+	}
 	if d.HasChanges("name", "username", "password", "url", "type", "auto_pull", "auto_pull_max", "auto_pull_time", "prefixes") {
 		prefixes := d.Get("prefixes").([]interface{})
 		registry := client.Registry{
@@ -150,7 +156,7 @@ func resourceRegistryUpdate(d *schema.ResourceData, m interface{}) error {
 			AutoPull:     d.Get("auto_pull").(bool),
 			AutoPullMax:  d.Get("auto_pull_max").(int),
 			AutoPullTime: d.Get("auto_pull_time").(string),
-			ScannerType:  d.Get("scanner_type").(string),
+			ScannerType:  scannerType,
 			Prefixes:     convertStringArr(prefixes),
 		}
 

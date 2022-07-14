@@ -11,6 +11,7 @@ import (
 )
 
 func TestResourceAquasecBasicFunctionRuntimePolicyCreate(t *testing.T) {
+	t.Parallel()
 	var runtimePolicy = client.RuntimePolicy{
 		Name:        acctest.RandomWithPrefix("test-function-runtime-policy"),
 		Description: "This is a test description of function runtime policy",
@@ -42,6 +43,7 @@ func TestResourceAquasecBasicFunctionRuntimePolicyCreate(t *testing.T) {
 }
 
 func TestResourceAquasecFunctionRuntimePolicyUpgrade(t *testing.T) {
+	t.Parallel()
 	var runtimePolicy = client.RuntimePolicy{
 		Name:        acctest.RandomWithPrefix("test-function-runtime-policy"),
 		Description: "This is a test description of function runtime policy",

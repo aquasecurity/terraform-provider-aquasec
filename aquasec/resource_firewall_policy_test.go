@@ -11,6 +11,7 @@ import (
 )
 
 func TestResourceAquasecFirewallPolicy(t *testing.T) {
+	t.Parallel()
 	basicFirewallPolicy := client.FirewallPolicy{
 		Name:        acctest.RandomWithPrefix("basic-resource-firewall-policy"),
 		Description: "this is a basic firewall policy",
@@ -34,6 +35,7 @@ func TestResourceAquasecFirewallPolicy(t *testing.T) {
 }
 
 func TestResourceFirewallPolicyComplex(t *testing.T) {
+	t.Parallel()
 	complexFirewallpolicy := client.FirewallPolicy{
 		Name:                 acctest.RandomWithPrefix("complex-resource-firewall-policy"),
 		Description:          "this is a complex firewall policy",

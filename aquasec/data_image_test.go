@@ -17,6 +17,7 @@ var imageData = client.Image{
 }
 
 func TestDataSourceAquasecImage(t *testing.T) {
+	t.Parallel()
 	rootRef := imageDataRef("test")
 	resource.Test(t, resource.TestCase{
 		PreCheck: func() {
@@ -31,9 +32,8 @@ func TestDataSourceAquasecImage(t *testing.T) {
 					resource.TestCheckResourceAttr(rootRef, "registry_type", "HUB"),
 					resource.TestCheckResourceAttr(rootRef, "repository", imageData.Repository),
 					resource.TestCheckResourceAttr(rootRef, "tag", imageData.Tag),
-					resource.TestCheckResourceAttr(rootRef, "scan_status", "finished"),
+					resource.TestCheckResourceAttrSet(rootRef, "scan_status"),
 					resource.TestCheckResourceAttrSet(rootRef, "disallowed"),
-					resource.TestCheckResourceAttrSet(rootRef, "created"),
 					resource.TestCheckResourceAttrSet(rootRef, "scan_date"),
 					resource.TestCheckResourceAttr(rootRef, "scan_error", ""),
 					resource.TestCheckResourceAttrSet(rootRef, "critical_vulnerabilities"),
@@ -43,15 +43,7 @@ func TestDataSourceAquasecImage(t *testing.T) {
 					resource.TestCheckResourceAttrSet(rootRef, "negligible_vulnerabilities"),
 					resource.TestCheckResourceAttrSet(rootRef, "total_vulnerabilities"),
 					resource.TestCheckResourceAttr(rootRef, "author", os.Getenv("AQUA_USER")),
-					resource.TestCheckResourceAttrSet(rootRef, "os"),
-					resource.TestCheckResourceAttrSet(rootRef, "os_version"),
-					resource.TestCheckResourceAttrSet(rootRef, "docker_version"),
-					resource.TestCheckResourceAttrSet(rootRef, "architecture"),
 					resource.TestCheckResourceAttrSet(rootRef, "image_size"),
-					resource.TestCheckResourceAttrSet(rootRef, "environment_variables.0"),
-					//resource.TestCheckResourceAttrSet(rootRef, "vulnerabilities.0.name"),
-					resource.TestCheckResourceAttrSet(rootRef, "history.0.created"),
-					resource.TestCheckResourceAttrSet(rootRef, "disallowed_by_assurance_checks"),
 				),
 			},
 		},

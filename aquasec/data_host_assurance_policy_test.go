@@ -9,6 +9,7 @@ import (
 )
 
 func TestDataAquasecHostAssurancePolicy(t *testing.T) {
+	t.Parallel()
 	name := "Default"
 	resource.Test(t, resource.TestCase{
 		PreCheck:  func() { testAccPreCheck(t) },

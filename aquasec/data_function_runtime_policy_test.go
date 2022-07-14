@@ -11,6 +11,7 @@ import (
 )
 
 func TestDataAquasecFunctionRuntimePolicy(t *testing.T) {
+	t.Parallel()
 	var runtimePolicy = client.RuntimePolicy{
 		Name:        acctest.RandomWithPrefix("test-function-runtime-policy"),
 		Description: "This is a test description of function runtime policy",
