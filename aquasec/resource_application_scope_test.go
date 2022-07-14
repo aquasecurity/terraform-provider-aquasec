@@ -10,6 +10,7 @@ import (
 )
 
 func TestAquasecApplicationScope(t *testing.T) {
+	t.Parallel()
 	name := acctest.RandomWithPrefix("terraform-test")
 	description := "Created using Terraform"
 	resource.Test(t, resource.TestCase{

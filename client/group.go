@@ -3,10 +3,11 @@ package client
 import (
 	"encoding/json"
 	"fmt"
+	"log"
+
 	"github.com/aquasecurity/terraform-provider-aquasec/consts"
 	"github.com/parnurzeal/gorequest"
 	"github.com/pkg/errors"
-	"log"
 )
 
 // Group represents a local Aqua Group
@@ -255,15 +256,15 @@ func getGroupResponse(body string, operation, baseUrl, apiPath string) (Group, e
 	var err error
 	var response Group
 
-	var sassResponse map[string]interface{}
+	var saasResponse map[string]interface{}
 
-	err = json.Unmarshal([]byte(body), &sassResponse)
+	err = json.Unmarshal([]byte(body), &saasResponse)
 
 	if err != nil {
 		log.Printf("Error calling func %s from %s%s, %v ", operation, baseUrl, apiPath, err)
 		return response, errors.Wrap(err, "could not unmarshal groups response")
 	}
-	data, err := json.Marshal(sassResponse["data"])
+	data, err := json.Marshal(saasResponse["data"])
 
 	if err == nil {
 		err = json.Unmarshal(data, &response)

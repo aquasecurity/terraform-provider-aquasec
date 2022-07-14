@@ -7,31 +7,32 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
-func TestAquasecUserSaasManagementDatasource(t *testing.T) {
+func TestAquasecRolesDatasource(t *testing.T) {
 
-	if !isSaasEnv() {
-		t.Skip("Skipping saas user test because its on prem env")
+	if isSaasEnv() {
+		t.Skip("Skipping prem roles test because its on saas env")
 	}
-
+	t.Parallel()
 	resource.Test(t, resource.TestCase{
 		PreCheck:  func() { testAccPreCheck(t) },
 		Providers: testAccProviders,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckAquasecUserSaasDataSource(),
-				Check:  testAccCheckAquasecUsersSaasDataSourceExists("data.aquasec_users_saas.testusers"),
+				Config: testAccCheckAquasecRolesDataSource(),
+				Check:  testAccCheckAquasecRolesDataSourceExists("data.aquasec_roles.testroles"),
 			},
 		},
 	})
 }
 
-func testAccCheckAquasecUserSaasDataSource() string {
+func testAccCheckAquasecRolesDataSource() string {
 	return `
-	data "aquasec_users_saas" "testusers" {}
+	data "aquasec_roles" "testroles" {}
 	`
+
 }
 
-func testAccCheckAquasecUsersSaasDataSourceExists(n string) resource.TestCheckFunc {
+func testAccCheckAquasecRolesDataSourceExists(n string) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 		rs, ok := s.RootModule().Resources[n]
 

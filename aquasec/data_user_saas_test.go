@@ -7,36 +7,40 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
-func TestAquasecGatewayManagementDatasource(t *testing.T) {
+func TestAquasecUserSaasManagementDatasource(t *testing.T) {
+
+	if !isSaasEnv() {
+		t.Skip("Skipping saas user test because its on prem env")
+	}
 	t.Parallel()
 	resource.Test(t, resource.TestCase{
 		PreCheck:  func() { testAccPreCheck(t) },
 		Providers: testAccProviders,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckAquasecGatewayDataSource(),
-				Check:  testAccCheckAquasecGatewaysDataSourceExists("data.aquasec_gateways.testgateways"),
+				Config: testAccCheckAquasecUserSaasDataSource(),
+				Check:  testAccCheckAquasecUsersSaasDataSourceExists("data.aquasec_users_saas.testusers"),
 			},
 		},
 	})
 }
 
-func testAccCheckAquasecGatewayDataSource() string {
+func testAccCheckAquasecUserSaasDataSource() string {
 	return `
-	data "aquasec_gateways" "testgateways" {}
+	data "aquasec_users_saas" "testusers" {}
 	`
-
 }
 
-func testAccCheckAquasecGatewaysDataSourceExists(n string) resource.TestCheckFunc {
+func testAccCheckAquasecUsersSaasDataSourceExists(n string) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 		rs, ok := s.RootModule().Resources[n]
 
 		if !ok {
 			return NewNotFoundErrorf("%s in state", n)
 		}
+
 		if rs.Primary.ID == "" {
-			return NewNotFoundErrorf("ID for %s in state", n)
+			return NewNotFoundErrorf("Id for %s in state", n)
 		}
 
 		return nil

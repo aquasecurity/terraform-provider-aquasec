@@ -10,6 +10,7 @@ import (
 )
 
 func TestDataSourceFirewallPolicyBasic(t *testing.T) {
+	t.Parallel()
 	basicFirewallPolicy := client.FirewallPolicy{
 		Name:        acctest.RandomWithPrefix("basic-data-firewall-policy"),
 		Description: "this is a basic firewall policy",
@@ -33,6 +34,7 @@ func TestDataSourceFirewallPolicyBasic(t *testing.T) {
 }
 
 func TestDataSourceFirewallPolicyComplex(t *testing.T) {
+	t.Parallel()
 	complexFirewallpolicy := client.FirewallPolicy{
 		Name:                 acctest.RandomWithPrefix("complex-data-firewall-policy"),
 		Description:          "this is a complex firewall policy",

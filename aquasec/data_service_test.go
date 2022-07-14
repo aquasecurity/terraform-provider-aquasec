@@ -9,6 +9,7 @@ import (
 )
 
 func TestDataSourceServiceBasic(t *testing.T) {
+	t.Parallel()
 	rootRef := "data.aquasec_service.test-svc"
 	resource.Test(t, resource.TestCase{
 		PreCheck: func() {
@@ -44,6 +45,7 @@ func TestDataSourceServiceBasic(t *testing.T) {
 }
 
 func TestDataSourceServiceComplex(t *testing.T) {
+	t.Parallel()
 	rootRef := "data.aquasec_service.test-svc"
 	resource.Test(t, resource.TestCase{
 		PreCheck: func() {

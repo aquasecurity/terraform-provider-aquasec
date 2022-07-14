@@ -10,6 +10,7 @@ import (
 )
 
 func TestAquasecImageAssurancePolicy(t *testing.T) {
+	t.Parallel()
 	assurance_type := "image"
 	description := "Created using Terraform"
 	name := acctest.RandomWithPrefix("terraform-test")
