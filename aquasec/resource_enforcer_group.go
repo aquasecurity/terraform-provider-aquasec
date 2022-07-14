@@ -76,6 +76,7 @@ func resourceEnforcerGroup() *schema.Resource {
 				Type:        schema.TypeBool,
 				Description: "This option is applicable only if `Enable Pod Enforcer injection` is selected. Select this option if you want Aqua Enterprise to copy the secrets defined above to the Pod Enforcer namespace and container. Otherwise, you can choose to copy these secrets by other means.",
 				Optional:    true,
+				Computed:    true,
 			},
 			"auto_discover_configure_registries": {
 				Type:        schema.TypeBool,
@@ -249,6 +250,7 @@ func resourceEnforcerGroup() *schema.Resource {
 				Description: `See https://docs.aquasec.com/docs/securing-kubernetes-applications#section-configuration-hardening, The KubeEnforcer can deploy the Aqua Security kube-bench open-source product to perform Kubernetes CIS benchmark testing of nodes.
 				This field specifies the path and file name of the kube-bench product image for the KubeEnforcer to deploy; it will be filled in automatically. You can optionally enter a different value.`,
 				Optional: true,
+				Computed: true,
 			},
 			"last_update": {
 				Type:        schema.TypeInt,
@@ -279,6 +281,7 @@ func resourceEnforcerGroup() *schema.Resource {
 				Type:        schema.TypeString,
 				Description: "This option is applicable only if `Enable Pod Enforcer injection` is selected. This field specifies the path and file name of the KubeEnforcer product image to be deployed; it will be filled in automatically. You can optionally enter a different value.",
 				Optional:    true,
+				Computed:    true,
 			},
 			"micro_enforcer_injection": {
 				Type:        schema.TypeBool,
@@ -289,6 +292,7 @@ func resourceEnforcerGroup() *schema.Resource {
 				Type:        schema.TypeString,
 				Description: "You can specify the name of the secret (in the Aqua namespace) that Aqua copies into the Pod Enforcer namespace and kube-bench, allowing them access to the Pod Enforcer and kube-bench product images, respectively.",
 				Optional:    true,
+				Computed:    true,
 			},
 			"neg_vulns": {
 				Type:        schema.TypeInt,
