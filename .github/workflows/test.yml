@@ -25,24 +25,24 @@ jobs:
     timeout-minutes: 5
     steps:
 
-    - name: Set up Go
-      uses: actions/setup-go@v2.1.3
-      with:
-        go-version: '1.15'
-      id: go
+      - name: Set up Go
+        uses: actions/setup-go@v2.1.3
+        with:
+          go-version: '1.17'
+        id: go
 
-    - name: Check out code into the Go module directory
-      uses: actions/checkout@v2.3.3
-      with:
-        ref: ${{ github.event.pull_request.head.sha }}
+      - name: Check out code into the Go module directory
+        uses: actions/checkout@v2.3.3
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
 
-    - name: Get dependencies
-      run: |
-        go mod download
+      - name: Get dependencies
+        run: |
+          go mod download
 
-    - name: Build
-      run: |
-        go build -v .
+      - name: Build
+        run: |
+          go build -v .
 
   # run acceptance tests in a matrix with Terraform core versions
   test:
@@ -60,28 +60,28 @@ jobs:
           - '0.14.0-beta2'
     steps:
 
-    - name: Set up Go
-      uses: actions/setup-go@v2.1.3
-      with:
-        go-version: '1.15'
-      id: go
+      - name: Set up Go
+        uses: actions/setup-go@v2.1.3
+        with:
+          go-version: '1.17'
+        id: go
 
-    - name: Check out code into the Go module directory
-      uses: actions/checkout@v2.3.3
-      with:
-        ref: ${{ github.event.pull_request.head.sha }}
-    - name: Get dependencies
-      run: |
-        go mod download
-        
-    - name: TF acceptance tests
-      timeout-minutes: 120
-      env:
-        TF_ACC: "1"
-        TF_ACC_TERRAFORM_VERSION: ${{ matrix.terraform }}
-        AQUA_URL: ${{ secrets.AQUA_URL }}
-        AQUA_USER: ${{ secrets.AQUA_USER }}
-        AQUA_PASSWORD: ${{ secrets.AQUA_PASSWORD }}
+      - name: Check out code into the Go module directory
+        uses: actions/checkout@v2.3.3
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Get dependencies
+        run: |
+          go mod download
 
-      run: |
-        go test -v -cover ./aquasec/ -timeout 120m
+      - name: TF acceptance tests
+        timeout-minutes: 120
+        env:
+          TF_ACC: "1"
+          TF_ACC_TERRAFORM_VERSION: ${{ matrix.terraform }}
+          AQUA_URL: ${{ secrets.AQUA_URL }}
+          AQUA_USER: ${{ secrets.AQUA_USER }}
+          AQUA_PASSWORD: ${{ secrets.AQUA_PASSWORD }}
+
+        run: |
+          go test -v -cover ./aquasec/ -timeout 120m
