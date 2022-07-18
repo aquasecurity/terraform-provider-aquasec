@@ -2,6 +2,7 @@ package aquasec
 
 import (
 	"context"
+
 	"github.com/aquasecurity/terraform-provider-aquasec/client"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -18,6 +19,7 @@ func resourceHostRuntimePolicy() *schema.Resource {
 				Type:        schema.TypeString,
 				Description: "Name of the host runtime policy",
 				Required:    true,
+				ForceNew:    true,
 			},
 			"description": {
 				Type:        schema.TypeString,

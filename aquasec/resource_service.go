@@ -19,6 +19,7 @@ func resourceService() *schema.Resource {
 				Type:        schema.TypeString,
 				Description: "The name of the service. It is recommended not to use whitespace characters in the name.",
 				Required:    true,
+				ForceNew:    true,
 			},
 			"description": {
 				Type:        schema.TypeString,

@@ -19,6 +19,7 @@ func resourceContainerRuntimePolicy() *schema.Resource {
 				Type:        schema.TypeString,
 				Description: "Name of the container runtime policy",
 				Required:    true,
+				ForceNew:    true,
 			},
 			"description": {
 				Type:        schema.TypeString,

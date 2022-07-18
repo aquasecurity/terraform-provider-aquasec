@@ -1,10 +1,11 @@
 package aquasec
 
 import (
-	"github.com/aquasecurity/terraform-provider-aquasec/client"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"log"
 	"time"
+
+	"github.com/aquasecurity/terraform-provider-aquasec/client"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func resourceRole() *schema.Resource {
@@ -21,35 +22,36 @@ func resourceRole() *schema.Resource {
 		},
 		Schema: map[string]*schema.Schema{
 			"role_name": {
-				Type:     schema.TypeString,
+				Type:        schema.TypeString,
 				Description: "The name of the role, comprised of alphanumeric characters and '-', '_', ' ', ':', '.', '@', '!', '^'.",
-				Required: true,
+				Required:    true,
+				ForceNew:    true,
 			},
 			"author": {
-				Type:     schema.TypeString,
+				Type:        schema.TypeString,
 				Description: "The name of the user who created the role. Only returned from the API for existing permissions, not part of the permission creation/modification structure.",
-				Computed: true,
+				Computed:    true,
 			},
 			"description": {
-				Type:     schema.TypeString,
+				Type:        schema.TypeString,
 				Description: "Free text description for the role.",
-				Optional: true,
+				Optional:    true,
 			},
 			"updated_at": {
-				Type:     schema.TypeString,
+				Type:        schema.TypeString,
 				Description: "The date of the last modification of the role.",
-				Computed: true,
-				Optional: true,
+				Computed:    true,
+				Optional:    true,
 			},
 			"permission": {
-				Type:     schema.TypeString,
+				Type:        schema.TypeString,
 				Description: "The name of the Permission Set that will affect the users assigned to this specific Role.",
-				Required: true,
+				Required:    true,
 			},
 			"scopes": {
-				Type:     schema.TypeList,
+				Type:        schema.TypeList,
 				Description: "List of Application Scopes that will affect the users assigned to this specific Role.",
-				Required: true,
+				Required:    true,
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
 				},
