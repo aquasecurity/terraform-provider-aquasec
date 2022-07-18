@@ -32,7 +32,7 @@ git clone https://github.com/aquasecurity/terraform-provider-aquasec.git
 
 cd terraform-provider-aquasec
 
-git checkout v0.8.9
+git checkout v0.8.12
 ```
 
 **Build the provider**
@@ -44,16 +44,15 @@ The last command will compile the Terraform Provider and generate a `terraform-p
 
 **Install the provider**
 
-After a successful build, the generated binary will need to be installed into the folder containing the Terraform resources.
-
-We'll use here the [example Terraform resources](examples/resources/main.tf) provided in this repo.
+After a successful build, the generated binary will need to be installed locally:
 
 ```
-mkdir -p examples/resources/.terraform/plugins/terraform-provider-aquasec/aquasec/aquasec/0.8.9/darwin_amd64/
+mkdir -p ~/.terraform.d/plugins/terraform-provider-aquasec/local/aquasec/0.8.12/darwin_amd64
 
-mv terraform-provider-aquasec examples/resources/.terraform/plugins/terraform-provider-aquasec/aquasec/aquasec/0.8.9/darwin_amd64/terraform-provider-aquasec
+mv terraform-provider-aquasec ~/.terraform.d/plugins/terraform-provider-aquasec/local/aquasec/0.8.12/darwin_amd64/
 ```
-Make sure to replace the version `0.8.9` and the architecture `darwin_amd64` in the path as relevant for your system.
+
+Make sure to replace the version `0.8.12` and the architecture `darwin_amd64` in the path as relevant for your system.
 
 **Terraform configuration**
 
@@ -62,8 +61,8 @@ In order to test the provider installed locally, the provider block will have to
 terraform {
   required_providers {
     aquasec = {
-      version = "0.8.9"
-      source  = "terraform-provider-aquasec/aquasec/aquasec"
+      version = "0.8.12"
+      source  = "terraform-provider-aquasec/local/aquasec"
     }
   }
 }
@@ -71,11 +70,10 @@ terraform {
 
 ## Test Aquasec Terraform Provider
 
-The following instructions will let you test the provider. If you built a localy copy of it please make sure to follow the instruction above and replace the provider definition in the example resources.
+Now you can carry on initialising Terraform in your folder with the resources.
+This step will be very shortly since Terraform won't download the provider but use instead the local binary
 
 ```
-cd examples/resources
-
 terraform init
 ```
 
