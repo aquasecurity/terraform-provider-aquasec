@@ -16,7 +16,7 @@ func resourceEnforcerGroup() *schema.Resource {
 		Update: resourceEnforcerGroupUpdate,
 		Delete: resourceEnforcerGroupDelete,
 		Importer: &schema.ResourceImporter{
-			State: schema.ImportStatePassthrough,
+			StateContext: schema.ImportStatePassthroughContext,
 		},
 		Schema: map[string]*schema.Schema{
 			"admission_control": {

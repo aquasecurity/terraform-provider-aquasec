@@ -44,6 +44,11 @@ func TestAquasecEnforcerGroupResource(t *testing.T) {
 					resource.TestCheckResourceAttr(rootRef, "type", basicEnforcerGroup.Type),
 				),
 			},
+			{
+				ResourceName:      fmt.Sprintf("aquasec_enforcer_groups.%s", basicEnforcerGroup.ID),
+				ImportState:       true,
+				ImportStateVerify: true,
+			},
 		},
 	})
 }
