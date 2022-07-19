@@ -13,31 +13,34 @@ func resourceApplicationScope() *schema.Resource {
 		Read:   resourceApplicationScopeRead,
 		Update: resourceApplicationScopeUpdate,
 		Delete: resourceApplicationScopeDelete,
+		Importer: &schema.ResourceImporter{
+			StateContext: schema.ImportStatePassthroughContext,
+		},
 		Schema: map[string]*schema.Schema{
 			"name": {
-				Type:     schema.TypeString,
+				Type:        schema.TypeString,
 				Description: "Name of an application scope.",
-				Required: true,
+				Required:    true,
 			},
 			"description": {
-				Type:     schema.TypeString,
+				Type:        schema.TypeString,
 				Description: "Description of the application scope.",
-				Optional: true,
+				Optional:    true,
 			},
 			"author": {
-				Type:     schema.TypeString,
+				Type:        schema.TypeString,
 				Description: "Username of the account that created the service.",
-				Computed: true,
+				Computed:    true,
 			},
 			"owner_email": {
-				Type:     schema.TypeString,
+				Type:        schema.TypeString,
 				Description: "Name of an application scope.",
-				Optional: true,
+				Optional:    true,
 			},
 			"categories": {
-				Type:     schema.TypeSet,
+				Type:        schema.TypeSet,
 				Description: "Artifacts (of applications) / Workloads (containers) / Infrastructure (elements).",
-				Optional: true,
+				Optional:    true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"artifacts": {
@@ -335,10 +338,10 @@ func resourceApplicationScopeCreate(d *schema.ResourceData, m interface{}) error
 
 	if err == nil {
 		d.Set("categories", flattenCategories(iap.Categories))
-
+		d.SetId(name)
 		err1 := resourceApplicationScopeRead(d, m)
 		if err1 == nil {
-			d.SetId(name)
+
 		} else {
 			return fmt.Errorf("application scope resource read is failed with error: %v", err1)
 		}
@@ -402,14 +405,14 @@ func expandApplicationScope(d *schema.ResourceData) (*client.ApplicationScope, e
 
 func resourceApplicationScopeRead(d *schema.ResourceData, m interface{}) error {
 	ac := m.(*client.Client)
-	name := d.Get("name").(string)
-
-	iap, err := ac.GetApplicationScope(name)
+	iap, err := ac.GetApplicationScope(d.Id())
 	if err == nil {
+
 		d.Set("name", iap.Name)
 		d.Set("description", iap.Description)
 		d.Set("author", iap.Author)
 		d.Set("owner_email", iap.OwnerEmail)
+		d.SetId(iap.Name)
 		//d.Set("categories", flattenCategories(iap.Categories))
 	} else {
 		return err
@@ -432,7 +435,7 @@ func resourceApplicationScopeUpdate(d *schema.ResourceData, m interface{}) error
 		if err == nil {
 			err1 := resourceApplicationScopeRead(d, m)
 			if err1 == nil {
-				d.SetId(name)
+				d.SetId(iap.Name)
 			} else {
 				return err1
 			}
