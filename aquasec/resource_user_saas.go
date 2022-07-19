@@ -3,10 +3,11 @@ package aquasec
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/aquasecurity/terraform-provider-aquasec/client"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"log"
 	"strconv"
+
+	"github.com/aquasecurity/terraform-provider-aquasec/client"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func resourceUserSaas() *schema.Resource {
@@ -19,7 +20,7 @@ func resourceUserSaas() *schema.Resource {
 		Update: resourceUserSaasUpdate,
 		Delete: resourceUserSaasDelete,
 		Importer: &schema.ResourceImporter{
-			State: schema.ImportStatePassthrough,
+			StateContext: schema.ImportStatePassthroughContext,
 		},
 		Schema: map[string]*schema.Schema{
 			//"dashboard": {
@@ -196,50 +197,44 @@ func resourceUserSaasCreate(d *schema.ResourceData, m interface{}) error {
 
 		d.Set("groups", groups)
 	}
+	d.SetId(user.BasicId.Id)
+	return resourceUserSaasRead(d, m)
 
-	err = resourceUserSaasRead(d, m)
-	if err == nil {
-		d.SetId(user.BasicId.Id)
-	} else {
-		return err
-	}
-
-	return nil
 }
 
 func resourceUserSaasRead(d *schema.ResourceData, m interface{}) error {
 	ac := m.(*client.Client)
-
-	id := d.Get("user_id").(string)
-	r, err := ac.GetUser(id)
-	if err == nil {
-		logins := make([]interface{}, len(r.BasicUser.Logins), len(r.BasicUser.Logins))
-
-		d.Set("confirmed", r.Confirmed)
-		d.Set("password_reset", r.PasswordReset)
-		d.Set("send_announcements", r.SendAnnouncements)
-		d.Set("send_scan_results", r.SendScanResults)
-		d.Set("send_new_plugins", r.SendNewPlugin)
-		d.Set("send_new_risks", r.SendNewRisks)
-		d.Set("created", r.Created)
-		//d.Set("provider", r.Provider)
-		d.Set("multiaccount", r.Multiaccount)
-
-		for i, login := range r.BasicUser.Logins {
-			l := make(map[string]interface{})
-			l["id"] = login.Id
-			l["ip_address"] = login.IpAddress
-			l["created"] = login.Created
-			l["user_id"] = login.UserId
-			logins[i] = l
-		}
-
-		d.Set("logins", logins)
-		d.SetId(id)
-	} else {
+	r, err := ac.GetUser(d.Id())
+	if err != nil {
 		log.Println("[DEBUG]  error calling ac.ReadUser: ", r)
 		return err
 	}
+	logins := make([]interface{}, len(r.BasicUser.Logins))
+
+	d.Set("confirmed", r.Confirmed)
+	d.Set("password_reset", r.PasswordReset)
+	d.Set("send_announcements", r.SendAnnouncements)
+	d.Set("send_scan_results", r.SendScanResults)
+	d.Set("send_new_plugins", r.SendNewPlugin)
+	d.Set("send_new_risks", r.SendNewRisks)
+	d.Set("created", r.Created)
+	//d.Set("provider", r.Provider)
+	d.Set("multiaccount", r.Multiaccount)
+	d.Set("account_admin", r.AccountAdmin)
+	d.Set("email", r.Email)
+	d.Set("user_id", r.BasicId.Id)
+
+	for i, login := range r.BasicUser.Logins {
+		l := make(map[string]interface{})
+		l["id"] = login.Id
+		l["ip_address"] = login.IpAddress
+		l["created"] = login.Created
+		l["user_id"] = login.UserId
+		logins[i] = l
+	}
+
+	d.Set("logins", logins)
+	d.SetId(r.BasicId.Id)
 
 	return nil
 }

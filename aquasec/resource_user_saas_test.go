@@ -40,6 +40,12 @@ func TestAquasecUsersSaasManagement(t *testing.T) {
 					testAccCheckAquasecUsersSaassExists("aquasec_user_saas.new"),
 				),
 			},
+			{
+				ResourceName:            "aquasec_user_saas.new",
+				ImportState:             true,
+				ImportStateVerify:       true,
+				ImportStateVerifyIgnore: []string{"groups"}, //TODO: add groups to read
+			},
 		},
 	})
 }
