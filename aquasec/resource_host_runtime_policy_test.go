@@ -40,6 +40,11 @@ func TestResourceAquasecBasicHostRuntimePolicyCreate(t *testing.T) {
 					resource.TestCheckResourceAttr(rootRef, "author", os.Getenv("AQUA_USER")),
 				),
 			},
+			{
+				ResourceName:      "aquasec_host_runtime_policy.test",
+				ImportState:       true,
+				ImportStateVerify: true,
+			},
 		},
 	})
 }
