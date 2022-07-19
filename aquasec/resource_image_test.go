@@ -53,7 +53,7 @@ func TestResourceAquasecImageCreate(t *testing.T) {
 				ResourceName:            "aquasec_image.test",
 				ImportState:             true,
 				ImportStateVerify:       true,
-				ImportStateVerifyIgnore: []string{"scan_date", "scan_status"},
+				ImportStateVerifyIgnore: []string{"scan_date", "scan_status", "scan_error"},
 			},
 		},
 	})
