@@ -2,9 +2,11 @@ package aquasec
 
 import (
 	"fmt"
+	"log"
+	"strconv"
+
 	"github.com/aquasecurity/terraform-provider-aquasec/client"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-	"log"
 )
 
 func resourceGroup() *schema.Resource {
@@ -17,23 +19,23 @@ func resourceGroup() *schema.Resource {
 		Update: resourceGroupUpdate,
 		Delete: resourceGroupDelete,
 		Importer: &schema.ResourceImporter{
-			State: schema.ImportStatePassthrough,
+			StateContext: schema.ImportStatePassthroughContext,
 		},
 		Schema: map[string]*schema.Schema{
 			"group_id": {
-				Type:     schema.TypeInt,
+				Type:        schema.TypeInt,
 				Description: "The ID of the created group.",
-				Computed: true,
+				Computed:    true,
 			},
 			"name": {
-				Type:     schema.TypeString,
+				Type:        schema.TypeString,
 				Description: "The desired name of the group.",
-				Required: true,
+				Required:    true,
 			},
 			"created": {
-				Type:     schema.TypeString,
+				Type:        schema.TypeString,
 				Description: "The creation date of the group.",
-				Computed: true,
+				Computed:    true,
 			},
 		},
 	}
@@ -52,23 +54,21 @@ func resourceGroupCreate(d *schema.ResourceData, m interface{}) error {
 	}
 	d.Set("group_id", group.Id)
 
-	err = resourceGroupRead(d, m)
-	if err != nil {
-		i := fmt.Sprintf("%v", group.Id)
-		d.SetId(i)
-	} else {
-		return err
-	}
-
-	return nil
+	d.SetId(fmt.Sprintf("%v", group.Id))
+	return resourceGroupRead(d, m)
 }
 
 func resourceGroupRead(d *schema.ResourceData, m interface{}) error {
 	ac := m.(*client.Client)
 
-	id := d.Get("group_id").(int)
+	id, err := strconv.Atoi(d.Id())
+	if err != nil {
+		return nil
+	}
 	r, err := ac.GetGroup(id)
 	if err == nil {
+		d.Set("name", r.Name)
+		d.Set("group_id", r.Id)
 		d.Set("created", r.Created)
 		d.SetId(fmt.Sprintf("%v", id))
 
