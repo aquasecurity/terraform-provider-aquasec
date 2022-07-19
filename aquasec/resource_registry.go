@@ -76,6 +76,7 @@ func resourceRegistry() *schema.Resource {
 				Type:        schema.TypeString,
 				Description: "The Scanner type",
 				Optional:    true,
+				Computed:    true,
 			},
 			"prefixes": {
 				Type:        schema.TypeList,
