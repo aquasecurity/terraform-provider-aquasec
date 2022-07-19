@@ -55,6 +55,7 @@ func resourceRegistry() *schema.Resource {
 				Type:        schema.TypeString,
 				Description: "The URL, address or region of the registry",
 				Optional:    true,
+				Computed:    true,
 			},
 			"auto_pull": {
 				Type:        schema.TypeBool,
