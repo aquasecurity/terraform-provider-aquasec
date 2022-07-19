@@ -134,24 +134,17 @@ func resourceFirewallPolicyCreate(ctx context.Context, d *schema.ResourceData, m
 		return diag.FromErr(err)
 	}
 
-	//d.SetId(name)
-	err1 := resourceFirewallPolicyRead(ctx, d, m)
-	if err1 == nil {
-		d.SetId(name)
-	} else {
-		return err1
-	}
+	d.SetId(name)
+	return resourceFirewallPolicyRead(ctx, d, m)
 
-	//return resourceFirewallPolicyRead(ctx, d, m)
-	return nil
 }
 
 func resourceFirewallPolicyRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	c := m.(*client.Client)
-	name := d.Get("name").(string)
 
-	firewallPolicy, err := c.GetFirewallPolicy(name)
+	firewallPolicy, err := c.GetFirewallPolicy(d.Id())
 	if err == nil {
+		d.Set("name", firewallPolicy.Name)
 		d.Set("description", firewallPolicy.Description)
 		d.Set("block_icmp_ping", firewallPolicy.BlockICMPPing)
 		d.Set("block_metadata_service", firewallPolicy.BlockMetadataService)
@@ -162,7 +155,7 @@ func resourceFirewallPolicyRead(ctx context.Context, d *schema.ResourceData, m i
 		d.Set("inbound_networks", flattenNetworks(firewallPolicy.InboundNetworks))
 		d.Set("outbound_networks", flattenNetworks(firewallPolicy.OutboundNetworks))
 
-		d.SetId(name)
+		d.SetId(firewallPolicy.Name)
 	} else {
 		return diag.FromErr(err)
 	}
