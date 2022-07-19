@@ -14,6 +14,9 @@ func resourceService() *schema.Resource {
 		ReadContext:   resourceServiceRead,
 		UpdateContext: resourceServiceUpdate,
 		DeleteContext: resourceServiceDelete,
+		Importer: &schema.ResourceImporter{
+			StateContext: schema.ImportStatePassthroughContext,
+		},
 		Schema: map[string]*schema.Schema{
 			"name": {
 				Type:        schema.TypeString,
@@ -169,7 +172,7 @@ func resourceService() *schema.Resource {
 
 func resourceServiceCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	c := m.(*client.Client)
-	//name := d.Get("name").(string)
+	name := d.Get("name").(string)
 
 	service := expandService(d)
 	err := c.CreateService(service)
@@ -177,21 +180,17 @@ func resourceServiceCreate(ctx context.Context, d *schema.ResourceData, m interf
 		return diag.FromErr(err)
 	}
 
-	//d.SetId(name)
-	err1 := resourceServiceRead(ctx, d, m)
-	if err1 != nil {
-		return err1
-	}
+	d.SetId(name)
+	return resourceServiceRead(ctx, d, m)
 
-	return nil
 }
 
 func resourceServiceRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	c := m.(*client.Client)
-	name := d.Get("name").(string)
 
-	service, err := c.GetService(name)
+	service, err := c.GetService(d.Id())
 	if err == nil {
+		d.Set("name", service.Name)
 		d.Set("description", service.Description)
 		d.Set("author", service.Author)
 		d.Set("containers_count", service.ContainersCount)
@@ -216,7 +215,7 @@ func resourceServiceRead(ctx context.Context, d *schema.ResourceData, m interfac
 		d.Set("unregistered_count", service.UnregisteredCount)
 		d.Set("is_registered", service.IsRegistered)
 		d.Set("application_scopes", service.ApplicationScopes)
-		d.SetId(name)
+		d.SetId(service.Name)
 	} else {
 		return diag.FromErr(err)
 	}
