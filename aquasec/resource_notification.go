@@ -13,6 +13,9 @@ func resourceNotification() *schema.Resource {
 		Update: resourceNotificationUpdate,
 		Read:   resourceNotificationRead,
 		Delete: resourceNotificationDelete,
+		Importer: &schema.ResourceImporter{
+			StateContext: schema.ImportStatePassthroughContext,
+		},
 		Schema: map[string]*schema.Schema{
 			"user_name": {
 				Type:     schema.TypeString,
@@ -116,6 +119,24 @@ func resourceNotificationRead(d *schema.ResourceData, m interface{}) error {
 	r, err := ac.SlackNotificationRead()
 	if err != nil {
 		log.Println("[DEBUG]  error calling ac.GetSlackNotification: ", r)
+		return err
+	}
+	if err = d.Set("channel", r.Channel); err != nil {
+		return err
+	}
+	if err = d.Set("enabled", r.Enabled); err != nil {
+		return err
+	}
+	if err = d.Set("name", r.Name); err != nil {
+		return err
+	}
+	if err = d.Set("type", r.Type); err != nil {
+		return err
+	}
+	if err = d.Set("user_name", r.UserName); err != nil {
+		return err
+	}
+	if err = d.Set("webhook_url", r.WebhookURL); err != nil {
 		return err
 	}
 	return nil
