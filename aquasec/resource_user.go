@@ -1,9 +1,10 @@
 package aquasec
 
 import (
+	"log"
+
 	"github.com/aquasecurity/terraform-provider-aquasec/client"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-	"log"
 )
 
 func resourceUser() *schema.Resource {
@@ -16,72 +17,72 @@ func resourceUser() *schema.Resource {
 		Update: resourceUserUpdate,
 		Delete: resourceUserDelete,
 		Importer: &schema.ResourceImporter{
-			State: schema.ImportStatePassthrough,
+			StateContext: schema.ImportStatePassthroughContext,
 		},
 		Schema: map[string]*schema.Schema{
 			"user_id": {
-				Type:     schema.TypeString,
+				Type:        schema.TypeString,
 				Description: "The user ID.",
-				Required: true,
-				ForceNew: true,
+				Required:    true,
+				ForceNew:    true,
 			},
 			"password": {
-				Type:     schema.TypeString,
+				Type:        schema.TypeString,
 				Description: "Login password for the user; string, required, at least 8 characters long.",
-				Required: true,
+				Required:    true,
 			},
 			"password_confirm": {
-				Type:     schema.TypeString,
+				Type:        schema.TypeString,
 				Description: "Password confirmation.",
-				Optional: true,
+				Optional:    true,
 			},
 			"name": {
-				Type:     schema.TypeString,
+				Type:        schema.TypeString,
 				Description: "The user name.",
-				Optional: true,
+				Optional:    true,
 			},
 			"email": {
-				Type:     schema.TypeString,
+				Type:        schema.TypeString,
 				Description: "The user Email.",
-				Optional: true,
+				Optional:    true,
 			},
 			"first_time": {
-				Type:     schema.TypeBool,
+				Type:        schema.TypeBool,
 				Description: "If the user must change password at next login.",
-				Optional: true,
+				Optional:    true,
 			},
 			"is_super": {
-				Type:     schema.TypeBool,
+				Type:        schema.TypeBool,
 				Description: "Give the Permission Set full access, meaning all actions are allowed without restriction.",
-				Computed: true,
+				Computed:    true,
 			},
 			"ui_access": {
-				Type:     schema.TypeBool,
+				Type:        schema.TypeBool,
 				Description: "Whether to allow UI access for users with this Permission Set.",
-				Computed: true,
+				Computed:    true,
 			},
 			"role": {
-				Type:     schema.TypeString,
+				Type:        schema.TypeString,
 				Description: "The first role that assigned to the user for backward compatibility.",
-				Computed: true,
+				Computed:    true,
 			},
 			"roles": {
-				Type:     schema.TypeList,
+				Type:        schema.TypeList,
 				Description: "The roles that will be assigned to the user.",
-				Required: true,
+				Required:    true,
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
 				},
 			},
 			"type": {
-				Type:     schema.TypeString,
+				Type:        schema.TypeString,
 				Description: "The user type (Aqua, LDAP, SAML, OAuth2, OpenID, Tenant Manager).",
-				Computed: true,
+				Computed:    true,
 			},
 			"plan": {
-				Type:     schema.TypeString,
+				Type:        schema.TypeString,
 				Description: "User's Aqua plan (Developer / Team / Advanced).",
-				Computed: true,
+				Computed:    true,
 			},
 		},
 	}
@@ -132,22 +133,15 @@ func resourceUserCreate(d *schema.ResourceData, m interface{}) error {
 	if err != nil {
 		return err
 	}
+	d.SetId(d.Get("user_id").(string))
+	return resourceUserRead(d, m)
 
-	err = resourceUserRead(d, m)
-	if err == nil {
-		d.SetId(d.Get("user_id").(string))
-	} else {
-		return err
-	}
-
-	return nil
 }
 
 func resourceUserRead(d *schema.ResourceData, m interface{}) error {
 	ac := m.(*client.Client)
 
-	id := d.Get("user_id").(string)
-	r, err := ac.GetUser(id)
+	r, err := ac.GetUser(d.Id())
 	if err == nil {
 		d.Set("first_time", r.BasicUser.FirstTime)
 		d.Set("is_super", r.BasicUser.IsSuper)
