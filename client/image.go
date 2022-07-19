@@ -129,20 +129,17 @@ func (cli *Client) CreateImage(image *Image) error {
 	return nil
 }
 
-// GetImage gets an Aqua image by registry, name and tag
-func (cli *Client) GetImage(image *Image) (*Image, error) {
-	registry := image.Registry
-	repo := image.Repository
-	tag := image.Tag
+// GetImage gets an Aqua image by registry/name/tag
+func (cli *Client) GetImage(imageUrl string) (*Image, error) {
 
 	var err error
 	var response Image
 	request := cli.gorequest
-	apiPath := fmt.Sprintf("/api/v2/images/%v/%v/%v", registry, repo, tag)
+	apiPath := fmt.Sprintf("/api/v2/images/%v", imageUrl)
 	request.Set("Authorization", "Bearer "+cli.token)
 	events, body, errs := request.Clone().Get(cli.url + apiPath).End()
 	if errs != nil {
-		return nil, errors.Wrap(getMergedError(errs), fmt.Sprintf("failed getting image with name %v/%v:%v", registry, repo, tag))
+		return nil, errors.Wrap(getMergedError(errs), fmt.Sprintf("failed getting image with name %v", imageUrl))
 	}
 	if events.StatusCode == 200 {
 		err = json.Unmarshal([]byte(body), &response)
@@ -155,10 +152,10 @@ func (cli *Client) GetImage(image *Image) (*Image, error) {
 		err = json.Unmarshal([]byte(body), &errorReponse)
 		if err != nil {
 			log.Println("failed to unmarshal error response")
-			return nil, fmt.Errorf("failed getting image with name %v/%v:%v. Status: %v, Response: %v", registry, repo, tag, events.StatusCode, body)
+			return nil, fmt.Errorf("failed getting image with name %v. Status: %v, Response: %v", imageUrl, events.StatusCode, body)
 		}
 
-		return nil, fmt.Errorf("failed getting image with name %v/%v:%v. Status: %v, error message: %v", registry, repo, tag, events.StatusCode, errorReponse.Message)
+		return nil, fmt.Errorf("failed getting image with name %v. Status: %v, error message: %v", imageUrl, events.StatusCode, errorReponse.Message)
 	}
 
 	return &response, nil
@@ -211,7 +208,7 @@ func (cli *Client) RescanImage(image *Image, fullRescan bool) error {
 
 func (cli *Client) WaitUntilScanCompleted(image *Image) error {
 	for {
-		img, err := cli.GetImage(image)
+		img, err := cli.GetImage(fmt.Sprintf("%v/%v/%v", image.Registry, image.Repository, image.Tag))
 		if err != nil {
 			return err
 		}

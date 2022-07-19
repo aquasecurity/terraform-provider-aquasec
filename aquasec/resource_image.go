@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"strings"
 
 	"github.com/aquasecurity/terraform-provider-aquasec/client"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
@@ -16,6 +17,9 @@ func resourceImage() *schema.Resource {
 		ReadContext:   resourceImageRead,
 		UpdateContext: resourceImageUpdate,
 		DeleteContext: resourceImageDelete,
+		Importer: &schema.ResourceImporter{
+			StateContext: schema.ImportStatePassthroughContext,
+		},
 		Schema: map[string]*schema.Schema{
 			"registry": {
 				Type:        schema.TypeString,
@@ -698,30 +702,24 @@ func resourceImageCreate(ctx context.Context, d *schema.ResourceData, m interfac
 		return diag.FromErr(err)
 	}
 
-	//d.SetId(getImageId(image))
+	d.SetId(getImageId(image))
+	return resourceImageRead(ctx, d, m)
 
-	err1 := resourceImageRead(ctx, d, m)
-	if err1 == nil {
-		d.SetId(getImageId(image))
-	} else {
-		return err1
-	}
-
-	return nil
-	//return resourceImageRead(ctx, d, m)
 }
 
 func resourceImageRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	var err error
 	c := m.(*client.Client)
-	image := expandImage(d)
+	id := d.Id()
+	i := strings.LastIndex(id, ":")
+	id = id[:i] + strings.Replace(id[i:], ":", "/", 1)
 
-	newImage, err := c.GetImage(image)
+	newImage, err := c.GetImage(id)
 	if err != nil {
 		return diag.FromErr(err)
 	}
 
-	vulnerabilities, err := c.GetVulnerabilities(image)
+	vulnerabilities, err := c.GetVulnerabilities(newImage)
 	if err == nil {
 		d.Set("registry", newImage.Registry)
 		d.Set("registry_type", newImage.RegistryType)

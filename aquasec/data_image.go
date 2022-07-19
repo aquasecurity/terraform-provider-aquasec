@@ -2,6 +2,7 @@ package aquasec
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/aquasecurity/terraform-provider-aquasec/client"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
@@ -671,7 +672,7 @@ func dataImageRead(ctx context.Context, d *schema.ResourceData, m interface{}) d
 	c := m.(*client.Client)
 	image := expandImage(d)
 
-	newImage, err := c.GetImage(image)
+	newImage, err := c.GetImage(fmt.Sprintf("%v/%v/%v", image.Registry, image.Repository, image.Tag))
 	if err != nil {
 		return diag.FromErr(err)
 	}
