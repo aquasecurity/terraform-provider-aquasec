@@ -29,6 +29,11 @@ func TestAquasecPermissionSetManagement(t *testing.T) {
 					testAccCheckAquasecPermissionSetExists("aquasec_permissions_sets.new"),
 				),
 			},
+			{
+				ResourceName:      "aquasec_permissions_sets.new",
+				ImportState:       true,
+				ImportStateVerify: true,
+			},
 		},
 	})
 }

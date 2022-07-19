@@ -12,6 +12,9 @@ func resourcePermissionSet() *schema.Resource {
 		Read:        resourcePermissionSetRead,
 		Update:      resourcePermissionSetUpdate,
 		Delete:      resourcePermissionSetDelete,
+		Importer: &schema.ResourceImporter{
+			StateContext: schema.ImportStatePassthroughContext,
+		},
 		Schema: map[string]*schema.Schema{
 			"id": {
 				Type:        schema.TypeString,
@@ -68,18 +71,11 @@ func resourcePermissionSetCreate(d *schema.ResourceData, m interface{}) error {
 	iap := expandPermissionSet(d)
 	err := ac.CreatePermissionsSet(iap)
 
-	if err == nil {
-		err1 := resourcePermissionSetRead(d, m)
-		if err1 == nil {
-			d.SetId(name)
-		} else {
-			return err1
-		}
-	} else {
+	if err != nil {
 		return err
 	}
-
-	return nil
+	d.SetId(name)
+	return resourcePermissionSetRead(d, m)
 }
 
 func resourcePermissionSetUpdate(d *schema.ResourceData, m interface{}) error {
@@ -105,10 +101,10 @@ func resourcePermissionSetUpdate(d *schema.ResourceData, m interface{}) error {
 
 func resourcePermissionSetRead(d *schema.ResourceData, m interface{}) error {
 	ac := m.(*client.Client)
-	name := d.Get("name").(string)
 
-	iap, err := ac.GetPermissionsSet(name)
+	iap, err := ac.GetPermissionsSet(d.Id())
 	if err == nil {
+		d.Set("name", iap.Name)
 		d.Set("description", iap.Description)
 		d.Set("author", iap.Author)
 		d.Set("ui_access", iap.UiAccess)

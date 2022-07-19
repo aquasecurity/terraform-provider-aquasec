@@ -29,6 +29,12 @@ func TestAquasecresourceRegistry(t *testing.T) {
 					testAccCheckAquasecRegistryExists("aquasec_integration_registry.new"),
 				),
 			},
+			{
+				ResourceName:            "aquasec_integration_registry.new",
+				ImportState:             true,
+				ImportStateVerify:       true,
+				ImportStateVerifyIgnore: []string{"prefixes"}, //TODO: implement read prefixes
+			},
 		},
 	})
 }
