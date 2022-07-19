@@ -11,6 +11,9 @@ func resourceImageAssurancePolicy() *schema.Resource {
 		Read:   resourceImageAssurancePolicyRead,
 		Update: resourceImageAssurancePolicyUpdate,
 		Delete: resourceImageAssurancePolicyDelete,
+		Importer: &schema.ResourceImporter{
+			StateContext: schema.ImportStatePassthroughContext,
+		},
 		Schema: map[string]*schema.Schema{
 			"assurance_type": {
 				Type:        schema.TypeString,
@@ -629,18 +632,12 @@ func resourceImageAssurancePolicyCreate(d *schema.ResourceData, m interface{}) e
 	iap := expandAssurancePolicy(d)
 	err := ac.CreateAssurancePolicy(iap, assurance_type)
 
-	if err == nil {
-		err1 := resourceImageAssurancePolicyRead(d, m)
-		if err1 == nil {
-			d.SetId(name)
-		} else {
-			return err1
-		}
-	} else {
+	if err != nil {
 		return err
 	}
+	d.SetId(name)
+	return resourceImageAssurancePolicyRead(d, m)
 
-	return nil
 }
 
 func resourceImageAssurancePolicyUpdate(d *schema.ResourceData, m interface{}) error {
@@ -673,11 +670,12 @@ func resourceImageAssurancePolicyUpdate(d *schema.ResourceData, m interface{}) e
 
 func resourceImageAssurancePolicyRead(d *schema.ResourceData, m interface{}) error {
 	ac := m.(*client.Client)
-	name := d.Get("name").(string)
 	assurance_type := "image"
 
-	iap, err := ac.GetAssurancePolicy(name, assurance_type)
+	iap, err := ac.GetAssurancePolicy(d.Id(), assurance_type)
 	if err == nil {
+		d.Set("assurance_type", iap.AssuranceType)
+		d.Set("name", iap.Name)
 		d.Set("description", iap.Description)
 		d.Set("author", iap.Author)
 		d.Set("application_scopes", iap.ApplicationScopes)
