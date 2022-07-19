@@ -30,6 +30,11 @@ func TestResourceAquasecFirewallPolicy(t *testing.T) {
 					resource.TestCheckResourceAttr(firewallPolicyResourceRef(basicFirewallPolicy.Name), "description", basicFirewallPolicy.Description),
 				),
 			},
+			{
+				ResourceName:      fmt.Sprintf("aquasec_firewall_policy.%s", basicFirewallPolicy.Name),
+				ImportState:       true,
+				ImportStateVerify: true,
+			},
 		},
 	})
 }

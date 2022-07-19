@@ -14,6 +14,9 @@ func resourceFirewallPolicy() *schema.Resource {
 		ReadContext:   resourceFirewallPolicyRead,
 		UpdateContext: resourceFirewallPolicyUpdate,
 		DeleteContext: resourceFirewallPolicyDelete,
+		Importer: &schema.ResourceImporter{
+			StateContext: schema.ImportStatePassthroughContext,
+		},
 		Schema: map[string]*schema.Schema{
 			"author": {
 				Type:        schema.TypeString,
