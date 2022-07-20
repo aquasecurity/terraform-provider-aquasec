@@ -15,29 +15,30 @@ func resourceApplicationScope() *schema.Resource {
 		Delete: resourceApplicationScopeDelete,
 		Schema: map[string]*schema.Schema{
 			"name": {
-				Type:     schema.TypeString,
+				Type:        schema.TypeString,
 				Description: "Name of an application scope.",
-				Required: true,
+				Required:    true,
+				ForceNew:    true,
 			},
 			"description": {
-				Type:     schema.TypeString,
+				Type:        schema.TypeString,
 				Description: "Description of the application scope.",
-				Optional: true,
+				Optional:    true,
 			},
 			"author": {
-				Type:     schema.TypeString,
+				Type:        schema.TypeString,
 				Description: "Username of the account that created the service.",
-				Computed: true,
+				Computed:    true,
 			},
 			"owner_email": {
-				Type:     schema.TypeString,
+				Type:        schema.TypeString,
 				Description: "Name of an application scope.",
-				Optional: true,
+				Optional:    true,
 			},
 			"categories": {
-				Type:     schema.TypeSet,
+				Type:        schema.TypeSet,
 				Description: "Artifacts (of applications) / Workloads (containers) / Infrastructure (elements).",
-				Optional: true,
+				Optional:    true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"artifacts": {

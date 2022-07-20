@@ -3,10 +3,11 @@ package aquasec
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/aquasecurity/terraform-provider-aquasec/client"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"log"
 	"strconv"
+
+	"github.com/aquasecurity/terraform-provider-aquasec/client"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func resourceUserSaas() *schema.Resource {
@@ -36,6 +37,7 @@ func resourceUserSaas() *schema.Resource {
 			"user_id": {
 				Type:     schema.TypeString,
 				Computed: true,
+				ForceNew: true,
 			},
 			"email": {
 				Type:     schema.TypeString,

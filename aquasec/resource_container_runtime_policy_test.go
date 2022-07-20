@@ -19,6 +19,13 @@ func TestResourceAquasecBasicContainerRuntimePolicyCreate(t *testing.T) {
 		Enforce:          false,
 		EnforceAfterDays: 5,
 	}
+	var chanegNameBasicRuntimePolicy = client.RuntimePolicy{
+		Name:             acctest.RandomWithPrefix("test-container-runtime-policy"),
+		Description:      "This is a test description of container runtime policy",
+		Enabled:          false,
+		Enforce:          false,
+		EnforceAfterDays: 5,
+	}
 
 	rootRef := containerRuntimePolicyRef("test")
 	resource.Test(t, resource.TestCase{
@@ -37,6 +44,19 @@ func TestResourceAquasecBasicContainerRuntimePolicyCreate(t *testing.T) {
 					resource.TestCheckResourceAttr(rootRef, "enabled", fmt.Sprintf("%v", basicRuntimePolicy.Enabled)),
 					resource.TestCheckResourceAttr(rootRef, "enforce", fmt.Sprintf("%v", basicRuntimePolicy.Enforce)),
 					resource.TestCheckResourceAttr(rootRef, "enforce_after_days", fmt.Sprintf("%v", basicRuntimePolicy.EnforceAfterDays)),
+					resource.TestCheckResourceAttr(rootRef, "author", os.Getenv("AQUA_USER")),
+				),
+			},
+			{
+				Config: getBasicContainerRuntimePolicyResource(chanegNameBasicRuntimePolicy),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr(rootRef, "name", chanegNameBasicRuntimePolicy.Name),
+					resource.TestCheckResourceAttr(rootRef, "description", chanegNameBasicRuntimePolicy.Description),
+					resource.TestCheckResourceAttr(rootRef, "application_scopes.#", "1"),
+					resource.TestCheckResourceAttr(rootRef, "application_scopes.0", "Global"),
+					resource.TestCheckResourceAttr(rootRef, "enabled", fmt.Sprintf("%v", chanegNameBasicRuntimePolicy.Enabled)),
+					resource.TestCheckResourceAttr(rootRef, "enforce", fmt.Sprintf("%v", chanegNameBasicRuntimePolicy.Enforce)),
+					resource.TestCheckResourceAttr(rootRef, "enforce_after_days", fmt.Sprintf("%v", chanegNameBasicRuntimePolicy.EnforceAfterDays)),
 					resource.TestCheckResourceAttr(rootRef, "author", os.Getenv("AQUA_USER")),
 				),
 			},

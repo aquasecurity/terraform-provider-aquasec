@@ -2,9 +2,10 @@ package aquasec
 
 import (
 	"fmt"
+	"log"
+
 	"github.com/aquasecurity/terraform-provider-aquasec/client"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-	"log"
 )
 
 func resourceGroup() *schema.Resource {
@@ -21,19 +22,20 @@ func resourceGroup() *schema.Resource {
 		},
 		Schema: map[string]*schema.Schema{
 			"group_id": {
-				Type:     schema.TypeInt,
+				Type:        schema.TypeInt,
 				Description: "The ID of the created group.",
-				Computed: true,
+				Computed:    true,
+				ForceNew:    true,
 			},
 			"name": {
-				Type:     schema.TypeString,
+				Type:        schema.TypeString,
 				Description: "The desired name of the group.",
-				Required: true,
+				Required:    true,
 			},
 			"created": {
-				Type:     schema.TypeString,
+				Type:        schema.TypeString,
 				Description: "The creation date of the group.",
-				Computed: true,
+				Computed:    true,
 			},
 		},
 	}

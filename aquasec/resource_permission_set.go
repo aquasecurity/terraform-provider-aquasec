@@ -23,6 +23,7 @@ func resourcePermissionSet() *schema.Resource {
 				Type:        schema.TypeString,
 				Description: "The name of the Permission Set, comprised of alphanumeric characters and '-', '_', ' ', ':', '.', '@', '!', '^'.",
 				Required:    true,
+				ForceNew:    true,
 			},
 			"description": {
 				Type:        schema.TypeString,
