@@ -432,16 +432,11 @@ func resourceApplicationScopeUpdate(d *schema.ResourceData, m interface{}) error
 			return err1
 		}
 		err = ac.UpdateApplicationScope(iap, name)
-		if err == nil {
-			err1 := resourceApplicationScopeRead(d, m)
-			if err1 == nil {
-				d.SetId(iap.Name)
-			} else {
-				return err1
-			}
-		} else {
+		if err != nil {
 			return err
 		}
+		return resourceApplicationScopeRead(d, m)
+
 	}
 	return nil
 }
