@@ -77,6 +77,7 @@ func resourceFirewallPolicy() *schema.Resource {
 				Type:        schema.TypeString,
 				Description: "Name of the policy, no longer than 128 characters and no slash characters.",
 				Required:    true,
+				ForceNew:    true,
 			},
 			"outbound_networks": {
 				Type:        schema.TypeList,

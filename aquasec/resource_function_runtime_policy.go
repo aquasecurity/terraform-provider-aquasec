@@ -22,6 +22,7 @@ func resourceFunctionRuntimePolicy() *schema.Resource {
 				Type:        schema.TypeString,
 				Description: "Name of the function runtime policy",
 				Required:    true,
+				ForceNew:    true,
 			},
 			"description": {
 				Type:        schema.TypeString,

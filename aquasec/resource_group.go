@@ -26,6 +26,7 @@ func resourceGroup() *schema.Resource {
 				Type:        schema.TypeInt,
 				Description: "The ID of the created group.",
 				Computed:    true,
+				ForceNew:    true,
 			},
 			"name": {
 				Type:        schema.TypeString,

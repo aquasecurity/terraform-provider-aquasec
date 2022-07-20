@@ -51,6 +51,11 @@ func dataSourceRegistry() *schema.Resource {
 				Description: "The time of day to start pulling new images from the registry, in the format HH:MM (24-hour clock), defaults to 03:00",
 				Computed:    true,
 			},
+			"auto_pull_interval": {
+				Type:        schema.TypeInt,
+				Description: "The interval in days to start pulling new images from the registry, Defaults to 1",
+				Computed:    true,
+			},
 			"scanner_type": {
 				Type:        schema.TypeString,
 				Description: "Scanner type",
@@ -83,6 +88,7 @@ func dataRegistryRead(d *schema.ResourceData, m interface{}) error {
 		d.Set("auto_pull", reg.AutoPull)
 		d.Set("auto_pull_max", reg.AutoPullMax)
 		d.Set("auto_pull_time", reg.AutoPullTime)
+		d.Set("auto_pull_interval", reg.AutoPullInterval)
 		d.Set("scanner_type", reg.ScannerType)
 		d.Set("prefixes", convertStringArr(prefixes))
 		d.SetId(name)

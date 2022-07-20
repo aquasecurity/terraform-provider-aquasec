@@ -37,6 +37,7 @@ func resourceUserSaas() *schema.Resource {
 			"user_id": {
 				Type:     schema.TypeString,
 				Computed: true,
+				ForceNew: true,
 			},
 			"email": {
 				Type:     schema.TypeString,

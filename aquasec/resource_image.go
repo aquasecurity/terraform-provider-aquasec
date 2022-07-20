@@ -25,6 +25,7 @@ func resourceImage() *schema.Resource {
 				Type:        schema.TypeString,
 				Description: "The name of the registry where the image is stored.",
 				Required:    true,
+				ForceNew:    true,
 			},
 			"registry_type": {
 				Type:        schema.TypeString,
@@ -35,11 +36,13 @@ func resourceImage() *schema.Resource {
 				Type:        schema.TypeString,
 				Description: "The name of the image's repository.",
 				Required:    true,
+				ForceNew:    true,
 			},
 			"tag": {
 				Type:        schema.TypeString,
 				Description: "The tag of the image.",
 				Required:    true,
+				ForceNew:    true,
 			},
 			"allow_image": {
 				Type:         schema.TypeBool,

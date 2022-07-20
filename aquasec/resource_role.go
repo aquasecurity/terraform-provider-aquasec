@@ -25,6 +25,7 @@ func resourceRole() *schema.Resource {
 				Type:        schema.TypeString,
 				Description: "The name of the role, comprised of alphanumeric characters and '-', '_', ' ', ':', '.', '@', '!', '^'.",
 				Required:    true,
+				ForceNew:    true,
 			},
 			"author": {
 				Type:        schema.TypeString,

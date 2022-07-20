@@ -27,6 +27,7 @@ func resourceImageAssurancePolicy() *schema.Resource {
 			"name": {
 				Type:     schema.TypeString,
 				Required: true,
+				ForceNew: true,
 			},
 			"author": {
 				Type:        schema.TypeString,

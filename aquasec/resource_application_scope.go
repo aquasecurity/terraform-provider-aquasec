@@ -21,6 +21,7 @@ func resourceApplicationScope() *schema.Resource {
 				Type:        schema.TypeString,
 				Description: "Name of an application scope.",
 				Required:    true,
+				ForceNew:    true,
 			},
 			"description": {
 				Type:        schema.TypeString,

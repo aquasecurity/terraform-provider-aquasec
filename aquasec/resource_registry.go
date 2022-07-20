@@ -72,6 +72,11 @@ func resourceRegistry() *schema.Resource {
 				Description: "The time of day to start pulling new images from the registry, in the format HH:MM (24-hour clock), defaults to 03:00",
 				Optional:    true,
 			},
+			"auto_pull_interval": {
+				Type:        schema.TypeInt,
+				Description: "The interval in days to start pulling new images from the registry, Defaults to 1",
+				Optional:    true,
+			},
 			"scanner_type": {
 				Type:        schema.TypeString,
 				Description: "The Scanner type",
@@ -107,6 +112,7 @@ func resourceRegistryCreate(d *schema.ResourceData, m interface{}) error {
 		AutoPull:     d.Get("auto_pull").(bool),
 		AutoPullMax:  d.Get("auto_pull_max").(int),
 		AutoPullTime: d.Get("auto_pull_time").(string),
+		AutoPullInterval: d.Get("auto_pull_interval").(int),
 		ScannerType:  scannerType,
 		Prefixes:     convertStringArr(prefixes),
 	}
@@ -162,7 +168,7 @@ func resourceRegistryUpdate(d *schema.ResourceData, m interface{}) error {
 	if scannerType == "" {
 		scannerType = "any"
 	}
-	if d.HasChanges("name", "username", "password", "url", "type", "auto_pull", "auto_pull_max", "auto_pull_time", "prefixes") {
+	if d.HasChanges("name", "username", "password", "url", "type", "auto_pull", "auto_pull_max", "auto_pull_time", "auto_pull_interval", "prefixes") {
 		prefixes := d.Get("prefixes").([]interface{})
 		registry := client.Registry{
 			Name:         d.Get("name").(string),
@@ -173,6 +179,7 @@ func resourceRegistryUpdate(d *schema.ResourceData, m interface{}) error {
 			AutoPull:     d.Get("auto_pull").(bool),
 			AutoPullMax:  d.Get("auto_pull_max").(int),
 			AutoPullTime: d.Get("auto_pull_time").(string),
+			AutoPullInterval: d.Get("auto_pull_interval").(int),
 			ScannerType:  scannerType,
 			Prefixes:     convertStringArr(prefixes),
 		}
