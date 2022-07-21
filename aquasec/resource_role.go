@@ -18,7 +18,7 @@ func resourceRole() *schema.Resource {
 		Update: resourceRoleUpdate,
 		Delete: resourceRoleDelete,
 		Importer: &schema.ResourceImporter{
-			State: schema.ImportStatePassthrough,
+			StateContext: schema.ImportStatePassthroughContext,
 		},
 		Schema: map[string]*schema.Schema{
 			"role_name": {
@@ -68,22 +68,17 @@ func resourceRoleCreate(d *schema.ResourceData, m interface{}) error {
 	if err != nil {
 		return err
 	}
+	d.SetId(role.Name)
+	return resourceRoleRead(d, m)
 
-	err = resourceRoleRead(d, m)
-	if err == nil {
-		d.SetId(role.Name)
-	} else {
-		return err
-	}
-	return nil
 }
 
 func resourceRoleRead(d *schema.ResourceData, m interface{}) error {
 	ac := m.(*client.Client)
 
-	id := d.Get("role_name").(string)
-	r, err := ac.GetRole(id)
+	r, err := ac.GetRole(d.Id())
 	if err == nil {
+		d.Set("name", r.Name)
 		d.Set("updated_at", r.UpdatedAt)
 		d.Set("author", r.Author)
 	} else {

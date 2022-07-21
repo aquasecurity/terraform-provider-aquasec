@@ -15,7 +15,7 @@ func resourceRegistry() *schema.Resource {
 		Update: resourceRegistryUpdate,
 		Delete: resourceRegistryDelete,
 		Importer: &schema.ResourceImporter{
-			State: schema.ImportStatePassthrough,
+			StateContext: schema.ImportStatePassthroughContext,
 		},
 		Schema: map[string]*schema.Schema{
 			"last_updated": {
@@ -55,6 +55,7 @@ func resourceRegistry() *schema.Resource {
 				Type:        schema.TypeString,
 				Description: "The URL, address or region of the registry",
 				Optional:    true,
+				Computed:    true,
 			},
 			"auto_pull": {
 				Type:        schema.TypeBool,
@@ -80,6 +81,7 @@ func resourceRegistry() *schema.Resource {
 				Type:        schema.TypeString,
 				Description: "The Scanner type",
 				Optional:    true,
+				Computed:    true,
 			},
 			"prefixes": {
 				Type:        schema.TypeList,
@@ -119,27 +121,42 @@ func resourceRegistryCreate(d *schema.ResourceData, m interface{}) error {
 	if err != nil {
 		return err
 	}
-	//d.SetId(d.Get("name").(string))
+	d.SetId(d.Get("name").(string))
 
-	err = resourceRegistryRead(d, m)
-	if err == nil {
-		d.SetId(d.Get("name").(string))
-	} else {
-		return err
-	}
+	return resourceRegistryRead(d, m)
 
-	return nil
 }
 
 func resourceRegistryRead(d *schema.ResourceData, m interface{}) error {
 	ac := m.(*client.Client)
-	//id := d.Id()
-	id := d.Get("name").(string)
-	r, err := ac.GetRegistry(id)
-	if err == nil {
-		d.Set("author", r.Author)
-	} else {
+
+	r, err := ac.GetRegistry(d.Id())
+	if err != nil {
 		log.Println("[DEBUG]  error calling ac.GetRegistry: ", r)
+		return err
+	}
+	if err = d.Set("auto_pull", r.AutoPull); err != nil {
+		return err
+	}
+	if err = d.Set("name", r.Name); err != nil {
+		return err
+	}
+	if err = d.Set("author", r.Author); err != nil {
+		return err
+	}
+	if err = d.Set("password", r.Password); err != nil {
+		return err
+	}
+	if err = d.Set("scanner_type", r.ScannerType); err != nil {
+		return err
+	}
+	if err = d.Set("type", r.Type); err != nil {
+		return err
+	}
+	if err = d.Set("url", r.URL); err != nil {
+		return err
+	}
+	if err = d.Set("username", r.Username); err != nil {
 		return err
 	}
 	return nil

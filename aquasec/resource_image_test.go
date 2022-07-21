@@ -49,6 +49,12 @@ func TestResourceAquasecImageCreate(t *testing.T) {
 					resource.TestCheckResourceAttrSet(rootRef, "image_size"),
 				),
 			},
+			{
+				ResourceName:            "aquasec_image.test",
+				ImportState:             true,
+				ImportStateVerify:       true,
+				ImportStateVerifyIgnore: []string{"scan_date", "scan_status", "scan_error"},
+			},
 		},
 	})
 }

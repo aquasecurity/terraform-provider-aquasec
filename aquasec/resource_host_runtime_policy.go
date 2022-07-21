@@ -14,6 +14,9 @@ func resourceHostRuntimePolicy() *schema.Resource {
 		ReadContext:   resourceHostRuntimePolicyRead,
 		UpdateContext: resourceHostRuntimePolicyUpdate,
 		DeleteContext: resourceHostRuntimePolicyDelete,
+		Importer: &schema.ResourceImporter{
+			StateContext: schema.ImportStatePassthroughContext,
+		},
 		Schema: map[string]*schema.Schema{
 			"name": {
 				Type:        schema.TypeString,
@@ -455,23 +458,17 @@ func resourceHostRuntimePolicyCreate(ctx context.Context, d *schema.ResourceData
 		return diag.FromErr(err)
 	}
 
-	//d.SetId(name)
-	err1 := resourceHostRuntimePolicyRead(ctx, d, m)
-	if err1 == nil {
-		d.SetId(name)
-	} else {
-		return err1
-	}
+	d.SetId(name)
+	return resourceHostRuntimePolicyRead(ctx, d, m)
 
-	return nil
 }
 
 func resourceHostRuntimePolicyRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	c := m.(*client.Client)
-	name := d.Get("name").(string)
 
-	crp, err := c.GetRuntimePolicy(name)
+	crp, err := c.GetRuntimePolicy(d.Id())
 	if err == nil {
+		d.Set("name", crp.Name)
 		d.Set("description", crp.Description)
 		d.Set("application_scopes", crp.ApplicationScopes)
 		d.Set("scope_expression", crp.Scope.Expression)
@@ -498,7 +495,7 @@ func resourceHostRuntimePolicyRead(ctx context.Context, d *schema.ResourceData, 
 		d.Set("windows_registry_monitoring", flattenWindowsRegistryMonitoring(crp.RegistryAccessMonitoring))
 		d.Set("windows_registry_protection", flattenWindowsRegistryProtection(crp.ReadonlyRegistry))
 
-		d.SetId(name)
+		d.SetId(crp.Name)
 	} else {
 		return diag.FromErr(err)
 	}

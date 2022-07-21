@@ -96,6 +96,11 @@ func TestResourceAquasecServiceBasicCreate(t *testing.T) {
 					resource.TestCheckResourceAttrSet(rootRef, "is_registered"),
 				),
 			},
+			{
+				ResourceName:      "aquasec_service.test-basic-svc",
+				ImportState:       true,
+				ImportStateVerify: true,
+			},
 		},
 	})
 }

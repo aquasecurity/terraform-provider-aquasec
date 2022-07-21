@@ -46,6 +46,11 @@ func TestAquasecUserManagement(t *testing.T) {
 					testAccCheckAquasecUsersExists("aquasec_user.new"),
 				),
 			},
+			{
+				ResourceName:      "aquasec_user.new",
+				ImportState:       true,
+				ImportStateVerify: true,
+			},
 		},
 	})
 }

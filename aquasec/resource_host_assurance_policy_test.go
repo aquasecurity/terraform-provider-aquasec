@@ -25,6 +25,11 @@ func TestAquasecHostAssurancePolicy(t *testing.T) {
 					testAccCheckHostAssurancePolicyExists("aquasec_host_assurance_policy.terraformiap"),
 				),
 			},
+			{
+				ResourceName:      "aquasec_host_assurance_policy.terraformiap",
+				ImportState:       true,
+				ImportStateVerify: true,
+			},
 		},
 	})
 }

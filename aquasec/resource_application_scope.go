@@ -13,6 +13,9 @@ func resourceApplicationScope() *schema.Resource {
 		Read:   resourceApplicationScopeRead,
 		Update: resourceApplicationScopeUpdate,
 		Delete: resourceApplicationScopeDelete,
+		Importer: &schema.ResourceImporter{
+			StateContext: schema.ImportStatePassthroughContext,
+		},
 		Schema: map[string]*schema.Schema{
 			"name": {
 				Type:        schema.TypeString,
@@ -336,10 +339,10 @@ func resourceApplicationScopeCreate(d *schema.ResourceData, m interface{}) error
 
 	if err == nil {
 		d.Set("categories", flattenCategories(iap.Categories))
-
+		d.SetId(name)
 		err1 := resourceApplicationScopeRead(d, m)
 		if err1 == nil {
-			d.SetId(name)
+
 		} else {
 			return fmt.Errorf("application scope resource read is failed with error: %v", err1)
 		}
@@ -403,14 +406,14 @@ func expandApplicationScope(d *schema.ResourceData) (*client.ApplicationScope, e
 
 func resourceApplicationScopeRead(d *schema.ResourceData, m interface{}) error {
 	ac := m.(*client.Client)
-	name := d.Get("name").(string)
-
-	iap, err := ac.GetApplicationScope(name)
+	iap, err := ac.GetApplicationScope(d.Id())
 	if err == nil {
+
 		d.Set("name", iap.Name)
 		d.Set("description", iap.Description)
 		d.Set("author", iap.Author)
 		d.Set("owner_email", iap.OwnerEmail)
+		d.SetId(iap.Name)
 		//d.Set("categories", flattenCategories(iap.Categories))
 	} else {
 		return err
@@ -430,16 +433,11 @@ func resourceApplicationScopeUpdate(d *schema.ResourceData, m interface{}) error
 			return err1
 		}
 		err = ac.UpdateApplicationScope(iap, name)
-		if err == nil {
-			err1 := resourceApplicationScopeRead(d, m)
-			if err1 == nil {
-				d.SetId(name)
-			} else {
-				return err1
-			}
-		} else {
+		if err != nil {
 			return err
 		}
+		return resourceApplicationScopeRead(d, m)
+
 	}
 	return nil
 }

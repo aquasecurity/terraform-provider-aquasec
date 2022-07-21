@@ -11,6 +11,9 @@ func resourceFunctionAssurancePolicy() *schema.Resource {
 		Read:   resourceFunctionAssurancePolicyRead,
 		Update: resourceFunctionAssurancePolicyUpdate,
 		Delete: resourceFunctionAssurancePolicyDelete,
+		Importer: &schema.ResourceImporter{
+			StateContext: schema.ImportStatePassthroughContext,
+		},
 		Schema: map[string]*schema.Schema{
 			"assurance_type": {
 				Type:        schema.TypeString,
@@ -630,23 +633,16 @@ func resourceFunctionAssurancePolicyCreate(d *schema.ResourceData, m interface{}
 	iap := expandAssurancePolicy(d)
 	err := ac.CreateAssurancePolicy(iap, assurance_type)
 
-	if err == nil {
-		err1 := resourceFunctionAssurancePolicyRead(d, m)
-		if err1 == nil {
-			d.SetId(name)
-		} else {
-			return err1
-		}
-	} else {
+	if err != nil {
 		return err
 	}
+	d.SetId(name)
+	return resourceFunctionAssurancePolicyRead(d, m)
 
-	return nil
 }
 
 func resourceFunctionAssurancePolicyUpdate(d *schema.ResourceData, m interface{}) error {
 	ac := m.(*client.Client)
-	name := d.Get("name").(string)
 	assurance_type := "function"
 
 	if d.HasChanges("description", "registry", "cvss_severity_enabled", "cvss_severity", "cvss_severity_exclude_no_fix", "custom_severity_enabled", "maximum_score_enabled", "maximum_score", "control_exclude_no_fix", "custom_checks_enabled",
@@ -661,7 +657,7 @@ func resourceFunctionAssurancePolicyUpdate(d *schema.ResourceData, m interface{}
 		if err == nil {
 			err1 := resourceFunctionAssurancePolicyRead(d, m)
 			if err1 == nil {
-				d.SetId(name)
+				d.SetId(iap.Name)
 			} else {
 				return err1
 			}
@@ -674,11 +670,12 @@ func resourceFunctionAssurancePolicyUpdate(d *schema.ResourceData, m interface{}
 
 func resourceFunctionAssurancePolicyRead(d *schema.ResourceData, m interface{}) error {
 	ac := m.(*client.Client)
-	name := d.Get("name").(string)
 	assurance_type := "function"
 
-	iap, err := ac.GetAssurancePolicy(name, assurance_type)
+	iap, err := ac.GetAssurancePolicy(d.Id(), assurance_type)
 	if err == nil {
+		d.Set("assurance_type", iap.AssuranceType)
+		d.Set("name", iap.Name)
 		d.Set("description", iap.Description)
 		d.Set("author", iap.Author)
 		d.Set("application_scopes", iap.ApplicationScopes)

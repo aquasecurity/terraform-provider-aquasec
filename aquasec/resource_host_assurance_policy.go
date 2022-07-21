@@ -11,6 +11,9 @@ func resourceHostAssurancePolicy() *schema.Resource {
 		Read:   resourceHostAssurancePolicyRead,
 		Update: resourceHostAssurancePolicyUpdate,
 		Delete: resourceHostAssurancePolicyDelete,
+		Importer: &schema.ResourceImporter{
+			StateContext: schema.ImportStatePassthroughContext,
+		},
 		Schema: map[string]*schema.Schema{
 			"assurance_type": {
 				Type:        schema.TypeString,
@@ -630,23 +633,16 @@ func resourceHostAssurancePolicyCreate(d *schema.ResourceData, m interface{}) er
 	iap := expandAssurancePolicy(d)
 	err := ac.CreateAssurancePolicy(iap, assurance_type)
 
-	if err == nil {
-		err1 := resourceHostAssurancePolicyRead(d, m)
-		if err1 == nil {
-			d.SetId(name)
-		} else {
-			return err1
-		}
-	} else {
+	if err != nil {
 		return err
 	}
+	d.SetId(name)
+	return resourceHostAssurancePolicyRead(d, m)
 
-	return nil
 }
 
 func resourceHostAssurancePolicyUpdate(d *schema.ResourceData, m interface{}) error {
 	ac := m.(*client.Client)
-	name := d.Get("name").(string)
 	assurance_type := "host"
 
 	if d.HasChanges("description", "registry", "cvss_severity_enabled", "cvss_severity", "cvss_severity_exclude_no_fix", "custom_severity_enabled", "maximum_score_enabled", "maximum_score", "control_exclude_no_fix", "custom_checks_enabled",
@@ -661,7 +657,7 @@ func resourceHostAssurancePolicyUpdate(d *schema.ResourceData, m interface{}) er
 		if err == nil {
 			err1 := resourceHostAssurancePolicyRead(d, m)
 			if err1 == nil {
-				d.SetId(name)
+				d.SetId(iap.Name)
 			} else {
 				return err1
 			}
@@ -674,11 +670,12 @@ func resourceHostAssurancePolicyUpdate(d *schema.ResourceData, m interface{}) er
 
 func resourceHostAssurancePolicyRead(d *schema.ResourceData, m interface{}) error {
 	ac := m.(*client.Client)
-	name := d.Get("name").(string)
 	assurance_type := "host"
 
-	iap, err := ac.GetAssurancePolicy(name, assurance_type)
+	iap, err := ac.GetAssurancePolicy(d.Id(), assurance_type)
 	if err == nil {
+		d.Set("assurance_type", iap.AssuranceType)
+		d.Set("name", iap.Name)
 		d.Set("description", iap.Description)
 		d.Set("author", iap.Author)
 		d.Set("application_scopes", iap.ApplicationScopes)

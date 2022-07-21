@@ -40,6 +40,11 @@ func TestAquasecRoleManagement(t *testing.T) {
 					testAccCheckAquasecRolesExists("aquasec_role.new"),
 				),
 			},
+			{
+				ResourceName:      "aquasec_role.new",
+				ImportState:       true,
+				ImportStateVerify: true,
+			},
 		},
 	})
 }

@@ -26,6 +26,11 @@ func TestAquasecNotification(t *testing.T) {
 					testAccCheckNotificationExists("aquasec_notification_slack.slacknew"),
 				),
 			},
+			{
+				ResourceName:      "aquasec_notification_slack.slacknew",
+				ImportState:       true,
+				ImportStateVerify: true,
+			},
 		},
 	})
 }

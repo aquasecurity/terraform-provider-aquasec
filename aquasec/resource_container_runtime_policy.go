@@ -14,6 +14,9 @@ func resourceContainerRuntimePolicy() *schema.Resource {
 		ReadContext:   resourceContainerRuntimePolicyRead,
 		UpdateContext: resourceContainerRuntimePolicyUpdate,
 		DeleteContext: resourceContainerRuntimePolicyDelete,
+		Importer: &schema.ResourceImporter{
+			StateContext: schema.ImportStatePassthroughContext,
+		},
 		Schema: map[string]*schema.Schema{
 			"name": {
 				Type:        schema.TypeString,
@@ -442,25 +445,15 @@ func resourceContainerRuntimePolicyCreate(ctx context.Context, d *schema.Resourc
 		return diag.FromErr(err)
 	}
 
-	//d.SetId(name)
-
-	err1 := resourceContainerRuntimePolicyRead(ctx, d, m)
-	if err1 == nil {
-		d.SetId(name)
-	} else {
-		return err1
-	}
-
-	//return resourceContainerRuntimePolicyRead(ctx, d, m)
-	return nil
+	d.SetId(name)
+	return resourceContainerRuntimePolicyRead(ctx, d, m)
 }
 
 func resourceContainerRuntimePolicyRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	c := m.(*client.Client)
-	name := d.Get("name").(string)
-
-	crp, err := c.GetRuntimePolicy(name)
+	crp, err := c.GetRuntimePolicy(d.Id())
 	if err == nil {
+		d.Set("name", crp.Name)
 		d.Set("description", crp.Description)
 		d.Set("application_scopes", crp.ApplicationScopes)
 		d.Set("scope_expression", crp.Scope.Expression)
@@ -512,7 +505,7 @@ func resourceContainerRuntimePolicyRead(ctx context.Context, d *schema.ResourceD
 		d.Set("allowed_registries", crp.AllowedRegistries.AllowedRegistries)
 		d.Set("monitor_system_time_changes", crp.SystemIntegrityProtection.MonitorAuditLogIntegrity)
 		d.Set("blocked_volumes", crp.RestrictedVolumes.Volumes)
-		d.SetId(name)
+		d.SetId(crp.Name)
 	} else {
 		return diag.FromErr(err)
 	}
@@ -522,8 +515,6 @@ func resourceContainerRuntimePolicyRead(ctx context.Context, d *schema.ResourceD
 
 func resourceContainerRuntimePolicyUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	c := m.(*client.Client)
-	name := d.Get("name").(string)
-
 	if d.HasChanges("description",
 		"application_scopes",
 		"scope_expression",
@@ -578,7 +569,7 @@ func resourceContainerRuntimePolicyUpdate(ctx context.Context, d *schema.Resourc
 		crp := expandContainerRuntimePolicy(d)
 		err := c.UpdateRuntimePolicy(crp)
 		if err == nil {
-			d.SetId(name)
+			d.SetId(crp.Name)
 		} else {
 			return diag.FromErr(err)
 		}

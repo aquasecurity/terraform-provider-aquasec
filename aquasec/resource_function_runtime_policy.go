@@ -14,6 +14,9 @@ func resourceFunctionRuntimePolicy() *schema.Resource {
 		ReadContext:   resourceFunctionRuntimePolicyRead,
 		UpdateContext: resourceFunctionRuntimePolicyUpdate,
 		DeleteContext: resourceFunctionRuntimePolicyDelete,
+		Importer: &schema.ResourceImporter{
+			StateContext: schema.ImportStatePassthroughContext,
+		},
 		Schema: map[string]*schema.Schema{
 			"name": {
 				Type:        schema.TypeString,
@@ -146,25 +149,18 @@ func resourceFunctionRuntimePolicyCreate(ctx context.Context, d *schema.Resource
 		return diag.FromErr(err)
 	}
 
-	//d.SetId(name)
+	d.SetId(name)
 
-	err1 := resourceFunctionRuntimePolicyRead(ctx, d, m)
-	if err1 == nil {
-		d.SetId(name)
-	} else {
-		return err1
-	}
+	return resourceFunctionRuntimePolicyRead(ctx, d, m)
 
-	//return resourceFunctionRuntimePolicyRead(ctx, d, m)
-	return nil
 }
 
 func resourceFunctionRuntimePolicyRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	c := m.(*client.Client)
-	name := d.Get("name").(string)
 
-	crp, err := c.GetRuntimePolicy(name)
+	crp, err := c.GetRuntimePolicy(d.Id())
 	if err == nil {
+		d.Set("name", crp.Name)
 		d.Set("description", crp.Description)
 		d.Set("author", crp.Author)
 		d.Set("application_scopes", crp.ApplicationScopes)
@@ -181,7 +177,7 @@ func resourceFunctionRuntimePolicyRead(ctx context.Context, d *schema.ResourceDa
 		d.Set("honeypot_apply_on", crp.Tripwire.ApplyOn)
 		d.Set("honeypot_serverless_app_name", crp.Tripwire.ServerlessApp)
 
-		d.SetId(name)
+		d.SetId(crp.Name)
 	} else {
 		return diag.FromErr(err)
 	}

@@ -37,6 +37,11 @@ func TestAquasecGroupManagement(t *testing.T) {
 					testAccCheckAquasecGroupsExists("aquasec_group.new"),
 				),
 			},
+			{
+				ResourceName:      "aquasec_group.new",
+				ImportState:       true,
+				ImportStateVerify: true,
+			},
 		},
 	})
 }
