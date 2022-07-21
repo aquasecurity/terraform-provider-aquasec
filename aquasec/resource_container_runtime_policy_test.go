@@ -32,7 +32,8 @@ func TestResourceAquasecBasicContainerRuntimePolicyCreate(t *testing.T) {
 		PreCheck: func() {
 			testAccPreCheck(t)
 		},
-		Providers: testAccProviders,
+		Providers:    testAccProviders,
+		CheckDestroy: CheckDestroy("aquasec_container_runtime_policy.test"),
 		Steps: []resource.TestStep{
 			{
 				Config: getBasicContainerRuntimePolicyResource(basicRuntimePolicy),

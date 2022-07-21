@@ -26,7 +26,8 @@ func TestResourceAquasecImageCreate(t *testing.T) {
 		PreCheck: func() {
 			testAccPreCheck(t)
 		},
-		Providers: testAccProviders,
+		Providers:    testAccProviders,
+		CheckDestroy: CheckDestroy("aquasec_image.test"),
 		Steps: []resource.TestStep{
 			{
 				Config: getImageResource(&image),
@@ -61,7 +62,8 @@ func TestResourceAquasecImageAllow(t *testing.T) {
 		PreCheck: func() {
 			testAccPreCheck(t)
 		},
-		Providers: testAccProviders,
+		Providers:    testAccProviders,
+		CheckDestroy: CheckDestroy("aquasec_image.test"),
 		Steps: []resource.TestStep{
 			{
 				Config: getImageResource(&image),
@@ -91,7 +93,8 @@ func TestResourceAquasecImageBlock(t *testing.T) {
 		PreCheck: func() {
 			testAccPreCheck(t)
 		},
-		Providers: testAccProviders,
+		Providers:    testAccProviders,
+		CheckDestroy: CheckDestroy("aquasec_image.test"),
 		Steps: []resource.TestStep{
 			{
 				Config: getImageResource(&image),
@@ -121,7 +124,8 @@ func TestResourceAquasecImageAllowAndBlock(t *testing.T) {
 		PreCheck: func() {
 			testAccPreCheck(t)
 		},
-		Providers: testAccProviders,
+		Providers:    testAccProviders,
+		CheckDestroy: CheckDestroy("aquasec_image.test"),
 		Steps: []resource.TestStep{
 			{
 				Config: getImageResource(&image),

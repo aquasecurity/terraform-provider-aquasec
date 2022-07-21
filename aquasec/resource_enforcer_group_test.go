@@ -31,7 +31,8 @@ func TestAquasecEnforcerGroupResource(t *testing.T) {
 		PreCheck: func() {
 			testAccPreCheck(t)
 		},
-		Providers: testAccProviders,
+		Providers:    testAccProviders,
+		CheckDestroy: CheckDestroy(fmt.Sprintf("aquasec_enforcer_groups.%v", basicEnforcerGroup.ID)),
 		Steps: []resource.TestStep{
 			{
 				Config: getBasicEnforcerGroupResource(basicEnforcerGroup),

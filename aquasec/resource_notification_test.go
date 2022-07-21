@@ -17,8 +17,9 @@ func TestAquasecNotification(t *testing.T) {
 	stype := "slack"
 	name := "Slack"
 	resource.Test(t, resource.TestCase{
-		PreCheck:  func() { testAccPreCheck(t) },
-		Providers: testAccProviders,
+		PreCheck:     func() { testAccPreCheck(t) },
+		Providers:    testAccProviders,
+		CheckDestroy: CheckDestroy("aquasec_notification_slack.slacknew"),
 		Steps: []resource.TestStep{
 			{
 				Config: testAccCheckNotification(user_name, channel, webhook_url, enabled, stype, name),

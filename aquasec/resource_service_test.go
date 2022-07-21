@@ -71,7 +71,8 @@ func TestResourceAquasecServiceBasicCreate(t *testing.T) {
 		PreCheck: func() {
 			testAccPreCheck(t)
 		},
-		Providers: testAccProviders,
+		Providers:    testAccProviders,
+		CheckDestroy: CheckDestroy("aquasec_service.test-basic-svc"),
 		Steps: []resource.TestStep{
 			{
 				Config: getBasicServiceResource(),
@@ -106,7 +107,8 @@ func TestResourceAquasecServiceComplexCreate(t *testing.T) {
 		PreCheck: func() {
 			testAccPreCheck(t)
 		},
-		Providers: testAccProviders,
+		Providers:    testAccProviders,
+		CheckDestroy: CheckDestroy("aquasec_service.test-complex-svc"),
 		Steps: []resource.TestStep{
 			{
 				Config: getComplexServiceResource(),
@@ -156,7 +158,8 @@ func TestResourceAquasecServiceUpdate(t *testing.T) {
 		PreCheck: func() {
 			testAccPreCheck(t)
 		},
-		Providers: testAccProviders,
+		Providers:    testAccProviders,
+		CheckDestroy: CheckDestroy("aquasec_service.test-basic-svc"),
 		Steps: []resource.TestStep{
 			{
 				Config: getBasicServiceResource(),

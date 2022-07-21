@@ -21,7 +21,8 @@ func TestResourceAquasecFirewallPolicy(t *testing.T) {
 		PreCheck: func() {
 			testAccPreCheck(t)
 		},
-		Providers: testAccProviders,
+		Providers:    testAccProviders,
+		CheckDestroy: CheckDestroy(fmt.Sprintf("aquasec_firewall_policy.%v", basicFirewallPolicy.Name)),
 		Steps: []resource.TestStep{
 			{
 				Config: getBasicFirewallPolicyResource(basicFirewallPolicy),
@@ -61,7 +62,8 @@ func TestResourceFirewallPolicyComplex(t *testing.T) {
 		PreCheck: func() {
 			testAccPreCheck(t)
 		},
-		Providers: testAccProviders,
+		Providers:    testAccProviders,
+		CheckDestroy: CheckDestroy(fmt.Sprintf("aquasec_firewall_policy.%v", complexFirewallpolicy.Name)),
 		Steps: []resource.TestStep{
 			{
 				Config: getComplexFirewallPolicyResource(complexFirewallpolicy),
