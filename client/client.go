@@ -5,9 +5,11 @@ import (
 	"crypto/x509"
 	"encoding/json"
 	"fmt"
+	"log"
+	"os"
+
 	"github.com/aquasecurity/terraform-provider-aquasec/consts"
 	"github.com/parnurzeal/gorequest"
-	"log"
 )
 
 // Client - API client
@@ -47,6 +49,11 @@ func NewClient(url, user, password string, verifyTLS bool, caCertByte []byte) *C
 		user:      user,
 		password:  password,
 		gorequest: gorequest.New().TLSClientConfig(tlsConfig),
+	}
+
+	proxy := os.Getenv("https_proxy")
+	if len(proxy) > 0 {
+		c.gorequest.Proxy(proxy)
 	}
 
 	switch url {
