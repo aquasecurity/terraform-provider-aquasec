@@ -6,10 +6,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
-	"os"
+	neturl "net/url"
 
 	"github.com/aquasecurity/terraform-provider-aquasec/consts"
 	"github.com/parnurzeal/gorequest"
+	"golang.org/x/net/http/httpproxy"
 )
 
 // Client - API client
@@ -51,9 +52,11 @@ func NewClient(url, user, password string, verifyTLS bool, caCertByte []byte) *C
 		gorequest: gorequest.New().TLSClientConfig(tlsConfig),
 	}
 
-	proxy := os.Getenv("https_proxy")
-	if len(proxy) > 0 {
-		c.gorequest.Proxy(proxy)
+	// Determine if we need to use a proxy
+	uURL, _ := neturl.Parse(c.url)
+	proxy, _:= httpproxy.FromEnvironment().ProxyFunc()(uURL)
+	if proxy != nil {
+		c.gorequest.Proxy(proxy.String())
 	}
 
 	switch url {
