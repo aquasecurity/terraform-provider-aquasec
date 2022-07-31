@@ -7,7 +7,7 @@ description: |-
   The users created must have at least one Role that is already present within Aqua.
 ---
 
-# Resource `aquasec_user`
+# aquasec_user (Resource)
 
 The `aquasec_user` resource manages your users within Aqua.
 
@@ -35,24 +35,24 @@ resource "aquasec_user" "IaC" {
 
 ### Required
 
-- **password** (String) Login password for the user; string, required, at least 8 characters long.
-- **roles** (List of String) The roles that will be assigned to the user.
-- **user_id** (String) The user ID.
+- `password` (String) Login password for the user; string, required, at least 8 characters long.
+- `roles` (List of String) The roles that will be assigned to the user.
+- `user_id` (String) The user ID.
 
 ### Optional
 
-- **email** (String) The user Email.
-- **first_time** (Boolean) If the user must change password at next login.
-- **id** (String) The ID of this resource.
-- **name** (String) The user name.
-- **password_confirm** (String) Password confirmation.
+- `email` (String) The user Email.
+- `first_time` (Boolean) If the user must change password at next login.
+- `name` (String) The user name.
+- `password_confirm` (String) Password confirmation.
 
-### Read-only
+### Read-Only
 
-- **is_super** (Boolean) Give the Permission Set full access, meaning all actions are allowed without restriction.
-- **plan** (String) User's Aqua plan (Developer / Team / Advanced).
-- **role** (String) The first role that assigned to the user for backward compatibility.
-- **type** (String) The user type (Aqua, LDAP, SAML, OAuth2, OpenID, Tenant Manager).
-- **ui_access** (Boolean) Whether to allow UI access for users with this Permission Set.
+- `id` (String) The ID of this resource.
+- `is_super` (Boolean) Give the Permission Set full access, meaning all actions are allowed without restriction.
+- `plan` (String) User's Aqua plan (Developer / Team / Advanced).
+- `role` (String) The first role that assigned to the user for backward compatibility.
+- `type` (String) The user type (Aqua, LDAP, SAML, OAuth2, OpenID, Tenant Manager).
+- `ui_access` (Boolean) Whether to allow UI access for users with this Permission Set.
 
 

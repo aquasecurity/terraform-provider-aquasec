@@ -6,7 +6,7 @@ description: |-
   
 ---
 
-# Resource `aquasec_firewall_policy`
+# aquasec_firewall_policy (Resource)
 
 
 
@@ -17,36 +17,36 @@ description: |-
 
 ### Required
 
-- **name** (String) Name of the policy, no longer than 128 characters and no slash characters.
+- `name` (String) Name of the policy, no longer than 128 characters and no slash characters.
 
 ### Optional
 
-- **block_icmp_ping** (Boolean) Indicates whether policy includes blocking incoming 'ping' requests.
-- **block_metadata_service** (Boolean) Indicates whether policy includes blocking metadata services of the cloud.
-- **description** (String) Description of the Firewall Policy.
-- **id** (String) The ID of this resource.
-- **inbound_networks** (Block List) Information on network addresses that are allowed to pass in data or requests. (see [below for nested schema](#nestedblock--inbound_networks))
-- **outbound_networks** (Block List) Information on network addresses that are allowed to receive data or requests. (see [below for nested schema](#nestedblock--outbound_networks))
-- **type** (String) Indicates the class of protection defined by the firewall.
-- **version** (String) Aqua version functionality supported
+- `block_icmp_ping` (Boolean) Indicates whether policy includes blocking incoming 'ping' requests.
+- `block_metadata_service` (Boolean) Indicates whether policy includes blocking metadata services of the cloud.
+- `description` (String) Description of the Firewall Policy.
+- `inbound_networks` (Block List) Information on network addresses that are allowed to pass in data or requests. (see [below for nested schema](#nestedblock--inbound_networks))
+- `outbound_networks` (Block List) Information on network addresses that are allowed to receive data or requests. (see [below for nested schema](#nestedblock--outbound_networks))
+- `type` (String) Indicates the class of protection defined by the firewall.
+- `version` (String) Aqua version functionality supported
 
-### Read-only
+### Read-Only
 
-- **author** (String) Username of the account that created the policy.
-- **lastupdate** (Number) Timestamp of the last update in Unix time format.
+- `author` (String) Username of the account that created the policy.
+- `id` (String) The ID of this resource.
+- `lastupdate` (Number) Timestamp of the last update in Unix time format.
 
 <a id="nestedblock--inbound_networks"></a>
 ### Nested Schema for `inbound_networks`
 
 Required:
 
-- **allow** (Boolean) Indicates whether the specified resources are allowed to pass in data or requests.
-- **port_range** (String) Range of ports affected by firewall.
-- **resource_type** (String) Type of the resource
+- `allow` (Boolean) Indicates whether the specified resources are allowed to pass in data or requests.
+- `port_range` (String) Range of ports affected by firewall.
+- `resource_type` (String) Type of the resource
 
 Optional:
 
-- **resource** (String) Information of the resource.
+- `resource` (String) Information of the resource.
 
 
 <a id="nestedblock--outbound_networks"></a>
@@ -54,12 +54,12 @@ Optional:
 
 Required:
 
-- **allow** (Boolean) Indicates whether the specified resources are allowed to receive data or requests.
-- **port_range** (String) Range of ports affected by firewall.
-- **resource_type** (String) Type of the resource.
+- `allow` (Boolean) Indicates whether the specified resources are allowed to receive data or requests.
+- `port_range` (String) Range of ports affected by firewall.
+- `resource_type` (String) Type of the resource.
 
 Optional:
 
-- **resource** (String) Information of the resource.
+- `resource` (String) Information of the resource.
 
 

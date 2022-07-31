@@ -6,7 +6,7 @@ description: |-
   
 ---
 
-# Resource `aquasec_application_scope`
+# aquasec_application_scope (Resource)
 
 
 
@@ -68,53 +68,53 @@ resource "aquasec_application_scope" "terraformiap" {
 
 ### Required
 
-- **name** (String) Name of an application scope.
+- `name` (String) Name of an application scope.
 
 ### Optional
 
-- **categories** (Block Set) Artifacts (of applications) / Workloads (containers) / Infrastructure (elements). (see [below for nested schema](#nestedblock--categories))
-- **description** (String) Description of the application scope.
-- **id** (String) The ID of this resource.
-- **owner_email** (String) Name of an application scope.
+- `categories` (Block Set) Artifacts (of applications) / Workloads (containers) / Infrastructure (elements). (see [below for nested schema](#nestedblock--categories))
+- `description` (String) Description of the application scope.
+- `owner_email` (String) Name of an application scope.
 
-### Read-only
+### Read-Only
 
-- **author** (String) Username of the account that created the service.
+- `author` (String) Username of the account that created the service.
+- `id` (String) The ID of this resource.
 
 <a id="nestedblock--categories"></a>
 ### Nested Schema for `categories`
 
 Optional:
 
-- **artifacts** (Block Set) (see [below for nested schema](#nestedblock--categories--artifacts))
-- **entity_scope** (Block Set) (see [below for nested schema](#nestedblock--categories--entity_scope))
-- **infrastructure** (Block Set) (see [below for nested schema](#nestedblock--categories--infrastructure))
-- **workloads** (Block Set) (see [below for nested schema](#nestedblock--categories--workloads))
+- `artifacts` (Block Set) (see [below for nested schema](#nestedblock--categories--artifacts))
+- `entity_scope` (Block Set) (see [below for nested schema](#nestedblock--categories--entity_scope))
+- `infrastructure` (Block Set) (see [below for nested schema](#nestedblock--categories--infrastructure))
+- `workloads` (Block Set) (see [below for nested schema](#nestedblock--categories--workloads))
 
 <a id="nestedblock--categories--artifacts"></a>
 ### Nested Schema for `categories.artifacts`
 
 Optional:
 
-- **cf** (Block Set) (see [below for nested schema](#nestedblock--categories--artifacts--cf))
-- **function** (Block Set) (see [below for nested schema](#nestedblock--categories--artifacts--function))
-- **image** (Block Set) (see [below for nested schema](#nestedblock--categories--artifacts--image))
+- `cf` (Block Set) (see [below for nested schema](#nestedblock--categories--artifacts--cf))
+- `function` (Block Set) (see [below for nested schema](#nestedblock--categories--artifacts--function))
+- `image` (Block Set) (see [below for nested schema](#nestedblock--categories--artifacts--image))
 
 <a id="nestedblock--categories--artifacts--cf"></a>
 ### Nested Schema for `categories.artifacts.cf`
 
 Optional:
 
-- **expression** (String)
-- **variables** (Block List) (see [below for nested schema](#nestedblock--categories--artifacts--cf--variables))
+- `expression` (String)
+- `variables` (Block List) (see [below for nested schema](#nestedblock--categories--artifacts--cf--variables))
 
 <a id="nestedblock--categories--artifacts--cf--variables"></a>
 ### Nested Schema for `categories.artifacts.cf.variables`
 
 Optional:
 
-- **attribute** (String)
-- **value** (String)
+- `attribute` (String)
+- `value` (String)
 
 
 
@@ -123,16 +123,16 @@ Optional:
 
 Optional:
 
-- **expression** (String)
-- **variables** (Block List) (see [below for nested schema](#nestedblock--categories--artifacts--function--variables))
+- `expression` (String)
+- `variables` (Block List) (see [below for nested schema](#nestedblock--categories--artifacts--function--variables))
 
 <a id="nestedblock--categories--artifacts--function--variables"></a>
 ### Nested Schema for `categories.artifacts.function.variables`
 
 Optional:
 
-- **attribute** (String)
-- **value** (String)
+- `attribute` (String)
+- `value` (String)
 
 
 
@@ -141,16 +141,16 @@ Optional:
 
 Optional:
 
-- **expression** (String)
-- **variables** (Block List) (see [below for nested schema](#nestedblock--categories--artifacts--image--variables))
+- `expression` (String)
+- `variables` (Block List) (see [below for nested schema](#nestedblock--categories--artifacts--image--variables))
 
 <a id="nestedblock--categories--artifacts--image--variables"></a>
 ### Nested Schema for `categories.artifacts.image.variables`
 
 Optional:
 
-- **attribute** (String)
-- **value** (String)
+- `attribute` (String)
+- `value` (String)
 
 
 
@@ -160,16 +160,16 @@ Optional:
 
 Optional:
 
-- **expression** (String)
-- **variables** (Block List) (see [below for nested schema](#nestedblock--categories--entity_scope--variables))
+- `expression` (String)
+- `variables` (Block List) (see [below for nested schema](#nestedblock--categories--entity_scope--variables))
 
 <a id="nestedblock--categories--entity_scope--variables"></a>
 ### Nested Schema for `categories.entity_scope.variables`
 
 Optional:
 
-- **attribute** (String)
-- **value** (String)
+- `attribute` (String)
+- `value` (String)
 
 
 
@@ -178,24 +178,24 @@ Optional:
 
 Optional:
 
-- **kubernetes** (Block Set) (see [below for nested schema](#nestedblock--categories--infrastructure--kubernetes))
-- **os** (Block Set) (see [below for nested schema](#nestedblock--categories--infrastructure--os))
+- `kubernetes` (Block Set) (see [below for nested schema](#nestedblock--categories--infrastructure--kubernetes))
+- `os` (Block Set) (see [below for nested schema](#nestedblock--categories--infrastructure--os))
 
 <a id="nestedblock--categories--infrastructure--kubernetes"></a>
 ### Nested Schema for `categories.infrastructure.kubernetes`
 
 Optional:
 
-- **expression** (String)
-- **variables** (Block List) (see [below for nested schema](#nestedblock--categories--infrastructure--kubernetes--variables))
+- `expression` (String)
+- `variables` (Block List) (see [below for nested schema](#nestedblock--categories--infrastructure--kubernetes--variables))
 
 <a id="nestedblock--categories--infrastructure--kubernetes--variables"></a>
 ### Nested Schema for `categories.infrastructure.kubernetes.variables`
 
 Optional:
 
-- **attribute** (String)
-- **value** (String)
+- `attribute` (String)
+- `value` (String)
 
 
 
@@ -204,16 +204,16 @@ Optional:
 
 Optional:
 
-- **expression** (String)
-- **variables** (Block List) (see [below for nested schema](#nestedblock--categories--infrastructure--os--variables))
+- `expression` (String)
+- `variables` (Block List) (see [below for nested schema](#nestedblock--categories--infrastructure--os--variables))
 
 <a id="nestedblock--categories--infrastructure--os--variables"></a>
 ### Nested Schema for `categories.infrastructure.os.variables`
 
 Optional:
 
-- **attribute** (String)
-- **value** (String)
+- `attribute` (String)
+- `value` (String)
 
 
 
@@ -223,25 +223,25 @@ Optional:
 
 Optional:
 
-- **cf** (Block Set) (see [below for nested schema](#nestedblock--categories--workloads--cf))
-- **kubernetes** (Block Set) (see [below for nested schema](#nestedblock--categories--workloads--kubernetes))
-- **os** (Block Set) (see [below for nested schema](#nestedblock--categories--workloads--os))
+- `cf` (Block Set) (see [below for nested schema](#nestedblock--categories--workloads--cf))
+- `kubernetes` (Block Set) (see [below for nested schema](#nestedblock--categories--workloads--kubernetes))
+- `os` (Block Set) (see [below for nested schema](#nestedblock--categories--workloads--os))
 
 <a id="nestedblock--categories--workloads--cf"></a>
 ### Nested Schema for `categories.workloads.cf`
 
 Optional:
 
-- **expression** (String)
-- **variables** (Block List) (see [below for nested schema](#nestedblock--categories--workloads--cf--variables))
+- `expression` (String)
+- `variables` (Block List) (see [below for nested schema](#nestedblock--categories--workloads--cf--variables))
 
 <a id="nestedblock--categories--workloads--cf--variables"></a>
 ### Nested Schema for `categories.workloads.cf.variables`
 
 Optional:
 
-- **attribute** (String)
-- **value** (String)
+- `attribute` (String)
+- `value` (String)
 
 
 
@@ -250,16 +250,16 @@ Optional:
 
 Optional:
 
-- **expression** (String)
-- **variables** (Block List) (see [below for nested schema](#nestedblock--categories--workloads--kubernetes--variables))
+- `expression` (String)
+- `variables` (Block List) (see [below for nested schema](#nestedblock--categories--workloads--kubernetes--variables))
 
 <a id="nestedblock--categories--workloads--kubernetes--variables"></a>
 ### Nested Schema for `categories.workloads.kubernetes.variables`
 
 Optional:
 
-- **attribute** (String)
-- **value** (String)
+- `attribute` (String)
+- `value` (String)
 
 
 
@@ -268,15 +268,15 @@ Optional:
 
 Optional:
 
-- **expression** (String)
-- **variables** (Block List) (see [below for nested schema](#nestedblock--categories--workloads--os--variables))
+- `expression` (String)
+- `variables` (Block List) (see [below for nested schema](#nestedblock--categories--workloads--os--variables))
 
 <a id="nestedblock--categories--workloads--os--variables"></a>
 ### Nested Schema for `categories.workloads.os.variables`
 
 Optional:
 
-- **attribute** (String)
-- **value** (String)
+- `attribute` (String)
+- `value` (String)
 
 

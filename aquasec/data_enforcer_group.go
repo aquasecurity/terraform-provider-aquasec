@@ -74,6 +74,16 @@ func dataSourceEnforcerGroup() *schema.Resource {
 					Type: schema.TypeString,
 				},
 			},
+			"forensics": {
+				Type:        schema.TypeBool,
+				Description: "Select Enabled to send activity logs in your containers to the Aqua Server for forensics purposes.",
+				Optional:    true,
+			},
+			"host_forensics": {
+				Type:        schema.TypeBool,
+				Description: "Select Enabled to send activity logs in your host to the Aqua Server for forensics purposes.",
+				Optional:    true,
+			},
 			"host_network_protection": {
 				Type:        schema.TypeBool,
 				Description: "When set to `True` applies Firewall Policies to hosts, and allows recording network maps for Aqua services. The Network Firewall setting must be disabled when deploying the Aqua Enforcer on a machine running Rocky Linux. See https://docs.aquasec.com/docs/platform-support-limitations-rocky-linux for further information",
@@ -396,6 +406,8 @@ func dataEnforcerGroupRead(d *schema.ResourceData, m interface{}) error {
 		d.Set("network_protection", group.NetworkProtection)
 		d.Set("behavioral_engine", group.BehavioralEngine)
 		d.Set("host_behavioral_engine", group.HostBehavioralEngine)
+		d.Set("forensics", group.ContainerForensicsCollection)
+		d.Set("host_forensics", group.HostForensicsCollection)
 		d.Set("host_network_protection", group.HostNetworkProtection)
 		d.Set("user_access_control", group.UserAccessControl)
 		d.Set("image_assurance", group.ImageAssurance)

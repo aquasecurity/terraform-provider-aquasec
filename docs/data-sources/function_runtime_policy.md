@@ -6,7 +6,7 @@ description: |-
   
 ---
 
-# Data Source `aquasec_function_runtime_policy`
+# aquasec_function_runtime_policy (Data Source)
 
 
 
@@ -27,36 +27,33 @@ output "function_runtime_policy_details" {
 
 ### Required
 
-- **name** (String) Name of the function runtime policy
+- `name` (String) Name of the function runtime policy
 
-### Optional
+### Read-Only
 
-- **id** (String) The ID of this resource.
-
-### Read-only
-
-- **application_scopes** (List of String) Indicates the application scope of the service.
-- **author** (String) Username of the account that created the service.
-- **block_malicious_executables** (Boolean) If true, prevent creation of malicious executables in functions during their runtime post invocation.
-- **block_malicious_executables_allowed_processes** (List of String) List of processes that will be allowed
-- **block_running_executables_in_tmp_folder** (Boolean) If true, prevent running of executables in functions locate in /tmp folder during their runtime post invocation.
-- **blocked_executables** (List of String) List of executables that are prevented from running in containers.
-- **description** (String) The description of the function runtime policy
-- **enabled** (Boolean) Indicates if the runtime policy is enabled or not.
-- **enforce** (Boolean) Indicates that policy should effect container execution (not just for audit).
-- **honeypot_access_key** (String) Honeypot User ID (Access Key)
-- **honeypot_apply_on** (List of String) List of options to apply the honeypot on (Environment Vairable, Layer, File)
-- **honeypot_secret_key** (String, Sensitive) Honeypot User Password (Secret Key)
-- **honeypot_serverless_app_name** (String) Serverless application name
-- **scope_expression** (String) Logical expression of how to compute the dependency of the scope variables.
-- **scope_variables** (List of Object) List of scope attributes. (see [below for nested schema](#nestedatt--scope_variables))
+- `application_scopes` (List of String) Indicates the application scope of the service.
+- `author` (String) Username of the account that created the service.
+- `block_malicious_executables` (Boolean) If true, prevent creation of malicious executables in functions during their runtime post invocation.
+- `block_malicious_executables_allowed_processes` (List of String) List of processes that will be allowed
+- `block_running_executables_in_tmp_folder` (Boolean) If true, prevent running of executables in functions locate in /tmp folder during their runtime post invocation.
+- `blocked_executables` (List of String) List of executables that are prevented from running in containers.
+- `description` (String) The description of the function runtime policy
+- `enabled` (Boolean) Indicates if the runtime policy is enabled or not.
+- `enforce` (Boolean) Indicates that policy should effect container execution (not just for audit).
+- `honeypot_access_key` (String) Honeypot User ID (Access Key)
+- `honeypot_apply_on` (List of String) List of options to apply the honeypot on (Environment Vairable, Layer, File)
+- `honeypot_secret_key` (String, Sensitive) Honeypot User Password (Secret Key)
+- `honeypot_serverless_app_name` (String) Serverless application name
+- `id` (String) The ID of this resource.
+- `scope_expression` (String) Logical expression of how to compute the dependency of the scope variables.
+- `scope_variables` (List of Object) List of scope attributes. (see [below for nested schema](#nestedatt--scope_variables))
 
 <a id="nestedatt--scope_variables"></a>
 ### Nested Schema for `scope_variables`
 
-Read-only:
+Read-Only:
 
-- **attribute** (String)
-- **value** (String)
+- `attribute` (String)
+- `value` (String)
 
 
