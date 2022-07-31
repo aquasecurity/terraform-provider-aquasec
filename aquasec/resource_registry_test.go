@@ -20,8 +20,9 @@ func TestAquasecresourceRegistry(t *testing.T) {
 	autopull := false
 	scanner_type := "any"
 	resource.Test(t, resource.TestCase{
-		PreCheck:  func() { testAccPreCheck(t) },
-		Providers: testAccProviders,
+		PreCheck:     func() { testAccPreCheck(t) },
+		Providers:    testAccProviders,
+		CheckDestroy: CheckDestroy("aquasec_integration_registry.new"),
 		Steps: []resource.TestStep{
 			{
 				Config: testAccCheckAquasecRegistry(name, url, rtype, username, password, prefixes, autopull, scanner_type),

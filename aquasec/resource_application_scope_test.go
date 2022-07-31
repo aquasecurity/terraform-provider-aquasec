@@ -14,8 +14,9 @@ func TestAquasecApplicationScope(t *testing.T) {
 	name := acctest.RandomWithPrefix("terraform-test")
 	description := "Created using Terraform"
 	resource.Test(t, resource.TestCase{
-		PreCheck:  func() { testAccPreCheck(t) },
-		Providers: testAccProviders,
+		PreCheck:     func() { testAccPreCheck(t) },
+		Providers:    testAccProviders,
+		CheckDestroy: CheckDestroy("aquasec_application_scope.terraformap"),
 		Steps: []resource.TestStep{
 			{
 				Config: testAccCheckApplicationScope(name, description),

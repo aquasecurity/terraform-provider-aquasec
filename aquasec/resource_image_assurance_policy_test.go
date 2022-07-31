@@ -16,8 +16,9 @@ func TestAquasecImageAssurancePolicy(t *testing.T) {
 	name := acctest.RandomWithPrefix("terraform-test")
 	application_scopes := "Global"
 	resource.Test(t, resource.TestCase{
-		PreCheck:  func() { testAccPreCheck(t) },
-		Providers: testAccProviders,
+		PreCheck:     func() { testAccPreCheck(t) },
+		Providers:    testAccProviders,
+		CheckDestroy: CheckDestroy("aquasec_image_assurance_policy.terraformiap"),
 		Steps: []resource.TestStep{
 			{
 				Config: testAccCheckImageAssurancePolicy(assurance_type, description, name, application_scopes),

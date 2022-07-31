@@ -24,7 +24,8 @@ func TestResourceAquasecBasicFunctionRuntimePolicyCreate(t *testing.T) {
 		PreCheck: func() {
 			testAccPreCheck(t)
 		},
-		Providers: testAccProviders,
+		Providers:    testAccProviders,
+		CheckDestroy: CheckDestroy("aquasec_function_runtime_policy.test"),
 		Steps: []resource.TestStep{
 			{
 				Config: getFunctionRuntimePolicyResource(runtimePolicy),
@@ -61,7 +62,8 @@ func TestResourceAquasecFunctionRuntimePolicyUpgrade(t *testing.T) {
 		PreCheck: func() {
 			testAccPreCheck(t)
 		},
-		Providers: testAccProviders,
+		Providers:    testAccProviders,
+		CheckDestroy: CheckDestroy("aquasec_function_runtime_policy.test"),
 		Steps: []resource.TestStep{
 			{
 				Config: getFunctionRuntimePolicyResource(runtimePolicy),

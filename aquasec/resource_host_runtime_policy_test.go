@@ -25,7 +25,8 @@ func TestResourceAquasecBasicHostRuntimePolicyCreate(t *testing.T) {
 		PreCheck: func() {
 			testAccPreCheck(t)
 		},
-		Providers: testAccProviders,
+		Providers:    testAccProviders,
+		CheckDestroy: CheckDestroy("aquasec_host_runtime_policy.test"),
 		Steps: []resource.TestStep{
 			{
 				Config: getBasicHostRuntimePolicyResource(basicRuntimePolicy),
@@ -63,7 +64,8 @@ func TestResourceAquasecComplexHostRuntimePolicyCreate(t *testing.T) {
 		PreCheck: func() {
 			testAccPreCheck(t)
 		},
-		Providers: testAccProviders,
+		Providers:    testAccProviders,
+		CheckDestroy: CheckDestroy("aquasec_host_runtime_policy.test"),
 		Steps: []resource.TestStep{
 			{
 				Config: getComplexHostRuntimePolicyResource(complexRuntimePolicy),
