@@ -41,7 +41,7 @@ func resourcePermissionSet() *schema.Resource {
 			"author": {
 				Type:        schema.TypeString,
 				Description: "The name of the user who created the Permission Set.",
-				Computed:    true,
+				Optional:    true,
 			},
 			"ui_access": {
 				Type:        schema.TypeBool,
