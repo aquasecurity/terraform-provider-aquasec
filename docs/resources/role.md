@@ -7,7 +7,7 @@ description: |-
   The roles created must have permission set and at least one Role Application Scope that is already present within Aqua.
 ---
 
-# Resource `aquasec_role`
+# aquasec_role (Resource)
 
 The `aquasec_role` resource manages your roles within Aqua.
 
@@ -29,18 +29,18 @@ resource "aquasec_role" "IaC" {
 
 ### Required
 
-- **permission** (String) The name of the Permission Set that will affect the users assigned to this specific Role.
-- **role_name** (String) The name of the role, comprised of alphanumeric characters and '-', '_', ' ', ':', '.', '@', '!', '^'.
-- **scopes** (List of String) List of Application Scopes that will affect the users assigned to this specific Role.
+- `permission` (String) The name of the Permission Set that will affect the users assigned to this specific Role.
+- `role_name` (String) The name of the role, comprised of alphanumeric characters and '-', '_', ' ', ':', '.', '@', '!', '^'.
+- `scopes` (List of String) List of Application Scopes that will affect the users assigned to this specific Role.
 
 ### Optional
 
-- **description** (String) Free text description for the role.
-- **id** (String) The ID of this resource.
-- **updated_at** (String) The date of the last modification of the role.
+- `description` (String) Free text description for the role.
+- `updated_at` (String) The date of the last modification of the role.
 
-### Read-only
+### Read-Only
 
-- **author** (String) The name of the user who created the role. Only returned from the API for existing permissions, not part of the permission creation/modification structure.
+- `author` (String) The name of the user who created the role. Only returned from the API for existing permissions, not part of the permission creation/modification structure.
+- `id` (String) The ID of this resource.
 
 

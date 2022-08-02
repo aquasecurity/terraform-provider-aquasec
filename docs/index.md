@@ -21,7 +21,7 @@ Use the navigation to the left to read about the available resources and data so
 terraform {
   required_providers {
     aquasec = {
-      version = "0.8.9"
+      version = "0.8.13"
       source  = "aquasecurity/aquasec"
     }
   }
@@ -45,9 +45,9 @@ username = "IaC"                    // Alternatively sourced from $AQUA_USER
 
 ### Optional
 
-- **aqua_url** (String) This is the base URL of your Aqua instance. Can alternatively be sourced from the `AQUA_URL` environment variable.
-- **ca_certificate_path** (String) This is the file path for server CA certificates if they are not available on the host OS. Can alternatively be sourced from the `AQUA_CA_CERT_PATH` environment variable.
-- **config_path** (String) This is the file path for Aqua provider configuration. The default configuration path is `~/.aqua/tf.config`. Can alternatively be sourced from the `AQUA_CONFIG` environment variable.
-- **password** (String, Sensitive) This is the password that should be used to make the connection. Can alternatively be sourced from the `AQUA_PASSWORD` environment variable.
-- **username** (String, Sensitive) This is the user id that should be used to make the connection. Can alternatively be sourced from the `AQUA_USER` environment variable.
-- **verify_tls** (Boolean) If true, server tls certificates will be verified by the client before making a connection. Defaults to true. Can alternatively be sourced from the `AQUA_TLS_VERIFY` environment variable.
+- `aqua_url` (String) This is the base URL of your Aqua instance. Can alternatively be sourced from the `AQUA_URL` environment variable.
+- `ca_certificate_path` (String) This is the file path for server CA certificates if they are not available on the host OS. Can alternatively be sourced from the `AQUA_CA_CERT_PATH` environment variable.
+- `config_path` (String) This is the file path for Aqua provider configuration. The default configuration path is `~/.aqua/tf.config`. Can alternatively be sourced from the `AQUA_CONFIG` environment variable.
+- `password` (String, Sensitive) This is the password that should be used to make the connection. Can alternatively be sourced from the `AQUA_PASSWORD` environment variable.
+- `username` (String, Sensitive) This is the user id that should be used to make the connection. Can alternatively be sourced from the `AQUA_USER` environment variable.
+- `verify_tls` (Boolean) If true, server tls certificates will be verified by the client before making a connection. Defaults to true. Can alternatively be sourced from the `AQUA_TLS_VERIFY` environment variable.

@@ -22,6 +22,11 @@ resource "aquasec_enforcer_groups" "group" {
     sync_host_images = true
     # Risk Explorer
     risk_explorer_auto_discovery = true
+    # host_forensics
+    host_forensics = true
+    # forensics
+    forensics = true
+
     orchestrator {}
 }
 

@@ -7,7 +7,7 @@ description: |-
   The users created must have at least one Csp Role that is already present within Aqua.
 ---
 
-# Resource `aquasec_user_saas`
+# aquasec_user_saas (Resource)
 
 The `aquasec_user_saas` resource manages your saas users within Aqua.
 
@@ -41,45 +41,45 @@ resource "aquasec_user_saas" "IaC2" {
 
 ### Required
 
-- **account_admin** (Boolean)
-- **csp_roles** (List of String)
-- **email** (String)
+- `account_admin` (Boolean)
+- `csp_roles` (List of String)
+- `email` (String)
 
 ### Optional
 
-- **groups** (Block List) (see [below for nested schema](#nestedblock--groups))
-- **id** (String) The ID of this resource.
+- `groups` (Block List) (see [below for nested schema](#nestedblock--groups))
 
-### Read-only
+### Read-Only
 
-- **confirmed** (Boolean)
-- **created** (String)
-- **logins** (List of Object) (see [below for nested schema](#nestedatt--logins))
-- **multiaccount** (Boolean)
-- **password_reset** (Boolean)
-- **send_announcements** (Boolean)
-- **send_new_plugins** (Boolean)
-- **send_new_risks** (Boolean)
-- **send_scan_results** (Boolean)
-- **user_id** (String)
+- `confirmed` (Boolean)
+- `created` (String)
+- `id` (String) The ID of this resource.
+- `logins` (List of Object) (see [below for nested schema](#nestedatt--logins))
+- `multiaccount` (Boolean)
+- `password_reset` (Boolean)
+- `send_announcements` (Boolean)
+- `send_new_plugins` (Boolean)
+- `send_new_risks` (Boolean)
+- `send_scan_results` (Boolean)
+- `user_id` (String)
 
 <a id="nestedblock--groups"></a>
 ### Nested Schema for `groups`
 
 Optional:
 
-- **group_admin** (Boolean)
-- **name** (String)
+- `group_admin` (Boolean)
+- `name` (String)
 
 
 <a id="nestedatt--logins"></a>
 ### Nested Schema for `logins`
 
-Read-only:
+Read-Only:
 
-- **created** (String)
-- **id** (Number)
-- **ip_address** (String)
-- **user_id** (Number)
+- `created` (String)
+- `id` (Number)
+- `ip_address` (String)
+- `user_id` (Number)
 
 
