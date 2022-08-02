@@ -6,7 +6,7 @@ description: |-
   
 ---
 
-# Resource `aquasec_notification_slack`
+# aquasec_notification_slack (Resource)
 
 
 
@@ -17,18 +17,21 @@ description: |-
 
 ### Required
 
-- **channel** (String)
-- **enabled** (Boolean)
-- **type** (String)
-- **user_name** (String)
-- **webhook_url** (String)
+- `channel` (String)
+- `enabled` (Boolean)
+- `type` (String)
+- `user_name` (String)
+- `webhook_url` (String)
 
 ### Optional
 
-- **icon** (String)
-- **id** (String) The ID of this resource.
-- **main_text** (String)
-- **name** (String)
-- **service_key** (String)
+- `icon` (String)
+- `main_text` (String)
+- `name` (String)
+- `service_key` (String)
+
+### Read-Only
+
+- `id` (String) The ID of this resource.
 
 

@@ -6,7 +6,7 @@ description: |-
   
 ---
 
-# Data Source `aquasec_container_runtime_policy`
+# aquasec_container_runtime_policy (Data Source)
 
 
 
@@ -27,89 +27,86 @@ output "container_runtime_policy_details" {
 
 ### Required
 
-- **name** (String) Name of the container runtime policy
+- `name` (String) Name of the container runtime policy
 
-### Optional
+### Read-Only
 
-- **id** (String) The ID of this resource.
-
-### Read-only
-
-- **allowed_executables** (List of String) List of executables that are allowed for the user.
-- **allowed_registries** (List of String) List of registries that allowed for running containers.
-- **application_scopes** (List of String) Indicates the application scope of the service.
-- **audit_all_network_activity** (Boolean) If true, all network activity will be audited.
-- **audit_all_processes_activity** (Boolean) If true, all process activity will be audited.
-- **audit_full_command_arguments** (Boolean) If true, full command arguments will be audited.
-- **author** (String) Username of the account that created the service.
-- **block_access_host_network** (Boolean) If true, prevent containers from running with access to host network.
-- **block_adding_capabilities** (Boolean) If true, prevent containers from running with adding capabilities with `--cap-add` privilege.
-- **block_container_exec** (Boolean) If true, exec into a container is prevented.
-- **block_cryptocurrency_mining** (Boolean) Detect and prevent communication to DNS/IP addresses known to be used for Cryptocurrency Mining
-- **block_fileless_exec** (Boolean) Detect and prevent running in-memory execution
-- **block_low_port_binding** (Boolean) If true, prevent containers from running with the capability to bind in port lower than 1024.
-- **block_non_compliant_images** (Boolean) If true, running non-compliant image in the container is prevented.
-- **block_non_compliant_workloads** (Boolean) If true, running containers in non-compliant pods is prevented.
-- **block_non_k8s_containers** (Boolean) If true, running non-kubernetes containers is prevented.
-- **block_privileged_containers** (Boolean) If true, prevent containers from running with privileged container capability.
-- **block_reverse_shell** (Boolean) If true, reverse shell is prevented.
-- **block_root_user** (Boolean) If true, prevent containers from running with root user.
-- **block_unregistered_images** (Boolean) If true, running images in the container that are not registered in Aqua is prevented.
-- **block_use_ipc_namespace** (Boolean) If true, prevent containers from running with the privilege to use the IPC namespace.
-- **block_use_pid_namespace** (Boolean) If true, prevent containers from running with the privilege to use the PID namespace.
-- **block_use_user_namespace** (Boolean) If true, prevent containers from running with the privilege to use the user namespace.
-- **block_use_uts_namespace** (Boolean) If true, prevent containers from running with the privilege to use the UTS namespace.
-- **blocked_capabilities** (List of String) If true, prevents containers from using specific Unix capabilities.
-- **blocked_executables** (List of String) List of executables that are prevented from running in containers.
-- **blocked_files** (List of String) List of files that are prevented from being read, modified and executed in the containers.
-- **blocked_inbound_ports** (List of String) List of blocked inbound ports.
-- **blocked_outbound_ports** (List of String) List of blocked outbound ports.
-- **blocked_packages** (List of String) Prevent containers from reading, writing, or executing all files in the list of packages.
-- **blocked_volumes** (List of String) List of volumes that are prevented from being mounted in the containers.
-- **container_exec_allowed_processes** (List of String) List of processes that will be allowed.
-- **description** (String) The description of the container runtime policy
-- **enable_drift_prevention** (Boolean) If true, executables that are not in the original image is prevented from running.
-- **enable_fork_guard** (Boolean) If true, fork bombs are prevented in the containers.
-- **enable_ip_reputation_security** (Boolean) If true, detect and prevent communication from containers to IP addresses known to have a bad reputation.
-- **enable_port_scan_detection** (Boolean) If true, detects port scanning behavior in the container.
-- **enabled** (Boolean) Indicates if the runtime policy is enabled or not.
-- **enforce** (Boolean) Indicates that policy should effect container execution (not just for audit).
-- **enforce_after_days** (Number) Indicates the number of days after which the runtime policy will be changed to enforce mode.
-- **exceptional_readonly_files_and_directories** (List of String) List of files and directories to be excluded from the read-only list.
-- **file_integrity_monitoring** (List of Object) Configuration for file integrity monitoring. (see [below for nested schema](#nestedatt--file_integrity_monitoring))
-- **fork_guard_process_limit** (Number) Process limit for the fork guard.
-- **limit_new_privileges** (Boolean) If true, prevents the container from obtaining new privileges at runtime. (only enabled in enforce mode)
-- **monitor_system_time_changes** (Boolean) If true, system time changes will be monitored.
-- **readonly_files_and_directories** (List of String) List of files and directories to be restricted as read-only
-- **reverse_shell_allowed_ips** (List of String) List of IPs/ CIDRs that will be allowed
-- **reverse_shell_allowed_processes** (List of String) List of processes that will be allowed
-- **scope_expression** (String) Logical expression of how to compute the dependency of the scope variables.
-- **scope_variables** (List of Object) List of scope attributes. (see [below for nested schema](#nestedatt--scope_variables))
+- `allowed_executables` (List of String) List of executables that are allowed for the user.
+- `allowed_registries` (List of String) List of registries that allowed for running containers.
+- `application_scopes` (List of String) Indicates the application scope of the service.
+- `audit_all_network_activity` (Boolean) If true, all network activity will be audited.
+- `audit_all_processes_activity` (Boolean) If true, all process activity will be audited.
+- `audit_full_command_arguments` (Boolean) If true, full command arguments will be audited.
+- `author` (String) Username of the account that created the service.
+- `block_access_host_network` (Boolean) If true, prevent containers from running with access to host network.
+- `block_adding_capabilities` (Boolean) If true, prevent containers from running with adding capabilities with `--cap-add` privilege.
+- `block_container_exec` (Boolean) If true, exec into a container is prevented.
+- `block_cryptocurrency_mining` (Boolean) Detect and prevent communication to DNS/IP addresses known to be used for Cryptocurrency Mining
+- `block_fileless_exec` (Boolean) Detect and prevent running in-memory execution
+- `block_low_port_binding` (Boolean) If true, prevent containers from running with the capability to bind in port lower than 1024.
+- `block_non_compliant_images` (Boolean) If true, running non-compliant image in the container is prevented.
+- `block_non_compliant_workloads` (Boolean) If true, running containers in non-compliant pods is prevented.
+- `block_non_k8s_containers` (Boolean) If true, running non-kubernetes containers is prevented.
+- `block_privileged_containers` (Boolean) If true, prevent containers from running with privileged container capability.
+- `block_reverse_shell` (Boolean) If true, reverse shell is prevented.
+- `block_root_user` (Boolean) If true, prevent containers from running with root user.
+- `block_unregistered_images` (Boolean) If true, running images in the container that are not registered in Aqua is prevented.
+- `block_use_ipc_namespace` (Boolean) If true, prevent containers from running with the privilege to use the IPC namespace.
+- `block_use_pid_namespace` (Boolean) If true, prevent containers from running with the privilege to use the PID namespace.
+- `block_use_user_namespace` (Boolean) If true, prevent containers from running with the privilege to use the user namespace.
+- `block_use_uts_namespace` (Boolean) If true, prevent containers from running with the privilege to use the UTS namespace.
+- `blocked_capabilities` (List of String) If true, prevents containers from using specific Unix capabilities.
+- `blocked_executables` (List of String) List of executables that are prevented from running in containers.
+- `blocked_files` (List of String) List of files that are prevented from being read, modified and executed in the containers.
+- `blocked_inbound_ports` (List of String) List of blocked inbound ports.
+- `blocked_outbound_ports` (List of String) List of blocked outbound ports.
+- `blocked_packages` (List of String) Prevent containers from reading, writing, or executing all files in the list of packages.
+- `blocked_volumes` (List of String) List of volumes that are prevented from being mounted in the containers.
+- `container_exec_allowed_processes` (List of String) List of processes that will be allowed.
+- `description` (String) The description of the container runtime policy
+- `enable_drift_prevention` (Boolean) If true, executables that are not in the original image is prevented from running.
+- `enable_fork_guard` (Boolean) If true, fork bombs are prevented in the containers.
+- `enable_ip_reputation_security` (Boolean) If true, detect and prevent communication from containers to IP addresses known to have a bad reputation.
+- `enable_port_scan_detection` (Boolean) If true, detects port scanning behavior in the container.
+- `enabled` (Boolean) Indicates if the runtime policy is enabled or not.
+- `enforce` (Boolean) Indicates that policy should effect container execution (not just for audit).
+- `enforce_after_days` (Number) Indicates the number of days after which the runtime policy will be changed to enforce mode.
+- `exceptional_readonly_files_and_directories` (List of String) List of files and directories to be excluded from the read-only list.
+- `file_integrity_monitoring` (List of Object) Configuration for file integrity monitoring. (see [below for nested schema](#nestedatt--file_integrity_monitoring))
+- `fork_guard_process_limit` (Number) Process limit for the fork guard.
+- `id` (String) The ID of this resource.
+- `limit_new_privileges` (Boolean) If true, prevents the container from obtaining new privileges at runtime. (only enabled in enforce mode)
+- `monitor_system_time_changes` (Boolean) If true, system time changes will be monitored.
+- `readonly_files_and_directories` (List of String) List of files and directories to be restricted as read-only
+- `reverse_shell_allowed_ips` (List of String) List of IPs/ CIDRs that will be allowed
+- `reverse_shell_allowed_processes` (List of String) List of processes that will be allowed
+- `scope_expression` (String) Logical expression of how to compute the dependency of the scope variables.
+- `scope_variables` (List of Object) List of scope attributes. (see [below for nested schema](#nestedatt--scope_variables))
 
 <a id="nestedatt--file_integrity_monitoring"></a>
 ### Nested Schema for `file_integrity_monitoring`
 
-Read-only:
+Read-Only:
 
-- **excluded_paths** (List of String)
-- **excluded_processes** (List of String)
-- **excluded_users** (List of String)
-- **monitor_attributes** (Boolean)
-- **monitor_create** (Boolean)
-- **monitor_delete** (Boolean)
-- **monitor_modify** (Boolean)
-- **monitor_read** (Boolean)
-- **monitored_paths** (List of String)
-- **monitored_processes** (List of String)
-- **monitored_users** (List of String)
+- `excluded_paths` (List of String)
+- `excluded_processes` (List of String)
+- `excluded_users` (List of String)
+- `monitor_attributes` (Boolean)
+- `monitor_create` (Boolean)
+- `monitor_delete` (Boolean)
+- `monitor_modify` (Boolean)
+- `monitor_read` (Boolean)
+- `monitored_paths` (List of String)
+- `monitored_processes` (List of String)
+- `monitored_users` (List of String)
 
 
 <a id="nestedatt--scope_variables"></a>
 ### Nested Schema for `scope_variables`
 
-Read-only:
+Read-Only:
 
-- **attribute** (String)
-- **value** (String)
+- `attribute` (String)
+- `value` (String)
 
 

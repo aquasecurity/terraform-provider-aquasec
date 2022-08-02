@@ -98,6 +98,11 @@ func resourceEnforcerGroup() *schema.Resource {
 				Description: "Select Enabled to detect suspicious activity in your containers and display potential security threats in the Incidents and Audit pages.",
 				Optional:    true,
 			},
+			"forensics": {
+				Type:        schema.TypeBool,
+				Description: "Select Enabled to send activity logs in your containers to the Aqua Server for forensics purposes.",
+				Optional:    true,
+			},
 			"block_admission_control": {
 				Type:        schema.TypeBool,
 				Description: "This applies only if both `Enable admission control` and Enforce mode are set. This additional option must be selected for admission control to work if the KubeEnforcer is not connected to any Gateway. If this option is not selected, admission control will be disabled; this will have no effect on containers already running.",
@@ -194,6 +199,11 @@ func resourceEnforcerGroup() *schema.Resource {
 			"host_behavioral_engine": {
 				Type:        schema.TypeBool,
 				Description: "Set `True` to enable these Host Runtime Policy controls: `OS Users and Groups Allowed` and `OS Users and Groups Blocked`",
+				Optional:    true,
+			},
+			"host_forensics": {
+				Type:        schema.TypeBool,
+				Description: "Select Enabled to send activity logs in your host to the Aqua Server for forensics purposes.",
 				Optional:    true,
 			},
 			"host_network_protection": {
@@ -435,6 +445,8 @@ func resourceEnforcerGroupRead(d *schema.ResourceData, m interface{}) error {
 		d.Set("network_protection", r.NetworkProtection)
 		d.Set("behavioral_engine", r.BehavioralEngine)
 		d.Set("host_behavioral_engine", r.BehavioralEngine)
+		d.Set("forensics", r.ContainerForensicsCollection)
+		d.Set("host_forensics", r.HostForensicsCollection)
 		d.Set("host_network_protection", r.HostNetworkProtection)
 		d.Set("user_access_control", r.UserAccessControl)
 		d.Set("image_assurance", r.ImageAssurance)
@@ -647,6 +659,11 @@ func expandEnforcerGroup(d *schema.ResourceData) client.EnforcerGroup {
 		enforcerGroup.BehavioralEngine = behavioralEngine.(bool)
 	}
 
+	forensics, ok := d.GetOk("forensics")
+	if ok {
+		enforcerGroup.ContainerForensicsCollection = forensics.(bool)
+	}
+
 	blockAdmissionControl, ok := d.GetOk("block_admission_control")
 	if ok {
 		enforcerGroup.BlockAdmissionControl = blockAdmissionControl.(bool)
@@ -685,6 +702,11 @@ func expandEnforcerGroup(d *schema.ResourceData) client.EnforcerGroup {
 	hostBehavioralEngine, ok := d.GetOk("host_behavioral_engine")
 	if ok {
 		enforcerGroup.HostBehavioralEngine = hostBehavioralEngine.(bool)
+	}
+
+	hostForensics, ok := d.GetOk("host_forensics")
+	if ok {
+		enforcerGroup.HostForensicsCollection = hostForensics.(bool)
 	}
 
 	hostNetworkProtection, ok := d.GetOk("host_network_protection")

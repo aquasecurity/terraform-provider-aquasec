@@ -39,6 +39,8 @@ type EnforcerGroup struct {
 	NetworkProtection                         bool                 `json:"network_protection"`
 	BehavioralEngine                          bool                 `json:"behavioral_engine"`
 	HostBehavioralEngine                      bool                 `json:"host_behavioral_engine"`
+	ContainerForensicsCollection              bool                 `json:"container_forensics_collection"`
+	HostForensicsCollection                   bool                 `json:"host_forensics_collection"`
 	HostNetworkProtection                     bool                 `json:"host_network_protection"`
 	UserAccessControl                         bool                 `json:"user_access_control"`
 	ImageAssurance                            bool                 `json:"image_assurance"`

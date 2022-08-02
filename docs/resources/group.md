@@ -7,7 +7,7 @@ description: |-
   The Groups created must have at least one Role that is already present within Aqua.
 ---
 
-# Resource `aquasec_group`
+# aquasec_group (Resource)
 
 The `aquasec_group` resource manages your groups within Aqua.
 
@@ -26,15 +26,12 @@ resource "aquasec_group" "group" {
 
 ### Required
 
-- **name** (String) The desired name of the group.
+- `name` (String) The desired name of the group.
 
-### Optional
+### Read-Only
 
-- **id** (String) The ID of this resource.
-
-### Read-only
-
-- **created** (String) The creation date of the group.
-- **group_id** (Number) The ID of the created group.
+- `created` (String) The creation date of the group.
+- `group_id` (Number) The ID of the created group.
+- `id` (String) The ID of this resource.
 
 
