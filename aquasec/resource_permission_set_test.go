@@ -2,6 +2,7 @@ package aquasec
 
 import (
 	"fmt"
+	"os"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/acctest"
@@ -13,9 +14,14 @@ func TestAquasecPermissionSetManagement(t *testing.T) {
 	t.Parallel()
 	name := acctest.RandomWithPrefix("terraform")
 	description := "created from terraform "
+	author := "system"
 	ui_access := true
 	is_super := false
 	actions := "risks.vulnerabilities.read"
+
+	if isSaasEnv() {
+		author = os.Getenv("AQUA_USER")
+	}
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
@@ -24,7 +30,7 @@ func TestAquasecPermissionSetManagement(t *testing.T) {
 		Steps: []resource.TestStep{
 			{
 				// Config returns the test resource
-				Config: testAccCheckAquasecPermissionSet(name, description, ui_access, is_super, actions),
+				Config: testAccCheckAquasecPermissionSet(name, description, author, ui_access, is_super, actions),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckAquasecPermissionSetExists("aquasec_permissions_sets.new"),
 				),
@@ -38,17 +44,18 @@ func TestAquasecPermissionSetManagement(t *testing.T) {
 	})
 }
 
-func testAccCheckAquasecPermissionSet(name string, description string, ui_access bool, is_super bool, actions string) string {
+func testAccCheckAquasecPermissionSet(name string, description string, author string, ui_access bool, is_super bool, actions string) string {
 	return fmt.Sprintf(`
 	resource "aquasec_permissions_sets" "new" {
 		name = "%s"
 		description     = "%s"
+		author = "%s"
 		ui_access = "%v"
 		is_super = "%v"
 		actions = [
 		  "%s"
 		]
-	  }`, name, description, ui_access, is_super, actions)
+	  }`, name, description, author, ui_access, is_super, actions)
 }
 
 func testAccCheckAquasecPermissionSetExists(n string) resource.TestCheckFunc {
