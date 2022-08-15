@@ -1,6 +1,7 @@
 package client
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"github.com/parnurzeal/gorequest"
@@ -33,7 +34,10 @@ func (cli *Client) GetRole(name string) (*Role, error) {
 
 	apiPath := fmt.Sprintf("/api/v2/access_management/roles/%s", name)
 	baseUrl := cli.url
-
+	err = cli.limiter.Wait(context.Background())
+	if err != nil {
+		return nil, err
+	}
 	events, body, errs := request.Get(baseUrl+apiPath).Set("Authorization", fmt.Sprintf("Bearer %s", cli.token)).End()
 
 	if errs != nil {
@@ -66,7 +70,10 @@ func (cli *Client) GetRoles() ([]Role, error) {
 
 	apiPath := "/api/v2/access_management/roles"
 	baseUrl := cli.url
-
+	err = cli.limiter.Wait(context.Background())
+	if err != nil {
+		return nil, err
+	}
 	events, body, errs := request.Get(baseUrl+apiPath).Set("Authorization", fmt.Sprintf("Bearer %s", cli.token)).End()
 
 	if errs != nil {
@@ -99,6 +106,10 @@ func (cli *Client) CreateRole(role *Role) error {
 	//}
 
 	request := cli.gorequest
+	err = cli.limiter.Wait(context.Background())
+	if err != nil {
+		return err
+	}
 	resp, data, errs := request.Post(baseUrl+apiPath).Set("Authorization", fmt.Sprintf("Bearer %s", cli.token)).Send(string(payload)).End()
 	fmt.Sprintf(data)
 	if errs != nil {
@@ -118,6 +129,10 @@ func (cli *Client) UpdateRole(role *Role) error {
 	payload, err := json.Marshal(role)
 
 	request := cli.gorequest
+	err = cli.limiter.Wait(context.Background())
+	if err != nil {
+		return err
+	}
 	resp, data, errs := request.Put(baseUrl+apiPath).Set("Authorization", fmt.Sprintf("Bearer %s", cli.token)).Send(string(payload)).End()
 	if errs != nil {
 		return errors.Wrap(err, "failed modifying role")
@@ -135,7 +150,10 @@ func (cli *Client) DeleteRole(name string) error {
 	apiPath := fmt.Sprintf("/api/v2/access_management/roles/%s", name)
 
 	request := cli.gorequest
-
+	err := cli.limiter.Wait(context.Background())
+	if err != nil {
+		return err
+	}
 	events, _, errs := request.Delete(baseUrl+apiPath).Set("Authorization", "Bearer "+cli.token).End()
 	if errs != nil {
 		return fmt.Errorf("error while calling DELETE on /api/v1/roles/%s: %v", name, events.StatusCode)

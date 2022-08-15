@@ -1,6 +1,7 @@
 package client
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -45,6 +46,10 @@ func (cli *Client) GetFirewallPolicies() (*FirewallPolicyList, error) {
 	request := cli.gorequest
 	request.Set("Authorization", "Bearer "+cli.token)
 	apiPath := fmt.Sprintf("/api/v2/firewall_policies")
+	err = cli.limiter.Wait(context.Background())
+	if err != nil {
+		return nil, err
+	}
 	events, body, errs := request.Clone().Get(cli.url + apiPath).End()
 	if errs != nil {
 		return nil, errors.Wrap(getMergedError(errs), "failed getting all firewall policy")
@@ -65,6 +70,10 @@ func (cli *Client) GetFirewallPolicy(name string) (*FirewallPolicy, error) {
 	var response FirewallPolicy
 	cli.gorequest.Set("Authorization", "Bearer "+cli.token)
 	apiPath := fmt.Sprintf("/api/v2/firewall_policies/%s", name)
+	err = cli.limiter.Wait(context.Background())
+	if err != nil {
+		return nil, err
+	}
 	resp, body, errs := cli.gorequest.Clone().Get(cli.url + apiPath).End()
 	if errs != nil {
 		return nil, errors.Wrap(getMergedError(errs), "failed getting firewall policy")
@@ -105,6 +114,10 @@ func (cli *Client) CreateFirewallPolicy(firewallPolicy FirewallPolicy) error {
 	request := cli.gorequest
 	request.Set("Authorization", "Bearer "+cli.token)
 	apiPath := fmt.Sprintf("/api/v2/firewall_policies")
+	err = cli.limiter.Wait(context.Background())
+	if err != nil {
+		return err
+	}
 	resp, _, errs := request.Clone().Post(cli.url + apiPath).Send(string(payload)).End()
 	if errs != nil {
 		return errors.Wrap(getMergedError(errs), "failed creating firewall policy.")
@@ -135,6 +148,10 @@ func (cli *Client) UpdateFirewallPolicy(firewallPolicy FirewallPolicy) error {
 	request := cli.gorequest
 	request.Set("Authorization", "Bearer "+cli.token)
 	apiPath := fmt.Sprintf("/api/v2/firewall_policies/%s", firewallPolicy.Name)
+	err = cli.limiter.Wait(context.Background())
+	if err != nil {
+		return err
+	}
 	resp, _, errs := request.Clone().Put(cli.url + apiPath).Send(string(payload)).End()
 	if errs != nil {
 		return errors.Wrap(getMergedError(errs), "failed modifying firewall policy")
@@ -161,6 +178,10 @@ func (cli *Client) DeleteFirewallPolicy(name string) error {
 	request := cli.gorequest
 	request.Set("Authorization", "Bearer "+cli.token)
 	apiPath := fmt.Sprintf("/api/v2/firewall_policies/%s", name)
+	err := cli.limiter.Wait(context.Background())
+	if err != nil {
+		return err
+	}
 	resp, _, errs := request.Clone().Delete(cli.url + apiPath).End()
 	if errs != nil {
 		return errors.Wrap(getMergedError(errs), "failed deleting firewall policy")

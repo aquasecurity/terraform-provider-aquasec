@@ -5,12 +5,12 @@ import (
 	"crypto/x509"
 	"encoding/json"
 	"fmt"
-	"log"
-	neturl "net/url"
-
 	"github.com/aquasecurity/terraform-provider-aquasec/consts"
 	"github.com/parnurzeal/gorequest"
 	"golang.org/x/net/http/httpproxy"
+	"golang.org/x/time/rate"
+	"log"
+	neturl "net/url"
 )
 
 // Client - API client
@@ -22,6 +22,7 @@ type Client struct {
 	name       string
 	gorequest  *gorequest.SuperAgent
 	clientType string
+	limiter    *rate.Limiter
 }
 
 const Csp string = "csp"
@@ -50,11 +51,13 @@ func NewClient(url, user, password string, verifyTLS bool, caCertByte []byte) *C
 		user:      user,
 		password:  password,
 		gorequest: gorequest.New().TLSClientConfig(tlsConfig),
+		// we are setting rate limit for 10 connection per second
+		limiter: rate.NewLimiter(10, 3),
 	}
 
 	// Determine if we need to use a proxy
 	uURL, _ := neturl.Parse(c.url)
-	proxy, _:= httpproxy.FromEnvironment().ProxyFunc()(uURL)
+	proxy, _ := httpproxy.FromEnvironment().ProxyFunc()(uURL)
 	if proxy != nil {
 		c.gorequest.Proxy(proxy.String())
 	}

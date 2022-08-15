@@ -1,6 +1,7 @@
 package client
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -47,6 +48,10 @@ func (cli *Client) GetGroup(id int) (*Group, error) {
 		err = fmt.Errorf("GetGroups is Supported only in Auaa SAAS")
 		return nil, err
 	}
+	err = cli.limiter.Wait(context.Background())
+	if err != nil {
+		return nil, err
+	}
 	events, body, errs := request.Get(baseUrl+apiPath).Set("Authorization", fmt.Sprintf("Bearer %s", cli.token)).End()
 
 	if errs != nil {
@@ -86,6 +91,10 @@ func (cli *Client) GetGroups() ([]Group, error) {
 		baseUrl = consts.SaasTokenUrl
 	default:
 		err = fmt.Errorf("GetGroups is Supported only in Auaa SAAS")
+		return nil, err
+	}
+	err = cli.limiter.Wait(context.Background())
+	if err != nil {
 		return nil, err
 	}
 	events, body, errs := request.Get(baseUrl+apiPath).Set("Authorization", fmt.Sprintf("Bearer %s", cli.token)).End()
@@ -130,6 +139,10 @@ func (cli *Client) CreateGroup(group *Group) error {
 	payload["name"] = group.Name
 
 	request := cli.gorequest
+	err = cli.limiter.Wait(context.Background())
+	if err != nil {
+		return err
+	}
 	resp, data, errs := request.Post(baseUrl+apiPath).Set("Authorization", fmt.Sprintf("Bearer %s", cli.token)).Send(payload).End()
 	fmt.Sprintf(data)
 	if errs != nil {
@@ -172,6 +185,10 @@ func (cli *Client) UpdateGroup(group *Group) error {
 	payload["name"] = group.Name
 
 	request := cli.gorequest
+	err = cli.limiter.Wait(context.Background())
+	if err != nil {
+		return err
+	}
 	resp, data, errs := request.Put(baseUrl+apiPath).Set("Authorization", fmt.Sprintf("Bearer %s", cli.token)).Send(payload).End()
 	if errs != nil {
 		return errors.Wrap(err, "failed modifying user")
@@ -203,7 +220,10 @@ func (cli *Client) DeleteGroup(id string) error {
 		return err
 	}
 	request := cli.gorequest
-
+	err = cli.limiter.Wait(context.Background())
+	if err != nil {
+		return err
+	}
 	events, _, errs := request.Delete(baseUrl+apiPath).Set("Authorization", "Bearer "+cli.token).End()
 	if errs != nil {
 		return fmt.Errorf("error while calling DELETE on %s%s, status: %v", baseUrl, apiPath, events.StatusCode)
@@ -240,7 +260,10 @@ func (cli *Client) ManageUserGroups(groupId, userId int, groupAdmin bool, operat
 		payload["action"] = "removing"
 		payload["user_id"] = userId
 	}
-
+	err = cli.limiter.Wait(context.Background())
+	if err != nil {
+		return err
+	}
 	request := cli.gorequest
 	resp, data, errs := request.Put(baseUrl+apiPath).Set("Authorization", fmt.Sprintf("Bearer %s", cli.token)).Send(payload).End()
 	if errs != nil {

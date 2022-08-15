@@ -1,6 +1,7 @@
 package client
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -57,6 +58,10 @@ func (cli *Client) GetApplicationScope(name string) (*ApplicationScope, error) {
 	var response ApplicationScope
 	cli.gorequest.Set("Authorization", "Bearer "+cli.token)
 	apiPath := fmt.Sprintf("/api/v2/access_management/scopes/%s", name)
+	err = cli.limiter.Wait(context.Background())
+	if err != nil {
+		return nil, err
+	}
 	resp, body, errs := cli.gorequest.Clone().Get(cli.url + apiPath).End()
 	if errs != nil {
 		return nil, errors.Wrap(getMergedError(errs), "failed getting Application Scopes")
@@ -97,6 +102,10 @@ func (cli *Client) CreateApplicationScope(applicationscope *ApplicationScope) er
 	request := cli.gorequest
 	request.Set("Authorization", "Bearer "+cli.token)
 	apiPath := fmt.Sprintf("/api/v2/access_management/scopes")
+	err = cli.limiter.Wait(context.Background())
+	if err != nil {
+		return err
+	}
 	resp, _, errs := request.Clone().Post(cli.url + apiPath).Send(string(payload)).End()
 	if errs != nil {
 		return errors.Wrap(getMergedError(errs), "failed creating Application Scope.")
@@ -127,6 +136,10 @@ func (cli *Client) UpdateApplicationScope(applicationscope *ApplicationScope, na
 	request := cli.gorequest
 	request.Set("Authorization", "Bearer "+cli.token)
 	apiPath := fmt.Sprintf("/api/v2/access_management/scopes/%s", name)
+	err = cli.limiter.Wait(context.Background())
+	if err != nil {
+		return err
+	}
 	resp, _, errs := request.Clone().Put(cli.url + apiPath).Send(string(payload)).End()
 	if errs != nil {
 		return errors.Wrap(getMergedError(errs), "failed modifying Application Scope")
@@ -153,6 +166,10 @@ func (cli *Client) DeleteApplicationScope(name string) error {
 	request := cli.gorequest
 	request.Set("Authorization", "Bearer "+cli.token)
 	apiPath := fmt.Sprintf("/api/v2/access_management/scopes/%s", name)
+	err := cli.limiter.Wait(context.Background())
+	if err != nil {
+		return err
+	}
 	resp, _, errs := request.Clone().Delete(cli.url + apiPath).End()
 	if errs != nil {
 		return errors.Wrap(getMergedError(errs), "failed deleting Application Scope")

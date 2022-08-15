@@ -1,6 +1,7 @@
 package client
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -30,6 +31,10 @@ func (cli *Client) GetPermissionsSet(name string) (*PermissionsSet, error) {
 	var response PermissionsSet
 	cli.gorequest.Set("Authorization", "Bearer "+cli.token)
 	apiPath := fmt.Sprintf("/api/v2/access_management/permissions/%s", name)
+	err = cli.limiter.Wait(context.Background())
+	if err != nil {
+		return nil, err
+	}
 	resp, body, errs := cli.gorequest.Clone().Get(cli.url + apiPath).End()
 	if errs != nil {
 		return nil, errors.Wrap(getMergedError(errs), "failed getting PermissionSet")
@@ -68,6 +73,10 @@ func (cli *Client) GetPermissionsSets() ([]PermissionsSet, error) {
 	request := cli.gorequest
 	request.Set("Authorization", "Bearer "+cli.token)
 	apiPath := fmt.Sprintf("/api/v2/access_management/permissions")
+	err = cli.limiter.Wait(context.Background())
+	if err != nil {
+		return nil, err
+	}
 	events, body, errs := request.Clone().Get(cli.url + apiPath).End()
 	if errs != nil {
 		err = fmt.Errorf("error calling %s", apiPath)
@@ -101,6 +110,10 @@ func (cli *Client) CreatePermissionsSet(permissionset *PermissionsSet) error {
 	request := cli.gorequest
 	request.Set("Authorization", "Bearer "+cli.token)
 	apiPath := fmt.Sprintf("/api/v2/access_management/permissions")
+	err = cli.limiter.Wait(context.Background())
+	if err != nil {
+		return err
+	}
 	resp, _, errs := request.Clone().Post(cli.url + apiPath).Send(string(payload)).End()
 	if errs != nil {
 		return errors.Wrap(getMergedError(errs), "failed creating PermissionSet.")
@@ -131,6 +144,10 @@ func (cli *Client) UpdatePermissionsSet(permissionset *PermissionsSet) error {
 	request := cli.gorequest
 	request.Set("Authorization", "Bearer "+cli.token)
 	apiPath := fmt.Sprintf("/api/v2/access_management/permissions/%s", permissionset.Name)
+	err = cli.limiter.Wait(context.Background())
+	if err != nil {
+		return err
+	}
 	resp, _, errs := request.Clone().Put(cli.url + apiPath).Send(string(payload)).End()
 	if errs != nil {
 		return errors.Wrap(getMergedError(errs), "failed modifying PermissionSet")
@@ -157,6 +174,10 @@ func (cli *Client) DeletePermissionsSet(name string) error {
 	request := cli.gorequest
 	request.Set("Authorization", "Bearer "+cli.token)
 	apiPath := fmt.Sprintf("/api/v2/access_management/permissions/%s", name)
+	err := cli.limiter.Wait(context.Background())
+	if err != nil {
+		return err
+	}
 	resp, _, errs := request.Clone().Delete(cli.url + apiPath).End()
 	if errs != nil {
 		return errors.Wrap(getMergedError(errs), "failed deleting PermissionSet")
