@@ -54,7 +54,7 @@ func NewClient(url, user, password string, verifyTLS bool, caCertByte []byte) *C
 
 	// Determine if we need to use a proxy
 	uURL, _ := neturl.Parse(c.url)
-	proxy, _:= httpproxy.FromEnvironment().ProxyFunc()(uURL)
+	proxy, _ := httpproxy.FromEnvironment().ProxyFunc()(uURL)
 	if proxy != nil {
 		c.gorequest.Proxy(proxy.String())
 	}

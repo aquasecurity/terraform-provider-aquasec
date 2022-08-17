@@ -18,7 +18,6 @@ description: |-
 ### Required
 
 - `name` (String) The name of the registry; string, required - this will be treated as the registry's ID, so choose a simple alphanumerical name without special signs and spaces
-- `prefixes` (List of String) List of possible prefixes to image names pulled from the registry
 - `type` (String) Registry type (HUB / V1 / V2 / ENGINE / AWS / GCR).
 
 ### Optional
@@ -30,12 +29,17 @@ description: |-
 - `auto_pull_time` (String) The time of day to start pulling new images from the registry, in the format HH:MM (24-hour clock), defaults to 03:00
 - `last_updated` (String) The last time the registry was modified in UNIX time
 - `password` (String) The password for registry authentication
+- `prefixes` (List of String) List of possible prefixes to image names pulled from the registry
+- `scanner_name` (List of String) List of scanner names
 - `scanner_type` (String) The Scanner type
 - `url` (String) The URL, address or region of the registry
 - `username` (String) The username for registry authentication.
 
 ### Read-Only
 
+- `existsing_scanners` (List of String) List of existing scanner names
 - `id` (String) The ID of this resource.
+- `scanner_name_added` (List of String) List of scanner names to be added
+- `scanner_name_removed` (List of String) List of scanner names to be removed
 
 
