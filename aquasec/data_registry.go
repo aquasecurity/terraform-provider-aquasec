@@ -61,6 +61,14 @@ func dataSourceRegistry() *schema.Resource {
 				Description: "Scanner type",
 				Optional:    true,
 			},
+			"scanner_name": {
+				Type:        schema.TypeList,
+				Description: "List of scanner names",
+				Optional:    true,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+			},
 			"prefixes": {
 				Type:        schema.TypeList,
 				Description: "List of possible prefixes to image names pulled from the registry",
@@ -80,6 +88,7 @@ func dataRegistryRead(d *schema.ResourceData, m interface{}) error {
 	reg, err := ac.GetRegistry(name)
 	if err == nil {
 		prefixes := d.Get("prefixes").([]interface{})
+		scanner_name := d.Get("scanner_name").([]interface{})
 		d.Set("username", reg.Username)
 		d.Set("password", reg.Password)
 		d.Set("name", reg.Name)
@@ -91,6 +100,10 @@ func dataRegistryRead(d *schema.ResourceData, m interface{}) error {
 		d.Set("auto_pull_interval", reg.AutoPullInterval)
 		d.Set("scanner_type", reg.ScannerType)
 		d.Set("prefixes", convertStringArr(prefixes))
+		scannerType := d.Get("scanner_type").(string)
+		if scannerType == "specific" {
+			d.Set("scanner_name", convertStringArr(scanner_name))
+		}
 		d.SetId(name)
 	} else {
 		return err

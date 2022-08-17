@@ -28,7 +28,7 @@ type Registry struct {
 	PullTagPatterns          interface{} `json:"pull_tag_patterns"`
 	PullMaxTags              int         `json:"pull_max_tags"`
 	AutoPullRescan           bool        `json:"auto_pull_rescan"`
-	Prefixes                 interface{} `json:"prefixes"`
+	Prefixes                 []string    `json:"prefixes"`
 	Webhook                  struct {
 		Enabled      bool   `json:"enabled"`
 		URL          string `json:"url"`
@@ -40,6 +40,10 @@ type Registry struct {
 	PullImageTagPattern []interface{} `json:"pull_image_tag_pattern"`
 	AlwaysPullPatterns  []interface{} `json:"always_pull_patterns"`
 	ScannerType         string        `json:"scanner_type"`
+	ScannerName         []string      `json:"scanner_name,omitempty"`
+	ScannerNameAdded    []string      `json:"scanner_name_added,omitempty"`
+	ScannerNameRemoved  []string      `json:"scanner_name_removed,omitempty"`
+	ExistingScanners    []string      `json:"existsing_scanners,omitempty"`
 }
 
 func (cli *Client) GetRegistry(name string) (*Registry, error) {
