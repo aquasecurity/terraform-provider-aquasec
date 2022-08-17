@@ -205,9 +205,6 @@ func getRegistry(name string) string {
 		name = "%s"
 		type = "HUB"
 		scanner_type = "any"
-		prefixes = [
-			""
-		]
 	}
 `, name)
 }
