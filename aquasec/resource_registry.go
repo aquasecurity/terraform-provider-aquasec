@@ -91,30 +91,6 @@ func resourceRegistry() *schema.Resource {
 					Type: schema.TypeString,
 				},
 			},
-			"scanner_name_added": {
-				Type:        schema.TypeList,
-				Description: "List of scanner names to be added",
-				Optional:    true,
-				Elem: &schema.Schema{
-					Type: schema.TypeString,
-				},
-			},
-			"scanner_name_removed": {
-				Type:        schema.TypeList,
-				Description: "List of scanner names to be removed",
-				Optional:    true,
-				Elem: &schema.Schema{
-					Type: schema.TypeString,
-				},
-			},
-			"existsing_scanners": {
-				Type:        schema.TypeList,
-				Description: "List of existing scanner names",
-				Optional:    true,
-				Elem: &schema.Schema{
-					Type: schema.TypeString,
-				},
-			},
 			"prefixes": {
 				Type:        schema.TypeList,
 				Description: "List of possible prefixes to image names pulled from the registry",
