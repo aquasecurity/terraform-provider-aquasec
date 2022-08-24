@@ -1,6 +1,7 @@
 package client
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -91,6 +92,10 @@ func (cli *Client) GetUser(name string) (*FullUser, error) {
 		apiPath = fmt.Sprintf("/v2/users/%s?expand=csproles,group", name)
 	}
 	request := cli.gorequest
+	err = cli.limiter.Wait(context.Background())
+	if err != nil {
+		return nil, err
+	}
 	events, body, errs := request.Get(baseUrl+apiPath).Set("Authorization", fmt.Sprintf("Bearer %s", cli.token)).End()
 
 	if errs != nil {
@@ -134,6 +139,10 @@ func (cli *Client) GetUsers() ([]FullUser, error) {
 		apiPath = "/v2/users?expand=login,csproles,group"
 	}
 	request := cli.gorequest
+	err = cli.limiter.Wait(context.Background())
+	if err != nil {
+		return nil, err
+	}
 	events, body, errs := request.Get(baseUrl+apiPath).Set("Authorization", fmt.Sprintf("Bearer %s", cli.token)).End()
 
 	if errs != nil {
@@ -217,6 +226,10 @@ func (cli *Client) CreateUser(user *FullUser) error {
 	}
 
 	request := cli.gorequest
+	err = cli.limiter.Wait(context.Background())
+	if err != nil {
+		return err
+	}
 	resp, data, errs := request.Post(baseUrl+apiPath).Set("Authorization", fmt.Sprintf("Bearer %s", cli.token)).Send(string(payload)).End()
 	fmt.Sprintf(data)
 	if errs != nil {
@@ -260,6 +273,10 @@ func (cli *Client) UpdateUser(user *FullUser) error {
 	}
 
 	request := cli.gorequest
+	err = cli.limiter.Wait(context.Background())
+	if err != nil {
+		return err
+	}
 	resp, data, errs := request.Put(baseUrl+apiPath).Set("Authorization", fmt.Sprintf("Bearer %s", cli.token)).Send(string(payload)).End()
 	if errs != nil {
 		return errors.Wrap(err, "failed modifying user")
@@ -286,7 +303,10 @@ func (cli *Client) DeleteUser(name string) error {
 		apiPath = fmt.Sprintf("/v2/users/%s", name)
 	}
 	request := cli.gorequest
-
+	err := cli.limiter.Wait(context.Background())
+	if err != nil {
+		return err
+	}
 	events, _, errs := request.Delete(baseUrl+apiPath).Set("Authorization", "Bearer "+cli.token).End()
 	if errs != nil {
 		return fmt.Errorf("error while calling DELETE on /api/v1/users/%s: %v", name, events.StatusCode)
@@ -306,6 +326,10 @@ func (cli *Client) ChangePassword(password NewPassword) error {
 	request := cli.gorequest
 	request.Set("Authorization", "Bearer "+cli.token)
 	apiPath := fmt.Sprintf("/api/v1/users/%s/password", password.Name)
+	err = cli.limiter.Wait(context.Background())
+	if err != nil {
+		return err
+	}
 	resp, _, errs := request.Clone().Put(cli.url + apiPath).Send(string(payload)).End()
 	if errs != nil {
 		return fmt.Errorf("error while calling PUT on /api/v1/users/%s/password: %v", password.Name, resp.StatusCode)

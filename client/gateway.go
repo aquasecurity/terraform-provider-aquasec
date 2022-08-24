@@ -1,6 +1,7 @@
 package client
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -26,6 +27,10 @@ func (cli *Client) GetGateway(name string) (*Gateway, error) {
 	var response Gateway
 	cli.gorequest.Set("Authorization", "Bearer "+cli.token)
 	apiPath := fmt.Sprintf("/api/v1/servers/%s", name)
+	err = cli.limiter.Wait(context.Background())
+	if err != nil {
+		return nil, err
+	}
 	events, body, errs := cli.gorequest.Clone().Get(cli.url + apiPath).End()
 	if errs != nil {
 		log.Println(events.StatusCode)
@@ -53,6 +58,10 @@ func (cli *Client) GetGateways() ([]Gateway, error) {
 	request := cli.gorequest
 	request.Set("Authorization", "Bearer "+cli.token)
 	apiPath := fmt.Sprintf("/api/v1/servers")
+	err = cli.limiter.Wait(context.Background())
+	if err != nil {
+		return nil, err
+	}
 	events, body, errs := request.Clone().Get(cli.url + apiPath).End()
 	if errs != nil {
 		err = fmt.Errorf("error calling %s", apiPath)

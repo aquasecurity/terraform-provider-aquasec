@@ -1,6 +1,7 @@
 package client
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -70,6 +71,10 @@ func (cli *Client) GetServices() (*ServiceList, error) {
 	request := cli.gorequest
 	apiPath := "/api/v1/applications"
 	request.Set("Authorization", "Bearer "+cli.token)
+	err = cli.limiter.Wait(context.Background())
+	if err != nil {
+		return nil, err
+	}
 	events, body, errs := request.Clone().Get(cli.url + apiPath).End()
 	if errs != nil {
 		return nil, errors.Wrap(getMergedError(errs), "failed getting list of Service")
@@ -99,6 +104,10 @@ func (cli *Client) GetService(name string) (*Service, error) {
 	request := cli.gorequest
 	apiPath := fmt.Sprintf("/api/v1/applications/%v", name)
 	request.Set("Authorization", "Bearer "+cli.token)
+	err = cli.limiter.Wait(context.Background())
+	if err != nil {
+		return nil, err
+	}
 	events, body, errs := request.Clone().Get(cli.url + apiPath).End()
 	if errs != nil {
 		return nil, errors.Wrap(getMergedError(errs), "failed getting service with name "+name)
@@ -133,6 +142,10 @@ func (cli *Client) CreateService(service *Service) error {
 	request := cli.gorequest
 	request.Set("Authorization", "Bearer "+cli.token)
 	apiPath := fmt.Sprintf("/api/v1/applications")
+	err = cli.limiter.Wait(context.Background())
+	if err != nil {
+		return err
+	}
 	resp, body, errs := request.Clone().Post(cli.url + apiPath).Send(string(payload)).End()
 	if errs != nil {
 		return errors.Wrap(getMergedError(errs), "failed creating service.")
@@ -158,6 +171,10 @@ func (cli *Client) UpdateService(service *Service) error {
 	request := cli.gorequest
 	request.Set("Authorization", "Bearer "+cli.token)
 	apiPath := fmt.Sprintf("/api/v1/applications/%s", service.Name)
+	err = cli.limiter.Wait(context.Background())
+	if err != nil {
+		return err
+	}
 	resp, _, errs := request.Clone().Put(cli.url + apiPath).Send(string(payload)).End()
 	if errs != nil {
 		return errors.Wrap(getMergedError(errs), "failed modifying service")
@@ -184,6 +201,10 @@ func (cli *Client) DeleteService(name string) error {
 	request := cli.gorequest
 	request.Set("Authorization", "Bearer "+cli.token)
 	apiPath := fmt.Sprintf("/api/v1/applications/%s", name)
+	err := cli.limiter.Wait(context.Background())
+	if err != nil {
+		return err
+	}
 	resp, body, errs := request.Clone().Delete(cli.url + apiPath).End()
 	if errs != nil {
 		return errors.Wrap(getMergedError(errs), "failed deleting service")

@@ -1,6 +1,7 @@
 package client
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -157,6 +158,10 @@ func (cli *Client) GetAssurancePolicy(name string, at string) (*AssurancePolicy,
 		atype = "function"
 	}
 	apiPath := "/api/v2/assurance_policy/" + atype + "/" + name
+	err = cli.limiter.Wait(context.Background())
+	if err != nil {
+		return nil, err
+	}
 	resp, body, errs := cli.gorequest.Clone().Get(cli.url + apiPath).End()
 	if errs != nil {
 		return nil, errors.Wrap(getMergedError(errs), "failed getting  Assurance Policy")
@@ -205,6 +210,10 @@ func (cli *Client) CreateAssurancePolicy(assurancepolicy *AssurancePolicy, at st
 	}
 	request := cli.gorequest
 	request.Set("Authorization", "Bearer "+cli.token)
+	err = cli.limiter.Wait(context.Background())
+	if err != nil {
+		return err
+	}
 	resp, _, errs := request.Clone().Post(cli.url + apiPath).Send(string(payload)).End()
 	if errs != nil {
 		return errors.Wrap(getMergedError(errs), "failed creating  Assurance Policy.")
@@ -243,6 +252,10 @@ func (cli *Client) UpdateAssurancePolicy(assurancepolicy *AssurancePolicy, at st
 	apiPath := "/api/v2/assurance_policy/" + atype + "/" + assurancepolicy.Name
 	request := cli.gorequest
 	request.Set("Authorization", "Bearer "+cli.token)
+	err = cli.limiter.Wait(context.Background())
+	if err != nil {
+		return err
+	}
 	resp, _, errs := request.Clone().Put(cli.url + apiPath).Send(string(payload)).End()
 	if errs != nil {
 		return errors.Wrap(getMergedError(errs), "failed modifying  Assurance Policy")
@@ -277,6 +290,10 @@ func (cli *Client) DeleteAssurancePolicy(name string, at string) error {
 		atype = "function"
 	}
 	apiPath := "/api/v2/assurance_policy/" + atype + "/" + name
+	err := cli.limiter.Wait(context.Background())
+	if err != nil {
+		return err
+	}
 	resp, _, errs := request.Clone().Delete(cli.url + apiPath).End()
 	if errs != nil {
 		return errors.Wrap(getMergedError(errs), "failed deleting  Assurance Policy")

@@ -1,6 +1,7 @@
 package client
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -98,6 +99,10 @@ func (cli *Client) GetEnforcerGroup(name string) (*EnforcerGroup, error) {
 	request := cli.gorequest
 	request.Set("Authorization", "Bearer "+cli.token)
 	apiPath := fmt.Sprintf("/api/v1/hostsbatch/%s", name)
+	err = cli.limiter.Wait(context.Background())
+	if err != nil {
+		return nil, err
+	}
 	events, body, errs := request.Clone().Get(cli.url + apiPath).End()
 
 	if errs != nil {
@@ -125,6 +130,10 @@ func (cli *Client) GetEnforcerGroups() ([]EnforcerGroup, error) {
 	request := cli.gorequest
 	request.Set("Authorization", "Bearer "+cli.token)
 	apiPath := fmt.Sprintf("/api/v1/hostsbatch")
+	err = cli.limiter.Wait(context.Background())
+	if err != nil {
+		return nil, err
+	}
 	events, body, errs := request.Clone().Get(cli.url + apiPath).End()
 	if errs != nil {
 		err = fmt.Errorf("error calling %s", apiPath)
@@ -149,6 +158,10 @@ func (cli *Client) CreateEnforcerGroup(group EnforcerGroup) error {
 	request := cli.gorequest
 	request.Set("Authorization", "Bearer "+cli.token)
 	apiPath := fmt.Sprintf("/api/v1/hostsbatch")
+	err = cli.limiter.Wait(context.Background())
+	if err != nil {
+		return err
+	}
 	resp, data, errs := request.Clone().Post(cli.url + apiPath).Send(string(payload)).End()
 	if errs != nil {
 		return errors.Wrap(err, "failed creating enforcer group")
@@ -172,6 +185,10 @@ func (cli *Client) UpdateEnforcerGroup(group EnforcerGroup) error {
 	request := cli.gorequest
 	request.Set("Authorization", "Bearer "+cli.token)
 	apiPath := "/api/v1/hostsbatch"
+	err = cli.limiter.Wait(context.Background())
+	if err != nil {
+		return err
+	}
 	resp, _, errs := request.Clone().Put(cli.url+apiPath).Send(string(payload)).Param("update_enforcers", "true").End()
 	//resp, _, errs := request.Clone().Put(cli.url + apiPath).Send(string(payload)).End()
 
@@ -189,6 +206,10 @@ func (cli *Client) DeleteEnforcerGroup(name string) error {
 	request := cli.gorequest
 	request.Set("Authorization", "Bearer "+cli.token)
 	apiPath := fmt.Sprintf("/api/v1/hostsbatch/%s?delete_related=true", name)
+	err := cli.limiter.Wait(context.Background())
+	if err != nil {
+		return err
+	}
 	events, _, errs := request.Clone().Delete(cli.url + apiPath).End()
 	if errs != nil {
 		return fmt.Errorf("error while calling DELETE on /api/v1/hostsbatch/%s: %v", name, events.StatusCode)
