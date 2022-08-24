@@ -16,21 +16,20 @@ func TestAquasecRegistryDatasource(t *testing.T) {
 	rtype := "HUB"
 	username := ""
 	password := ""
-	prefix := ""
 	autopull := false
 	resource.Test(t, resource.TestCase{
 		PreCheck:  func() { testAccPreCheck(t) },
 		Providers: testAccProviders,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckAquasecRegistryDataSource(name, url, rtype, username, password, prefix, autopull),
+				Config: testAccCheckAquasecRegistryDataSource(name, url, rtype, username, password, autopull),
 				Check:  testAccCheckAquasecRegistryDataSourceExists("data.aquasec_integration_registries.testregistries"),
 			},
 		},
 	})
 }
 
-func testAccCheckAquasecRegistryDataSource(name, url, rtype, username, password, prefix string, autopull bool) string {
+func testAccCheckAquasecRegistryDataSource(name, url, rtype, username, password string, autopull bool) string {
 	return fmt.Sprintf(`
 	resource "aquasec_integration_registry" "new" {
 		name = "%s"
@@ -38,9 +37,6 @@ func testAccCheckAquasecRegistryDataSource(name, url, rtype, username, password,
 		type = "%s"
 		username = "%s"
 		password = "%s"
-		prefixes = [
-			"%s"
-		]
 		auto_pull = "%v"
 	}
 
@@ -50,7 +46,7 @@ func testAccCheckAquasecRegistryDataSource(name, url, rtype, username, password,
 			aquasec_integration_registry.new
         ]
 	}
-	`, name, url, rtype, username, password, prefix, autopull)
+	`, name, url, rtype, username, password, autopull)
 
 }
 

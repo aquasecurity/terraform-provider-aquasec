@@ -42,7 +42,7 @@ resource "aquasec_user" "IaC" {
 ### Optional
 
 - `email` (String) The user Email.
-- `first_time` (Boolean) If the user must change password at next login.
+- `first_time` (Boolean) If the user must change the password first login. Applicable only one time, Later for user password resets use aqua console.
 - `name` (String) The user name.
 - `password_confirm` (String) Password confirmation.
 

@@ -83,10 +83,19 @@ func resourceRegistry() *schema.Resource {
 				Optional:    true,
 				Computed:    true,
 			},
+			"scanner_name": {
+				Type:        schema.TypeList,
+				Description: "List of scanner names",
+				Optional:    true,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+			},
 			"prefixes": {
 				Type:        schema.TypeList,
 				Description: "List of possible prefixes to image names pulled from the registry",
-				Required:    true,
+				Optional:    true,
+				Computed:    true,
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
 				},
@@ -103,18 +112,30 @@ func resourceRegistryCreate(d *schema.ResourceData, m interface{}) error {
 	}
 	// Get and Convert Roles
 	prefixes := d.Get("prefixes").([]interface{})
+	scanner_name := d.Get("scanner_name").([]interface{})
+
+	old, new := d.GetChange("scanner_name")
+
+	existsing_scanners := old.([]interface{})
+
+	scanner_name_added, scanner_name_removed := scannerNamesListCreate(old.([]interface{}), new.([]interface{}))
+
 	registry := client.Registry{
-		Username:     d.Get("username").(string),
-		Password:     d.Get("password").(string),
-		Name:         d.Get("name").(string),
-		Type:         d.Get("type").(string),
-		URL:          d.Get("url").(string),
-		AutoPull:     d.Get("auto_pull").(bool),
-		AutoPullMax:  d.Get("auto_pull_max").(int),
-		AutoPullTime: d.Get("auto_pull_time").(string),
-		AutoPullInterval: d.Get("auto_pull_interval").(int),
-		ScannerType:  scannerType,
-		Prefixes:     convertStringArr(prefixes),
+		Username:           d.Get("username").(string),
+		Password:           d.Get("password").(string),
+		Name:               d.Get("name").(string),
+		Type:               d.Get("type").(string),
+		URL:                d.Get("url").(string),
+		AutoPull:           d.Get("auto_pull").(bool),
+		AutoPullMax:        d.Get("auto_pull_max").(int),
+		AutoPullTime:       d.Get("auto_pull_time").(string),
+		AutoPullInterval:   d.Get("auto_pull_interval").(int),
+		ScannerType:        scannerType,
+		ScannerName:        convertStringArr(scanner_name),
+		ScannerNameAdded:   convertStringArr(scanner_name_added),
+		ScannerNameRemoved: convertStringArr(scanner_name_removed),
+		ExistingScanners:   convertStringArr(existsing_scanners),
+		Prefixes:           convertStringArr(prefixes),
 	}
 
 	err := ac.CreateRegistry(registry)
@@ -159,6 +180,15 @@ func resourceRegistryRead(d *schema.ResourceData, m interface{}) error {
 	if err = d.Set("username", r.Username); err != nil {
 		return err
 	}
+	if err = d.Set("prefixes", r.Prefixes); err != nil {
+		return err
+	}
+	scannerType := d.Get("scanner_type").(string)
+	if scannerType == "specific" {
+		if err = d.Set("scanner_name", r.ScannerName); err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
@@ -168,20 +198,33 @@ func resourceRegistryUpdate(d *schema.ResourceData, m interface{}) error {
 	if scannerType == "" {
 		scannerType = "any"
 	}
-	if d.HasChanges("name", "username", "password", "url", "type", "auto_pull", "auto_pull_max", "auto_pull_time", "auto_pull_interval", "prefixes") {
+	if d.HasChanges("name", "username", "password", "url", "type", "auto_pull", "auto_pull_max", "auto_pull_time", "auto_pull_interval", "scanner_name", "prefixes") {
+
 		prefixes := d.Get("prefixes").([]interface{})
+		scanner_name := d.Get("scanner_name").([]interface{})
+
+		old, new := d.GetChange("scanner_name")
+
+		existsing_scanners := old.([]interface{})
+
+		scanner_name_added, scanner_name_removed := scannerNamesListCreate(old.([]interface{}), new.([]interface{}))
+
 		registry := client.Registry{
-			Name:         d.Get("name").(string),
-			Type:         d.Get("type").(string),
-			Username:     d.Get("username").(string),
-			Password:     d.Get("password").(string),
-			URL:          d.Get("url").(string),
-			AutoPull:     d.Get("auto_pull").(bool),
-			AutoPullMax:  d.Get("auto_pull_max").(int),
-			AutoPullTime: d.Get("auto_pull_time").(string),
-			AutoPullInterval: d.Get("auto_pull_interval").(int),
-			ScannerType:  scannerType,
-			Prefixes:     convertStringArr(prefixes),
+			Name:               d.Get("name").(string),
+			Type:               d.Get("type").(string),
+			Username:           d.Get("username").(string),
+			Password:           d.Get("password").(string),
+			URL:                d.Get("url").(string),
+			AutoPull:           d.Get("auto_pull").(bool),
+			AutoPullMax:        d.Get("auto_pull_max").(int),
+			AutoPullTime:       d.Get("auto_pull_time").(string),
+			AutoPullInterval:   d.Get("auto_pull_interval").(int),
+			ScannerType:        scannerType,
+			ScannerName:        convertStringArr(scanner_name),
+			ScannerNameAdded:   convertStringArr(scanner_name_added),
+			ScannerNameRemoved: convertStringArr(scanner_name_removed),
+			ExistingScanners:   convertStringArr(existsing_scanners),
+			Prefixes:           convertStringArr(prefixes),
 		}
 
 		err := c.UpdateRegistry(registry)
@@ -211,4 +254,32 @@ func resourceRegistryDelete(d *schema.ResourceData, m interface{}) error {
 	//d.SetId("")
 
 	return err
+}
+
+func scannerNamesListCreate(a, b []interface{}) (d, e []interface{}) {
+	m1 := make(map[interface{}]bool)
+	m2 := make(map[interface{}]bool)
+
+	for _, item := range a {
+		m1[item] = true
+	}
+	for _, item := range b {
+		m2[item] = true
+	}
+
+	for _, item := range b {
+		if _, ok := m1[item]; ok {
+			continue
+		} else {
+			d = append(d, item)
+		}
+	}
+	for _, item := range a {
+		if _, ok := m2[item]; ok {
+			continue
+		} else {
+			e = append(e, item)
+		}
+	}
+	return
 }

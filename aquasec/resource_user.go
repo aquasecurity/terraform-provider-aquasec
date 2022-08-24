@@ -48,7 +48,7 @@ func resourceUser() *schema.Resource {
 			},
 			"first_time": {
 				Type:        schema.TypeBool,
-				Description: "If the user must change password at next login.",
+				Description: "If the user must change the password first login. Applicable only one time, Later for user password resets use aqua console.",
 				Optional:    true,
 			},
 			"is_super": {
@@ -143,7 +143,10 @@ func resourceUserRead(d *schema.ResourceData, m interface{}) error {
 
 	r, err := ac.GetUser(d.Id())
 	if err == nil {
-		d.Set("first_time", r.BasicUser.FirstTime)
+		firstTime, ok := d.GetOk("first_time")
+		if ok && firstTime.(bool) == false {
+			d.Set("first_time", r.BasicUser.FirstTime)
+		}
 		d.Set("is_super", r.BasicUser.IsSuper)
 		d.Set("ui_access", r.BasicUser.UiAccess)
 		d.Set("role", r.BasicUser.Role)
