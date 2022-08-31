@@ -16,6 +16,7 @@ import (
 // Client - API client
 type Client struct {
 	url        string
+	tokenUrl   string
 	user       string
 	password   string
 	token      string
@@ -63,11 +64,25 @@ func NewClient(url, user, password string, verifyTLS bool, caCertByte []byte) *C
 	}
 
 	switch url {
-	case "https://cloud.aquasec.com":
+	case consts.SaasUrl:
 		c.clientType = Saas
+		c.tokenUrl = consts.SaasTokenUrl
 		break
-	case "https://cloud-dev.aquasec.com":
+	case consts.SaasEu1Url:
+		c.clientType = Saas
+		c.tokenUrl = consts.SaasEu1TokenUrl
+		break
+	case consts.SaasAsia1Url:
+		c.clientType = Saas
+		c.tokenUrl = consts.SaasAsia1TokenUrl
+		break
+	case consts.SaasAsia2Url:
+		c.clientType = Saas
+		c.tokenUrl = consts.SaasAsia2TokenUrl
+		break
+	case consts.SaasDevUrl:
 		c.clientType = SaasDev
+		c.tokenUrl = consts.SaasDevTokenUrl
 		break
 	default:
 		c.clientType = Csp
@@ -120,15 +135,13 @@ func (cli *Client) GetCspAuthToken() (string, error) {
 
 // GetUSEAuthToken - Connect to Aqua SaaS solution and return a JWT bearerToken (string)
 func (cli *Client) GetUSEAuthToken() (string, string, error) {
-	tokenUrl := consts.SaasTokenUrl
 	provUrl := consts.SaasProvUrl
 
 	if cli.clientType == "saasDev" {
-		tokenUrl = consts.SaasDevTokenUrl
 		provUrl = consts.SaasDevProvUrl
 	}
 
-	resp, body, errs := cli.gorequest.Post(tokenUrl + "/v2/signin").
+	resp, body, errs := cli.gorequest.Post(cli.tokenUrl + "/v2/signin").
 		Send(`{"email":"` + cli.user + `", "password":"` + cli.password + `"}`).End()
 	if errs != nil {
 		return "", "", getMergedError(errs)
