@@ -62,6 +62,11 @@ func resourceRegistry() *schema.Resource {
 				Description: "Whether to automatically pull images from the registry on creation and daily",
 				Optional:    true,
 			},
+			"auto_pull_rescan": {
+				Type:        schema.TypeBool,
+				Description: "Whether to automatically pull and rescan images from the registry on creation and daily",
+				Optional:    true,
+			},
 			"auto_pull_max": {
 				Type:        schema.TypeInt,
 				Description: "Maximum number of repositories to pull every day, defaults to 100",
@@ -110,6 +115,14 @@ func resourceRegistryCreate(d *schema.ResourceData, m interface{}) error {
 	if scannerType == "" {
 		scannerType = "any"
 	}
+
+	autoPull := d.Get("auto_pull").(bool)
+	autoPullRescan := d.Get("auto_pull_rescan").(bool)
+	autoPullInterval := d.Get("auto_pull_interval").(int)
+	if (autoPull || autoPullRescan) && (autoPullInterval < 1) {
+		autoPullInterval = 1
+	}
+	
 	// Get and Convert Roles
 	prefixes := d.Get("prefixes").([]interface{})
 	scanner_name := d.Get("scanner_name").([]interface{})
@@ -127,9 +140,10 @@ func resourceRegistryCreate(d *schema.ResourceData, m interface{}) error {
 		Type:               d.Get("type").(string),
 		URL:                d.Get("url").(string),
 		AutoPull:           d.Get("auto_pull").(bool),
+		AutoPullRescan:     d.Get("auto_pull_rescan").(bool),
 		AutoPullMax:        d.Get("auto_pull_max").(int),
 		AutoPullTime:       d.Get("auto_pull_time").(string),
-		AutoPullInterval:   d.Get("auto_pull_interval").(int),
+		AutoPullInterval:   autoPullInterval,
 		ScannerType:        scannerType,
 		ScannerName:        convertStringArr(scanner_name),
 		ScannerNameAdded:   convertStringArr(scanner_name_added),
@@ -157,6 +171,12 @@ func resourceRegistryRead(d *schema.ResourceData, m interface{}) error {
 		return err
 	}
 	if err = d.Set("auto_pull", r.AutoPull); err != nil {
+		return err
+	}
+	if err = d.Set("auto_pull_rescan", r.AutoPullRescan); err != nil {
+		return err
+	}
+	if err = d.Set("auto_pull_interval", r.AutoPullInterval); err != nil {
 		return err
 	}
 	if err = d.Set("name", r.Name); err != nil {
@@ -198,7 +218,7 @@ func resourceRegistryUpdate(d *schema.ResourceData, m interface{}) error {
 	if scannerType == "" {
 		scannerType = "any"
 	}
-	if d.HasChanges("name", "username", "password", "url", "type", "auto_pull", "auto_pull_max", "auto_pull_time", "auto_pull_interval", "scanner_name", "prefixes") {
+	if d.HasChanges("name", "username", "password", "url", "type", "auto_pull", "auto_pull_rescan", "auto_pull_max", "auto_pull_time", "auto_pull_interval", "scanner_name", "prefixes") {
 
 		prefixes := d.Get("prefixes").([]interface{})
 		scanner_name := d.Get("scanner_name").([]interface{})
@@ -216,6 +236,7 @@ func resourceRegistryUpdate(d *schema.ResourceData, m interface{}) error {
 			Password:           d.Get("password").(string),
 			URL:                d.Get("url").(string),
 			AutoPull:           d.Get("auto_pull").(bool),
+			AutoPullRescan:     d.Get("auto_pull_rescan").(bool),
 			AutoPullMax:        d.Get("auto_pull_max").(int),
 			AutoPullTime:       d.Get("auto_pull_time").(string),
 			AutoPullInterval:   d.Get("auto_pull_interval").(int),
