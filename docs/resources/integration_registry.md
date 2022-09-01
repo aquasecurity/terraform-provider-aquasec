@@ -26,6 +26,7 @@ description: |-
 - `auto_pull` (Boolean) Whether to automatically pull images from the registry on creation and daily
 - `auto_pull_interval` (Number) The interval in days to start pulling new images from the registry, Defaults to 1
 - `auto_pull_max` (Number) Maximum number of repositories to pull every day, defaults to 100
+- `auto_pull_rescan` (Boolean) Whether to automatically pull and rescan images from the registry on creation and daily
 - `auto_pull_time` (String) The time of day to start pulling new images from the registry, in the format HH:MM (24-hour clock), defaults to 03:00
 - `last_updated` (String) The last time the registry was modified in UNIX time
 - `password` (String) The password for registry authentication
@@ -37,9 +38,6 @@ description: |-
 
 ### Read-Only
 
-- `existsing_scanners` (List of String) List of existing scanner names
 - `id` (String) The ID of this resource.
-- `scanner_name_added` (List of String) List of scanner names to be added
-- `scanner_name_removed` (List of String) List of scanner names to be removed
 
 
