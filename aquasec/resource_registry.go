@@ -90,13 +90,13 @@ func resourceRegistry() *schema.Resource {
 			},
 			"pull_image_age": {
 				Type:        schema.TypeString,
-				Description: "When auto pull image enabled, sets maximum age of auto pulled images (for example for 5 Days the value should be: 5D), Requires image_creation_date_condition = \"image_age\" ",
+				Description: "When auto pull image enabled, sets maximum age of auto pulled images (for example for 5 Days the value should be: 5D), Requires `image_creation_date_condition = \"image_age\"` ",
 				Optional:    true,
 				Computed:    true,
 			},
 			"pull_image_count": {
 				Type:        schema.TypeInt,
-				Description: "When auto pull image enabled, sets maximum age of auto pulled images tags from each repository (based on image creation date) Requires image_creation_date_condition = \"image_count\"",
+				Description: "When auto pull image enabled, sets maximum age of auto pulled images tags from each repository (based on image creation date) Requires `image_creation_date_condition = \"image_count\"`",
 				Optional:    true,
 				Computed:    true,
 			},
