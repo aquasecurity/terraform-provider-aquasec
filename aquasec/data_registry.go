@@ -61,6 +61,24 @@ func dataSourceRegistry() *schema.Resource {
 				Description: "The interval in days to start pulling new images from the registry, Defaults to 1",
 				Computed:    true,
 			},
+			"image_creation_date_condition": {
+				Type:        schema.TypeString,
+				Description: "Additional condition for pulling and rescanning images, Defaults to 'none'",
+				Optional:    true,
+				Computed:    true,
+			},
+			"pull_image_age": {
+				Type:        schema.TypeString,
+				Description: "When auto pull image enabled, sets maximum age of auto pulled images",
+				Optional:    true,
+				Computed:    true,
+			},
+			"pull_image_count": {
+				Type:        schema.TypeInt,
+				Description: "When auto pull image enabled, sets maximum age of auto pulled images tags from each repository.",
+				Optional:    true,
+				Computed:    true,
+			},
 			"scanner_type": {
 				Type:        schema.TypeString,
 				Description: "Scanner type",
