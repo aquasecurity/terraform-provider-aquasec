@@ -32,7 +32,7 @@ git clone https://github.com/aquasecurity/terraform-provider-aquasec.git
 
 cd terraform-provider-aquasec
 
-git checkout v0.8.13
+git checkout v0.8.15
 ```
 
 **Build and install the provider**
@@ -55,7 +55,7 @@ In order to test the provider installed locally, the provider block will have to
 terraform {
   required_providers {
     aquasec = {
-      version = "0.8.13"
+      version = "0.8.15"
       source  = "terraform-provider-aquasec/aquasec/aquasec"
     }
   }
