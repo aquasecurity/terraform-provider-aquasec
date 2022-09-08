@@ -21,6 +21,8 @@ description: |-
 
 ### Optional
 
+- `auto_pull_rescan` (Boolean) Whether to automatically pull and rescan images from the registry on creation and daily
+- `scanner_name` (List of String) List of scanner names
 - `scanner_type` (String) Scanner type
 
 ### Read-Only
