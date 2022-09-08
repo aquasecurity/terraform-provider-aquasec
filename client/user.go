@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/aquasecurity/terraform-provider-aquasec/consts"
 	"github.com/pkg/errors"
 )
 
@@ -82,15 +81,11 @@ func (cli *Client) GetUser(name string) (*FullUser, error) {
 	var response FullUser
 	baseUrl := cli.url
 	apiPath := fmt.Sprintf("/api/v1/users/%s", name)
-	if cli.clientType == Saas {
-		baseUrl = consts.SaasTokenUrl
+	if cli.clientType == Saas || cli.clientType == SaasDev {
+		baseUrl = cli.tokenUrl
 		apiPath = fmt.Sprintf("/v2/users/%s/?expand=csproles,group", name)
 	}
 
-	if cli.clientType == SaasDev {
-		baseUrl = consts.SaasDevTokenUrl
-		apiPath = fmt.Sprintf("/v2/users/%s?expand=csproles,group", name)
-	}
 	request := cli.gorequest
 	err = cli.limiter.Wait(context.Background())
 	if err != nil {
@@ -129,15 +124,11 @@ func (cli *Client) GetUsers() ([]FullUser, error) {
 
 	baseUrl := cli.url
 	apiPath := "/api/v1/users"
-	if cli.clientType == Saas {
-		baseUrl = consts.SaasTokenUrl
+	if cli.clientType == Saas || cli.clientType == SaasDev {
+		baseUrl = cli.tokenUrl
 		apiPath = "/v2/users?expand=login,csproles,group"
 	}
 
-	if cli.clientType == SaasDev {
-		baseUrl = consts.SaasDevTokenUrl
-		apiPath = "/v2/users?expand=login,csproles,group"
-	}
 	request := cli.gorequest
 	err = cli.limiter.Wait(context.Background())
 	if err != nil {
@@ -208,17 +199,12 @@ func (cli *Client) CreateUser(user *FullUser) error {
 	saas := false
 	baseUrl := cli.url
 	apiPath := "/api/v1/users"
-	if cli.clientType == Saas {
+	if cli.clientType == Saas || cli.clientType == SaasDev {
 		saas = true
-		baseUrl = consts.SaasTokenUrl
+		baseUrl = cli.tokenUrl
 		apiPath = "/v2/users"
 	}
 
-	if cli.clientType == SaasDev {
-		saas = true
-		baseUrl = consts.SaasDevTokenUrl
-		apiPath = "/v2/users"
-	}
 	payload, err := json.Marshal(UpdatePayload(saas, false, user))
 
 	if err != nil {
@@ -255,17 +241,12 @@ func (cli *Client) UpdateUser(user *FullUser) error {
 	baseUrl := cli.url
 	apiPath := fmt.Sprintf("/api/v1/users/%s", user.Id)
 
-	if cli.clientType == Saas {
+	if cli.clientType == Saas || cli.clientType == SaasDev {
 		saas = true
-		baseUrl = consts.SaasTokenUrl
+		baseUrl = cli.tokenUrl
 		apiPath = fmt.Sprintf("/v2/users/%s", user.Id)
 	}
 
-	if cli.clientType == SaasDev {
-		saas = true
-		baseUrl = consts.SaasDevTokenUrl
-		apiPath = fmt.Sprintf("/v2/users/%s", user.Id)
-	}
 	payload, err := json.Marshal(UpdatePayload(saas, true, user))
 
 	if err != nil {
@@ -293,15 +274,11 @@ func (cli *Client) DeleteUser(name string) error {
 	baseUrl := cli.url
 	apiPath := fmt.Sprintf("/api/v1/users/%s", name)
 
-	if cli.clientType == Saas {
-		baseUrl = consts.SaasTokenUrl
+	if cli.clientType == Saas || cli.clientType == SaasDev {
+		baseUrl = cli.tokenUrl
 		apiPath = fmt.Sprintf("/v2/users/%s", name)
 	}
 
-	if cli.clientType == SaasDev {
-		baseUrl = consts.SaasDevTokenUrl
-		apiPath = fmt.Sprintf("/v2/users/%s", name)
-	}
 	request := cli.gorequest
 	err := cli.limiter.Wait(context.Background())
 	if err != nil {
