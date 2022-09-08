@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/aquasecurity/terraform-provider-aquasec/client"
+	"github.com/aquasecurity/terraform-provider-aquasec/consts"
 	os "os"
 )
 
@@ -169,9 +170,19 @@ func flattenGatewaysData(gateways *[]client.Gateway) ([]interface{}, string) {
 
 func isSaasEnv() bool {
 	url := os.Getenv("AQUA_URL")
-	if url == "https://cloud.aquasec.com" || url == "https://cloud-dev.aquasec.com" {
+
+	switch url {
+	case consts.SaasUrl:
 		return true
-	} else {
+	case consts.SaasDevUrl:
+		return true
+	case consts.SaasEu1Url:
+		return true
+	case consts.SaasAsia1Url:
+		return true
+	case consts.SaasAsia2Url:
+		return true
+	default:
 		return false
 	}
 }

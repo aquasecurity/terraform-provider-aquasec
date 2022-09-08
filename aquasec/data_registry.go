@@ -41,6 +41,11 @@ func dataSourceRegistry() *schema.Resource {
 				Description: "Whether to automatically pull images from the registry on creation and daily",
 				Computed:    true,
 			},
+			"auto_pull_rescan": {
+				Type:        schema.TypeBool,
+				Description: "Whether to automatically pull and rescan images from the registry on creation and daily",
+				Optional:    true,
+			},
 			"auto_pull_max": {
 				Type:        schema.TypeInt,
 				Description: "Maximum number of repositories to pull every day, defaults to 100",
@@ -54,6 +59,24 @@ func dataSourceRegistry() *schema.Resource {
 			"auto_pull_interval": {
 				Type:        schema.TypeInt,
 				Description: "The interval in days to start pulling new images from the registry, Defaults to 1",
+				Computed:    true,
+			},
+			"image_creation_date_condition": {
+				Type:        schema.TypeString,
+				Description: "Additional condition for pulling and rescanning images, Defaults to 'none'",
+				Optional:    true,
+				Computed:    true,
+			},
+			"pull_image_age": {
+				Type:        schema.TypeString,
+				Description: "When auto pull image enabled, sets maximum age of auto pulled images",
+				Optional:    true,
+				Computed:    true,
+			},
+			"pull_image_count": {
+				Type:        schema.TypeInt,
+				Description: "When auto pull image enabled, sets maximum age of auto pulled images tags from each repository.",
+				Optional:    true,
 				Computed:    true,
 			},
 			"scanner_type": {
@@ -95,6 +118,7 @@ func dataRegistryRead(d *schema.ResourceData, m interface{}) error {
 		d.Set("type", reg.Type)
 		d.Set("url", reg.URL)
 		d.Set("auto_pull", reg.AutoPull)
+		d.Set("auto_pull_rescan", reg.AutoPullRescan)
 		d.Set("auto_pull_max", reg.AutoPullMax)
 		d.Set("auto_pull_time", reg.AutoPullTime)
 		d.Set("auto_pull_interval", reg.AutoPullInterval)
