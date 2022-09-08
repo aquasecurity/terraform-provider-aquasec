@@ -392,7 +392,7 @@ func expandService(d *schema.ResourceData) *client.Service {
 		service.IsRegistered = isRegistered.(bool)
 	}
 
-	applicationScope, ok := d.GetOk("application_scope")
+	applicationScope, ok := d.GetOk("application_scopes")
 	if ok {
 		service.ApplicationScopes = convertStringArr(applicationScope.([]interface{}))
 	}
