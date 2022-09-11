@@ -37,9 +37,6 @@ description: |-
 
 ### Read-Only
 
-- `existsing_scanners` (List of String) List of existing scanner names
 - `id` (String) The ID of this resource.
-- `scanner_name_added` (List of String) List of scanner names to be added
-- `scanner_name_removed` (List of String) List of scanner names to be removed
 
 

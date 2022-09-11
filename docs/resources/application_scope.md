@@ -86,10 +86,10 @@ resource "aquasec_application_scope" "terraformiap" {
 
 Optional:
 
-- `artifacts` (Block Set) (see [below for nested schema](#nestedblock--categories--artifacts))
+- `artifacts` (Block Set) An artifact is an application. It can be an image (for a container, not a CF application); a serverless function; or a Tanzu Application Service (TAS) droplet. (see [below for nested schema](#nestedblock--categories--artifacts))
 - `entity_scope` (Block Set) (see [below for nested schema](#nestedblock--categories--entity_scope))
-- `infrastructure` (Block Set) (see [below for nested schema](#nestedblock--categories--infrastructure))
-- `workloads` (Block Set) (see [below for nested schema](#nestedblock--categories--workloads))
+- `infrastructure` (Block Set) An infrastructure resource is an element of a computing environment on which a workload is orchestrated and run. It can be a host (VM) or a Kubernetes cluster. (see [below for nested schema](#nestedblock--categories--infrastructure))
+- `workloads` (Block Set) A workload is a running container. It can run in a Kubernetes cluster, on a VM (no orchestrator), or under Tanzu Application Service (TAS). (see [below for nested schema](#nestedblock--categories--workloads))
 
 <a id="nestedblock--categories--artifacts"></a>
 ### Nested Schema for `categories.artifacts`
@@ -97,8 +97,8 @@ Optional:
 Optional:
 
 - `cf` (Block Set) (see [below for nested schema](#nestedblock--categories--artifacts--cf))
-- `function` (Block Set) (see [below for nested schema](#nestedblock--categories--artifacts--function))
-- `image` (Block Set) (see [below for nested schema](#nestedblock--categories--artifacts--image))
+- `function` (Block Set) Function name (see [below for nested schema](#nestedblock--categories--artifacts--function))
+- `image` (Block Set) Name of a registry as defined in Aqua (see [below for nested schema](#nestedblock--categories--artifacts--image))
 
 <a id="nestedblock--categories--artifacts--cf"></a>
 ### Nested Schema for `categories.artifacts.cf`

@@ -21,6 +21,7 @@ description: |-
 
 ### Optional
 
+- `scanner_name` (List of String) List of scanner names
 - `scanner_type` (String) Scanner type
 
 ### Read-Only
