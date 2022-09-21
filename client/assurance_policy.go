@@ -89,6 +89,7 @@ type AssurancePolicy struct {
 	MalwareAction                    string              `json:"malware_action"`
 	PartialResultsImageFail          bool                `json:"partial_results_image_fail"`
 	MaximumScoreExcludeNoFix         bool                `json:"maximum_score_exclude_no_fix"`
+	KubenetesControlsNames           []string            `json:"kubernetes_controls_names"`
 }
 
 type Checks struct {
@@ -156,6 +157,8 @@ func (cli *Client) GetAssurancePolicy(name string, at string) (*AssurancePolicy,
 		atype = "image"
 	} else if strings.EqualFold(at, "function") {
 		atype = "function"
+	} else if strings.EqualFold(at, "kubernetes") {
+		atype = "kubernetes"
 	}
 	apiPath := "/api/v2/assurance_policy/" + atype + "/" + name
 	err = cli.limiter.Wait(context.Background())
@@ -203,6 +206,8 @@ func (cli *Client) CreateAssurancePolicy(assurancepolicy *AssurancePolicy, at st
 		atype = "image"
 	} else if strings.EqualFold(at, "function") {
 		atype = "function"
+	} else if strings.EqualFold(at, "kubernetes") {
+		atype = "kubernetes"
 	}
 	apiPath := "/api/v2/assurance_policy/" + atype
 	if err != nil {
@@ -248,6 +253,8 @@ func (cli *Client) UpdateAssurancePolicy(assurancepolicy *AssurancePolicy, at st
 		atype = "image"
 	} else if strings.EqualFold(at, "function") {
 		atype = "function"
+	} else if strings.EqualFold(at, "kubernetes") {
+		atype = "kubernetes"
 	}
 	apiPath := "/api/v2/assurance_policy/" + atype + "/" + assurancepolicy.Name
 	request := cli.gorequest
@@ -288,6 +295,8 @@ func (cli *Client) DeleteAssurancePolicy(name string, at string) error {
 		atype = "image"
 	} else if strings.EqualFold(at, "function") {
 		atype = "function"
+	} else if strings.EqualFold(at, "kubernetes") {
+		atype = "kubernetes"
 	}
 	apiPath := "/api/v2/assurance_policy/" + atype + "/" + name
 	err := cli.limiter.Wait(context.Background())
