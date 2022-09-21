@@ -117,12 +117,6 @@ func resourceKubernetesAssurancePolicy() *schema.Resource {
 				Optional:    true,
 				Default:     true,
 			},
-			"fail_cicd": {
-				Type:        schema.TypeBool,
-				Description: "Indicates if cicd failures will fail the image.",
-				Optional:    true,
-				Default:     true,
-			},
 			"block_failed": {
 				Type:        schema.TypeBool,
 				Description: "Indicates if failed images are blocked.",
@@ -655,7 +649,7 @@ func resourceKubernetesAssurancePolicyUpdate(d *schema.ResourceData, m interface
 	assurance_type := "kubernetes"
 
 	if d.HasChanges("description", "registry", "cvss_severity_enabled", "cvss_severity", "cvss_severity_exclude_no_fix", "custom_severity_enabled", "maximum_score_enabled", "maximum_score", "control_exclude_no_fix", "custom_checks_enabled",
-		"scap_enabled", "cves_black_list_enabled", "packages_black_list_enabled", "packages_white_list_enabled", "only_none_root_users", "trusted_base_images_enabled", "scan_sensitive_data", "audit_on_failure", "fail_cicd", "block_failed",
+		"scap_enabled", "cves_black_list_enabled", "packages_black_list_enabled", "packages_white_list_enabled", "only_none_root_users", "trusted_base_images_enabled", "scan_sensitive_data", "audit_on_failure", "block_failed",
 		"disallow_malware", "monitored_malware_paths", "exceptional_monitored_malware_paths", "blacklisted_licenses_enabled", "blacklisted_licenses", "whitelisted_licenses_enabled", "whitelisted_licenses", "custom_checks", "scap_files", "scope",
 		"registries", "labels", "images", "cves_black_list", "packages_black_list", "packages_white_list", "allowed_images", "trusted_base_images", "read_only", "force_microenforcer", "docker_cis_enabled", "kube_cis_enabled", "enforce_excessive_permissions",
 		"function_integrity_enabled", "dta_enabled", "cves_white_list", "kubernetes_controls_names", "cves_white_list_enabled", "blacklist_permissions_enabled", "blacklist_permissions", "enabled", "enforce", "enforce_after_days", "ignore_recently_published_vln", "ignore_recently_published_vln_period",
@@ -705,7 +699,6 @@ func resourceKubernetesAssurancePolicyRead(d *schema.ResourceData, m interface{}
 		d.Set("trusted_base_images_enabled", iap.TrustedBaseImagesEnabled)
 		d.Set("scan_sensitive_data", iap.ScanSensitiveData)
 		d.Set("audit_on_failure", iap.AuditOnFailure)
-		d.Set("fail_cicd", iap.FailCicd)
 		d.Set("block_failed", iap.BlockFailed)
 		d.Set("disallow_malware", iap.DisallowMalware)
 		d.Set("monitored_malware_paths", iap.MonitoredMalwarePaths)
