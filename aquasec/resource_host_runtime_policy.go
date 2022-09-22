@@ -444,6 +444,48 @@ func resourceHostRuntimePolicy() *schema.Resource {
 				},
 				Optional: true,
 			},
+			"malware_scan_options": {
+				Type:        schema.TypeList,
+				MaxItems:    1,
+				Description: "Configuration for Real-Time Malware Protection.",
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"enabled": {
+							Type:        schema.TypeBool,
+							Description: "Defines if enabled or not",
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+							Optional: true,
+						},
+						"action": {
+							Type:        schema.TypeString,
+							Description: "Set Action, Defaults to 'Alert' when empty",
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+							Optional: true,
+						},
+						"exclude_directories": {
+							Type:        schema.TypeList,
+							Description: "List of registry paths to be excluded from being protected.",
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+							Optional: true,
+						},
+						"exclude_processes": {
+							Type:        schema.TypeList,
+							Description: "List of registry processes to be excluded from being protected.",
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+							Optional: true,
+						},
+					},
+				},
+				Optional: true,
+			},
 		},
 	}
 }
@@ -490,6 +532,7 @@ func resourceHostRuntimePolicyRead(ctx context.Context, d *schema.ResourceData, 
 		d.Set("os_groups_allowed", crp.WhitelistedOsUsers.GroupWhiteList)
 		d.Set("os_users_blocked", crp.BlacklistedOsUsers.UserBlackList)
 		d.Set("os_groups_blocked", crp.BlacklistedOsUsers.GroupBlackList)
+		d.Set("malware_scan_options", flattenMalwareScanOptions(crp.MalwareScanOptions))
 		d.Set("monitor_system_time_changes", crp.SystemIntegrityProtection.AuditSystemtimeChange)
 		d.Set("monitor_windows_services", crp.SystemIntegrityProtection.WindowsServicesMonitoring)
 		d.Set("windows_registry_monitoring", flattenWindowsRegistryMonitoring(crp.RegistryAccessMonitoring))
@@ -531,6 +574,7 @@ func resourceHostRuntimePolicyUpdate(ctx context.Context, d *schema.ResourceData
 		"os_groups_blocked",
 		"package_block",
 		"port_scanning_detection",
+		"malware_scan_options",
 		"monitor_system_time_changes",
 		"monitor_windows_services",
 		"monitor_system_log_integrity",
@@ -795,6 +839,19 @@ func expandHostRuntimePolicy(d *schema.ResourceData) *client.RuntimePolicy {
 		}
 	}
 
+	crp.MalwareScanOptions = client.MalwareScanOptions{}
+	malwareScanOptionsMap, ok := d.GetOk("malware_scan_options")
+	if ok {
+		v := malwareScanOptionsMap.([]interface{})[0].(map[string]interface{})
+
+		crp.MalwareScanOptions = client.MalwareScanOptions{
+			Enabled:            v["enabled"].(bool),
+			Action:             v["action"].(string),
+			ExcludeDirectories: convertStringArr(v["exclude_directories"].([]interface{})),
+			ExcludeProcesses:   convertStringArr(v["exclude_processes"].([]interface{})),
+		}
+	}
+
 	return &crp
 }
 
@@ -852,6 +909,20 @@ func flattenWindowsRegistryMonitoring(monitoring client.RegistryAccessMonitoring
 			"excluded_processes":  monitoring.ExceptionalMonitoredRegistryProcesses,
 			"monitored_users":     monitoring.MonitoredRegistryUsers,
 			"excluded_users":      monitoring.ExceptionalMonitoredRegistryUsers,
+		},
+	}
+}
+
+func flattenMalwareScanOptions(monitoring client.MalwareScanOptions) []map[string]interface{} {
+	if len(monitoring.ExcludeDirectories) == 0 {
+		return []map[string]interface{}{}
+	}
+	return []map[string]interface{}{
+		{
+			"enabled":             monitoring.Enabled,
+			"action":              monitoring.Action,
+			"exclude_directories": monitoring.ExcludeDirectories,
+			"exclude_processes":   monitoring.ExcludeProcesses,
 		},
 	}
 }
