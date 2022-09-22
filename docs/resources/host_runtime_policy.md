@@ -109,6 +109,7 @@ resource "aquasec_host_runtime_policy" "host_runtime_policy" {
 - `enforce` (Boolean) Indicates that policy should effect container execution (not just for audit).
 - `enforce_after_days` (Number) Indicates the number of days after which the runtime policy will be changed to enforce mode.
 - `file_integrity_monitoring` (Block List, Max: 1) Configuration for file integrity monitoring. (see [below for nested schema](#nestedblock--file_integrity_monitoring))
+- `malware_scan_options` (Block List, Max: 1) Configuration for Real-Time Malware Protection. (see [below for nested schema](#nestedblock--malware_scan_options))
 - `monitor_system_log_integrity` (Boolean) If true, system log will be monitored.
 - `monitor_system_time_changes` (Boolean) If true, system time changes will be monitored.
 - `monitor_windows_services` (Boolean) If true, windows service operations will be monitored.
@@ -144,6 +145,17 @@ Optional:
 - `monitored_paths` (List of String) List of paths to be monitored.
 - `monitored_processes` (List of String) List of processes to be monitored.
 - `monitored_users` (List of String) List of users to be monitored.
+
+
+<a id="nestedblock--malware_scan_options"></a>
+### Nested Schema for `malware_scan_options`
+
+Optional:
+
+- `action` (String) Set Action, Defaults to 'Alert' when empty
+- `enabled` (Boolean) Defines if enabled or not
+- `exclude_directories` (List of String) List of registry paths to be excluded from being protected.
+- `exclude_processes` (List of String) List of registry processes to be excluded from being protected.
 
 
 <a id="nestedblock--scope_variables"></a>
