@@ -29,6 +29,10 @@ output "host_runtime_policy_details" {
 
 - `name` (String) Name of the host runtime policy
 
+### Optional
+
+- `malware_scan_options` (Block List, Max: 1) Configuration for Real-Time Malware Protection. (see [below for nested schema](#nestedblock--malware_scan_options))
+
 ### Read-Only
 
 - `application_scopes` (List of String) Indicates the application scope of the service.
@@ -61,6 +65,17 @@ output "host_runtime_policy_details" {
 - `scope_variables` (List of Object) List of scope attributes. (see [below for nested schema](#nestedatt--scope_variables))
 - `windows_registry_monitoring` (List of Object) Configuration for windows registry monitoring. (see [below for nested schema](#nestedatt--windows_registry_monitoring))
 - `windows_registry_protection` (List of Object) Configuration for windows registry protection. (see [below for nested schema](#nestedatt--windows_registry_protection))
+
+<a id="nestedblock--malware_scan_options"></a>
+### Nested Schema for `malware_scan_options`
+
+Optional:
+
+- `action` (String) Set Action, Defaults to 'Alert' when empty
+- `enabled` (Boolean) Defines if enabled or not
+- `exclude_processes` (List of String) List of registry processes to be excluded from being protected.
+- `include_directories` (List of String) List of directories to be protected.
+
 
 <a id="nestedatt--file_integrity_monitoring"></a>
 ### Nested Schema for `file_integrity_monitoring`
