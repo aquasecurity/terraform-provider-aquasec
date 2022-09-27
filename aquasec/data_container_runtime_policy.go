@@ -184,6 +184,48 @@ func dataContainerRuntimePolicy() *schema.Resource {
 				},
 				Computed: true,
 			},
+			"malware_scan_options": {
+				Type:        schema.TypeList,
+				MaxItems:    1,
+				Description: "Configuration for Real-Time Malware Protection.",
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"enabled": {
+							Type:        schema.TypeBool,
+							Description: "Defines if enabled or not",
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+							Optional: true,
+						},
+						"action": {
+							Type:        schema.TypeString,
+							Description: "Set Action, Defaults to 'Alert' when empty",
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+							Optional: true,
+						},
+						"exclude_directories": {
+							Type:        schema.TypeList,
+							Description: "List of registry paths to be excluded from being protected.",
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+							Optional: true,
+						},
+						"exclude_processes": {
+							Type:        schema.TypeList,
+							Description: "List of registry processes to be excluded from being protected.",
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+							Optional: true,
+						},
+					},
+				},
+				Optional: true,
+			},
 			"file_integrity_monitoring": {
 				Type:        schema.TypeList,
 				Description: "Configuration for file integrity monitoring.",
@@ -465,6 +507,7 @@ func dataContainerRuntimePolicyRead(ctx context.Context, d *schema.ResourceData,
 		d.Set("blocked_outbound_ports", crp.PortBlock.BlockOutboundPorts)
 		d.Set("enable_port_scan_detection", crp.EnablePortScanProtection)
 		d.Set("readonly_files_and_directories", crp.ReadonlyFiles.ReadonlyFiles)
+		d.Set("malware_scan_options", flattenMalwareScanOptions(crp.MalwareScanOptions))
 		d.Set("exceptional_readonly_files_and_directories", crp.ReadonlyFiles.ExceptionalReadonlyFiles)
 		d.Set("allowed_registries", crp.AllowedRegistries.AllowedRegistries)
 		d.Set("monitor_system_time_changes", crp.SystemIntegrityProtection.MonitorAuditLogIntegrity)
