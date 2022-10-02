@@ -30,6 +30,7 @@ description: |-
 - `auto_pull_time` (String) The time of day to start pulling new images from the registry, in the format HH:MM (24-hour clock), defaults to 03:00
 - `image_creation_date_condition` (String) Additional condition for pulling and rescanning images, Defaults to 'none'
 - `last_updated` (String) The last time the registry was modified in UNIX time
+- `options` (Block List) (see [below for nested schema](#nestedblock--options))
 - `password` (String) The password for registry authentication
 - `prefixes` (List of String) List of possible prefixes to image names pulled from the registry
 - `pull_image_age` (String) When auto pull image enabled, sets maximum age of auto pulled images (for example for 5 Days the value should be: 5D), Requires `image_creation_date_condition = "image_age"`
@@ -42,5 +43,13 @@ description: |-
 ### Read-Only
 
 - `id` (String) The ID of this resource.
+
+<a id="nestedblock--options"></a>
+### Nested Schema for `options`
+
+Optional:
+
+- `option` (String)
+- `value` (String)
 
 
