@@ -56,7 +56,6 @@ description: |-
 - `enforce_after_days` (Number)
 - `enforce_excessive_permissions` (Boolean)
 - `exceptional_monitored_malware_paths` (List of String)
-- `fail_cicd` (Boolean) Indicates if cicd failures will fail the image.
 - `forbidden_labels` (Block Set) (see [below for nested schema](#nestedblock--forbidden_labels))
 - `forbidden_labels_enabled` (Boolean)
 - `force_microenforcer` (Boolean)

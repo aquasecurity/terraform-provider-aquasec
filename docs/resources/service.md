@@ -20,8 +20,6 @@ description: |-
 - `application_scopes` (List of String) Indicates the application scope of the service.
 - `name` (String) The name of the service. It is recommended not to use whitespace characters in the name.
 - `policies` (List of String) The service's policies; an array of container firewall policy names.
-- `scope_expression` (String) Logical expression of how to compute the dependency of the scope variables.
-- `scope_variables` (Block List, Min: 1) List of scope attributes. (see [below for nested schema](#nestedblock--scope_variables))
 - `target` (String) Type of the workload. container or host.
 
 ### Optional
@@ -30,6 +28,8 @@ description: |-
 - `enforce` (Boolean) Enforcement status of the service.
 - `monitoring` (Boolean) Indicates if monitoring is enabled or not
 - `priority` (Number) Rules priority, must be between 1-100.
+- `scope_expression` (String) Logical expression of how to compute the dependency of the scope variables.
+- `scope_variables` (Block List) List of scope attributes. (see [below for nested schema](#nestedblock--scope_variables))
 
 ### Read-Only
 
@@ -53,7 +53,7 @@ description: |-
 <a id="nestedblock--scope_variables"></a>
 ### Nested Schema for `scope_variables`
 
-Required:
+Optional:
 
 - `attribute` (String) Class of supported scope.
 - `value` (String) Value assigned to the attribute.
