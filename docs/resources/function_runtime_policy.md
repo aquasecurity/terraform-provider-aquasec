@@ -68,4 +68,8 @@ Required:
 - `attribute` (String) Class of supported scope.
 - `value` (String) Value assigned to the attribute.
 
+Optional:
+
+- `name` (String) Name assigned to the attribute.
+
 

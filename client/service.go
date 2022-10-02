@@ -54,6 +54,7 @@ type Scope struct {
 
 type Variable struct {
 	Attribute string `json:"attribute"`
+	Name      string `json:"name"`
 	Value     string `json:"value"`
 }
 

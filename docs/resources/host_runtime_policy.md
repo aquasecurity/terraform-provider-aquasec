@@ -166,6 +166,10 @@ Required:
 - `attribute` (String) Class of supported scope.
 - `value` (String) Value assigned to the attribute.
 
+Optional:
+
+- `name` (String) Name assigned to the attribute.
+
 
 <a id="nestedblock--windows_registry_monitoring"></a>
 ### Nested Schema for `windows_registry_monitoring`

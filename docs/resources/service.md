@@ -56,6 +56,7 @@ description: |-
 Optional:
 
 - `attribute` (String) Class of supported scope.
+- `name` (String) Name assigned to the attribute.
 - `value` (String) Value assigned to the attribute.
 
 

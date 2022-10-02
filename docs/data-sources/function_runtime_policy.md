@@ -54,6 +54,7 @@ output "function_runtime_policy_details" {
 Read-Only:
 
 - `attribute` (String)
+- `name` (String)
 - `value` (String)
 
 

@@ -45,6 +45,11 @@ func dataContainerRuntimePolicy() *schema.Resource {
 							Description: "Class of supported scope.",
 							Computed:    true,
 						},
+						"name": {
+							Type:        schema.TypeString,
+							Description: "Name assigned to the attribute.",
+							Optional:    true,
+						},
 						"value": {
 							Type:        schema.TypeString,
 							Description: "Value assigned to the attribute.",

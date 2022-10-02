@@ -54,6 +54,11 @@ func resourceFunctionRuntimePolicy() *schema.Resource {
 							Description: "Class of supported scope.",
 							Required:    true,
 						},
+						"name": {
+							Type:        schema.TypeString,
+							Description: "Name assigned to the attribute.",
+							Optional:    true,
+						},
 						"value": {
 							Type:        schema.TypeString,
 							Description: "Value assigned to the attribute.",
@@ -260,6 +265,7 @@ func expandFunctionRuntimePolicy(d *schema.ResourceData) *client.RuntimePolicy {
 			ifc := v.(map[string]interface{})
 			variables = append(variables, client.Variable{
 				Attribute: ifc["attribute"].(string),
+				Name:      ifc["name"].(string),
 				Value:     ifc["value"].(string),
 			})
 		}
