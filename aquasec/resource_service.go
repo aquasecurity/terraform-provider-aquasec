@@ -73,7 +73,7 @@ func resourceService() *schema.Resource {
 			"scope_expression": {
 				Type:        schema.TypeString,
 				Description: "Logical expression of how to compute the dependency of the scope variables.",
-				Required:    true,
+				Optional:    true,
 			},
 			"scope_variables": {
 				Type:        schema.TypeList,
@@ -83,16 +83,16 @@ func resourceService() *schema.Resource {
 						"attribute": {
 							Type:        schema.TypeString,
 							Description: "Class of supported scope.",
-							Required:    true,
+							Optional:    true,
 						},
 						"value": {
 							Type:        schema.TypeString,
 							Description: "Value assigned to the attribute.",
-							Required:    true,
+							Optional:    true,
 						},
 					},
 				},
-				Required: true,
+				Optional: true,
 			},
 			"policies": {
 				Type: schema.TypeList,
