@@ -73,7 +73,7 @@ func resourceService() *schema.Resource {
 			"scope_expression": {
 				Type:        schema.TypeString,
 				Description: "Logical expression of how to compute the dependency of the scope variables.",
-				Required:    true,
+				Optional:    true,
 			},
 			"scope_variables": {
 				Type:        schema.TypeList,
@@ -83,16 +83,21 @@ func resourceService() *schema.Resource {
 						"attribute": {
 							Type:        schema.TypeString,
 							Description: "Class of supported scope.",
-							Required:    true,
+							Optional:    true,
+						},
+						"name": {
+							Type:        schema.TypeString,
+							Description: "Name assigned to the attribute.",
+							Optional:    true,
 						},
 						"value": {
 							Type:        schema.TypeString,
 							Description: "Value assigned to the attribute.",
-							Required:    true,
+							Optional:    true,
 						},
 					},
 				},
-				Required: true,
+				Optional: true,
 			},
 			"policies": {
 				Type: schema.TypeList,
@@ -369,6 +374,7 @@ func expandService(d *schema.ResourceData) *client.Service {
 			ifc := v.(map[string]interface{})
 			variables = append(variables, client.Variable{
 				Attribute: ifc["attribute"].(string),
+				Name:      ifc["name"].(string),
 				Value:     ifc["value"].(string),
 			})
 		}
@@ -405,6 +411,7 @@ func flattenScopeVariables(variables []client.Variable) []map[string]interface{}
 	for i := range variables {
 		specs[i] = map[string]interface{}{
 			"attribute": variables[i].Attribute,
+			"name":      variables[i].Name,
 			"value":     variables[i].Value,
 		}
 	}

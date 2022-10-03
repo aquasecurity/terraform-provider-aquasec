@@ -45,6 +45,11 @@ func dataHostRuntimePolicy() *schema.Resource {
 							Description: "Class of supported scope.",
 							Computed:    true,
 						},
+						"name": {
+							Type:        schema.TypeString,
+							Description: "Name assigned to the attribute.",
+							Computed:    true,
+						},
 						"value": {
 							Type:        schema.TypeString,
 							Description: "Value assigned to the attribute.",
