@@ -1,6 +1,19 @@
 resource "aquasec_host_runtime_policy" "host_runtime_policy" {
   name = "host_runtime_policy"
   description = "host_runtime_policy"
+  scope_variables {
+    attribute = "kubernetes.cluster"
+    value = "default"
+  }
+  scope_variables {
+      attribute = "kubernetes.label"
+      name = "app"
+      value = "aqua"
+  }
+
+  application_scopes = [
+    "Global",
+  ]
   enabled = true
   enforce = false
   block_cryptocurrency_mining = true

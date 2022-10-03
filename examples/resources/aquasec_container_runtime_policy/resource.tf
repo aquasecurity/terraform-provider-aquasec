@@ -1,6 +1,20 @@
 resource "aquasec_container_runtime_policy" "container_runtime_policy" {
   name = "container_runtime_policy"
   description = "container_runtime_policy"
+  scope_expression = "v1 || v2"
+  scope_variables {
+    attribute = "kubernetes.cluster"
+    value = "default"
+  }
+  scope_variables {
+      attribute = "kubernetes.label"
+      name = "app"
+      value = "aqua"
+  }
+
+  application_scopes = [
+    "Global",
+  ]
   enabled = true
   enforce = false
   block_container_exec          = true

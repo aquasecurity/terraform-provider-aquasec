@@ -48,7 +48,7 @@ func dataContainerRuntimePolicy() *schema.Resource {
 						"name": {
 							Type:        schema.TypeString,
 							Description: "Name assigned to the attribute.",
-							Optional:    true,
+							Computed:    true,
 						},
 						"value": {
 							Type:        schema.TypeString,
