@@ -82,9 +82,12 @@ func Provider(v string) *schema.Provider {
 			"aquasec_function_assurance_policy":   resourceFunctionAssurancePolicy(),
 			"aquasec_application_scope":           resourceApplicationScope(),
 			"aquasec_permissions_sets":            resourcePermissionSet(),
+			//"aquasec_sso":						 resourceSSO(),
+			"aquasec_role_mapping": resourceRoleMapping(),
 			//saas
-			"aquasec_group":     resourceGroup(),
-			"aquasec_user_saas": resourceUserSaas(),
+			"aquasec_group":             resourceGroup(),
+			"aquasec_user_saas":         resourceUserSaas(),
+			"aquasec_role_mapping_saas": resourceRoleMappingSaas(),
 		},
 		DataSourcesMap: map[string]*schema.Resource{
 			"aquasec_users":                       dataSourceUsers(),
@@ -104,9 +107,13 @@ func Provider(v string) *schema.Provider {
 			"aquasec_gateways":                    dataSourceGateways(),
 			"aquasec_application_scope":           dataApplicationScope(),
 			"aquasec_permissions_sets":            dataSourcePermissionsSets(),
+			"aquasec_integration_state":         dataIntegrationState(),
+			//"aquasec_sso":						 	dataSourceSSO(),
+			"aquasec_roles_mapping": dataSourceRolesMapping(),
 			//saas:
-			"aquasec_groups":     dataSourceGroups(),
-			"aquasec_users_saas": dataSourceUsersSaas(),
+			"aquasec_groups":             dataSourceGroups(),
+			"aquasec_users_saas":         dataSourceUsersSaas(),
+			"aquasec_roles_mapping_saas": dataSourceRolesMappingSaas(),
 		},
 		ConfigureContextFunc: providerConfigure,
 	}
