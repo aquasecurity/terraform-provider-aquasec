@@ -45,13 +45,15 @@ func resourceApplicationScope() *schema.Resource {
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"artifacts": {
-							Type:     schema.TypeSet,
-							Optional: true,
+							Type:        schema.TypeSet,
+							Optional:    true,
+							Description: "An artifact is an application. It can be an image (for a container, not a CF application); a serverless function; or a Tanzu Application Service (TAS) droplet.",
 							Elem: &schema.Resource{
 								Schema: map[string]*schema.Schema{
 									"image": {
-										Type:     schema.TypeSet,
-										Optional: true,
+										Type:        schema.TypeSet,
+										Optional:    true,
+										Description: "Name of a registry as defined in Aqua",
 										Elem: &schema.Resource{
 											Schema: map[string]*schema.Schema{
 												"expression": {
@@ -78,8 +80,9 @@ func resourceApplicationScope() *schema.Resource {
 										},
 									},
 									"function": {
-										Type:     schema.TypeSet,
-										Optional: true,
+										Type:        schema.TypeSet,
+										Optional:    true,
+										Description: "Function name",
 										Elem: &schema.Resource{
 											Schema: map[string]*schema.Schema{
 												"expression": {
@@ -165,8 +168,9 @@ func resourceApplicationScope() *schema.Resource {
 							},
 						},
 						"workloads": {
-							Type:     schema.TypeSet,
-							Optional: true,
+							Type:        schema.TypeSet,
+							Optional:    true,
+							Description: "A workload is a running container. It can run in a Kubernetes cluster, on a VM (no orchestrator), or under Tanzu Application Service (TAS).",
 							Elem: &schema.Resource{
 								Schema: map[string]*schema.Schema{
 									"cf": {
@@ -257,8 +261,9 @@ func resourceApplicationScope() *schema.Resource {
 							},
 						},
 						"infrastructure": {
-							Type:     schema.TypeSet,
-							Optional: true,
+							Type:        schema.TypeSet,
+							Description: "An infrastructure resource is an element of a computing environment on which a workload is orchestrated and run. It can be a host (VM) or a Kubernetes cluster.",
+							Optional:    true,
 							Elem: &schema.Resource{
 								Schema: map[string]*schema.Schema{
 									"kubernetes": {
