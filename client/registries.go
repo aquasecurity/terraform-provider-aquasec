@@ -47,6 +47,12 @@ type Registry struct {
 	ScannerNameAdded    []string      `json:"scanner_name_added,omitempty"`
 	ScannerNameRemoved  []string      `json:"scanner_name_removed,omitempty"`
 	ExistingScanners    []string      `json:"existsing_scanners,omitempty"`
+	Options             []Options     `json:"options"`
+}
+
+type Options struct {
+	Option string `json:"option"`
+	Value  string `json:"value"`
 }
 
 func (cli *Client) GetRegistry(name string) (*Registry, error) {

@@ -114,6 +114,22 @@ func resourceRegistry() *schema.Resource {
 					Type: schema.TypeString,
 				},
 			},
+			"options": {
+				Type:     schema.TypeList,
+				Optional: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"option": {
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"value": {
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+					},
+				},
+			},
 			"prefixes": {
 				Type:        schema.TypeList,
 				Description: "List of possible prefixes to image names pulled from the registry",
@@ -171,6 +187,20 @@ func resourceRegistryCreate(d *schema.ResourceData, m interface{}) error {
 		ScannerNameRemoved:         convertStringArr(scanner_name_removed),
 		ExistingScanners:           convertStringArr(existsing_scanners),
 		Prefixes:                   convertStringArr(prefixes),
+	}
+	options, ok := d.GetOk("options")
+	if ok {
+		options1 := options.([]interface{})
+		optionsarray := make([]client.Options, len(options1))
+		for i, Data := range options1 {
+			options2 := Data.(map[string]interface{})
+			Options := client.Options{
+				Option: options2["option"].(string),
+				Value:  options2["value"].(string),
+			}
+			optionsarray[i] = Options
+		}
+		registry.Options = optionsarray
 	}
 
 	err := ac.CreateRegistry(registry)
@@ -233,6 +263,9 @@ func resourceRegistryRead(d *schema.ResourceData, m interface{}) error {
 	if err = d.Set("prefixes", r.Prefixes); err != nil {
 		return err
 	}
+	if err = d.Set("options", flattenoptions(r.Options)); err != nil {
+		return err
+	}
 	scannerType := d.Get("scanner_type").(string)
 	if scannerType == "specific" {
 		if err = d.Set("scanner_name", r.ScannerName); err != nil {
@@ -255,7 +288,7 @@ func resourceRegistryUpdate(d *schema.ResourceData, m interface{}) error {
 		autoPullInterval = 1
 	}
 
-	if d.HasChanges("name", "username", "password", "url", "type", "auto_pull", "auto_pull_rescan", "auto_pull_max", "auto_pull_time", "auto_pull_interval", "image_creation_date_condition", "scanner_name", "prefixes", "pull_image_count", "pull_image_age") {
+	if d.HasChanges("name", "username", "password", "url", "type", "auto_pull", "auto_pull_rescan", "auto_pull_max", "auto_pull_time", "auto_pull_interval", "image_creation_date_condition", "scanner_name", "prefixes", "pull_image_count", "pull_image_age", "options") {
 
 		prefixes := d.Get("prefixes").([]interface{})
 		scanner_name := d.Get("scanner_name").([]interface{})
@@ -286,6 +319,21 @@ func resourceRegistryUpdate(d *schema.ResourceData, m interface{}) error {
 			ScannerNameRemoved:         convertStringArr(scanner_name_removed),
 			ExistingScanners:           convertStringArr(existsing_scanners),
 			Prefixes:                   convertStringArr(prefixes),
+		}
+
+		options, ok := d.GetOk("options")
+		if ok {
+			options1 := options.([]interface{})
+			optionsarray := make([]client.Options, len(options1))
+			for i, Data := range options1 {
+				options2 := Data.(map[string]interface{})
+				Options := client.Options{
+					Option: options2["option"].(string),
+					Value:  options2["value"].(string),
+				}
+				optionsarray[i] = Options
+			}
+			registry.Options = optionsarray
 		}
 
 		err := c.UpdateRegistry(registry)
@@ -343,4 +391,15 @@ func scannerNamesListCreate(a, b []interface{}) (d, e []interface{}) {
 		}
 	}
 	return
+}
+
+func flattenoptions(options []client.Options) []map[string]interface{} {
+	option := make([]map[string]interface{}, len(options))
+	for i := range options {
+		option[i] = map[string]interface{}{
+			"option": options[i].Option,
+			"value":  options[i].Value,
+		}
+	}
+	return option
 }
