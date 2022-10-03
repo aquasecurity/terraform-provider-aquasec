@@ -144,6 +144,11 @@ resource "aquasec_container_runtime_policy" "test" {
 
   enable_ip_reputation_security = true
 
+  malware_scan_options {
+    enabled = true
+    action = "alert"
+    #exclude_directories = [ "/var/run/" ]
+  }
   blocked_packages = [
     "pkg",
   ]

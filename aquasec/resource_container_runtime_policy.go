@@ -196,6 +196,48 @@ func resourceContainerRuntimePolicy() *schema.Resource {
 				},
 				Optional: true,
 			},
+			"malware_scan_options": {
+				Type:        schema.TypeList,
+				MaxItems:    1,
+				Description: "Configuration for Real-Time Malware Protection.",
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"enabled": {
+							Type:        schema.TypeBool,
+							Description: "Defines if enabled or not",
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+							Optional: true,
+						},
+						"action": {
+							Type:        schema.TypeString,
+							Description: "Set Action, Defaults to 'Alert' when empty",
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+							Optional: true,
+						},
+						"exclude_directories": {
+							Type:        schema.TypeList,
+							Description: "List of registry paths to be excluded from being protected.",
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+							Optional: true,
+						},
+						"exclude_processes": {
+							Type:        schema.TypeList,
+							Description: "List of registry processes to be excluded from being protected.",
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+							Optional: true,
+						},
+					},
+				},
+				Optional: true,
+			},
 			"file_integrity_monitoring": {
 				Type:        schema.TypeList,
 				MaxItems:    1,
@@ -505,6 +547,7 @@ func resourceContainerRuntimePolicyRead(ctx context.Context, d *schema.ResourceD
 		d.Set("allowed_registries", crp.AllowedRegistries.AllowedRegistries)
 		d.Set("monitor_system_time_changes", crp.SystemIntegrityProtection.MonitorAuditLogIntegrity)
 		d.Set("blocked_volumes", crp.RestrictedVolumes.Volumes)
+		d.Set("malware_scan_options", flattenMalwareScanOptions(crp.MalwareScanOptions))
 		d.SetId(crp.Name)
 	} else {
 		return diag.FromErr(err)
@@ -564,6 +607,7 @@ func resourceContainerRuntimePolicyUpdate(ctx context.Context, d *schema.Resourc
 		"exceptional_readonly_files_and_directories",
 		"allowed_registries",
 		"monitor_system_time_changes",
+		"malware_scan_options",
 		"blocked_volumes") {
 
 		crp := expandContainerRuntimePolicy(d)
@@ -912,6 +956,19 @@ func expandContainerRuntimePolicy(d *schema.ResourceData) *client.RuntimePolicy 
 	if ok {
 		crp.RestrictedVolumes.Enabled = true
 		crp.RestrictedVolumes.Volumes = convertStringArr(blockedVol.([]interface{}))
+	}
+
+	crp.MalwareScanOptions = client.MalwareScanOptions{}
+	malwareScanOptionsMap, ok := d.GetOk("malware_scan_options")
+	if ok {
+		v := malwareScanOptionsMap.([]interface{})[0].(map[string]interface{})
+
+		crp.MalwareScanOptions = client.MalwareScanOptions{
+			Enabled:            v["enabled"].(bool),
+			Action:             v["action"].(string),
+			ExcludeDirectories: convertStringArr(v["exclude_directories"].([]interface{})),
+			ExcludeProcesses:   convertStringArr(v["exclude_processes"].([]interface{})),
+		}
 	}
 
 	return &crp

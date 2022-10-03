@@ -169,6 +169,7 @@ resource "aquasec_container_runtime_policy" "container_runtime_policy" {
 - `file_integrity_monitoring` (Block List, Max: 1) Configuration for file integrity monitoring. (see [below for nested schema](#nestedblock--file_integrity_monitoring))
 - `fork_guard_process_limit` (Number) Process limit for the fork guard.
 - `limit_new_privileges` (Boolean) If true, prevents the container from obtaining new privileges at runtime. (only enabled in enforce mode)
+- `malware_scan_options` (Block List, Max: 1) Configuration for Real-Time Malware Protection. (see [below for nested schema](#nestedblock--malware_scan_options))
 - `monitor_system_time_changes` (Boolean) If true, system time changes will be monitored.
 - `readonly_files_and_directories` (List of String) List of files and directories to be restricted as read-only
 - `reverse_shell_allowed_ips` (List of String) List of IPs/ CIDRs that will be allowed
@@ -197,6 +198,17 @@ Optional:
 - `monitored_paths` (List of String) List of paths to be monitored.
 - `monitored_processes` (List of String) List of processes to be monitored.
 - `monitored_users` (List of String) List of users to be monitored.
+
+
+<a id="nestedblock--malware_scan_options"></a>
+### Nested Schema for `malware_scan_options`
+
+Optional:
+
+- `action` (String) Set Action, Defaults to 'Alert' when empty
+- `enabled` (Boolean) Defines if enabled or not
+- `exclude_directories` (List of String) List of registry paths to be excluded from being protected.
+- `exclude_processes` (List of String) List of registry processes to be excluded from being protected.
 
 
 <a id="nestedblock--scope_variables"></a>

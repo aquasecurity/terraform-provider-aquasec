@@ -41,6 +41,11 @@ resource "aquasec_container_runtime_policy" "container_runtime_policy" {
     "test1",
     "test2"
   ]
+  malware_scan_options {
+    enabled = true
+    action = "alert"
+    #exclude_directories = [ "/var/run/" ]
+  }
   file_integrity_monitoring {
     monitor_create      = true
     monitor_read        = true
