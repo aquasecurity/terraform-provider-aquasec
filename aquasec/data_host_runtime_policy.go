@@ -404,6 +404,48 @@ func dataHostRuntimePolicy() *schema.Resource {
 				},
 				Computed: true,
 			},
+			"malware_scan_options": {
+				Type:        schema.TypeList,
+				MaxItems:    1,
+				Description: "Configuration for Real-Time Malware Protection.",
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"enabled": {
+							Type:        schema.TypeBool,
+							Description: "Defines if enabled or not",
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+							Optional: true,
+						},
+						"action": {
+							Type:        schema.TypeString,
+							Description: "Set Action, Defaults to 'Alert' when empty",
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+							Optional: true,
+						},
+						"exclude_processes": {
+							Type:        schema.TypeList,
+							Description: "List of registry processes to be excluded from being protected.",
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+							Optional: true,
+						},
+						"include_directories": {
+							Type:        schema.TypeList,
+							Description: "List of directories to be protected.",
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+							Optional: true,
+						},
+					},
+				},
+				Optional: true,
+			},
 		},
 	}
 }
@@ -440,6 +482,7 @@ func dataHostRuntimePolicyRead(ctx context.Context, d *schema.ResourceData, m in
 		d.Set("os_groups_blocked", crp.BlacklistedOsUsers.GroupBlackList)
 		d.Set("package_block", crp.PackageBlock.PackagesBlackList)
 		d.Set("port_scanning_detection", crp.EnablePortScanProtection)
+		d.Set("malware_scan_options", flattenMalwareScanOptions(crp.MalwareScanOptions))
 		d.Set("monitor_system_time_changes", crp.SystemIntegrityProtection.AuditSystemtimeChange)
 		d.Set("monitor_windows_services", crp.SystemIntegrityProtection.WindowsServicesMonitoring)
 		d.Set("monitor_system_log_integrity", crp.SystemIntegrityProtection.Enabled)

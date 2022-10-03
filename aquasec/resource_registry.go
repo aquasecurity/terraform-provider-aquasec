@@ -62,6 +62,11 @@ func resourceRegistry() *schema.Resource {
 				Description: "Whether to automatically pull images from the registry on creation and daily",
 				Optional:    true,
 			},
+			"auto_pull_rescan": {
+				Type:        schema.TypeBool,
+				Description: "Whether to automatically pull and rescan images from the registry on creation and daily",
+				Optional:    true,
+			},
 			"auto_pull_max": {
 				Type:        schema.TypeInt,
 				Description: "Maximum number of repositories to pull every day, defaults to 100",
@@ -76,6 +81,24 @@ func resourceRegistry() *schema.Resource {
 				Type:        schema.TypeInt,
 				Description: "The interval in days to start pulling new images from the registry, Defaults to 1",
 				Optional:    true,
+			},
+			"image_creation_date_condition": {
+				Type:        schema.TypeString,
+				Description: "Additional condition for pulling and rescanning images, Defaults to 'none'",
+				Optional:    true,
+				Computed:    true,
+			},
+			"pull_image_age": {
+				Type:        schema.TypeString,
+				Description: "When auto pull image enabled, sets maximum age of auto pulled images (for example for 5 Days the value should be: 5D), Requires `image_creation_date_condition = \"image_age\"` ",
+				Optional:    true,
+				Computed:    true,
+			},
+			"pull_image_count": {
+				Type:        schema.TypeInt,
+				Description: "When auto pull image enabled, sets maximum age of auto pulled images tags from each repository (based on image creation date) Requires `image_creation_date_condition = \"image_count\"`",
+				Optional:    true,
+				Computed:    true,
 			},
 			"scanner_type": {
 				Type:        schema.TypeString,
@@ -110,6 +133,14 @@ func resourceRegistryCreate(d *schema.ResourceData, m interface{}) error {
 	if scannerType == "" {
 		scannerType = "any"
 	}
+
+	autoPull := d.Get("auto_pull").(bool)
+	autoPullRescan := d.Get("auto_pull_rescan").(bool)
+	autoPullInterval := d.Get("auto_pull_interval").(int)
+	if (autoPull || autoPullRescan) && (autoPullInterval < 1) {
+		autoPullInterval = 1
+	}
+
 	// Get and Convert Roles
 	prefixes := d.Get("prefixes").([]interface{})
 	scanner_name := d.Get("scanner_name").([]interface{})
@@ -121,21 +152,25 @@ func resourceRegistryCreate(d *schema.ResourceData, m interface{}) error {
 	scanner_name_added, scanner_name_removed := scannerNamesListCreate(old.([]interface{}), new.([]interface{}))
 
 	registry := client.Registry{
-		Username:           d.Get("username").(string),
-		Password:           d.Get("password").(string),
-		Name:               d.Get("name").(string),
-		Type:               d.Get("type").(string),
-		URL:                d.Get("url").(string),
-		AutoPull:           d.Get("auto_pull").(bool),
-		AutoPullMax:        d.Get("auto_pull_max").(int),
-		AutoPullTime:       d.Get("auto_pull_time").(string),
-		AutoPullInterval:   d.Get("auto_pull_interval").(int),
-		ScannerType:        scannerType,
-		ScannerName:        convertStringArr(scanner_name),
-		ScannerNameAdded:   convertStringArr(scanner_name_added),
-		ScannerNameRemoved: convertStringArr(scanner_name_removed),
-		ExistingScanners:   convertStringArr(existsing_scanners),
-		Prefixes:           convertStringArr(prefixes),
+		Username:                   d.Get("username").(string),
+		Password:                   d.Get("password").(string),
+		Name:                       d.Get("name").(string),
+		Type:                       d.Get("type").(string),
+		URL:                        d.Get("url").(string),
+		AutoPull:                   d.Get("auto_pull").(bool),
+		AutoPullRescan:             d.Get("auto_pull_rescan").(bool),
+		AutoPullMax:                d.Get("auto_pull_max").(int),
+		AutoPullTime:               d.Get("auto_pull_time").(string),
+		ImageCreationDateCondition: d.Get("image_creation_date_condition").(string),
+		PullImageAge:               d.Get("pull_image_age").(string),
+		PullImageCount:             d.Get("pull_image_count").(int),
+		AutoPullInterval:           autoPullInterval,
+		ScannerType:                scannerType,
+		ScannerName:                convertStringArr(scanner_name),
+		ScannerNameAdded:           convertStringArr(scanner_name_added),
+		ScannerNameRemoved:         convertStringArr(scanner_name_removed),
+		ExistingScanners:           convertStringArr(existsing_scanners),
+		Prefixes:                   convertStringArr(prefixes),
 	}
 
 	err := ac.CreateRegistry(registry)
@@ -157,6 +192,21 @@ func resourceRegistryRead(d *schema.ResourceData, m interface{}) error {
 		return err
 	}
 	if err = d.Set("auto_pull", r.AutoPull); err != nil {
+		return err
+	}
+	if err = d.Set("auto_pull_rescan", r.AutoPullRescan); err != nil {
+		return err
+	}
+	if err = d.Set("auto_pull_interval", r.AutoPullInterval); err != nil {
+		return err
+	}
+	if err = d.Set("image_creation_date_condition", r.ImageCreationDateCondition); err != nil {
+		return err
+	}
+	if err = d.Set("pull_image_age", r.PullImageAge); err != nil {
+		return err
+	}
+	if err = d.Set("pull_image_count", r.PullImageCount); err != nil {
 		return err
 	}
 	if err = d.Set("name", r.Name); err != nil {
@@ -198,7 +248,14 @@ func resourceRegistryUpdate(d *schema.ResourceData, m interface{}) error {
 	if scannerType == "" {
 		scannerType = "any"
 	}
-	if d.HasChanges("name", "username", "password", "url", "type", "auto_pull", "auto_pull_max", "auto_pull_time", "auto_pull_interval", "scanner_name", "prefixes") {
+	autoPull := d.Get("auto_pull").(bool)
+	autoPullRescan := d.Get("auto_pull_rescan").(bool)
+	autoPullInterval := d.Get("auto_pull_interval").(int)
+	if (autoPull || autoPullRescan) && (autoPullInterval < 1) {
+		autoPullInterval = 1
+	}
+
+	if d.HasChanges("name", "username", "password", "url", "type", "auto_pull", "auto_pull_rescan", "auto_pull_max", "auto_pull_time", "auto_pull_interval", "image_creation_date_condition", "scanner_name", "prefixes", "pull_image_count", "pull_image_age") {
 
 		prefixes := d.Get("prefixes").([]interface{})
 		scanner_name := d.Get("scanner_name").([]interface{})
@@ -210,21 +267,25 @@ func resourceRegistryUpdate(d *schema.ResourceData, m interface{}) error {
 		scanner_name_added, scanner_name_removed := scannerNamesListCreate(old.([]interface{}), new.([]interface{}))
 
 		registry := client.Registry{
-			Name:               d.Get("name").(string),
-			Type:               d.Get("type").(string),
-			Username:           d.Get("username").(string),
-			Password:           d.Get("password").(string),
-			URL:                d.Get("url").(string),
-			AutoPull:           d.Get("auto_pull").(bool),
-			AutoPullMax:        d.Get("auto_pull_max").(int),
-			AutoPullTime:       d.Get("auto_pull_time").(string),
-			AutoPullInterval:   d.Get("auto_pull_interval").(int),
-			ScannerType:        scannerType,
-			ScannerName:        convertStringArr(scanner_name),
-			ScannerNameAdded:   convertStringArr(scanner_name_added),
-			ScannerNameRemoved: convertStringArr(scanner_name_removed),
-			ExistingScanners:   convertStringArr(existsing_scanners),
-			Prefixes:           convertStringArr(prefixes),
+			Name:                       d.Get("name").(string),
+			Type:                       d.Get("type").(string),
+			Username:                   d.Get("username").(string),
+			Password:                   d.Get("password").(string),
+			URL:                        d.Get("url").(string),
+			AutoPull:                   d.Get("auto_pull").(bool),
+			AutoPullRescan:             d.Get("auto_pull_rescan").(bool),
+			AutoPullMax:                d.Get("auto_pull_max").(int),
+			AutoPullTime:               d.Get("auto_pull_time").(string),
+			AutoPullInterval:           autoPullInterval,
+			ImageCreationDateCondition: d.Get("image_creation_date_condition").(string),
+			PullImageAge:               d.Get("pull_image_age").(string),
+			PullImageCount:             d.Get("pull_image_count").(int),
+			ScannerType:                scannerType,
+			ScannerName:                convertStringArr(scanner_name),
+			ScannerNameAdded:           convertStringArr(scanner_name_added),
+			ScannerNameRemoved:         convertStringArr(scanner_name_removed),
+			ExistingScanners:           convertStringArr(existsing_scanners),
+			Prefixes:                   convertStringArr(prefixes),
 		}
 
 		err := c.UpdateRegistry(registry)

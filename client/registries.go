@@ -11,26 +11,27 @@ import (
 
 // Registry defines a registry
 type Registry struct {
-	Name                     string      `json:"name"`
-	Type                     string      `json:"type"` // [HUB, V1/V2, ENGINE, AWS, GCR]
-	DetectedType             int         `json:"detected_type"`
-	Description              string      `json:"description"`
-	Author                   string      `json:"author"`
-	Lastupdate               int         `json:"lastupdate"`
-	URL                      string      `json:"url"`
-	Username                 string      `json:"username"`
-	Password                 string      `json:"password"`
-	AutoPull                 bool        `json:"auto_pull"`
-	AutoPullTime             string      `json:"auto_pull_time"`
-	AutoPullMax              int         `json:"auto_pull_max"`
-	AutoPullInterval         int         `json:"auto_pull_interval"`
-	PullRepoPatterns         interface{} `json:"pull_repo_patterns"`
-	PullRepoPatternsExcluded interface{} `json:"pull_repo_patterns_excluded"`
-	PullTagPatterns          interface{} `json:"pull_tag_patterns"`
-	PullMaxTags              int         `json:"pull_max_tags"`
-	AutoPullRescan           bool        `json:"auto_pull_rescan"`
-	Prefixes                 []string    `json:"prefixes"`
-	Webhook                  struct {
+	Name                       string      `json:"name"`
+	Type                       string      `json:"type"` // [HUB, V1/V2, ENGINE, AWS, GCR]
+	DetectedType               int         `json:"detected_type"`
+	Description                string      `json:"description"`
+	Author                     string      `json:"author"`
+	Lastupdate                 int         `json:"lastupdate"`
+	URL                        string      `json:"url"`
+	Username                   string      `json:"username"`
+	Password                   string      `json:"password"`
+	ImageCreationDateCondition string      `json:"image_creation_date_condition"`
+	AutoPull                   bool        `json:"auto_pull"`
+	AutoPullTime               string      `json:"auto_pull_time"`
+	AutoPullMax                int         `json:"auto_pull_max"`
+	AutoPullInterval           int         `json:"auto_pull_interval"`
+	PullRepoPatterns           interface{} `json:"pull_repo_patterns"`
+	PullRepoPatternsExcluded   interface{} `json:"pull_repo_patterns_excluded"`
+	PullTagPatterns            interface{} `json:"pull_tag_patterns"`
+	PullMaxTags                int         `json:"pull_max_tags"`
+	AutoPullRescan             bool        `json:"auto_pull_rescan"`
+	Prefixes                   []string    `json:"prefixes"`
+	Webhook                    struct {
 		Enabled      bool   `json:"enabled"`
 		URL          string `json:"url"`
 		AuthToken    string `json:"auth_token"`
@@ -38,6 +39,7 @@ type Registry struct {
 	} `json:"webhook"`
 	RegistryScanTimeout int           `json:"registry_scan_timeout"`
 	PullImageAge        string        `json:"pull_image_age"`
+	PullImageCount      int           `json:"pull_image_count"`
 	PullImageTagPattern []interface{} `json:"pull_image_tag_pattern"`
 	AlwaysPullPatterns  []interface{} `json:"always_pull_patterns"`
 	ScannerType         string        `json:"scanner_type"`

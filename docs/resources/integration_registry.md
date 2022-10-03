@@ -26,10 +26,14 @@ description: |-
 - `auto_pull` (Boolean) Whether to automatically pull images from the registry on creation and daily
 - `auto_pull_interval` (Number) The interval in days to start pulling new images from the registry, Defaults to 1
 - `auto_pull_max` (Number) Maximum number of repositories to pull every day, defaults to 100
+- `auto_pull_rescan` (Boolean) Whether to automatically pull and rescan images from the registry on creation and daily
 - `auto_pull_time` (String) The time of day to start pulling new images from the registry, in the format HH:MM (24-hour clock), defaults to 03:00
+- `image_creation_date_condition` (String) Additional condition for pulling and rescanning images, Defaults to 'none'
 - `last_updated` (String) The last time the registry was modified in UNIX time
 - `password` (String) The password for registry authentication
 - `prefixes` (List of String) List of possible prefixes to image names pulled from the registry
+- `pull_image_age` (String) When auto pull image enabled, sets maximum age of auto pulled images (for example for 5 Days the value should be: 5D), Requires `image_creation_date_condition = "image_age"`
+- `pull_image_count` (Number) When auto pull image enabled, sets maximum age of auto pulled images tags from each repository (based on image creation date) Requires `image_creation_date_condition = "image_count"`
 - `scanner_name` (List of String) List of scanner names
 - `scanner_type` (String) The Scanner type
 - `url` (String) The URL, address or region of the registry

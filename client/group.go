@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/aquasecurity/terraform-provider-aquasec/consts"
 	"github.com/parnurzeal/gorequest"
 	"github.com/pkg/errors"
 )
@@ -33,21 +32,14 @@ func (cli *Client) GetGroup(id int) (*Group, error) {
 
 	apiPath := ""
 	baseUrl := ""
-
-	switch cli.clientType {
-	case Csp:
+	if cli.clientType == Saas || cli.clientType == SaasDev {
+		apiPath = fmt.Sprintf("/v2/groups/%v", id)
+		baseUrl = cli.tokenUrl
+	} else {
 		err = fmt.Errorf("GetGroup is Supported only in Auaa SAAS")
 		return nil, err
-	case SaasDev:
-		apiPath = fmt.Sprintf("/v2/groups/%v", id)
-		baseUrl = consts.SaasDevTokenUrl
-	case Saas:
-		apiPath = fmt.Sprintf("/v2/groups/%v", id)
-		baseUrl = consts.SaasTokenUrl
-	default:
-		err = fmt.Errorf("GetGroups is Supported only in Auaa SAAS")
-		return nil, err
 	}
+
 	err = cli.limiter.Wait(context.Background())
 	if err != nil {
 		return nil, err
@@ -79,20 +71,14 @@ func (cli *Client) GetGroups() ([]Group, error) {
 	apiPath := ""
 	baseUrl := ""
 
-	switch cli.clientType {
-	case Csp:
-		err = fmt.Errorf("GetGroups is Supported only in Auaa SAAS")
-		return nil, err
-	case SaasDev:
+	if cli.clientType == Saas || cli.clientType == SaasDev {
 		apiPath = "/v2/groups"
-		baseUrl = consts.SaasDevTokenUrl
-	case Saas:
-		apiPath = "/v2/groups"
-		baseUrl = consts.SaasTokenUrl
-	default:
+		baseUrl = cli.tokenUrl
+	} else {
 		err = fmt.Errorf("GetGroups is Supported only in Auaa SAAS")
 		return nil, err
 	}
+
 	err = cli.limiter.Wait(context.Background())
 	if err != nil {
 		return nil, err
@@ -120,18 +106,11 @@ func (cli *Client) CreateGroup(group *Group) error {
 	apiPath := ""
 	var err error
 
-	switch cli.clientType {
-	case Csp:
-		err = fmt.Errorf("GetGroup is Supported only in Auaa SAAS")
-		return err
-	case SaasDev:
+	if cli.clientType == Saas || cli.clientType == SaasDev {
 		apiPath = "/v2/groups"
-		baseUrl = consts.SaasDevTokenUrl
-	case Saas:
-		apiPath = "/v2/groups"
-		baseUrl = consts.SaasTokenUrl
-	default:
-		err = fmt.Errorf("GetGroups is Supported only in Auaa SAAS")
+		baseUrl = cli.tokenUrl
+	} else {
+		err = fmt.Errorf("CreateGroup is Supported only in Auaa SAAS")
 		return err
 	}
 
@@ -166,18 +145,11 @@ func (cli *Client) UpdateGroup(group *Group) error {
 	apiPath := ""
 	var err error
 
-	switch cli.clientType {
-	case Csp:
-		err = fmt.Errorf("GetGroup is Supported only in Auaa SAAS")
-		return err
-	case SaasDev:
+	if cli.clientType == Saas || cli.clientType == SaasDev {
 		apiPath = fmt.Sprintf("/v2/groups/%v", group.Id)
-		baseUrl = consts.SaasDevTokenUrl
-	case Saas:
-		apiPath = fmt.Sprintf("/v2/groups/%v", group.Id)
-		baseUrl = consts.SaasTokenUrl
-	default:
-		err = fmt.Errorf("GetGroups is Supported only in Auaa SAAS")
+		baseUrl = cli.tokenUrl
+	} else {
+		err = fmt.Errorf("UpdateGroup is Supported only in Auaa SAAS")
 		return err
 	}
 
@@ -205,20 +177,14 @@ func (cli *Client) DeleteGroup(id string) error {
 	apiPath := ""
 	var err error
 
-	switch cli.clientType {
-	case Csp:
-		err = fmt.Errorf("GetGroup is Supported only in Auaa SAAS")
-		return err
-	case SaasDev:
+	if cli.clientType == Saas || cli.clientType == SaasDev {
 		apiPath = fmt.Sprintf("/v2/groups/%v", id)
-		baseUrl = consts.SaasDevTokenUrl
-	case Saas:
-		apiPath = fmt.Sprintf("/v2/groups/%v", id)
-		baseUrl = consts.SaasTokenUrl
-	default:
-		err = fmt.Errorf("GetGroups is Supported only in Auaa SAAS")
+		baseUrl = cli.tokenUrl
+	} else {
+		err = fmt.Errorf("DeleteGroup is Supported only in Auaa SAAS")
 		return err
 	}
+
 	request := cli.gorequest
 	err = cli.limiter.Wait(context.Background())
 	if err != nil {
@@ -236,19 +202,9 @@ func (cli *Client) DeleteGroup(id string) error {
 
 // ManageUserGroups removes a group
 func (cli *Client) ManageUserGroups(groupId, userId int, groupAdmin bool, operation string) error {
-	baseUrl := ""
-	apiPath := ""
+	baseUrl := cli.tokenUrl
+	apiPath := fmt.Sprintf("/v2/groups/%v", groupId)
 	var err error
-
-	if cli.clientType == Saas {
-		baseUrl = consts.SaasTokenUrl
-		apiPath = fmt.Sprintf("/v2/groups/%v", groupId)
-	}
-
-	if cli.clientType == SaasDev {
-		baseUrl = consts.SaasDevTokenUrl
-		apiPath = fmt.Sprintf("/v2/groups/%v", groupId)
-	}
 	payload := make(map[string]interface{})
 
 	switch operation {

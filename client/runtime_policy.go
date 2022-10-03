@@ -190,8 +190,7 @@ type MalwareScanOptions struct {
 	Action             string   `json:"action"`
 	Enabled            bool     `json:"enabled"`
 	ExcludeDirectories []string `json:"exclude_directories"`
-	ExcludeProcess     []string `json:"exclude_process"`
-	IncludeDirectories []string `json:"include_directories"`
+	ExcludeProcesses   []string `json:"exclude_processes"`
 }
 
 type PortBlock struct {

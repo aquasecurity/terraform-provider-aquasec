@@ -182,6 +182,7 @@ func resourceEnforcerGroup() *schema.Resource {
 				Type:        schema.TypeList,
 				Description: "List of Aqua gateway IDs for the Enforcers.",
 				Optional:    true,
+				Computed:    true,
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
 				},
@@ -271,6 +272,7 @@ func resourceEnforcerGroup() *schema.Resource {
 				Type:        schema.TypeString,
 				Description: "Name for the batch install record.",
 				Optional:    true,
+				Computed:    true,
 			},
 			"low_vulns": {
 				Type:        schema.TypeInt,
@@ -434,7 +436,9 @@ func resourceEnforcerGroupRead(d *schema.ResourceData, m interface{}) error {
 	r, err := ac.GetEnforcerGroup(name)
 	if err == nil {
 		d.Set("group_id", r.ID)
-		d.Set("logical_name", r.LogicalName)
+		if d.Get("logical_name") == "" {
+			d.Set("logical_name", r.LogicalName)
+		}
 		d.Set("type", r.Type)
 		d.Set("enforcer_image_name", r.EnforcerImageName)
 		d.Set("description", r.Description)
