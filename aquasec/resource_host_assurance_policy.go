@@ -15,11 +15,14 @@ func resourceHostAssurancePolicy() *schema.Resource {
 			StateContext: schema.ImportStatePassthroughContext,
 		},
 		Schema: map[string]*schema.Schema{
-			"assurance_type": {
-				Type:        schema.TypeString,
-				Description: "What type of assurance policy is described.",
-				Optional:    true,
-			},
+			/*
+				"assurance_type": {
+					Type:        schema.TypeString,
+					Description: "What type of assurance policy is described.",
+					Optional:    true,
+					Computed:    true,
+				},
+			*/
 			"id": {
 				Type:     schema.TypeString,
 				Computed: true,
@@ -630,7 +633,7 @@ func resourceHostAssurancePolicyCreate(d *schema.ResourceData, m interface{}) er
 	name := d.Get("name").(string)
 	assurance_type := "host"
 
-	iap := expandAssurancePolicy(d)
+	iap := expandAssurancePolicy(d, assurance_type)
 	err := ac.CreateAssurancePolicy(iap, assurance_type)
 
 	if err != nil {
@@ -652,7 +655,7 @@ func resourceHostAssurancePolicyUpdate(d *schema.ResourceData, m interface{}) er
 		"function_integrity_enabled", "dta_enabled", "cves_white_list", "cves_white_list_enabled", "blacklist_permissions_enabled", "blacklist_permissions", "enabled", "enforce", "enforce_after_days", "ignore_recently_published_vln", "ignore_recently_published_vln_period",
 		"ignore_risk_resources_enabled", "ignored_risk_resources", "application_scopes", "auto_scan_enabled", "auto_scan_configured", "auto_scan_time", "required_labels_enabled", "required_labels", "forbidden_labels_enabled", "forbidden_labels", "domain_name",
 		"domain", "description", "dta_severity", "scan_nfs_mounts", "malware_action", "partial_results_image_fail", "maximum_score_exclude_no_fix") {
-		iap := expandAssurancePolicy(d)
+		iap := expandAssurancePolicy(d, assurance_type)
 		err := ac.UpdateAssurancePolicy(iap, assurance_type)
 		if err == nil {
 			err1 := resourceHostAssurancePolicyRead(d, m)

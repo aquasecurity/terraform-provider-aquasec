@@ -421,7 +421,7 @@ func dataHostRuntimePolicy() *schema.Resource {
 							Elem: &schema.Schema{
 								Type: schema.TypeString,
 							},
-							Optional: true,
+							Computed: true,
 						},
 						"action": {
 							Type:        schema.TypeString,
@@ -429,7 +429,7 @@ func dataHostRuntimePolicy() *schema.Resource {
 							Elem: &schema.Schema{
 								Type: schema.TypeString,
 							},
-							Optional: true,
+							Computed: true,
 						},
 						"exclude_processes": {
 							Type:        schema.TypeList,
@@ -437,7 +437,7 @@ func dataHostRuntimePolicy() *schema.Resource {
 							Elem: &schema.Schema{
 								Type: schema.TypeString,
 							},
-							Optional: true,
+							Computed: true,
 						},
 						"include_directories": {
 							Type:        schema.TypeList,
@@ -445,7 +445,7 @@ func dataHostRuntimePolicy() *schema.Resource {
 							Elem: &schema.Schema{
 								Type: schema.TypeString,
 							},
-							Optional: true,
+							Computed: true,
 						},
 					},
 				},

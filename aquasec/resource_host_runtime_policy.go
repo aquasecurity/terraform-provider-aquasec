@@ -920,9 +920,9 @@ func flattenWindowsRegistryMonitoring(monitoring client.RegistryAccessMonitoring
 }
 
 func flattenMalwareScanOptions(monitoring client.MalwareScanOptions) []map[string]interface{} {
-	if len(monitoring.ExcludeDirectories) == 0 {
-		return []map[string]interface{}{}
-	}
+	//if len(monitoring.ExcludeDirectories) == 0 {
+	//	return []map[string]interface{}{}
+	//}
 	return []map[string]interface{}{
 		{
 			"enabled":             monitoring.Enabled,

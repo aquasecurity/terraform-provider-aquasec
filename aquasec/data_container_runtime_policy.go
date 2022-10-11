@@ -201,7 +201,7 @@ func dataContainerRuntimePolicy() *schema.Resource {
 							Elem: &schema.Schema{
 								Type: schema.TypeString,
 							},
-							Optional: true,
+							Computed: true,
 						},
 						"action": {
 							Type:        schema.TypeString,
@@ -209,7 +209,7 @@ func dataContainerRuntimePolicy() *schema.Resource {
 							Elem: &schema.Schema{
 								Type: schema.TypeString,
 							},
-							Optional: true,
+							Computed: true,
 						},
 						"exclude_directories": {
 							Type:        schema.TypeList,
@@ -217,7 +217,7 @@ func dataContainerRuntimePolicy() *schema.Resource {
 							Elem: &schema.Schema{
 								Type: schema.TypeString,
 							},
-							Optional: true,
+							Computed: true,
 						},
 						"exclude_processes": {
 							Type:        schema.TypeList,
@@ -225,11 +225,12 @@ func dataContainerRuntimePolicy() *schema.Resource {
 							Elem: &schema.Schema{
 								Type: schema.TypeString,
 							},
-							Optional: true,
+							Computed: true,
 						},
 					},
 				},
 				Optional: true,
+				Computed: true,
 			},
 			"file_integrity_monitoring": {
 				Type:        schema.TypeList,

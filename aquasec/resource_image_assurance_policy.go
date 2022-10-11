@@ -15,11 +15,14 @@ func resourceImageAssurancePolicy() *schema.Resource {
 			StateContext: schema.ImportStatePassthroughContext,
 		},
 		Schema: map[string]*schema.Schema{
-			"assurance_type": {
-				Type:        schema.TypeString,
-				Description: "What type of assurance policy is described.",
-				Optional:    true,
-			},
+			/*
+				"assurance_type": {
+					Type:        schema.TypeString,
+					Description: "What type of assurance policy is described.",
+					Optional:    true,
+					Computed:    true,
+				},
+			*/
 			"id": {
 				Type:     schema.TypeString,
 				Computed: true,
@@ -630,7 +633,7 @@ func resourceImageAssurancePolicyCreate(d *schema.ResourceData, m interface{}) e
 	name := d.Get("name").(string)
 	assurance_type := "image"
 
-	iap := expandAssurancePolicy(d)
+	iap := expandAssurancePolicy(d, assurance_type)
 	err := ac.CreateAssurancePolicy(iap, assurance_type)
 
 	if err != nil {
@@ -653,7 +656,7 @@ func resourceImageAssurancePolicyUpdate(d *schema.ResourceData, m interface{}) e
 		"function_integrity_enabled", "dta_enabled", "cves_white_list", "cves_white_list_enabled", "blacklist_permissions_enabled", "blacklist_permissions", "enabled", "enforce", "enforce_after_days", "ignore_recently_published_vln", "ignore_recently_published_vln_period",
 		"ignore_risk_resources_enabled", "ignored_risk_resources", "application_scopes", "auto_scan_enabled", "auto_scan_configured", "auto_scan_time", "required_labels_enabled", "required_labels", "forbidden_labels_enabled", "forbidden_labels", "domain_name",
 		"domain", "description", "dta_severity", "scan_nfs_mounts", "malware_action", "partial_results_image_fail", "maximum_score_exclude_no_fix") {
-		iap := expandAssurancePolicy(d)
+		iap := expandAssurancePolicy(d, assurance_type)
 		err := ac.UpdateAssurancePolicy(iap, assurance_type)
 		if err == nil {
 			err1 := resourceImageAssurancePolicyRead(d, m)
@@ -862,10 +865,14 @@ func flattenTrustedBaseImages(TrustedBaseImages []client.BaseImagesTrusted) []ma
 	return tbi
 }
 
-func expandAssurancePolicy(d *schema.ResourceData) *client.AssurancePolicy {
+func expandAssurancePolicy(d *schema.ResourceData, a_type string) *client.AssurancePolicy {
 	app_scopes := d.Get("application_scopes").([]interface{})
+	/*assurance_type := d.Get("assurance_type").(string)
+	if assurance_type == "" {
+		assurance_type = a_type
+	}*/
 	iap := client.AssurancePolicy{
-		AssuranceType:     d.Get("assurance_type").(string),
+		AssuranceType:     a_type,
 		Name:              d.Get("name").(string),
 		ApplicationScopes: convertStringArr(app_scopes),
 	}
