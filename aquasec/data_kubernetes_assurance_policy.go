@@ -626,7 +626,7 @@ func dataKubernetesAssurancePolicyRead(d *schema.ResourceData, m interface{}) er
 	iap, err := ac.GetAssurancePolicy(name, assurance_type)
 	if err == nil {
 		d.Set("description", iap.Description)
-		d.Set("assurance_type", iap.AssuranceType)
+		//d.Set("assurance_type", iap.AssuranceType)
 		d.Set("author", iap.Author)
 		d.Set("application_scopes", iap.ApplicationScopes)
 		d.Set("registry", iap.Registry)

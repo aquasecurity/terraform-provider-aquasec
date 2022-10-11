@@ -677,7 +677,7 @@ func resourceFunctionAssurancePolicyRead(d *schema.ResourceData, m interface{}) 
 
 	iap, err := ac.GetAssurancePolicy(d.Id(), assurance_type)
 	if err == nil {
-		d.Set("assurance_type", iap.AssuranceType)
+		//d.Set("assurance_type", iap.AssuranceType)
 		d.Set("name", iap.Name)
 		d.Set("description", iap.Description)
 		d.Set("author", iap.Author)
