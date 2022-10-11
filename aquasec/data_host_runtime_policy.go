@@ -411,7 +411,6 @@ func dataHostRuntimePolicy() *schema.Resource {
 			},
 			"malware_scan_options": {
 				Type:        schema.TypeList,
-				MaxItems:    1,
 				Description: "Configuration for Real-Time Malware Protection.",
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
@@ -449,7 +448,7 @@ func dataHostRuntimePolicy() *schema.Resource {
 						},
 					},
 				},
-				Optional: true,
+				Computed: true,
 			},
 		},
 	}
@@ -487,7 +486,7 @@ func dataHostRuntimePolicyRead(ctx context.Context, d *schema.ResourceData, m in
 		d.Set("os_groups_blocked", crp.BlacklistedOsUsers.GroupBlackList)
 		d.Set("package_block", crp.PackageBlock.PackagesBlackList)
 		d.Set("port_scanning_detection", crp.EnablePortScanProtection)
-		d.Set("malware_scan_options", flattenMalwareScanOptionsData(crp.MalwareScanOptions))
+		d.Set("malware_scan_options", flattenMalwareScanOptions(crp.MalwareScanOptions))
 		d.Set("monitor_system_time_changes", crp.SystemIntegrityProtection.AuditSystemtimeChange)
 		d.Set("monitor_windows_services", crp.SystemIntegrityProtection.WindowsServicesMonitoring)
 		d.Set("monitor_system_log_integrity", crp.SystemIntegrityProtection.Enabled)

@@ -932,14 +932,3 @@ func flattenMalwareScanOptions(monitoring client.MalwareScanOptions) []map[strin
 		},
 	}
 }
-
-func flattenMalwareScanOptionsData(monitoring client.MalwareScanOptions) []map[string]interface{} {
-	return []map[string]interface{}{
-		{
-			"enabled":             monitoring.Enabled,
-			"action":              monitoring.Action,
-			"exclude_directories": monitoring.ExcludeDirectories,
-			"exclude_processes":   monitoring.ExcludeProcesses,
-		},
-	}
-}

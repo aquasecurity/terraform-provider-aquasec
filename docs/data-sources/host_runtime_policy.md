@@ -29,10 +29,6 @@ output "host_runtime_policy_details" {
 
 - `name` (String) Name of the host runtime policy
 
-### Optional
-
-- `malware_scan_options` (Block List, Max: 1) Configuration for Real-Time Malware Protection. (see [below for nested schema](#nestedblock--malware_scan_options))
-
 ### Read-Only
 
 - `application_scopes` (List of String) Indicates the application scope of the service.
@@ -52,6 +48,7 @@ output "host_runtime_policy_details" {
 - `enforce_after_days` (Number) Indicates the number of days after which the runtime policy will be changed to enforce mode.
 - `file_integrity_monitoring` (List of Object) Configuration for file integrity monitoring. (see [below for nested schema](#nestedatt--file_integrity_monitoring))
 - `id` (String) The ID of this resource.
+- `malware_scan_options` (List of Object) Configuration for Real-Time Malware Protection. (see [below for nested schema](#nestedatt--malware_scan_options))
 - `monitor_system_log_integrity` (Boolean) If true, system log will be monitored.
 - `monitor_system_time_changes` (Boolean) If true, system time changes will be monitored.
 - `monitor_windows_services` (Boolean) If true, windows service operations will be monitored.
@@ -65,17 +62,6 @@ output "host_runtime_policy_details" {
 - `scope_variables` (List of Object) List of scope attributes. (see [below for nested schema](#nestedatt--scope_variables))
 - `windows_registry_monitoring` (List of Object) Configuration for windows registry monitoring. (see [below for nested schema](#nestedatt--windows_registry_monitoring))
 - `windows_registry_protection` (List of Object) Configuration for windows registry protection. (see [below for nested schema](#nestedatt--windows_registry_protection))
-
-<a id="nestedblock--malware_scan_options"></a>
-### Nested Schema for `malware_scan_options`
-
-Optional:
-
-- `action` (String) Set Action, Defaults to 'Alert' when empty
-- `enabled` (Boolean) Defines if enabled or not
-- `exclude_processes` (List of String) List of registry processes to be excluded from being protected.
-- `include_directories` (List of String) List of directories to be protected.
-
 
 <a id="nestedatt--file_integrity_monitoring"></a>
 ### Nested Schema for `file_integrity_monitoring`
@@ -93,6 +79,17 @@ Read-Only:
 - `monitored_paths` (List of String)
 - `monitored_processes` (List of String)
 - `monitored_users` (List of String)
+
+
+<a id="nestedatt--malware_scan_options"></a>
+### Nested Schema for `malware_scan_options`
+
+Read-Only:
+
+- `action` (String)
+- `enabled` (Boolean)
+- `exclude_processes` (List of String)
+- `include_directories` (List of String)
 
 
 <a id="nestedatt--scope_variables"></a>

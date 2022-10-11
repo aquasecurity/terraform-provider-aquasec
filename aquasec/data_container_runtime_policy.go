@@ -191,7 +191,6 @@ func dataContainerRuntimePolicy() *schema.Resource {
 			},
 			"malware_scan_options": {
 				Type:        schema.TypeList,
-				MaxItems:    1,
 				Description: "Configuration for Real-Time Malware Protection.",
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
@@ -513,7 +512,7 @@ func dataContainerRuntimePolicyRead(ctx context.Context, d *schema.ResourceData,
 		d.Set("blocked_outbound_ports", crp.PortBlock.BlockOutboundPorts)
 		d.Set("enable_port_scan_detection", crp.EnablePortScanProtection)
 		d.Set("readonly_files_and_directories", crp.ReadonlyFiles.ReadonlyFiles)
-		d.Set("malware_scan_options", flattenMalwareScanOptionsData(crp.MalwareScanOptions))
+		d.Set("malware_scan_options", flattenMalwareScanOptions(crp.MalwareScanOptions))
 		d.Set("exceptional_readonly_files_and_directories", crp.ReadonlyFiles.ExceptionalReadonlyFiles)
 		d.Set("allowed_registries", crp.AllowedRegistries.AllowedRegistries)
 		d.Set("monitor_system_time_changes", crp.SystemIntegrityProtection.MonitorAuditLogIntegrity)

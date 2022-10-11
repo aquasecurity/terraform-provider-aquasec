@@ -19,16 +19,10 @@ description: |-
 
 - `name` (String)
 
-### Optional
-
-- `kubernetes_controls_names` (List of String) List of kubernetes control names
-- `maximum_score_exclude_no_fix` (Boolean) Indicates that policy should ignore cases that do not have a known fix.
-
 ### Read-Only
 
 - `allowed_images` (List of String) List of explicitly allowed images.
 - `application_scopes` (List of String)
-- `assurance_type` (String) What type of assurance policy is described.
 - `audit_on_failure` (Boolean) Indicates if auditing for failures.
 - `author` (String) Name of user account that created the policy.
 - `auto_scan_configured` (Boolean)
@@ -74,10 +68,12 @@ description: |-
 - `ignored_risk_resources` (List of String) List of ignored risk resources.
 - `images` (List of String) List of images.
 - `kube_cis_enabled` (Boolean)
+- `kubernetes_controls_names` (List of String) List of kubernetes control names
 - `labels` (List of String) List of labels.
 - `malware_action` (String)
 - `maximum_score` (Number) Value of allowed maximum score.
 - `maximum_score_enabled` (Boolean) Indicates if exceeding the maximum score is scanned.
+- `maximum_score_exclude_no_fix` (Boolean) Indicates that policy should ignore cases that do not have a known fix.
 - `monitored_malware_paths` (List of String)
 - `only_none_root_users` (Boolean) Indicates if raise a warning for images that should only be run as root.
 - `packages_black_list` (Set of Object) List of backlisted images. (see [below for nested schema](#nestedatt--packages_black_list))

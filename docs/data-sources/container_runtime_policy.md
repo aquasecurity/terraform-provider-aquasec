@@ -29,10 +29,6 @@ output "container_runtime_policy_details" {
 
 - `name` (String) Name of the container runtime policy
 
-### Optional
-
-- `malware_scan_options` (Block List, Max: 1) Configuration for Real-Time Malware Protection. (see [below for nested schema](#nestedblock--malware_scan_options))
-
 ### Read-Only
 
 - `allowed_executables` (List of String) List of executables that are allowed for the user.
@@ -80,23 +76,13 @@ output "container_runtime_policy_details" {
 - `fork_guard_process_limit` (Number) Process limit for the fork guard.
 - `id` (String) The ID of this resource.
 - `limit_new_privileges` (Boolean) If true, prevents the container from obtaining new privileges at runtime. (only enabled in enforce mode)
+- `malware_scan_options` (Block List) Configuration for Real-Time Malware Protection. (see [below for nested schema](#nestedblock--malware_scan_options))
 - `monitor_system_time_changes` (Boolean) If true, system time changes will be monitored.
 - `readonly_files_and_directories` (List of String) List of files and directories to be restricted as read-only
 - `reverse_shell_allowed_ips` (List of String) List of IPs/ CIDRs that will be allowed
 - `reverse_shell_allowed_processes` (List of String) List of processes that will be allowed
 - `scope_expression` (String) Logical expression of how to compute the dependency of the scope variables.
 - `scope_variables` (List of Object) List of scope attributes. (see [below for nested schema](#nestedatt--scope_variables))
-
-<a id="nestedblock--malware_scan_options"></a>
-### Nested Schema for `malware_scan_options`
-
-Optional:
-
-- `action` (String) Set Action, Defaults to 'Alert' when empty
-- `enabled` (Boolean) Defines if enabled or not
-- `exclude_directories` (List of String) List of registry paths to be excluded from being protected.
-- `exclude_processes` (List of String) List of registry processes to be excluded from being protected.
-
 
 <a id="nestedatt--file_integrity_monitoring"></a>
 ### Nested Schema for `file_integrity_monitoring`
@@ -114,6 +100,17 @@ Read-Only:
 - `monitored_paths` (List of String)
 - `monitored_processes` (List of String)
 - `monitored_users` (List of String)
+
+
+<a id="nestedblock--malware_scan_options"></a>
+### Nested Schema for `malware_scan_options`
+
+Read-Only:
+
+- `action` (String) Set Action, Defaults to 'Alert' when empty
+- `enabled` (Boolean) Defines if enabled or not
+- `exclude_directories` (List of String) List of registry paths to be excluded from being protected.
+- `exclude_processes` (List of String) List of registry processes to be excluded from being protected.
 
 
 <a id="nestedatt--scope_variables"></a>
