@@ -76,6 +76,7 @@ jobs:
           go mod download
 
       - name: TF acceptance tests
+        max_attempts: 2
         timeout-minutes: 120
         env:
           TF_ACC: "1"
