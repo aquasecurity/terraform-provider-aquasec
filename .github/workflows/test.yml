@@ -79,7 +79,7 @@ jobs:
         uses: nick-fields/retry@v2
         with:
           max_attempts: 2
-          timeout_minutes: 120
+          timeout_minutes: 15
         env:
           TF_ACC: "1"
           TF_ACC_TERRAFORM_VERSION: ${{ matrix.terraform }}
@@ -88,4 +88,4 @@ jobs:
           AQUA_PASSWORD: ${{ secrets.AQUA_PASSWORD }}
 
         run: |
-          go test -v -cover ./aquasec/ -timeout 120m
+          go test -v -cover ./aquasec/ -timeout 15m
