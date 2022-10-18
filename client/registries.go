@@ -25,6 +25,7 @@ type Registry struct {
 	AutoPullTime               string      `json:"auto_pull_time"`
 	AutoPullMax                int         `json:"auto_pull_max"`
 	AutoPullInterval           int         `json:"auto_pull_interval"`
+	AutoCleanUp                bool        `json:"auto_cleanup"`
 	PullRepoPatterns           interface{} `json:"pull_repo_patterns"`
 	PullRepoPatternsExcluded   interface{} `json:"pull_repo_patterns_excluded"`
 	PullTagPatterns            interface{} `json:"pull_tag_patterns"`

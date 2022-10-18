@@ -82,6 +82,11 @@ func resourceRegistry() *schema.Resource {
 				Description: "The interval in days to start pulling new images from the registry, Defaults to 1",
 				Optional:    true,
 			},
+			"auto_cleanup": {
+				Type:        schema.TypeBool,
+				Description: "Automatically clean up images and repositories which are no longer present in the registry from Aqua console",
+				Optional:    true,
+			},
 			"image_creation_date_condition": {
 				Type:        schema.TypeString,
 				Description: "Additional condition for pulling and rescanning images, Defaults to 'none'",
@@ -177,6 +182,7 @@ func resourceRegistryCreate(d *schema.ResourceData, m interface{}) error {
 		AutoPullRescan:             d.Get("auto_pull_rescan").(bool),
 		AutoPullMax:                d.Get("auto_pull_max").(int),
 		AutoPullTime:               d.Get("auto_pull_time").(string),
+		AutoCleanUp:                d.Get("auto_cleanup").(bool),
 		ImageCreationDateCondition: d.Get("image_creation_date_condition").(string),
 		PullImageAge:               d.Get("pull_image_age").(string),
 		PullImageCount:             d.Get("pull_image_count").(int),
@@ -228,6 +234,9 @@ func resourceRegistryRead(d *schema.ResourceData, m interface{}) error {
 		return err
 	}
 	if err = d.Set("auto_pull_interval", r.AutoPullInterval); err != nil {
+		return err
+	}
+	if err = d.Set("auto_cleanup", r.AutoCleanUp); err != nil {
 		return err
 	}
 	if err = d.Set("image_creation_date_condition", r.ImageCreationDateCondition); err != nil {
@@ -288,7 +297,7 @@ func resourceRegistryUpdate(d *schema.ResourceData, m interface{}) error {
 		autoPullInterval = 1
 	}
 
-	if d.HasChanges("name", "username", "password", "url", "type", "auto_pull", "auto_pull_rescan", "auto_pull_max", "auto_pull_time", "auto_pull_interval", "image_creation_date_condition", "scanner_name", "prefixes", "pull_image_count", "pull_image_age", "options") {
+	if d.HasChanges("name", "username", "password", "url", "type", "auto_pull", "auto_pull_rescan", "auto_pull_max", "auto_pull_time", "auto_pull_interval", "auto_cleanup", "image_creation_date_condition", "scanner_name", "prefixes", "pull_image_count", "pull_image_age", "options") {
 
 		prefixes := d.Get("prefixes").([]interface{})
 		scanner_name := d.Get("scanner_name").([]interface{})
@@ -309,6 +318,7 @@ func resourceRegistryUpdate(d *schema.ResourceData, m interface{}) error {
 			AutoPullRescan:             d.Get("auto_pull_rescan").(bool),
 			AutoPullMax:                d.Get("auto_pull_max").(int),
 			AutoPullTime:               d.Get("auto_pull_time").(string),
+			AutoCleanUp:                d.Get("auto_cleanup").(bool),
 			AutoPullInterval:           autoPullInterval,
 			ImageCreationDateCondition: d.Get("image_creation_date_condition").(string),
 			PullImageAge:               d.Get("pull_image_age").(string),

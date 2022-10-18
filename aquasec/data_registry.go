@@ -61,6 +61,11 @@ func dataSourceRegistry() *schema.Resource {
 				Description: "The interval in days to start pulling new images from the registry, Defaults to 1",
 				Computed:    true,
 			},
+			"auto_cleanup": {
+				Type:        schema.TypeBool,
+				Description: "Automatically clean up images and repositories which are no longer present in the registry from Aqua console",
+				Computed:    true,
+			},
 			"image_creation_date_condition": {
 				Type:        schema.TypeString,
 				Description: "Additional condition for pulling and rescanning images, Defaults to 'none'",
@@ -122,6 +127,7 @@ func dataRegistryRead(d *schema.ResourceData, m interface{}) error {
 		d.Set("auto_pull_max", reg.AutoPullMax)
 		d.Set("auto_pull_time", reg.AutoPullTime)
 		d.Set("auto_pull_interval", reg.AutoPullInterval)
+		d.Set("auto_cleanup", reg.AutoCleanUp)
 		d.Set("scanner_type", reg.ScannerType)
 		d.Set("prefixes", convertStringArr(prefixes))
 		scannerType := d.Get("scanner_type").(string)
