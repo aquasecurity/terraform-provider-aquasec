@@ -80,12 +80,10 @@ jobs:
         with:
           max_attempts: 2
           timeout_minutes: 15
+          command: go test -v -cover ./aquasec/ -timeout 15m
         env:
           TF_ACC: "1"
           TF_ACC_TERRAFORM_VERSION: ${{ matrix.terraform }}
           AQUA_URL: ${{ secrets.AQUA_URL }}
           AQUA_USER: ${{ secrets.AQUA_USER }}
           AQUA_PASSWORD: ${{ secrets.AQUA_PASSWORD }}
-
-        command: |
-          go test -v -cover ./aquasec/ -timeout 15m
