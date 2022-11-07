@@ -17,7 +17,7 @@ func TestAquasecPermissionSetManagement(t *testing.T) {
 	author := "system"
 	ui_access := true
 	is_super := false
-	actions := "risks.vulnerabilities.read"
+	actions := "risks.vulnerabilities.read,images.read"
 
 	if isSaasEnv() {
 		author = os.Getenv("AQUA_USER")
