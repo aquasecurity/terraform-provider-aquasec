@@ -32,13 +32,13 @@ output "scopes" {
 ### Optional
 
 - `categories` (Block Set) Artifacts (of applications) / Workloads (containers) / Infrastructure (elements). (see [below for nested schema](#nestedblock--categories))
-- `description` (String) Description of the application scope.
-- `owner_email` (String) Name of an application scope.
 
 ### Read-Only
 
 - `author` (String) Username of the account that created the service.
+- `description` (String) Description of the application scope.
 - `id` (String) The ID of this resource.
+- `owner_email` (String) Name of an application scope.
 
 <a id="nestedblock--categories"></a>
 ### Nested Schema for `categories`

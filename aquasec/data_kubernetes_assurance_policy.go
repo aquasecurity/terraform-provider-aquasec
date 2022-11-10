@@ -9,11 +9,13 @@ func dataKubernetesAssurancePolicy() *schema.Resource {
 	return &schema.Resource{
 		Read: dataKubernetesAssurancePolicyRead,
 		Schema: map[string]*schema.Schema{
-			"assurance_type": {
-				Type:        schema.TypeString,
-				Description: "What type of assurance policy is described.",
-				Computed:    true,
-			},
+			/*
+				"assurance_type": {
+					Type:        schema.TypeString,
+					Description: "What type of assurance policy is described.",
+					Computed:    true,
+				},
+			*/
 			"id": {
 				Type:     schema.TypeString,
 				Computed: true,
@@ -82,7 +84,7 @@ func dataKubernetesAssurancePolicy() *schema.Resource {
 			"kubernetes_controls_names": {
 				Type:        schema.TypeList,
 				Description: "List of kubernetes control names",
-				Optional:    true,
+				Computed:    true,
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
 				},
@@ -610,7 +612,7 @@ func dataKubernetesAssurancePolicy() *schema.Resource {
 			"maximum_score_exclude_no_fix": {
 				Type:        schema.TypeBool,
 				Description: "Indicates that policy should ignore cases that do not have a known fix.",
-				Optional:    true,
+				Computed:    true,
 			},
 		},
 	}
@@ -624,7 +626,7 @@ func dataKubernetesAssurancePolicyRead(d *schema.ResourceData, m interface{}) er
 	iap, err := ac.GetAssurancePolicy(name, assurance_type)
 	if err == nil {
 		d.Set("description", iap.Description)
-		d.Set("assurance_type", iap.AssuranceType)
+		//d.Set("assurance_type", iap.AssuranceType)
 		d.Set("author", iap.Author)
 		d.Set("application_scopes", iap.ApplicationScopes)
 		d.Set("registry", iap.Registry)

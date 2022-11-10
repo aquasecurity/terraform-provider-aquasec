@@ -23,7 +23,6 @@ description: |-
 ### Optional
 
 - `allowed_images` (List of String) List of explicitly allowed images.
-- `assurance_type` (String) What type of assurance policy is described.
 - `audit_on_failure` (Boolean) Indicates if auditing for failures.
 - `auto_scan_configured` (Boolean)
 - `auto_scan_enabled` (Boolean)

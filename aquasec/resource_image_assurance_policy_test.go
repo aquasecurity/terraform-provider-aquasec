@@ -11,7 +11,6 @@ import (
 
 func TestAquasecImageAssurancePolicy(t *testing.T) {
 	t.Parallel()
-	assurance_type := "image"
 	description := "Created using Terraform"
 	name := acctest.RandomWithPrefix("terraform-test")
 	application_scopes := "Global"
@@ -21,7 +20,7 @@ func TestAquasecImageAssurancePolicy(t *testing.T) {
 		CheckDestroy: CheckDestroy("aquasec_image_assurance_policy.terraformiap"),
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckImageAssurancePolicy(assurance_type, description, name, application_scopes),
+				Config: testAccCheckImageAssurancePolicy(description, name, application_scopes),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckImageAssurancePolicyExists("aquasec_image_assurance_policy.terraformiap"),
 				),
@@ -35,16 +34,15 @@ func TestAquasecImageAssurancePolicy(t *testing.T) {
 	})
 }
 
-func testAccCheckImageAssurancePolicy(assurance_type string, description string, name string, application_scopes string) string {
+func testAccCheckImageAssurancePolicy(description string, name string, application_scopes string) string {
 	return fmt.Sprintf(`
 	resource "aquasec_image_assurance_policy" "terraformiap" {
-		assurance_type = "%s"
 		description = "%s"
 		name = "%s"
 		application_scopes = [
 			"%s"
 		]
-	}`, assurance_type, description, name, application_scopes)
+	}`, description, name, application_scopes)
 
 }
 

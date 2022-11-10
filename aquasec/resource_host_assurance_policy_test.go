@@ -11,7 +11,6 @@ import (
 
 func TestAquasecHostAssurancePolicy(t *testing.T) {
 	t.Parallel()
-	assurance_type := "host"
 	description := "Created using Terraform"
 	name := acctest.RandomWithPrefix("terraform-test")
 	application_scopes := "Global"
@@ -21,7 +20,7 @@ func TestAquasecHostAssurancePolicy(t *testing.T) {
 		CheckDestroy: CheckDestroy("aquasec_host_assurance_policy.terraformiap"),
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckHostAssurancePolicy(assurance_type, description, name, application_scopes),
+				Config: testAccCheckHostAssurancePolicy(description, name, application_scopes),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckHostAssurancePolicyExists("aquasec_host_assurance_policy.terraformiap"),
 				),
@@ -35,16 +34,15 @@ func TestAquasecHostAssurancePolicy(t *testing.T) {
 	})
 }
 
-func testAccCheckHostAssurancePolicy(assurance_type string, description string, name string, application_scopes string) string {
+func testAccCheckHostAssurancePolicy(description string, name string, application_scopes string) string {
 	return fmt.Sprintf(`
 	resource "aquasec_host_assurance_policy" "terraformiap" {
-		assurance_type = "%s"
 		description = "%s"
 		name = "%s"
 		application_scopes = [
 			"%s"
 		]
-	}`, assurance_type, description, name, application_scopes)
+	}`, description, name, application_scopes)
 
 }
 

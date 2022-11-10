@@ -44,7 +44,7 @@ func dataSourceRegistry() *schema.Resource {
 			"auto_pull_rescan": {
 				Type:        schema.TypeBool,
 				Description: "Whether to automatically pull and rescan images from the registry on creation and daily",
-				Optional:    true,
+				Computed:    true,
 			},
 			"auto_pull_max": {
 				Type:        schema.TypeInt,
@@ -83,11 +83,13 @@ func dataSourceRegistry() *schema.Resource {
 				Type:        schema.TypeString,
 				Description: "Scanner type",
 				Optional:    true,
+				Computed:    true,
 			},
 			"scanner_name": {
 				Type:        schema.TypeList,
 				Description: "List of scanner names",
 				Optional:    true,
+				Computed:    true,
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
 				},

@@ -11,7 +11,6 @@ import (
 
 func TestAquasecKubernetesAssurancePolicy(t *testing.T) {
 	t.Parallel()
-	assurance_type := "kubernetes"
 	description := "Created using Terraform"
 	name := acctest.RandomWithPrefix("terraform-test")
 	application_scopes := "Global"
@@ -21,7 +20,7 @@ func TestAquasecKubernetesAssurancePolicy(t *testing.T) {
 		CheckDestroy: CheckDestroy("aquasec_kubernetes_assurance_policy.terraformiap"),
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckKubernetesAssurancePolicy(assurance_type, description, name, application_scopes),
+				Config: testAccCheckKubernetesAssurancePolicy(description, name, application_scopes),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckKubernetesAssurancePolicyExists("aquasec_kubernetes_assurance_policy.terraformiap"),
 				),
@@ -35,16 +34,15 @@ func TestAquasecKubernetesAssurancePolicy(t *testing.T) {
 	})
 }
 
-func testAccCheckKubernetesAssurancePolicy(assurance_type string, description string, name string, application_scopes string) string {
+func testAccCheckKubernetesAssurancePolicy(description string, name string, application_scopes string) string {
 	return fmt.Sprintf(`
 	resource "aquasec_kubernetes_assurance_policy" "terraformiap" {
-		assurance_type = "%s"
 		description = "%s"
 		name = "%s"
 		application_scopes = [
 			"%s"
 		]
-	}`, assurance_type, description, name, application_scopes)
+	}`, description, name, application_scopes)
 
 }
 

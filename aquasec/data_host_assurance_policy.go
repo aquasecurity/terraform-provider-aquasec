@@ -9,11 +9,13 @@ func dataHostAssurancePolicy() *schema.Resource {
 	return &schema.Resource{
 		Read: dataHostAssurancePolicyRead,
 		Schema: map[string]*schema.Schema{
-			"assurance_type": {
-				Type:        schema.TypeString,
-				Description: "What type of assurance policy is described.",
-				Computed:    true,
-			},
+			/*
+				"assurance_type": {
+					Type:        schema.TypeString,
+					Description: "What type of assurance policy is described.",
+					Computed:    true,
+				},
+			*/
 			"id": {
 				Type:     schema.TypeString,
 				Computed: true,
@@ -602,7 +604,7 @@ func dataHostAssurancePolicy() *schema.Resource {
 			"maximum_score_exclude_no_fix": {
 				Type:        schema.TypeBool,
 				Description: "Indicates that policy should ignore cases that do not have a known fix.",
-				Optional:    true,
+				Computed:    true,
 			},
 		},
 	}
@@ -616,7 +618,7 @@ func dataHostAssurancePolicyRead(d *schema.ResourceData, m interface{}) error {
 	iap, err := ac.GetAssurancePolicy(name, assurance_type)
 	if err == nil {
 		d.Set("description", iap.Description)
-		d.Set("assurance_type", iap.AssuranceType)
+		//d.Set("assurance_type", iap.AssuranceType)
 		d.Set("author", iap.Author)
 		d.Set("application_scopes", iap.ApplicationScopes)
 		d.Set("registry", iap.Registry)
