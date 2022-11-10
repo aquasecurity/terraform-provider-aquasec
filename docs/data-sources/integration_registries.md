@@ -29,6 +29,7 @@ description: |-
 
 ### Read-Only
 
+- `auto_cleanup` (Boolean) Automatically clean up images and repositories which are no longer present in the registry from Aqua console
 - `auto_pull` (Boolean) Whether to automatically pull images from the registry on creation and daily
 - `auto_pull_interval` (Number) The interval in days to start pulling new images from the registry, Defaults to 1
 - `auto_pull_max` (Number) Maximum number of repositories to pull every day, defaults to 100
