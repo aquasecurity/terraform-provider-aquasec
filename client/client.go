@@ -135,10 +135,26 @@ func (cli *Client) GetCspAuthToken() (string, error) {
 
 // GetUSEAuthToken - Connect to Aqua SaaS solution and return a JWT bearerToken (string)
 func (cli *Client) GetUSEAuthToken() (string, string, error) {
-	provUrl := consts.SaasProvUrl
+	var provUrl string
 
-	if cli.clientType == "saasDev" {
+	switch cli.url {
+	case consts.SaasUrl:
+		provUrl = consts.SaasProvUrl
+		break
+	case consts.SaasEu1Url:
+		provUrl = consts.SaasEu1ProvUrl
+		break
+	case consts.SaasAsia1Url:
+		provUrl = consts.SaasAsia1ProvUrl
+		break
+	case consts.SaasAsia2Url:
+		provUrl = consts.SaasAsia2ProvUrl
+		break
+	case consts.SaasDevUrl:
 		provUrl = consts.SaasDevProvUrl
+		break
+	default:
+		return "", "", fmt.Errorf(fmt.Sprintf("%v URL is not allowed USE url", cli.url))
 	}
 
 	resp, body, errs := cli.gorequest.Post(cli.tokenUrl + "/v2/signin").
