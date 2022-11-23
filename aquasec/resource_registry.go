@@ -24,6 +24,11 @@ func resourceRegistry() *schema.Resource {
 				Optional:    true,
 				Computed:    true,
 			},
+			"description": {
+				Type:        schema.TypeString,
+				Description: "The description of the registry",
+				Optional:    true,
+			},
 			"author": {
 				Type:        schema.TypeString,
 				Description: "The username of the user who created or last modified the registry",
@@ -176,6 +181,7 @@ func resourceRegistryCreate(d *schema.ResourceData, m interface{}) error {
 		Username:                   d.Get("username").(string),
 		Password:                   d.Get("password").(string),
 		Name:                       d.Get("name").(string),
+		Description:                d.Get("description").(string),
 		Type:                       d.Get("type").(string),
 		URL:                        d.Get("url").(string),
 		AutoPull:                   d.Get("auto_pull").(bool),
@@ -249,6 +255,9 @@ func resourceRegistryRead(d *schema.ResourceData, m interface{}) error {
 		return err
 	}
 	if err = d.Set("name", r.Name); err != nil {
+		return err
+	}
+	if err = d.Set("description", r.Description); err != nil {
 		return err
 	}
 	if err = d.Set("author", r.Author); err != nil {
