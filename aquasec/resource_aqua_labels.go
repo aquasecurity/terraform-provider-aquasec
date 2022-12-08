@@ -9,8 +9,6 @@ import (
 
 func resourceAquaLabels() *schema.Resource {
 	return &schema.Resource{
-		Description: "The data source `aquasec_aqua_labels` provides a method to query all aqua labels within the Aqua account management." +
-			"The fields returned from this query are detailed in the Schema section below.",
 		Read:   resourceAquaLabelRead,
 		Create: resourceAquaLabelCreate,
 		Update: resourceAquaLabelUpdate,
