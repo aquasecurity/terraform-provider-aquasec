@@ -31,6 +31,11 @@ func dataSourceRegistry() *schema.Resource {
 				Description: "The name of the registry; string, required - this will be treated as the registry's ID, so choose a simple alphanumerical name without special signs and spaces",
 				Required:    true,
 			},
+			"description": {
+				Type:        schema.TypeString,
+				Description: "The description of the registry",
+				Computed:    true,
+			},
 			"url": {
 				Type:        schema.TypeString,
 				Description: "The URL, address or region of the registry",
@@ -122,6 +127,7 @@ func dataRegistryRead(d *schema.ResourceData, m interface{}) error {
 		d.Set("username", reg.Username)
 		d.Set("password", reg.Password)
 		d.Set("name", reg.Name)
+		d.Set("description", reg.Description)
 		d.Set("type", reg.Type)
 		d.Set("url", reg.URL)
 		d.Set("auto_pull", reg.AutoPull)

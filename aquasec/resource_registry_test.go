@@ -18,13 +18,14 @@ func TestAquasecresourceRegistry(t *testing.T) {
 	password := ""
 	autopull := false
 	scanner_type := "any"
+	description := "Terrafrom-test"
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,
 		CheckDestroy: CheckDestroy("aquasec_integration_registry.new"),
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckAquasecRegistry(name, url, rtype, username, password, autopull, scanner_type),
+				Config: testAccCheckAquasecRegistry(name, url, rtype, username, password, autopull, scanner_type, description),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckAquasecRegistryExists("aquasec_integration_registry.new"),
 				),
@@ -39,7 +40,7 @@ func TestAquasecresourceRegistry(t *testing.T) {
 	})
 }
 
-func testAccCheckAquasecRegistry(name string, url string, rtype string, username string, password string, autopull bool, scanner_type string) string {
+func testAccCheckAquasecRegistry(name string, url string, rtype string, username string, password string, autopull bool, scanner_type string, description string) string {
 	return fmt.Sprintf(`
 	resource "aquasec_integration_registry" "new" {
 		name = "%s"
@@ -49,7 +50,8 @@ func testAccCheckAquasecRegistry(name string, url string, rtype string, username
 		password = "%s"
 		auto_pull = "%v"
 		scanner_type = "%s"
-	}`, name, url, rtype, username, password, autopull, scanner_type)
+		description = "%s"
+	}`, name, url, rtype, username, password, autopull, scanner_type, description)
 
 }
 
