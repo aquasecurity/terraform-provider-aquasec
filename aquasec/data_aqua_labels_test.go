@@ -33,6 +33,7 @@ func testAccCheckAquasecAquaLabelsDataSource(name, description string) string {
 	}
 
 	data "aquasec_aqua_labels" "test_aqua_labels" {
+	depends_on = [aquasec_aqua_label.new]
 	}
 	`, name, description)
 
