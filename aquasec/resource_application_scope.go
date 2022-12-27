@@ -418,8 +418,8 @@ func resourceApplicationScopeRead(d *schema.ResourceData, m interface{}) error {
 		d.Set("description", iap.Description)
 		d.Set("author", iap.Author)
 		d.Set("owner_email", iap.OwnerEmail)
+		d.Set("categories", flattenCategories(iap.Categories))
 		d.SetId(iap.Name)
-		//d.Set("categories", flattenCategories(iap.Categories))
 	} else {
 		return err
 	}
