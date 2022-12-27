@@ -716,8 +716,8 @@ func resourceImageAssurancePolicyRead(d *schema.ResourceData, m interface{}) err
 		d.Set("labels", iap.Labels)
 		d.Set("images", iap.Images)
 		d.Set("cves_black_list", iap.CvesBlackList)
-		d.Set("packages_black_list", flattenpackages(iap.PackagesBlackList))
-		d.Set("packages_white_list", flattenpackages(iap.PackagesWhiteList))
+		d.Set("packages_black_list", flattenPackages(iap.PackagesBlackList))
+		d.Set("packages_white_list", flattenPackages(iap.PackagesWhiteList))
 		d.Set("allowed_images", iap.AllowedImages)
 		d.Set("trusted_base_images", flattenTrustedBaseImages(iap.TrustedBaseImages))
 		d.Set("read_only", iap.ReadOnly)
@@ -743,9 +743,9 @@ func resourceImageAssurancePolicyRead(d *schema.ResourceData, m interface{}) err
 		d.Set("auto_scan_configured", iap.AutoScanConfigured)
 		d.Set("auto_scan_time", flattenAutoScanTime(iap.AutoScanTime))
 		d.Set("required_labels_enabled", iap.RequiredLabelsEnabled)
-		d.Set("required_labels", flattenlabels(iap.RequiredLabels))
+		d.Set("required_labels", flattenLabels(iap.RequiredLabels))
 		d.Set("forbidden_labels_enabled", iap.ForbiddenLabelsEnabled)
-		d.Set("forbidden_labels", flattenlabels(iap.ForbiddenLabels))
+		d.Set("forbidden_labels", flattenLabels(iap.ForbiddenLabels))
 		d.Set("domain_name", iap.DomainName)
 		d.Set("domain", iap.Domain)
 		d.Set("dta_severity", iap.DtaSeverity)
@@ -825,7 +825,7 @@ func flattenCustomChecks(checks []client.Checks) []map[string]interface{} {
 	return check
 }
 
-func flattenlabels(labels []client.Labels) []map[string]interface{} {
+func flattenLabels(labels []client.Labels) []map[string]interface{} {
 	label := make([]map[string]interface{}, len(labels))
 	for i := range labels {
 		label[i] = map[string]interface{}{
@@ -836,7 +836,7 @@ func flattenlabels(labels []client.Labels) []map[string]interface{} {
 	return label
 }
 
-func flattenpackages(packages []client.ListPackages) []map[string]interface{} {
+func flattenPackages(packages []client.ListPackages) []map[string]interface{} {
 	package1 := make([]map[string]interface{}, len(packages))
 	for i := range packages {
 		package1[i] = map[string]interface{}{
@@ -1097,7 +1097,7 @@ func expandAssurancePolicy(d *schema.ResourceData, a_type string) *client.Assura
 
 	packages_black_list, ok := d.GetOk("packages_black_list")
 	if ok {
-		pkgsblacklist := packages_black_list.([]interface{})
+		pkgsblacklist := packages_black_list.(*schema.Set).List()
 		pkgsblacklistarray := make([]client.ListPackages, len(pkgsblacklist))
 		for i, Data := range pkgsblacklist {
 			blackLists := Data.(map[string]interface{})
@@ -1119,7 +1119,7 @@ func expandAssurancePolicy(d *schema.ResourceData, a_type string) *client.Assura
 
 	packages_white_list, ok := d.GetOk("packages_white_list")
 	if ok {
-		pkgswhitelist := packages_white_list.([]interface{})
+		pkgswhitelist := packages_white_list.(*schema.Set).List()
 		pkgswhitelistarray := make([]client.ListPackages, len(pkgswhitelist))
 		for i, Data := range pkgswhitelist {
 			WhiteLists := Data.(map[string]interface{})
@@ -1146,7 +1146,7 @@ func expandAssurancePolicy(d *schema.ResourceData, a_type string) *client.Assura
 
 	trusted_base_images, ok := d.GetOk("trusted_base_images")
 	if ok {
-		trustedbaseimages := trusted_base_images.([]interface{})
+		trustedbaseimages := trusted_base_images.(*schema.Set).List()
 		baseimagesarray := make([]client.BaseImagesTrusted, len(trustedbaseimages))
 		for i, Data := range trustedbaseimages {
 			baseimages := Data.(map[string]interface{})
@@ -1290,7 +1290,7 @@ func expandAssurancePolicy(d *schema.ResourceData, a_type string) *client.Assura
 
 	required_labels, ok := d.GetOk("required_labels")
 	if ok {
-		requiredlabels := required_labels.([]interface{})
+		requiredlabels := required_labels.(*schema.Set).List()
 		labelsarray := make([]client.Labels, len(requiredlabels))
 		for i, Data := range requiredlabels {
 			labels := Data.(map[string]interface{})
@@ -1310,7 +1310,7 @@ func expandAssurancePolicy(d *schema.ResourceData, a_type string) *client.Assura
 
 	forbidden_labels, ok := d.GetOk("forbidden_labels")
 	if ok {
-		forbiddenlabels := forbidden_labels.([]interface{})
+		forbiddenlabels := forbidden_labels.(*schema.Set).List()
 		labelsarray := make([]client.Labels, len(forbiddenlabels))
 		for i, Data := range forbiddenlabels {
 			labels := Data.(map[string]interface{})
