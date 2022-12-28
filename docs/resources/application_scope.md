@@ -87,9 +87,12 @@ resource "aquasec_application_scope" "terraformiap" {
 Optional:
 
 - `artifacts` (Block Set) An artifact is an application. It can be an image (for a container, not a CF application); a serverless function; or a Tanzu Application Service (TAS) droplet. (see [below for nested schema](#nestedblock--categories--artifacts))
-- `entity_scope` (Block Set) (see [below for nested schema](#nestedblock--categories--entity_scope))
 - `infrastructure` (Block Set) An infrastructure resource is an element of a computing environment on which a workload is orchestrated and run. It can be a host (VM) or a Kubernetes cluster. (see [below for nested schema](#nestedblock--categories--infrastructure))
 - `workloads` (Block Set) A workload is a running container. It can run in a Kubernetes cluster, on a VM (no orchestrator), or under Tanzu Application Service (TAS). (see [below for nested schema](#nestedblock--categories--workloads))
+
+Read-Only:
+
+- `entity_scope` (Set of Object) (see [below for nested schema](#nestedatt--categories--entity_scope))
 
 <a id="nestedblock--categories--artifacts"></a>
 ### Nested Schema for `categories.artifacts`
@@ -152,24 +155,6 @@ Optional:
 - `attribute` (String)
 - `value` (String)
 
-
-
-
-<a id="nestedblock--categories--entity_scope"></a>
-### Nested Schema for `categories.entity_scope`
-
-Optional:
-
-- `expression` (String)
-- `variables` (Block List) (see [below for nested schema](#nestedblock--categories--entity_scope--variables))
-
-<a id="nestedblock--categories--entity_scope--variables"></a>
-### Nested Schema for `categories.entity_scope.variables`
-
-Optional:
-
-- `attribute` (String)
-- `value` (String)
 
 
 
@@ -275,6 +260,25 @@ Optional:
 ### Nested Schema for `categories.workloads.os.variables`
 
 Optional:
+
+- `attribute` (String)
+- `value` (String)
+
+
+
+
+<a id="nestedatt--categories--entity_scope"></a>
+### Nested Schema for `categories.entity_scope`
+
+Read-Only:
+
+- `expression` (String)
+- `variables` (List of Object) (see [below for nested schema](#nestedobjatt--categories--entity_scope--variables))
+
+<a id="nestedobjatt--categories--entity_scope--variables"></a>
+### Nested Schema for `categories.entity_scope.variables`
+
+Read-Only:
 
 - `attribute` (String)
 - `value` (String)

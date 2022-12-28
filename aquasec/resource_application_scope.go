@@ -141,25 +141,25 @@ func resourceApplicationScope() *schema.Resource {
 						},
 						"entity_scope": {
 							Type:     schema.TypeSet,
-							Optional: true,
+							Computed: true,
 							Elem: &schema.Resource{
 								Schema: map[string]*schema.Schema{
 									"expression": {
 										Type:     schema.TypeString,
-										Optional: true,
+										Computed: true,
 									},
 									"variables": {
 										Type:     schema.TypeList,
-										Optional: true,
+										Computed: true,
 										Elem: &schema.Resource{
 											Schema: map[string]*schema.Schema{
 												"attribute": {
 													Type:     schema.TypeString,
-													Optional: true,
+													Computed: true,
 												},
 												"value": {
 													Type:     schema.TypeString,
-													Optional: true,
+													Computed: true,
 												},
 											},
 										},
@@ -333,7 +333,6 @@ func resourceApplicationScope() *schema.Resource {
 }
 
 func resourceApplicationScopeCreate(d *schema.ResourceData, m interface{}) error {
-
 	ac := m.(*client.Client)
 	name := d.Get("name").(string)
 	iap, err1 := expandApplicationScope(d)
@@ -343,19 +342,12 @@ func resourceApplicationScopeCreate(d *schema.ResourceData, m interface{}) error
 	err := ac.CreateApplicationScope(iap)
 
 	if err == nil {
-		d.Set("categories", flattenCategories(iap.Categories))
 		d.SetId(name)
-		err1 := resourceApplicationScopeRead(d, m)
-		if err1 == nil {
-
-		} else {
-			return fmt.Errorf("application scope resource read is failed with error: %v", err1)
-		}
 	} else {
 		return fmt.Errorf("application scope resource create is failed with error:  %v", err)
 	}
 
-	return nil
+	return resourceApplicationScopeRead(d, m)
 }
 
 func expandApplicationScope(d *schema.ResourceData) (*client.ApplicationScope, error) {
@@ -411,18 +403,38 @@ func expandApplicationScope(d *schema.ResourceData) (*client.ApplicationScope, e
 
 func resourceApplicationScopeRead(d *schema.ResourceData, m interface{}) error {
 	ac := m.(*client.Client)
+
 	iap, err := ac.GetApplicationScope(d.Id())
 	if err == nil {
 
-		d.Set("name", iap.Name)
-		d.Set("description", iap.Description)
-		d.Set("author", iap.Author)
-		d.Set("owner_email", iap.OwnerEmail)
-		d.Set("categories", flattenCategories(iap.Categories))
+		err = d.Set("name", iap.Name)
+		if err != nil {
+			return err
+		}
+		err = d.Set("description", iap.Description)
+		if err != nil {
+			return err
+		}
+		err = d.Set("author", iap.Author)
+		if err != nil {
+			return err
+		}
+		err = d.Set("owner_email", iap.OwnerEmail)
+		if err != nil {
+			return err
+		}
+
+		err = d.Set("categories", flattenCategories(iap.Categories))
+
+		if err != nil {
+			return err
+		}
+
 		d.SetId(iap.Name)
 	} else {
 		return err
 	}
+
 	return nil
 }
 
@@ -573,6 +585,7 @@ func resourceApplicationScopeDelete(d *schema.ResourceData, m interface{}) error
 }
 
 func flattenCategories(category1 client.Category) []map[string]interface{} {
+
 	return []map[string]interface{}{
 		{
 			"artifacts":      flattenArtifacts(category1.Artifacts),
@@ -584,31 +597,64 @@ func flattenCategories(category1 client.Category) []map[string]interface{} {
 }
 
 func flattenArtifacts(artifact1 client.Artifact) []map[string]interface{} {
-	return []map[string]interface{}{
-		{
-			"image":    flattenAppScopeCommon(artifact1.Image),
-			"function": flattenAppScopeCommon(artifact1.Function),
-			"cf":       flattenAppScopeCommon(artifact1.CF),
-		},
+	artifactsMap := map[string]interface{}{}
+
+	if artifact1.Image.Expression != "" {
+		artifactsMap["image"] = flattenAppScopeCommon(artifact1.Image)
+	}
+
+	if artifact1.Function.Expression != "" {
+		artifactsMap["function"] = flattenAppScopeCommon(artifact1.Function)
+	}
+
+	if artifact1.CF.Expression != "" {
+		artifactsMap["cf"] = flattenAppScopeCommon(artifact1.CF)
+	}
+	if len(artifactsMap) == 0 {
+		return make([]map[string]interface{}, 0)
+	} else {
+		return []map[string]interface{}{artifactsMap}
 	}
 }
 
 func flattenWorkloads(workload1 client.Workload) []map[string]interface{} {
-	return []map[string]interface{}{
-		{
-			"cf":         flattenAppScopeCommon(workload1.WCF),
-			"kubernetes": flattenAppScopeCommon(workload1.Kubernetes),
-			"os":         flattenAppScopeCommon(workload1.OS),
-		},
+	workloadMap := map[string]interface{}{}
+
+	if workload1.WCF.Expression != "" {
+		workloadMap["cf"] = flattenAppScopeCommon(workload1.WCF)
+	}
+
+	if workload1.Kubernetes.Expression != "" {
+		workloadMap["kubernetes"] = flattenAppScopeCommon(workload1.Kubernetes)
+	}
+
+	if workload1.OS.Expression != "" {
+		workloadMap["os"] = flattenAppScopeCommon(workload1.OS)
+	}
+
+	if len(workloadMap) == 0 {
+		return make([]map[string]interface{}, 0)
+	} else {
+		return []map[string]interface{}{workloadMap}
 	}
 }
 
 func flattenInfrastructure(infra1 client.Infrastructure) []map[string]interface{} {
-	return []map[string]interface{}{
-		{
-			"kubernetes": flattenAppScopeCommon(infra1.IKubernetes),
-			"os":         flattenAppScopeCommon(infra1.IOS),
-		},
+
+	infraMap := map[string]interface{}{}
+
+	if infra1.IKubernetes.Expression != "" {
+		infraMap["kubernetes"] = flattenAppScopeCommon(infra1.IKubernetes)
+	}
+
+	if infra1.IOS.Expression != "" {
+		infraMap["os"] = flattenAppScopeCommon(infra1.IOS)
+	}
+
+	if len(infraMap) == 0 {
+		return make([]map[string]interface{}, 0)
+	} else {
+		return []map[string]interface{}{infraMap}
 	}
 }
 
