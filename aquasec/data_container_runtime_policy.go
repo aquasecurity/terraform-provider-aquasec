@@ -165,6 +165,14 @@ func dataContainerRuntimePolicy() *schema.Resource {
 				Description: "If true, executables that are not in the original image is prevented from running.",
 				Computed:    true,
 			},
+			"exec_lockdown_white_list": {
+				Type:        schema.TypeList,
+				Description: "Specify processes that will be allowed",
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+				Computed: true,
+			},
 			"allowed_executables": {
 				Type:        schema.TypeList,
 				Description: "List of executables that are allowed for the user.",
@@ -488,6 +496,7 @@ func dataContainerRuntimePolicyRead(ctx context.Context, d *schema.ResourceData,
 		d.Set("blocked_capabilities", crp.LinuxCapabilities.RemoveLinuxCapabilities)
 		d.Set("enable_ip_reputation_security", crp.EnableIPReputation)
 		d.Set("enable_drift_prevention", crp.DriftPrevention.Enabled && crp.DriftPrevention.ExecLockdown)
+		d.Set("exec_lockdown_white_list", crp.DriftPrevention.ExecLockdownWhiteList)
 		d.Set("allowed_executables", crp.AllowedExecutables.AllowExecutables)
 		d.Set("blocked_executables", crp.ExecutableBlacklist.Executables)
 		d.Set("blocked_files", crp.FileBlock.FilenameBlockList)

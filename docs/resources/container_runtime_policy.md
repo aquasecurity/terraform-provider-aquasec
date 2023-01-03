@@ -185,6 +185,7 @@ resource "aquasec_container_runtime_policy" "container_runtime_policy" {
 - `enforce` (Boolean) Indicates that policy should effect container execution (not just for audit).
 - `enforce_after_days` (Number) Indicates the number of days after which the runtime policy will be changed to enforce mode.
 - `exceptional_readonly_files_and_directories` (List of String) List of files and directories to be excluded from the read-only list.
+- `exec_lockdown_white_list` (List of String) Specify processes that will be allowed
 - `file_integrity_monitoring` (Block List, Max: 1) Configuration for file integrity monitoring. (see [below for nested schema](#nestedblock--file_integrity_monitoring))
 - `fork_guard_process_limit` (Number) Process limit for the fork guard.
 - `limit_new_privileges` (Boolean) If true, prevents the container from obtaining new privileges at runtime. (only enabled in enforce mode)
