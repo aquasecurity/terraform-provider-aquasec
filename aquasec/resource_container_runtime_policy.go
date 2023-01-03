@@ -177,6 +177,15 @@ func resourceContainerRuntimePolicy() *schema.Resource {
 				Description: "If true, executables that are not in the original image is prevented from running.",
 				Optional:    true,
 			},
+			"exec_lockdown_white_list": {
+				Type:        schema.TypeList,
+				Description: "Specify processes that will be allowed",
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+				Optional:     true,
+				RequiredWith: []string{"enable_drift_prevention"},
+			},
 			"allowed_executables": {
 				Type:        schema.TypeList,
 				Description: "List of executables that are allowed for the user.",
@@ -524,6 +533,7 @@ func resourceContainerRuntimePolicyRead(ctx context.Context, d *schema.ResourceD
 		d.Set("blocked_capabilities", crp.LinuxCapabilities.RemoveLinuxCapabilities)
 		d.Set("enable_ip_reputation_security", crp.EnableIPReputation)
 		d.Set("enable_drift_prevention", crp.DriftPrevention.Enabled && crp.DriftPrevention.ExecLockdown)
+		d.Set("exec_lockdown_white_list", crp.DriftPrevention.ExecLockdownWhiteList)
 		d.Set("allowed_executables", crp.AllowedExecutables.AllowExecutables)
 		d.Set("blocked_executables", crp.ExecutableBlacklist.Executables)
 		d.Set("blocked_files", crp.FileBlock.FilenameBlockList)
@@ -585,6 +595,7 @@ func resourceContainerRuntimePolicyUpdate(ctx context.Context, d *schema.Resourc
 		"blocked_capabilities",
 		"enable_ip_reputation_security",
 		"enable_drift_prevention",
+		"exec_lockdown_white_list",
 		"allowed_executables",
 		"blocked_executables",
 		"blocked_files",
@@ -774,6 +785,10 @@ func expandContainerRuntimePolicy(d *schema.ResourceData) *client.RuntimePolicy 
 	if ok {
 		crp.DriftPrevention.Enabled = enableDriftPrevention.(bool)
 		crp.DriftPrevention.ExecLockdown = enableDriftPrevention.(bool)
+		execLockdownWhiteList, ok := d.GetOk("exec_lockdown_white_list")
+		if ok {
+			crp.DriftPrevention.ExecLockdownWhiteList = convertStringArr(execLockdownWhiteList.([]interface{}))
+		}
 	}
 
 	allowedExecutables, ok := d.GetOk("allowed_executables")
