@@ -30,9 +30,18 @@ output "role_mapping_saml" {
 ### Read-Only
 
 - `id` (String) The ID of this resource.
+- `ldap` (Set of Object) LDAP Authentication (see [below for nested schema](#nestedatt--ldap))
 - `oauth2` (Set of Object) Oauth2 Authentication (see [below for nested schema](#nestedatt--oauth2))
 - `openid` (Set of Object) OpenId Authentication (see [below for nested schema](#nestedatt--openid))
 - `saml` (Set of Object) SAML Authentication (see [below for nested schema](#nestedatt--saml))
+
+<a id="nestedatt--ldap"></a>
+### Nested Schema for `ldap`
+
+Read-Only:
+
+- `role_mapping` (Map of String)
+
 
 <a id="nestedatt--oauth2"></a>
 ### Nested Schema for `oauth2`

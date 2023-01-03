@@ -31,6 +31,7 @@ output "role_mapping" {
 
 ### Optional
 
+- `ldap` (Block Set, Max: 1) LDAP Authentication (see [below for nested schema](#nestedblock--ldap))
 - `oauth2` (Block Set, Max: 1) Oauth2 Authentication (see [below for nested schema](#nestedblock--oauth2))
 - `openid` (Block Set, Max: 1) OpenId Authentication (see [below for nested schema](#nestedblock--openid))
 - `saml` (Block Set, Max: 1) SAML Authentication (see [below for nested schema](#nestedblock--saml))
@@ -38,6 +39,14 @@ output "role_mapping" {
 ### Read-Only
 
 - `id` (String) The ID of this resource.
+
+<a id="nestedblock--ldap"></a>
+### Nested Schema for `ldap`
+
+Required:
+
+- `role_mapping` (Map of String) Role Mapping is used to define the IdP role that the user will assume in Aqua
+
 
 <a id="nestedblock--oauth2"></a>
 ### Nested Schema for `oauth2`

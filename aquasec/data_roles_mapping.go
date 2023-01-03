@@ -62,6 +62,23 @@ func dataSourceRolesMapping() *schema.Resource {
 				},
 				Computed: true,
 			},
+			"ldap": {
+				Type:        schema.TypeSet,
+				Description: "LDAP Authentication",
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"role_mapping": {
+							Type:        schema.TypeMap,
+							Description: "Role Mapping is used to define the IdP role that the user will assume in Aqua",
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+							Computed: true,
+						},
+					},
+				},
+				Computed: true,
+			},
 		},
 	}
 }
@@ -73,10 +90,19 @@ func dataRolesMappingRead(ctx context.Context, d *schema.ResourceData, m interfa
 		d.Set("saml", flattenSamlRoleMapping(sso.Saml))
 		d.Set("oauth2", flattenOAuth2RoleMapping(sso.OAuth2))
 		d.Set("openid", flattenOpenIdRoleMapping(sso.OpenId))
-		d.SetId("aquasec-rolesMapping")
 	} else {
 		return diag.FromErr(err)
 	}
+
+	ldap, err := c.GetLdap()
+
+	if err == nil {
+		d.Set("ldap", flattenLdapRoleMapping(ldap))
+	} else {
+		return diag.FromErr(err)
+	}
+	d.SetId("aquasec-rolesMapping")
+
 	return nil
 }
 
@@ -100,6 +126,14 @@ func flattenOpenIdRoleMapping(openId client.OpenId) []map[string]interface{} {
 	return []map[string]interface{}{
 		{
 			"role_mapping": flattenRoleMap(openId.RoleMapping),
+		},
+	}
+}
+
+func flattenLdapRoleMapping(ldap *client.Ldap) []map[string]interface{} {
+	return []map[string]interface{}{
+		{
+			"role_mapping": flattenRoleMap(ldap.RoleMapping),
 		},
 	}
 }
