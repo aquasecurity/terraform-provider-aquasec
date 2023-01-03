@@ -27,7 +27,7 @@ func TestAquasecApplicationScope(t *testing.T) {
 			{
 				ResourceName:      "aquasec_application_scope.terraformap",
 				ImportState:       true,
-				ImportStateVerify: false, //TODO: when read set up change to trye
+				ImportStateVerify: true,
 			},
 		},
 	})

@@ -100,6 +100,7 @@ resource "aquasec_integration_registry" "integration_registry" {
 - `auto_pull_max` (Number) Maximum number of repositories to pull every day, defaults to 100
 - `auto_pull_rescan` (Boolean) Whether to automatically pull and rescan images from the registry on creation and daily
 - `auto_pull_time` (String) The time of day to start pulling new images from the registry, in the format HH:MM (24-hour clock), defaults to 03:00
+- `description` (String) The description of the registry
 - `image_creation_date_condition` (String) Additional condition for pulling and rescanning images, Defaults to 'none'
 - `last_updated` (String) The last time the registry was modified in UNIX time
 - `options` (Block List) (see [below for nested schema](#nestedblock--options))
