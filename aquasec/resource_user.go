@@ -1,7 +1,9 @@
 package aquasec
 
 import (
+	"fmt"
 	"log"
+	"strings"
 
 	"github.com/aquasecurity/terraform-provider-aquasec/client"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -142,20 +144,24 @@ func resourceUserRead(d *schema.ResourceData, m interface{}) error {
 	ac := m.(*client.Client)
 
 	r, err := ac.GetUser(d.Id())
-	if err == nil {
-		firstTime, ok := d.GetOk("first_time")
-		if ok && firstTime.(bool) == false {
-			d.Set("first_time", r.BasicUser.FirstTime)
+	if err != nil {
+		if strings.Contains(fmt.Sprintf("%s", err), "404 Not Found") {
+			d.SetId("")
+			return nil
 		}
-		d.Set("is_super", r.BasicUser.IsSuper)
-		d.Set("ui_access", r.BasicUser.UiAccess)
-		d.Set("role", r.BasicUser.Role)
-		d.Set("user_id", r.BasicId.Id)
-		d.Set("type", r.BasicUser.Type)
-	} else {
-		log.Println("[DEBUG]  error calling ac.ReadUser: ", r)
 		return err
 	}
+
+	firstTime, ok := d.GetOk("first_time")
+	if ok && firstTime.(bool) == false {
+		d.Set("first_time", r.BasicUser.FirstTime)
+	}
+	d.Set("is_super", r.BasicUser.IsSuper)
+	d.Set("ui_access", r.BasicUser.UiAccess)
+	d.Set("role", r.BasicUser.Role)
+	d.Set("user_id", r.BasicId.Id)
+	d.Set("type", r.BasicUser.Type)
+
 	return nil
 }
 

@@ -2,6 +2,8 @@ package aquasec
 
 import (
 	"context"
+	"fmt"
+	"strings"
 
 	"github.com/aquasecurity/terraform-provider-aquasec/client"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
@@ -514,39 +516,44 @@ func resourceHostRuntimePolicyRead(ctx context.Context, d *schema.ResourceData, 
 	c := m.(*client.Client)
 
 	crp, err := c.GetRuntimePolicy(d.Id())
-	if err == nil {
-		d.Set("name", crp.Name)
-		d.Set("description", crp.Description)
-		d.Set("application_scopes", crp.ApplicationScopes)
-		d.Set("scope_expression", crp.Scope.Expression)
-		d.Set("scope_variables", flattenScopeVariables(crp.Scope.Variables))
-		d.Set("enabled", crp.Enabled)
-		d.Set("enforce", crp.Enforce)
-		d.Set("enforce_after_days", crp.EnforceAfterDays)
-		d.Set("author", crp.Author)
-		d.Set("block_cryptocurrency_mining", crp.EnableCryptoMiningDns)
-		d.Set("audit_brute_force_login", crp.AuditBruteForceLogin)
-		d.Set("enable_ip_reputation_security", crp.EnableIPReputation)
-		d.Set("blocked_files", crp.FileBlock.FilenameBlockList)
-		d.Set("file_integrity_monitoring", flattenFileIntegrityMonitoring(crp.FileIntegrityMonitoring))
-		d.Set("audit_all_os_user_activity", crp.Auditing.AuditOsUserActivity)
-		d.Set("audit_full_command_arguments", crp.Auditing.AuditProcessCmdline)
-		d.Set("audit_host_successful_login_events", crp.Auditing.AuditSuccessLogin)
-		d.Set("audit_host_failed_login_events", crp.Auditing.AuditFailedLogin)
-		d.Set("os_users_allowed", crp.WhitelistedOsUsers.UserWhiteList)
-		d.Set("os_groups_allowed", crp.WhitelistedOsUsers.GroupWhiteList)
-		d.Set("os_users_blocked", crp.BlacklistedOsUsers.UserBlackList)
-		d.Set("os_groups_blocked", crp.BlacklistedOsUsers.GroupBlackList)
-		d.Set("malware_scan_options", flattenMalwareScanOptions(crp.MalwareScanOptions))
-		d.Set("monitor_system_time_changes", crp.SystemIntegrityProtection.AuditSystemtimeChange)
-		d.Set("monitor_windows_services", crp.SystemIntegrityProtection.WindowsServicesMonitoring)
-		d.Set("windows_registry_monitoring", flattenWindowsRegistryMonitoring(crp.RegistryAccessMonitoring))
-		d.Set("windows_registry_protection", flattenWindowsRegistryProtection(crp.ReadonlyRegistry))
 
-		d.SetId(crp.Name)
-	} else {
+	if err != nil {
+		if strings.Contains(fmt.Sprintf("%s", err), "404 Not Found") {
+			d.SetId("")
+			return nil
+		}
 		return diag.FromErr(err)
 	}
+
+	d.Set("name", crp.Name)
+	d.Set("description", crp.Description)
+	d.Set("application_scopes", crp.ApplicationScopes)
+	d.Set("scope_expression", crp.Scope.Expression)
+	d.Set("scope_variables", flattenScopeVariables(crp.Scope.Variables))
+	d.Set("enabled", crp.Enabled)
+	d.Set("enforce", crp.Enforce)
+	d.Set("enforce_after_days", crp.EnforceAfterDays)
+	d.Set("author", crp.Author)
+	d.Set("block_cryptocurrency_mining", crp.EnableCryptoMiningDns)
+	d.Set("audit_brute_force_login", crp.AuditBruteForceLogin)
+	d.Set("enable_ip_reputation_security", crp.EnableIPReputation)
+	d.Set("blocked_files", crp.FileBlock.FilenameBlockList)
+	d.Set("file_integrity_monitoring", flattenFileIntegrityMonitoring(crp.FileIntegrityMonitoring))
+	d.Set("audit_all_os_user_activity", crp.Auditing.AuditOsUserActivity)
+	d.Set("audit_full_command_arguments", crp.Auditing.AuditProcessCmdline)
+	d.Set("audit_host_successful_login_events", crp.Auditing.AuditSuccessLogin)
+	d.Set("audit_host_failed_login_events", crp.Auditing.AuditFailedLogin)
+	d.Set("os_users_allowed", crp.WhitelistedOsUsers.UserWhiteList)
+	d.Set("os_groups_allowed", crp.WhitelistedOsUsers.GroupWhiteList)
+	d.Set("os_users_blocked", crp.BlacklistedOsUsers.UserBlackList)
+	d.Set("os_groups_blocked", crp.BlacklistedOsUsers.GroupBlackList)
+	d.Set("malware_scan_options", flattenMalwareScanOptions(crp.MalwareScanOptions))
+	d.Set("monitor_system_time_changes", crp.SystemIntegrityProtection.AuditSystemtimeChange)
+	d.Set("monitor_windows_services", crp.SystemIntegrityProtection.WindowsServicesMonitoring)
+	d.Set("windows_registry_monitoring", flattenWindowsRegistryMonitoring(crp.RegistryAccessMonitoring))
+	d.Set("windows_registry_protection", flattenWindowsRegistryProtection(crp.ReadonlyRegistry))
+
+	d.SetId(crp.Name)
 
 	return nil
 }

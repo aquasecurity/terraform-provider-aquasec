@@ -2,6 +2,8 @@ package aquasec
 
 import (
 	"context"
+	"fmt"
+	"strings"
 
 	"github.com/aquasecurity/terraform-provider-aquasec/client"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
@@ -144,22 +146,27 @@ func resourceFirewallPolicyRead(ctx context.Context, d *schema.ResourceData, m i
 	c := m.(*client.Client)
 
 	firewallPolicy, err := c.GetFirewallPolicy(d.Id())
-	if err == nil {
-		d.Set("name", firewallPolicy.Name)
-		d.Set("description", firewallPolicy.Description)
-		d.Set("block_icmp_ping", firewallPolicy.BlockICMPPing)
-		d.Set("block_metadata_service", firewallPolicy.BlockMetadataService)
-		d.Set("type", firewallPolicy.Type)
-		d.Set("author", firewallPolicy.Author)
-		d.Set("lastupdate", firewallPolicy.Lastupdate)
-		d.Set("version", firewallPolicy.Version)
-		d.Set("inbound_networks", flattenNetworks(firewallPolicy.InboundNetworks))
-		d.Set("outbound_networks", flattenNetworks(firewallPolicy.OutboundNetworks))
 
-		d.SetId(firewallPolicy.Name)
-	} else {
+	if err != nil {
+		if strings.Contains(fmt.Sprintf("%s", err), "404 Not Found") {
+			d.SetId("")
+			return nil
+		}
 		return diag.FromErr(err)
 	}
+
+	d.Set("name", firewallPolicy.Name)
+	d.Set("description", firewallPolicy.Description)
+	d.Set("block_icmp_ping", firewallPolicy.BlockICMPPing)
+	d.Set("block_metadata_service", firewallPolicy.BlockMetadataService)
+	d.Set("type", firewallPolicy.Type)
+	d.Set("author", firewallPolicy.Author)
+	d.Set("lastupdate", firewallPolicy.Lastupdate)
+	d.Set("version", firewallPolicy.Version)
+	d.Set("inbound_networks", flattenNetworks(firewallPolicy.InboundNetworks))
+	d.Set("outbound_networks", flattenNetworks(firewallPolicy.OutboundNetworks))
+
+	d.SetId(firewallPolicy.Name)
 
 	return nil
 }

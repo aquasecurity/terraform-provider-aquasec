@@ -2,9 +2,9 @@ package aquasec
 
 import (
 	"fmt"
-
 	"github.com/aquasecurity/terraform-provider-aquasec/client"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"strings"
 )
 
 func resourceApplicationScope() *schema.Resource {
@@ -42,6 +42,7 @@ func resourceApplicationScope() *schema.Resource {
 				Type:        schema.TypeSet,
 				Description: "Artifacts (of applications) / Workloads (containers) / Infrastructure (elements).",
 				Optional:    true,
+				Computed:    true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"artifacts": {
@@ -405,35 +406,38 @@ func resourceApplicationScopeRead(d *schema.ResourceData, m interface{}) error {
 	ac := m.(*client.Client)
 
 	iap, err := ac.GetApplicationScope(d.Id())
-	if err == nil {
-
-		err = d.Set("name", iap.Name)
-		if err != nil {
-			return err
+	if err != nil {
+		if strings.Contains(fmt.Sprintf("%s", err), "404 Not Found") {
+			d.SetId("")
+			return nil
 		}
-		err = d.Set("description", iap.Description)
-		if err != nil {
-			return err
-		}
-		err = d.Set("author", iap.Author)
-		if err != nil {
-			return err
-		}
-		err = d.Set("owner_email", iap.OwnerEmail)
-		if err != nil {
-			return err
-		}
-
-		err = d.Set("categories", flattenCategories(iap.Categories))
-
-		if err != nil {
-			return err
-		}
-
-		d.SetId(iap.Name)
-	} else {
 		return err
 	}
+
+	err = d.Set("name", iap.Name)
+	if err != nil {
+		return err
+	}
+	err = d.Set("description", iap.Description)
+	if err != nil {
+		return err
+	}
+	err = d.Set("author", iap.Author)
+	if err != nil {
+		return err
+	}
+	err = d.Set("owner_email", iap.OwnerEmail)
+	if err != nil {
+		return err
+	}
+
+	err = d.Set("categories", flattenCategories(iap.Categories))
+
+	if err != nil {
+		return err
+	}
+
+	d.SetId(iap.Name)
 
 	return nil
 }

@@ -1,7 +1,8 @@
 package aquasec
 
 import (
-	"log"
+	"fmt"
+	"strings"
 
 	"github.com/aquasecurity/terraform-provider-aquasec/client"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -118,7 +119,10 @@ func resourceNotificationRead(d *schema.ResourceData, m interface{}) error {
 
 	r, err := ac.SlackNotificationRead()
 	if err != nil {
-		log.Println("[DEBUG]  error calling ac.GetSlackNotification: ", r)
+		if strings.Contains(fmt.Sprintf("%s", err), "404 Not Found") {
+			d.SetId("")
+			return nil
+		}
 		return err
 	}
 	if err = d.Set("channel", r.Channel); err != nil {
