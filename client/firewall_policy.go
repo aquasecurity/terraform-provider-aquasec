@@ -68,13 +68,12 @@ func (cli *Client) GetFirewallPolicies() (*FirewallPolicyList, error) {
 func (cli *Client) GetFirewallPolicy(name string) (*FirewallPolicy, error) {
 	var err error
 	var response FirewallPolicy
-	cli.gorequest.Set("Authorization", "Bearer "+cli.token)
 	apiPath := fmt.Sprintf("/api/v2/firewall_policies/%s", name)
 	err = cli.limiter.Wait(context.Background())
 	if err != nil {
 		return nil, err
 	}
-	resp, body, errs := cli.gorequest.Clone().Get(cli.url + apiPath).End()
+	resp, body, errs := cli.gorequest.Clone().Set("Authorization", "Bearer "+cli.token).Get(cli.url + apiPath).End()
 	if errs != nil {
 		return nil, errors.Wrap(getMergedError(errs), "failed getting firewall policy")
 	}
@@ -112,13 +111,12 @@ func (cli *Client) CreateFirewallPolicy(firewallPolicy FirewallPolicy) error {
 		return err
 	}
 	request := cli.gorequest
-	request.Set("Authorization", "Bearer "+cli.token)
-	apiPath := fmt.Sprintf("/api/v2/firewall_policies")
+	apiPath := "/api/v2/firewall_policies"
 	err = cli.limiter.Wait(context.Background())
 	if err != nil {
 		return err
 	}
-	resp, _, errs := request.Clone().Post(cli.url + apiPath).Send(string(payload)).End()
+	resp, _, errs := request.Clone().Set("Authorization", "Bearer "+cli.token).Post(cli.url + apiPath).Send(string(payload)).End()
 	if errs != nil {
 		return errors.Wrap(getMergedError(errs), "failed creating firewall policy.")
 	}
@@ -146,13 +144,12 @@ func (cli *Client) UpdateFirewallPolicy(firewallPolicy FirewallPolicy) error {
 		return err
 	}
 	request := cli.gorequest
-	request.Set("Authorization", "Bearer "+cli.token)
 	apiPath := fmt.Sprintf("/api/v2/firewall_policies/%s", firewallPolicy.Name)
 	err = cli.limiter.Wait(context.Background())
 	if err != nil {
 		return err
 	}
-	resp, _, errs := request.Clone().Put(cli.url + apiPath).Send(string(payload)).End()
+	resp, _, errs := request.Clone().Set("Authorization", "Bearer "+cli.token).Put(cli.url + apiPath).Send(string(payload)).End()
 	if errs != nil {
 		return errors.Wrap(getMergedError(errs), "failed modifying firewall policy")
 	}
@@ -176,13 +173,12 @@ func (cli *Client) UpdateFirewallPolicy(firewallPolicy FirewallPolicy) error {
 // DeleteFirewallPolicy removes a Firewall Policy
 func (cli *Client) DeleteFirewallPolicy(name string) error {
 	request := cli.gorequest
-	request.Set("Authorization", "Bearer "+cli.token)
 	apiPath := fmt.Sprintf("/api/v2/firewall_policies/%s", name)
 	err := cli.limiter.Wait(context.Background())
 	if err != nil {
 		return err
 	}
-	resp, _, errs := request.Clone().Delete(cli.url + apiPath).End()
+	resp, _, errs := request.Clone().Set("Authorization", "Bearer "+cli.token).Delete(cli.url + apiPath).End()
 	if errs != nil {
 		return errors.Wrap(getMergedError(errs), "failed deleting firewall policy")
 	}

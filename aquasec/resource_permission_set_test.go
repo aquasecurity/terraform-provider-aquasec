@@ -20,6 +20,8 @@ func TestAquasecPermissionSetManagement(t *testing.T) {
 	actions := "risks.vulnerabilities.read,images.read"
 
 	if isSaasEnv() {
+		// todo: remove this after solving the following issue: https://scalock.atlassian.net/browse/SLK-62403
+		t.Skip("Skipping user test because its saas env")
 		author = os.Getenv("AQUA_USER")
 	}
 

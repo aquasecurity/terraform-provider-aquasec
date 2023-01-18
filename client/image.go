@@ -111,13 +111,12 @@ func (cli *Client) CreateImage(image *Image) error {
 	}
 
 	request := cli.gorequest
-	request.Set("Authorization", "Bearer "+cli.token)
-	apiPath := fmt.Sprintf("/api/v1/images")
+	apiPath := "/api/v1/images"
 	err = cli.limiter.Wait(context.Background())
 	if err != nil {
 		return err
 	}
-	resp, body, errs := request.Clone().Post(cli.url + apiPath).Send(string(payload)).End()
+	resp, body, errs := request.Clone().Set("Authorization", "Bearer "+cli.token).Post(cli.url + apiPath).Send(string(payload)).End()
 	if errs != nil {
 		return errors.Wrap(getMergedError(errs), "failed creating image.")
 	}
@@ -141,12 +140,11 @@ func (cli *Client) GetImage(imageUrl string) (*Image, error) {
 	var response Image
 	request := cli.gorequest
 	apiPath := fmt.Sprintf("/api/v2/images/%v", imageUrl)
-	request.Set("Authorization", "Bearer "+cli.token)
 	err = cli.limiter.Wait(context.Background())
 	if err != nil {
 		return nil, err
 	}
-	events, body, errs := request.Clone().Get(cli.url + apiPath).End()
+	events, body, errs := request.Clone().Set("Authorization", "Bearer "+cli.token).Get(cli.url + apiPath).End()
 	if errs != nil {
 		return nil, errors.Wrap(getMergedError(errs), fmt.Sprintf("failed getting image with name %v", imageUrl))
 	}
@@ -191,13 +189,12 @@ func (cli *Client) RescanImage(image *Image, fullRescan bool) error {
 	}
 
 	request := cli.gorequest
-	request.Set("Authorization", "Bearer "+cli.token)
-	apiPath := fmt.Sprintf("/api/v1/images/rescan")
+	apiPath := "/api/v1/images/rescan"
 	err = cli.limiter.Wait(context.Background())
 	if err != nil {
 		return err
 	}
-	resp, _, errs := request.Clone().Post(cli.url + apiPath).Send(string(payload)).End()
+	resp, _, errs := request.Clone().Set("Authorization", "Bearer "+cli.token).Post(cli.url + apiPath).Send(string(payload)).End()
 	if errs != nil {
 		return errors.Wrap(getMergedError(errs), "failed rescaning image")
 	}
@@ -243,13 +240,12 @@ func (cli *Client) DeleteImage(image *Image) error {
 	tag := image.Tag
 
 	request := cli.gorequest
-	request.Set("Authorization", "Bearer "+cli.token)
 	apiPath := fmt.Sprintf("/api/v2/images/%v/%v/%v", registry, repo, tag)
 	err := cli.limiter.Wait(context.Background())
 	if err != nil {
 		return err
 	}
-	resp, body, errs := request.Clone().Delete(cli.url + apiPath).End()
+	resp, body, errs := request.Clone().Set("Authorization", "Bearer "+cli.token).Delete(cli.url + apiPath).End()
 	if errs != nil {
 		return errors.Wrap(getMergedError(errs), "failed deleting image")
 	}
@@ -290,12 +286,11 @@ func (cli *Client) ChangeImagePermission(image *Image, allow bool, permissionMod
 	}
 
 	request := cli.gorequest
-	request.Set("Authorization", "Bearer "+cli.token)
 	err = cli.limiter.Wait(context.Background())
 	if err != nil {
 		return err
 	}
-	resp, body, errs := request.Clone().Post(cli.url + apiPath).Send(string(payload)).End()
+	resp, body, errs := request.Clone().Set("Authorization", "Bearer "+cli.token).Post(cli.url + apiPath).Send(string(payload)).End()
 	if errs != nil {
 		return errors.Wrap(getMergedError(errs), "failed blocking image")
 	}
