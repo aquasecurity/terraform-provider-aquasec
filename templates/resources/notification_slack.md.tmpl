@@ -1,0 +1,15 @@
+---
+page_title: "{{.Type}} - {{.ProviderName}}"
+subcategory: ""
+description: |-
+{{ .Description | plainmarkdown | trimspace | prefixlines "  " }}
+---
+
+# {{.Name}} ({{.Type}})
+
+{{ .Description | trimspace }}
+
+~> **Note about resource deprecation**
+Resource aquasec_notification_slack is deprecated, please use aquasec_notification instead
+
+{{ .SchemaMarkdown | trimspace }}
