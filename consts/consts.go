@@ -19,4 +19,5 @@ const (
 	SamlSettingsApiPath   = "/api/v1/settings/SAMLSettings/SAMLSettings"
 	OIDCSettingsApiPath   = "/api/v1/settings/OIDCSettings/OIDCSettings"
 	OpenIdSettingsApiPath = "/api/v1/settings/OIDCSettings/OpenIdSettings"
+	LdapSettingsApiPath   = "/api/v1/settings/ldap"
 )
