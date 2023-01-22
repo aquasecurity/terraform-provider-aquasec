@@ -119,12 +119,11 @@ func (cli *Client) getVulnerabilities(image *Image, page, pagesize int) (*Vulner
 	var response VulnerabilitiesList
 	request := cli.gorequest
 	apiPath := fmt.Sprintf("/api/v2/risks/vulnerabilities?page=%v&pagesize=%v&include_vpatch_info=true&show_negligible=true&hide_base_image=false&image_name=%v:%v&registry_name=%v", page, pagesize, image.Repository, image.Tag, image.Registry)
-	request.Set("Authorization", "Bearer "+cli.token)
 	err = cli.limiter.Wait(context.Background())
 	if err != nil {
 		return nil, err
 	}
-	events, body, errs := request.Clone().Get(cli.url + apiPath).End()
+	events, body, errs := request.Clone().Set("Authorization", "Bearer "+cli.token).Get(cli.url + apiPath).End()
 	if errs != nil {
 		return nil, errors.Wrap(getMergedError(errs), fmt.Sprintf("failed getting vulnerabilities with name %v/%v:%v", image.Registry, image.Repository, image.Tag))
 	}

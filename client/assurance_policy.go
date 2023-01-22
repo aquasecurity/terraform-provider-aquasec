@@ -149,7 +149,6 @@ type ScanTimeAuto struct {
 func (cli *Client) GetAssurancePolicy(name string, at string) (*AssurancePolicy, error) {
 	var err error
 	var response AssurancePolicy
-	cli.gorequest.Set("Authorization", "Bearer "+cli.token)
 	var atype string
 	if strings.EqualFold(at, "host") {
 		atype = "host"
@@ -165,7 +164,7 @@ func (cli *Client) GetAssurancePolicy(name string, at string) (*AssurancePolicy,
 	if err != nil {
 		return nil, err
 	}
-	resp, body, errs := cli.gorequest.Clone().Get(cli.url + apiPath).End()
+	resp, body, errs := cli.gorequest.Clone().Set("Authorization", "Bearer "+cli.token).Get(cli.url + apiPath).End()
 	if errs != nil {
 		return nil, errors.Wrap(getMergedError(errs), "failed getting  Assurance Policy")
 	}
@@ -214,12 +213,11 @@ func (cli *Client) CreateAssurancePolicy(assurancepolicy *AssurancePolicy, at st
 		return err
 	}
 	request := cli.gorequest
-	request.Set("Authorization", "Bearer "+cli.token)
 	err = cli.limiter.Wait(context.Background())
 	if err != nil {
 		return err
 	}
-	resp, _, errs := request.Clone().Post(cli.url + apiPath).Send(string(payload)).End()
+	resp, _, errs := request.Clone().Set("Authorization", "Bearer "+cli.token).Post(cli.url + apiPath).Send(string(payload)).End()
 	if errs != nil {
 		return errors.Wrap(getMergedError(errs), "failed creating  Assurance Policy.")
 	}
@@ -258,12 +256,11 @@ func (cli *Client) UpdateAssurancePolicy(assurancepolicy *AssurancePolicy, at st
 	}
 	apiPath := "/api/v2/assurance_policy/" + atype + "/" + assurancepolicy.Name
 	request := cli.gorequest
-	request.Set("Authorization", "Bearer "+cli.token)
 	err = cli.limiter.Wait(context.Background())
 	if err != nil {
 		return err
 	}
-	resp, _, errs := request.Clone().Put(cli.url + apiPath).Send(string(payload)).End()
+	resp, _, errs := request.Clone().Set("Authorization", "Bearer "+cli.token).Put(cli.url + apiPath).Send(string(payload)).End()
 	if errs != nil {
 		return errors.Wrap(getMergedError(errs), "failed modifying  Assurance Policy")
 	}
@@ -287,7 +284,6 @@ func (cli *Client) UpdateAssurancePolicy(assurancepolicy *AssurancePolicy, at st
 // DeleteAssurancePolicy removes a  Assurance Policy
 func (cli *Client) DeleteAssurancePolicy(name string, at string) error {
 	request := cli.gorequest
-	request.Set("Authorization", "Bearer "+cli.token)
 	var atype string
 	if strings.EqualFold(at, "host") {
 		atype = "host"
@@ -303,7 +299,7 @@ func (cli *Client) DeleteAssurancePolicy(name string, at string) error {
 	if err != nil {
 		return err
 	}
-	resp, _, errs := request.Clone().Delete(cli.url + apiPath).End()
+	resp, _, errs := request.Clone().Set("Authorization", "Bearer "+cli.token).Delete(cli.url + apiPath).End()
 	if errs != nil {
 		return errors.Wrap(getMergedError(errs), "failed deleting  Assurance Policy")
 	}

@@ -100,13 +100,12 @@ func (cli *Client) CreateApplicationScope(applicationscope *ApplicationScope) er
 		return err
 	}
 	request := cli.gorequest
-	request.Set("Authorization", "Bearer "+cli.token)
 	apiPath := fmt.Sprintf("/api/v2/access_management/scopes")
 	err = cli.limiter.Wait(context.Background())
 	if err != nil {
 		return err
 	}
-	resp, _, errs := request.Clone().Post(cli.url + apiPath).Send(string(payload)).End()
+	resp, _, errs := request.Clone().Set("Authorization", "Bearer "+cli.token).Post(cli.url + apiPath).Send(string(payload)).End()
 	if errs != nil {
 		return errors.Wrap(getMergedError(errs), "failed creating Application Scope.")
 	}
@@ -134,13 +133,12 @@ func (cli *Client) UpdateApplicationScope(applicationscope *ApplicationScope, na
 		return err
 	}
 	request := cli.gorequest
-	request.Set("Authorization", "Bearer "+cli.token)
 	apiPath := fmt.Sprintf("/api/v2/access_management/scopes/%s", name)
 	err = cli.limiter.Wait(context.Background())
 	if err != nil {
 		return err
 	}
-	resp, _, errs := request.Clone().Put(cli.url + apiPath).Send(string(payload)).End()
+	resp, _, errs := request.Clone().Set("Authorization", "Bearer "+cli.token).Put(cli.url + apiPath).Send(string(payload)).End()
 	if errs != nil {
 		return errors.Wrap(getMergedError(errs), "failed modifying Application Scope")
 	}
@@ -164,13 +162,12 @@ func (cli *Client) UpdateApplicationScope(applicationscope *ApplicationScope, na
 // DeleteApplicationScope removes a Application Scope
 func (cli *Client) DeleteApplicationScope(name string) error {
 	request := cli.gorequest
-	request.Set("Authorization", "Bearer "+cli.token)
 	apiPath := fmt.Sprintf("/api/v2/access_management/scopes/%s", name)
 	err := cli.limiter.Wait(context.Background())
 	if err != nil {
 		return err
 	}
-	resp, _, errs := request.Clone().Delete(cli.url + apiPath).End()
+	resp, _, errs := request.Clone().Set("Authorization", "Bearer "+cli.token).Delete(cli.url + apiPath).End()
 	if errs != nil {
 		return errors.Wrap(getMergedError(errs), "failed deleting Application Scope")
 	}

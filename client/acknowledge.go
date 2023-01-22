@@ -54,13 +54,12 @@ func (cli *Client) AcknowledgeCreate(acknowledgePost AcknowledgePost) error {
 	}
 
 	request := cli.gorequest
-	request.Set("Authorization", "Bearer "+cli.token)
 	apiPath := fmt.Sprintf("/api/v2/risks/acknowledge")
 	err = cli.limiter.Wait(context.Background())
 	if err != nil {
 		return err
 	}
-	resp, data, errs := request.Clone().Post(cli.url + apiPath).Send(string(payload)).End()
+	resp, data, errs := request.Clone().Set("Authorization", "Bearer "+cli.token).Post(cli.url + apiPath).Send(string(payload)).End()
 	if errs != nil {
 		return errors.Wrap(err, "failed creating security acknowledges")
 	}
@@ -77,13 +76,13 @@ func (cli *Client) AcknowledgeRead() (*AcknowledgeList, error) {
 	var response AcknowledgeList
 
 	request := cli.gorequest
-	request.Set("Authorization", "Bearer "+cli.token)
+
 	apiPath := fmt.Sprintf("/api/v2/risks/acknowledge?order_by=date")
 	err = cli.limiter.Wait(context.Background())
 	if err != nil {
 		return nil, err
 	}
-	events, body, errs := request.Clone().Get(cli.url + apiPath).End()
+	events, body, errs := request.Clone().Set("Authorization", "Bearer "+cli.token).Get(cli.url + apiPath).End()
 	if errs != nil {
 		err = fmt.Errorf("error calling %s", apiPath)
 		return nil, err
@@ -105,13 +104,12 @@ func (cli *Client) AcknowledgeDelete(acknowledgePost AcknowledgePost) error {
 		return err
 	}
 	request := cli.gorequest
-	request.Set("Authorization", "Bearer "+cli.token)
 	apiPath := fmt.Sprintf("/api/v2/risks/acknowledge/multiple")
 	err = cli.limiter.Wait(context.Background())
 	if err != nil {
 		return err
 	}
-	resp, data, errs := request.Clone().Delete(cli.url + apiPath).Send(string(payload)).End()
+	resp, data, errs := request.Clone().Set("Authorization", "Bearer "+cli.token).Delete(cli.url + apiPath).Send(string(payload)).End()
 	if errs != nil {
 		return errors.Wrap(err, "failed deleting security acknowledges")
 	}

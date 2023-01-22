@@ -29,13 +29,12 @@ func (cli *Client) SlackNotificationCreate(notf Notification) error {
 		return err
 	}
 	request := cli.gorequest
-	request.Set("Authorization", "Bearer "+cli.token)
 	apiPath := fmt.Sprintf("/api/v1/settings/notifiers/Slack")
 	err = cli.limiter.Wait(context.Background())
 	if err != nil {
 		return err
 	}
-	resp, data, errs := request.Clone().Put(cli.url + apiPath).Send(string(payload)).End()
+	resp, data, errs := request.Clone().Set("Authorization", "Bearer "+cli.token).Put(cli.url + apiPath).Send(string(payload)).End()
 	if errs != nil {
 		return errors.Wrap(err, "failed creating Slack notification")
 	}
@@ -53,13 +52,12 @@ func (cli *Client) SlackNotificationUpdate(notf Notification) error {
 		return err
 	}
 	request := cli.gorequest
-	request.Set("Authorization", "Bearer "+cli.token)
-	apiPath := fmt.Sprintf("/api/v1/settings/notifiers/Slack")
+	apiPath := "/api/v1/settings/notifiers/Slack"
 	err = cli.limiter.Wait(context.Background())
 	if err != nil {
 		return err
 	}
-	resp, data, errs := request.Clone().Put(cli.url + apiPath).Send(string(payload)).End()
+	resp, data, errs := request.Clone().Set("Authorization", "Bearer "+cli.token).Put(cli.url + apiPath).Send(string(payload)).End()
 	if errs != nil {
 		return errors.Wrap(err, "failed creating Slack notification")
 	}
@@ -75,13 +73,12 @@ func (cli *Client) SlackNotificationRead() (*Notification, error) {
 	var response Notification
 
 	request := cli.gorequest
-	request.Set("Authorization", "Bearer "+cli.token)
-	apiPath := fmt.Sprintf("/api/v1/settings/notifiers/Slack")
+	apiPath := "/api/v1/settings/notifiers/Slack"
 	err = cli.limiter.Wait(context.Background())
 	if err != nil {
 		return nil, err
 	}
-	events, body, errs := request.Clone().Get(cli.url + apiPath).End()
+	events, body, errs := request.Clone().Set("Authorization", "Bearer "+cli.token).Get(cli.url + apiPath).End()
 	if errs != nil {
 		err = fmt.Errorf("error calling %s", apiPath)
 		return nil, err
@@ -105,13 +102,12 @@ func (cli *Client) SlackNotificationDelete(notf Notification) error {
 		return err
 	}
 	request := cli.gorequest
-	request.Set("Authorization", "Bearer "+cli.token)
-	apiPath := fmt.Sprintf("/api/v1/settings/notifiers/Slack")
+	apiPath := "/api/v1/settings/notifiers/Slack"
 	err = cli.limiter.Wait(context.Background())
 	if err != nil {
 		return err
 	}
-	resp, data, errs := request.Clone().Put(cli.url + apiPath).Send(string(payload)).End()
+	resp, data, errs := request.Clone().Set("Authorization", "Bearer "+cli.token).Put(cli.url + apiPath).Send(string(payload)).End()
 	if errs != nil {
 		return errors.Wrap(err, "failed deleting Slack notification")
 	}

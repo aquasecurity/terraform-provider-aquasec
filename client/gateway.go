@@ -25,13 +25,12 @@ type Gateway struct {
 func (cli *Client) GetGateway(name string) (*Gateway, error) {
 	var err error
 	var response Gateway
-	cli.gorequest.Set("Authorization", "Bearer "+cli.token)
 	apiPath := fmt.Sprintf("/api/v1/servers/%s", name)
 	err = cli.limiter.Wait(context.Background())
 	if err != nil {
 		return nil, err
 	}
-	events, body, errs := cli.gorequest.Clone().Get(cli.url + apiPath).End()
+	events, body, errs := cli.gorequest.Clone().Set("Authorization", "Bearer "+cli.token).Get(cli.url + apiPath).End()
 	if errs != nil {
 		log.Println(events.StatusCode)
 		err = fmt.Errorf("error calling %s", apiPath)
@@ -56,13 +55,12 @@ func (cli *Client) GetGateways() ([]Gateway, error) {
 	var err error
 	var response []Gateway
 	request := cli.gorequest
-	request.Set("Authorization", "Bearer "+cli.token)
-	apiPath := fmt.Sprintf("/api/v1/servers")
+	apiPath := "/api/v1/servers"
 	err = cli.limiter.Wait(context.Background())
 	if err != nil {
 		return nil, err
 	}
-	events, body, errs := request.Clone().Get(cli.url + apiPath).End()
+	events, body, errs := request.Clone().Set("Authorization", "Bearer "+cli.token).Get(cli.url + apiPath).End()
 	if errs != nil {
 		err = fmt.Errorf("error calling %s", apiPath)
 		return nil, err

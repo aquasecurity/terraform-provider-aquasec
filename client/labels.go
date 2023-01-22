@@ -25,13 +25,12 @@ type AquaLabels struct {
 func (cli *Client) GetAquaLabel(name string) (*AquaLabel, error) {
 	var err error
 	var response AquaLabel
-	cli.gorequest.Set("Authorization", "Bearer "+cli.token)
 	apiPath := fmt.Sprintf("/api/v1/settings/labels/%s", name)
 	err = cli.limiter.Wait(context.Background())
 	if err != nil {
 		return nil, err
 	}
-	resp, body, errs := cli.gorequest.Clone().Get(cli.url + apiPath).End()
+	resp, body, errs := cli.gorequest.Clone().Set("Authorization", "Bearer "+cli.token).Get(cli.url + apiPath).End()
 	if errs != nil {
 		return nil, errors.Wrap(getMergedError(errs), "failed getting Aqua label")
 	}
@@ -65,13 +64,12 @@ func (cli *Client) GetAquaLabel(name string) (*AquaLabel, error) {
 func (cli *Client) GetAquaLabels() (*AquaLabels, error) {
 	var err error
 	var response AquaLabels
-	cli.gorequest.Set("Authorization", "Bearer "+cli.token)
 	apiPath := fmt.Sprintf("/api/v2/settings/labels")
 	err = cli.limiter.Wait(context.Background())
 	if err != nil {
 		return nil, err
 	}
-	resp, body, errs := cli.gorequest.Clone().Get(cli.url + apiPath).End()
+	resp, body, errs := cli.gorequest.Clone().Set("Authorization", "Bearer "+cli.token).Get(cli.url + apiPath).End()
 	if errs != nil {
 		return nil, errors.Wrap(getMergedError(errs), "failed getting Aqua labels")
 	}
@@ -107,13 +105,12 @@ func (cli *Client) CreateAquaLabel(aquaLabel *AquaLabel) error {
 		return err
 	}
 	request := cli.gorequest
-	request.Set("Authorization", "Bearer "+cli.token)
 	apiPath := fmt.Sprintf("/api/v1/settings/labels")
 	err = cli.limiter.Wait(context.Background())
 	if err != nil {
 		return err
 	}
-	resp, _, errs := request.Clone().Post(cli.url + apiPath).Send(string(payload)).End()
+	resp, _, errs := request.Clone().Set("Authorization", "Bearer "+cli.token).Post(cli.url + apiPath).Send(string(payload)).End()
 	if errs != nil {
 		return errors.Wrap(getMergedError(errs), "failed creating Aqua label.")
 	}
@@ -141,13 +138,12 @@ func (cli *Client) UpdateAquaLabel(aquaLabel *AquaLabel) error {
 		return err
 	}
 	request := cli.gorequest
-	request.Set("Authorization", "Bearer "+cli.token)
 	apiPath := fmt.Sprintf("/api/v1/settings/labels/%s", aquaLabel.Name)
 	err = cli.limiter.Wait(context.Background())
 	if err != nil {
 		return err
 	}
-	resp, _, errs := request.Clone().Put(cli.url + apiPath).Send(string(payload)).End()
+	resp, _, errs := request.Clone().Set("Authorization", "Bearer "+cli.token).Put(cli.url + apiPath).Send(string(payload)).End()
 	if errs != nil {
 		return errors.Wrap(getMergedError(errs), "failed modifying Aqua label")
 	}
@@ -171,13 +167,12 @@ func (cli *Client) UpdateAquaLabel(aquaLabel *AquaLabel) error {
 // DeleteAquaLabel removes a Aqua label
 func (cli *Client) DeleteAquaLabel(name string) error {
 	request := cli.gorequest
-	request.Set("Authorization", "Bearer "+cli.token)
 	apiPath := fmt.Sprintf("/api/v1/settings/labels/%s", name)
 	err := cli.limiter.Wait(context.Background())
 	if err != nil {
 		return err
 	}
-	resp, _, errs := request.Clone().Delete(cli.url + apiPath).End()
+	resp, _, errs := request.Clone().Set("Authorization", "Bearer "+cli.token).Delete(cli.url + apiPath).End()
 	if errs != nil {
 		return errors.Wrap(getMergedError(errs), "failed deleting Aqua label")
 	}

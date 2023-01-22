@@ -134,7 +134,6 @@ func (cli *Client) GetIntegrationState() (*IntegrationState, error) {
 	case Csp:
 		apiPath = "/api/v2/integrationsEnabledState"
 		baseUrl = cli.url
-		request.Set("Authorization", "Bearer "+cli.token)
 	case SaasDev:
 		err = fmt.Errorf("GetSSO is Supported only in Aqua on prem env")
 		return nil, err
@@ -149,7 +148,7 @@ func (cli *Client) GetIntegrationState() (*IntegrationState, error) {
 	if err != nil {
 		return nil, err
 	}
-	events, body, errs := request.Get(baseUrl+apiPath).Set("Authorization", fmt.Sprintf("Bearer %s", cli.token)).End()
+	events, body, errs := request.Clone().Set("Authorization", fmt.Sprintf("Bearer %s", cli.token)).Get(baseUrl + apiPath).End()
 
 	if errs != nil {
 		err = fmt.Errorf("error calling %s", apiPath)
@@ -214,7 +213,6 @@ func (cli *Client) getSsoBasic(apiPath string) (string, error) {
 	switch cli.clientType {
 	case Csp:
 		baseUrl = cli.url
-		request.Set("Authorization", "Bearer "+cli.token)
 	case SaasDev:
 		err = fmt.Errorf("GetSSO is Supported only in Aqua on prem env")
 		return "", err
@@ -230,7 +228,7 @@ func (cli *Client) getSsoBasic(apiPath string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	events, body, errs := request.Get(baseUrl+apiPath).Set("Authorization", fmt.Sprintf("Bearer %s", cli.token)).End()
+	events, body, errs := request.Clone().Set("Authorization", fmt.Sprintf("Bearer %s", cli.token)).Get(baseUrl + apiPath).End()
 
 	if errs != nil {
 		err = fmt.Errorf("error calling %s", apiPath)
@@ -257,7 +255,6 @@ func (cli *Client) createSsoBasic(apiPath string, sso interface{}) error {
 	switch cli.clientType {
 	case Csp:
 		baseUrl = cli.url
-		request.Set("Authorization", "Bearer "+cli.token)
 	case SaasDev:
 		err = fmt.Errorf("GetSSO is Supported only in Aqua on prem env")
 		return err
@@ -273,7 +270,7 @@ func (cli *Client) createSsoBasic(apiPath string, sso interface{}) error {
 	if err != nil {
 		return err
 	}
-	events, _, errs := request.Put(baseUrl+apiPath).Set("Authorization", fmt.Sprintf("Bearer %s", cli.token)).Send(string(payload)).End()
+	events, _, errs := request.Clone().Set("Authorization", fmt.Sprintf("Bearer %s", cli.token)).Put(baseUrl + apiPath).Send(string(payload)).End()
 
 	if errs != nil {
 		err = fmt.Errorf("error calling %s, error: %v", apiPath, err)
@@ -312,7 +309,7 @@ func (cli *Client) GetRoleMappingSass(id string) (*RoleMappingSaas, error) {
 		return nil, err
 	}
 
-	events, body, errs := request.Get(baseUrl+apiPath).Set("Authorization", fmt.Sprintf("Bearer %s", cli.token)).End()
+	events, body, errs := request.Clone().Set("Authorization", fmt.Sprintf("Bearer %s", cli.token)).Get(baseUrl + apiPath).End()
 
 	if errs != nil {
 		err = fmt.Errorf("error calling %s", apiPath)
@@ -359,7 +356,7 @@ func (cli *Client) GetRolesMappingSass() (*RoleMappingSaasList, error) {
 		return nil, err
 	}
 
-	events, body, errs := request.Get(baseUrl+apiPath).Set("Authorization", fmt.Sprintf("Bearer %s", cli.token)).End()
+	events, body, errs := request.Clone().Set("Authorization", fmt.Sprintf("Bearer %s", cli.token)).Get(baseUrl + apiPath).End()
 
 	if errs != nil {
 		err = fmt.Errorf("error calling %s", apiPath)
@@ -411,7 +408,7 @@ func (cli *Client) CreateRoleMappingSaas(saas *RoleMappingSaas) error {
 		return err
 	}
 
-	events, body, errs := request.Post(baseUrl+apiPath).Set("Authorization", fmt.Sprintf("Bearer %s", cli.token)).Send(string(payload)).End()
+	events, body, errs := request.Clone().Set("Authorization", fmt.Sprintf("Bearer %s", cli.token)).Post(baseUrl + apiPath).Send(string(payload)).End()
 
 	if errs != nil {
 		err = fmt.Errorf("error calling %s", apiPath)
@@ -461,7 +458,7 @@ func (cli *Client) UpdateRoleMappingSaas(saas *RoleMappingSaas, id string) error
 		return err
 	}
 
-	events, body, errs := request.Put(baseUrl+apiPath).Set("Authorization", fmt.Sprintf("Bearer %s", cli.token)).Send(string(payload)).End()
+	events, body, errs := request.Clone().Set("Authorization", fmt.Sprintf("Bearer %s", cli.token)).Put(baseUrl + apiPath).Send(string(payload)).End()
 
 	if errs != nil {
 		err = fmt.Errorf("error calling %s", apiPath)
@@ -505,7 +502,7 @@ func (cli *Client) DeleteRoleMappingSass(id string) error {
 		return err
 	}
 
-	events, body, errs := request.Delete(baseUrl+apiPath).Set("Authorization", fmt.Sprintf("Bearer %s", cli.token)).End()
+	events, body, errs := request.Clone().Set("Authorization", fmt.Sprintf("Bearer %s", cli.token)).Delete(baseUrl + apiPath).End()
 
 	if errs != nil {
 		err = fmt.Errorf("error calling %s", apiPath)
