@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"strconv"
+	"strings"
 
 	"github.com/aquasecurity/terraform-provider-aquasec/client"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -67,16 +68,20 @@ func resourceGroupRead(d *schema.ResourceData, m interface{}) error {
 		return nil
 	}
 	r, err := ac.GetGroup(id)
-	if err == nil {
-		d.Set("name", r.Name)
-		d.Set("group_id", r.Id)
-		d.Set("created", r.Created)
-		d.SetId(fmt.Sprintf("%v", id))
 
-	} else {
-		log.Println("[DEBUG]  error calling ac.ReadGroup: ", r)
+	if err != nil {
+		if strings.Contains(fmt.Sprintf("%s", err), "404 Not Found") {
+			d.SetId("")
+			return nil
+		}
 		return err
 	}
+
+	d.Set("name", r.Name)
+	d.Set("group_id", r.Id)
+	d.Set("created", r.Created)
+	d.SetId(fmt.Sprintf("%v", id))
+
 	return nil
 }
 

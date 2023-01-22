@@ -2,6 +2,8 @@ package aquasec
 
 import (
 	"context"
+	"fmt"
+	"strings"
 
 	"github.com/aquasecurity/terraform-provider-aquasec/client"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
@@ -195,36 +197,41 @@ func resourceServiceRead(ctx context.Context, d *schema.ResourceData, m interfac
 	c := m.(*client.Client)
 
 	service, err := c.GetService(d.Id())
-	if err == nil {
-		d.Set("name", service.Name)
-		d.Set("description", service.Description)
-		d.Set("author", service.Author)
-		d.Set("containers_count", service.ContainersCount)
-		d.Set("monitoring", service.Monitoring)
-		d.Set("evaluated", service.Evaluated)
-		d.Set("policies", service.Policies)
-		d.Set("lastupdate", service.Lastupdate)
-		d.Set("vulnerabilities_total", service.Vulnerabilities.Total)
-		d.Set("vulnerabilities_high", service.Vulnerabilities.High)
-		d.Set("vulnerabilities_medium", service.Vulnerabilities.Medium)
-		d.Set("vulnerabilities_low", service.Vulnerabilities.Low)
-		d.Set("vulnerabilities_sensitive", service.Vulnerabilities.Sensitive)
-		d.Set("vulnerabilities_malware", service.Vulnerabilities.Malware)
-		d.Set("vulnerabilities_negligible", service.Vulnerabilities.Negligible)
-		d.Set("vulnerabilities_score_average", service.Vulnerabilities.ScoreAverage)
-		d.Set("enforce", service.Enforce)
-		d.Set("priority", service.MembershipRules.Priority)
-		d.Set("target", service.MembershipRules.Target)
-		d.Set("scope_expression", service.MembershipRules.Scope.Expression)
-		d.Set("scope_variables", flattenScopeVariables(service.MembershipRules.Scope.Variables))
-		d.Set("not_evaluated_count", service.NotEvaluatedCount)
-		d.Set("unregistered_count", service.UnregisteredCount)
-		d.Set("is_registered", service.IsRegistered)
-		d.Set("application_scopes", service.ApplicationScopes)
-		d.SetId(service.Name)
-	} else {
+
+	if err != nil {
+		if strings.Contains(fmt.Sprintf("%s", err), "404 Not Found") {
+			d.SetId("")
+			return nil
+		}
 		return diag.FromErr(err)
 	}
+
+	d.Set("name", service.Name)
+	d.Set("description", service.Description)
+	d.Set("author", service.Author)
+	d.Set("containers_count", service.ContainersCount)
+	d.Set("monitoring", service.Monitoring)
+	d.Set("evaluated", service.Evaluated)
+	d.Set("policies", service.Policies)
+	d.Set("lastupdate", service.Lastupdate)
+	d.Set("vulnerabilities_total", service.Vulnerabilities.Total)
+	d.Set("vulnerabilities_high", service.Vulnerabilities.High)
+	d.Set("vulnerabilities_medium", service.Vulnerabilities.Medium)
+	d.Set("vulnerabilities_low", service.Vulnerabilities.Low)
+	d.Set("vulnerabilities_sensitive", service.Vulnerabilities.Sensitive)
+	d.Set("vulnerabilities_malware", service.Vulnerabilities.Malware)
+	d.Set("vulnerabilities_negligible", service.Vulnerabilities.Negligible)
+	d.Set("vulnerabilities_score_average", service.Vulnerabilities.ScoreAverage)
+	d.Set("enforce", service.Enforce)
+	d.Set("priority", service.MembershipRules.Priority)
+	d.Set("target", service.MembershipRules.Target)
+	d.Set("scope_expression", service.MembershipRules.Scope.Expression)
+	d.Set("scope_variables", flattenScopeVariables(service.MembershipRules.Scope.Variables))
+	d.Set("not_evaluated_count", service.NotEvaluatedCount)
+	d.Set("unregistered_count", service.UnregisteredCount)
+	d.Set("is_registered", service.IsRegistered)
+	d.Set("application_scopes", service.ApplicationScopes)
+	d.SetId(service.Name)
 
 	return nil
 }

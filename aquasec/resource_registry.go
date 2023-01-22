@@ -1,7 +1,9 @@
 package aquasec
 
 import (
+	"fmt"
 	"log"
+	"strings"
 	"time"
 
 	"github.com/aquasecurity/terraform-provider-aquasec/client"
@@ -230,9 +232,13 @@ func resourceRegistryRead(d *schema.ResourceData, m interface{}) error {
 
 	r, err := ac.GetRegistry(d.Id())
 	if err != nil {
-		log.Println("[DEBUG]  error calling ac.GetRegistry: ", r)
+		if strings.Contains(fmt.Sprintf("%s", err), "404 Not Found") {
+			d.SetId("")
+			return nil
+		}
 		return err
 	}
+
 	if err = d.Set("auto_pull", r.AutoPull); err != nil {
 		return err
 	}

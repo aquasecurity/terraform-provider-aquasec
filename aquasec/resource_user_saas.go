@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"strconv"
+	"strings"
 
 	"github.com/aquasecurity/terraform-provider-aquasec/client"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -207,7 +208,10 @@ func resourceUserSaasRead(d *schema.ResourceData, m interface{}) error {
 	ac := m.(*client.Client)
 	r, err := ac.GetUser(d.Id())
 	if err != nil {
-		log.Println("[DEBUG]  error calling ac.ReadUser: ", r)
+		if strings.Contains(fmt.Sprintf("%s", err), "404 Not Found") {
+			d.SetId("")
+			return nil
+		}
 		return err
 	}
 	logins := make([]interface{}, len(r.BasicUser.Logins))

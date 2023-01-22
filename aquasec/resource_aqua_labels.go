@@ -1,7 +1,9 @@
 package aquasec
 
 import (
+	"fmt"
 	"log"
+	"strings"
 
 	"github.com/aquasecurity/terraform-provider-aquasec/client"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -67,8 +69,13 @@ func resourceAquaLabelRead(d *schema.ResourceData, m interface{}) error {
 	r, err := c.GetAquaLabel(d.Id())
 
 	if err != nil {
+		if strings.Contains(fmt.Sprintf("%s", err), "404 Not Found") {
+			d.SetId("")
+			return nil
+		}
 		return err
 	}
+
 	d.Set("name", r.Name)
 	d.Set("description", r.Description)
 	d.Set("created", r.Created)

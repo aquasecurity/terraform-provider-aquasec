@@ -1,8 +1,10 @@
 package aquasec
 
 import (
+	"fmt"
 	"github.com/aquasecurity/terraform-provider-aquasec/client"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"strings"
 )
 
 func resourcePermissionSet() *schema.Resource {
@@ -104,16 +106,22 @@ func resourcePermissionSetRead(d *schema.ResourceData, m interface{}) error {
 	ac := m.(*client.Client)
 
 	iap, err := ac.GetPermissionsSet(d.Id())
-	if err == nil {
-		d.Set("name", iap.Name)
-		d.Set("description", iap.Description)
-		d.Set("author", iap.Author)
-		d.Set("ui_access", iap.UiAccess)
-		d.Set("is_super", iap.IsSuper)
-		d.Set("actions", iap.Actions)
-	} else {
+
+	if err != nil {
+		if strings.Contains(fmt.Sprintf("%s", err), "404 Not Found") {
+			d.SetId("")
+			return nil
+		}
 		return err
 	}
+
+	d.Set("name", iap.Name)
+	d.Set("description", iap.Description)
+	d.Set("author", iap.Author)
+	d.Set("ui_access", iap.UiAccess)
+	d.Set("is_super", iap.IsSuper)
+	d.Set("actions", iap.Actions)
+
 	return nil
 }
 

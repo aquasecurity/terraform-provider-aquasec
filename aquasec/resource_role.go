@@ -1,7 +1,9 @@
 package aquasec
 
 import (
+	"fmt"
 	"log"
+	"strings"
 	"time"
 
 	"github.com/aquasecurity/terraform-provider-aquasec/client"
@@ -77,15 +79,20 @@ func resourceRoleRead(d *schema.ResourceData, m interface{}) error {
 	ac := m.(*client.Client)
 
 	r, err := ac.GetRole(d.Id())
-	if err == nil {
-		d.Set("name", r.Name)
-		d.Set("updated_at", r.UpdatedAt)
-		d.Set("author", r.Author)
-	} else {
-		log.Println("[DEBUG]  error calling ac.ReadRole: ", r)
+
+	if err != nil {
+		if strings.Contains(fmt.Sprintf("%s", err), "404 Not Found") {
+			d.SetId("")
+			return nil
+		}
 		return err
 	}
-	return err
+
+	d.Set("name", r.Name)
+	d.Set("updated_at", r.UpdatedAt)
+	d.Set("author", r.Author)
+
+	return nil
 }
 
 func resourceRoleUpdate(d *schema.ResourceData, m interface{}) error {

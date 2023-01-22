@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/aquasecurity/terraform-provider-aquasec/client"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"strings"
 	"time"
 )
 
@@ -226,15 +227,20 @@ func resourceAcknowledgeRead(d *schema.ResourceData, m interface{}) error {
 	}
 
 	currentAcknowledges, err := ac.AcknowledgeRead()
-	if err == nil {
-		updateIssuesFromReadList(&acknowledgePost, currentAcknowledges)
-	} else {
+
+	if err != nil {
+		if strings.Contains(fmt.Sprintf("%s", err), "404 Not Found") {
+			d.SetId("")
+			return nil
+		}
 		return err
 	}
 
-	err = d.Set("comment", acknowledgePost.Comment)
+	updateIssuesFromReadList(&acknowledgePost, currentAcknowledges)
+
+	d.Set("comment", acknowledgePost.Comment)
 	flattenIssues, id := flattenIssues(acknowledgePost.Issues)
-	err = d.Set("issues", flattenIssues)
+	d.Set("issues", flattenIssues)
 	d.SetId(id)
 
 	return nil
