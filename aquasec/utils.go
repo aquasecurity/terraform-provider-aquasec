@@ -6,6 +6,7 @@ import (
 	"github.com/aquasecurity/terraform-provider-aquasec/client"
 	"github.com/aquasecurity/terraform-provider-aquasec/consts"
 	os "os"
+	"strings"
 )
 
 func convertStringArr(ifaceArr []interface{}) []string {
@@ -184,5 +185,13 @@ func isSaasEnv() bool {
 		return true
 	default:
 		return false
+	}
+}
+
+func isResourceExist(response string) bool {
+	if strings.Contains(response, "404") {
+		return false
+	} else {
+		return true
 	}
 }
