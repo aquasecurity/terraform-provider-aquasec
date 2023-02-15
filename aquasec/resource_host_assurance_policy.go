@@ -680,7 +680,7 @@ func resourceHostAssurancePolicyRead(d *schema.ResourceData, m interface{}) erro
 	iap, err := ac.GetAssurancePolicy(d.Id(), assurance_type)
 
 	if err != nil {
-		if strings.Contains(fmt.Sprintf("%s", err), "404 Not Found") {
+		if strings.Contains(fmt.Sprintf("%s", err), "404") {
 			d.SetId("")
 			return nil
 		}

@@ -720,7 +720,7 @@ func resourceImageRead(ctx context.Context, d *schema.ResourceData, m interface{
 	newImage, err := c.GetImage(id)
 
 	if err != nil {
-		if strings.Contains(fmt.Sprintf("%s", err), "404 Not Found") {
+		if strings.Contains(fmt.Sprintf("%s", err), "404") {
 			d.SetId("")
 			return nil
 		}
@@ -730,7 +730,7 @@ func resourceImageRead(ctx context.Context, d *schema.ResourceData, m interface{
 	vulnerabilities, err := c.GetVulnerabilities(newImage)
 
 	if err != nil {
-		if strings.Contains(fmt.Sprintf("%s", err), "404 Not Found") {
+		if strings.Contains(fmt.Sprintf("%s", err), "404") {
 			d.SetId("")
 			return nil
 		}

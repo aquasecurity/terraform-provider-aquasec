@@ -19,7 +19,7 @@ func newTestImage() client.Image {
 }
 
 func TestResourceAquasecImageCreate(t *testing.T) {
-	t.Parallel()
+	//t.Parallel()
 	image := newTestImage()
 	rootRef := imageResourceRef("test")
 	resource.Test(t, resource.TestCase{
@@ -61,7 +61,7 @@ func TestResourceAquasecImageCreate(t *testing.T) {
 }
 
 func TestResourceAquasecImageAllow(t *testing.T) {
-	t.Parallel()
+	//t.Parallel()
 	image := newTestImage()
 	rootRef := imageResourceRef("test")
 	resource.Test(t, resource.TestCase{
@@ -92,7 +92,7 @@ func TestResourceAquasecImageAllow(t *testing.T) {
 }
 
 func TestResourceAquasecImageBlock(t *testing.T) {
-	t.Parallel()
+	//t.Parallel()
 	image := newTestImage()
 	rootRef := imageResourceRef("test")
 	resource.Test(t, resource.TestCase{
@@ -123,7 +123,7 @@ func TestResourceAquasecImageBlock(t *testing.T) {
 }
 
 func TestResourceAquasecImageAllowAndBlock(t *testing.T) {
-	t.Parallel()
+	//t.Parallel()
 	image := newTestImage()
 	rootRef := imageResourceRef("test")
 	resource.Test(t, resource.TestCase{

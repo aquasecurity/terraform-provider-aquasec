@@ -199,7 +199,7 @@ func resourceServiceRead(ctx context.Context, d *schema.ResourceData, m interfac
 	service, err := c.GetService(d.Id())
 
 	if err != nil {
-		if strings.Contains(fmt.Sprintf("%s", err), "404 Not Found") {
+		if strings.Contains(fmt.Sprintf("%s", err), "404") {
 			d.SetId("")
 			return nil
 		}

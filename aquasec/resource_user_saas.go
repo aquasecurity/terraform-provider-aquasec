@@ -208,7 +208,7 @@ func resourceUserSaasRead(d *schema.ResourceData, m interface{}) error {
 	ac := m.(*client.Client)
 	r, err := ac.GetUser(d.Id())
 	if err != nil {
-		if strings.Contains(fmt.Sprintf("%s", err), "404 Not Found") {
+		if strings.Contains(fmt.Sprintf("%s", err), "404") {
 			d.SetId("")
 			return nil
 		}

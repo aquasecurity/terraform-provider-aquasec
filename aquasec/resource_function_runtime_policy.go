@@ -168,7 +168,7 @@ func resourceFunctionRuntimePolicyRead(ctx context.Context, d *schema.ResourceDa
 	crp, err := c.GetRuntimePolicy(d.Id())
 
 	if err != nil {
-		if strings.Contains(fmt.Sprintf("%s", err), "404 Not Found") {
+		if strings.Contains(fmt.Sprintf("%s", err), "404") {
 			d.SetId("")
 			return nil
 		}
