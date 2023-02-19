@@ -1,9 +1,11 @@
 package aquasec
 
 import (
+	"fmt"
 	"github.com/aquasecurity/terraform-provider-aquasec/client"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"log"
+	"math/rand"
 )
 
 func dataSourceAcknowledges() *schema.Resource {
@@ -140,6 +142,9 @@ func dataAcknowledgesRead(d *schema.ResourceData, m interface{}) error {
 	result, err := c.AcknowledgeRead()
 	if err == nil {
 		acknowledges, id := flattenAcknowledgesData(result)
+		if id == "" {
+			id = fmt.Sprintf("no-ack-found-%d", rand.Int())
+		}
 		d.SetId(id)
 		if err := d.Set("acknowledges", acknowledges); err != nil {
 			return err

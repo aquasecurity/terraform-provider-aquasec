@@ -2,7 +2,9 @@ package aquasec
 
 import (
 	"context"
+	"fmt"
 	"log"
+	"math/rand"
 
 	"github.com/aquasecurity/terraform-provider-aquasec/client"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
@@ -21,39 +23,39 @@ func dataSourcePermissionsSets() *schema.Resource {
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"name": {
-							Type:     schema.TypeString,
+							Type:        schema.TypeString,
 							Description: "The name of the Permission Set, comprised of alphanumeric characters and '-', '_', ' ', ':', '.', '@', '!', '^'.",
-							Computed: true,
+							Computed:    true,
 						},
 						"description": {
-							Type:     schema.TypeString,
+							Type:        schema.TypeString,
 							Description: "Free text description for the Permission Set.",
-							Computed: true,
+							Computed:    true,
 						},
 						"author": {
-							Type:     schema.TypeString,
+							Type:        schema.TypeString,
 							Description: "The name of the user who created the Permission Set.",
-							Computed: true,
+							Computed:    true,
 						},
 						"updated_at": {
-							Type:     schema.TypeString,
+							Type:        schema.TypeString,
 							Description: "The date of the last modification of the Role.",
-							Computed: true,
+							Computed:    true,
 						},
 						"ui_access": {
-							Type:     schema.TypeBool,
+							Type:        schema.TypeBool,
 							Description: "Whether to allow UI access for users with this Permission Set.",
-							Computed: true,
+							Computed:    true,
 						},
 						"is_super": {
-							Type:     schema.TypeBool,
+							Type:        schema.TypeBool,
 							Description: "Give the Permission Set full access, meaning all actions are allowed without restriction.",
-							Computed: true,
+							Computed:    true,
 						},
 						"actions": {
-							Type:     schema.TypeList,
+							Type:        schema.TypeList,
 							Description: "List of allowed actions for the Permission Set (not relevant if 'is_super' is true).",
-							Computed: true,
+							Computed:    true,
 							Elem: &schema.Schema{
 								Type: schema.TypeString,
 							},
@@ -90,6 +92,9 @@ func dataPermissionsSetRead(ctx context.Context, d *schema.ResourceData, m inter
 		ps[i] = p
 	}
 
+	if id == "" {
+		id = fmt.Sprintf("no-permmisions-found-%d", rand.Int())
+	}
 	d.SetId(id)
 	if err := d.Set("permissions_sets", ps); err != nil {
 		return diag.FromErr(err)
