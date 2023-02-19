@@ -3,12 +3,12 @@
 page_title: "aquasec_aqua_label Resource - terraform-provider-aquasec"
 subcategory: ""
 description: |-
-  The data source aquasec_aqua_labels provides a method to query all aqua labels within the Aqua account management.The fields returned from this query are detailed in the Schema section below.
+  
 ---
 
 # aquasec_aqua_label (Resource)
 
-The data source `aquasec_aqua_labels` provides a method to query all aqua labels within the Aqua account management.The fields returned from this query are detailed in the Schema section below.
+
 
 
 

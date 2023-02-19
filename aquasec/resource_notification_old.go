@@ -8,12 +8,13 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
-func resourceNotification() *schema.Resource {
+func resourceNotificationOld() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceNotificationCreate,
-		Update: resourceNotificationUpdate,
-		Read:   resourceNotificationRead,
-		Delete: resourceNotificationDelete,
+		Description: "Provides an Aquasec Notification Slack resource",
+		Create:      resourceNotificationOldCreate,
+		Update:      resourceNotificationOldUpdate,
+		Read:        resourceNotificationOldRead,
+		Delete:      resourceNotificationOldDelete,
 		Importer: &schema.ResourceImporter{
 			StateContext: schema.ImportStatePassthroughContext,
 		},
@@ -59,10 +60,10 @@ func resourceNotification() *schema.Resource {
 
 }
 
-func resourceNotificationCreate(d *schema.ResourceData, m interface{}) error {
+func resourceNotificationOldCreate(d *schema.ResourceData, m interface{}) error {
 	ac := m.(*client.Client)
 
-	notification := client.Notification{
+	NotificationOld := client.NotificationOld{
 		UserName:   d.Get("user_name").(string),
 		WebhookURL: d.Get("webhook_url").(string),
 		Channel:    d.Get("channel").(string),
@@ -74,14 +75,14 @@ func resourceNotificationCreate(d *schema.ResourceData, m interface{}) error {
 		Type:       d.Get("type").(string),
 	}
 
-	err := ac.SlackNotificationCreate(notification)
+	err := ac.SlackNotificationCreate(NotificationOld)
 	if err != nil {
 		return err
 	}
 
 	//d.SetId(d.Get("name").(string))
 
-	err = resourceNotificationRead(d, m)
+	err = resourceNotificationOldRead(d, m)
 	if err == nil {
 		d.SetId("Slack")
 	} else {
@@ -91,10 +92,10 @@ func resourceNotificationCreate(d *schema.ResourceData, m interface{}) error {
 	return nil
 }
 
-func resourceNotificationUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceNotificationOldUpdate(d *schema.ResourceData, m interface{}) error {
 	ac := m.(*client.Client)
 
-	notification := client.Notification{
+	NotificationOld := client.NotificationOld{
 		UserName:   d.Get("user_name").(string),
 		WebhookURL: d.Get("webhook_url").(string),
 		Channel:    d.Get("channel").(string),
@@ -106,7 +107,7 @@ func resourceNotificationUpdate(d *schema.ResourceData, m interface{}) error {
 		Type:       d.Get("type").(string),
 	}
 
-	err := ac.SlackNotificationUpdate(notification)
+	err := ac.SlackNotificationUpdate(NotificationOld)
 	if err != nil {
 		return err
 	}
@@ -114,7 +115,7 @@ func resourceNotificationUpdate(d *schema.ResourceData, m interface{}) error {
 	return nil
 }
 
-func resourceNotificationRead(d *schema.ResourceData, m interface{}) error {
+func resourceNotificationOldRead(d *schema.ResourceData, m interface{}) error {
 	ac := m.(*client.Client)
 
 	r, err := ac.SlackNotificationRead()
@@ -146,10 +147,10 @@ func resourceNotificationRead(d *schema.ResourceData, m interface{}) error {
 	return nil
 }
 
-func resourceNotificationDelete(d *schema.ResourceData, m interface{}) error {
+func resourceNotificationOldDelete(d *schema.ResourceData, m interface{}) error {
 	ac := m.(*client.Client)
 
-	notification := client.Notification{
+	NotificationOld := client.NotificationOld{
 		UserName:   "",
 		WebhookURL: "",
 		Channel:    "",
@@ -161,7 +162,7 @@ func resourceNotificationDelete(d *schema.ResourceData, m interface{}) error {
 		Type:       "slack",
 	}
 
-	err := ac.SlackNotificationDelete(notification)
+	err := ac.SlackNotificationDelete(NotificationOld)
 	if err != nil {
 		return err
 	}

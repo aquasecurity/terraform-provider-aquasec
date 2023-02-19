@@ -2,6 +2,7 @@ package aquasec
 
 import (
 	"fmt"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/acctest"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
@@ -10,42 +11,74 @@ import (
 
 func TestAquasecNotification(t *testing.T) {
 	t.Parallel()
-	user_name := "Aquasec"
-	channel := "#general"
-	webhook_url := "terraform-eg"
-	enabled := true
-	stype := "slack"
-	name := "Slack"
+
+	nameTeams := acctest.RandomWithPrefix("terraform-teams")
+	nameEmail := acctest.RandomWithPrefix("terraform-email")
+
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,
-		CheckDestroy: CheckDestroy("aquasec_notification_slack.slacknew"),
+		CheckDestroy: CheckDestroy("aquasec_notification.notificationTeams"),
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckNotification(user_name, channel, webhook_url, enabled, stype, name),
+				Config: testAccCheckNotificationTeams(nameTeams),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckNotificationExists("aquasec_notification_slack.slacknew"),
+					testAccCheckNotificationExists("aquasec_notification.notificationTeams"),
 				),
 			},
 			{
-				ResourceName:      "aquasec_notification_slack.slacknew",
+				ResourceName:      "aquasec_notification.notificationTeams",
 				ImportState:       true,
 				ImportStateVerify: true,
 			},
 		},
 	})
+	resource.Test(t, resource.TestCase{
+		PreCheck:     func() { testAccPreCheck(t) },
+		Providers:    testAccProviders,
+		CheckDestroy: CheckDestroy("aquasec_notification.notificationEmail"),
+		Steps: []resource.TestStep{
+			{
+				Config: testAccCheckNotificationEmail(nameEmail),
+				Check: resource.ComposeTestCheckFunc(
+					testAccCheckNotificationExists("aquasec_notification.notificationEmail"),
+				),
+			},
+			{
+				ResourceName:            "aquasec_notification.notificationEmail",
+				ImportState:             true,
+				ImportStateVerify:       true,
+				ImportStateVerifyIgnore: []string{"properties.password", "properties.%"},
+			},
+		},
+	})
 }
 
-func testAccCheckNotification(user_name string, channel string, webhook_url string, enabled bool, stype string, name string) string {
+func testAccCheckNotificationTeams(name string) string {
 	return fmt.Sprintf(`
-	resource "aquasec_notification_slack" "slacknew" {
-		user_name = "%s"
-		channel = "%s"
-		webhook_url = "%s"
-		enabled = "%v"
-		type = "%s"
+	resource "aquasec_notification" "notificationTeams" {
 		name = "%s"
-	  }`, user_name, channel, webhook_url, enabled, stype, name)
+		type = "teams"
+		properties = {
+			url = "1.1.1.1"
+		}
+    }`, name)
+}
+
+func testAccCheckNotificationEmail(name string) string {
+	return fmt.Sprintf(`
+	resource "aquasec_notification" "notificationEmail" {
+    	name = "%s"
+    	type = "email"
+    	properties = {
+    	    user = "test"
+    	    password = "password"
+    	    host = "2.2.2.2"
+    	    port = 25
+    	    sender = "test@test.com"
+    	    recipients = "test1@test.com,test2@test.com"
+    	}
+	}`, name)
 
 }
 
