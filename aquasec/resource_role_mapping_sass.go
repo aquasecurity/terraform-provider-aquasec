@@ -7,6 +7,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"log"
+	"strings"
 )
 
 func resourceRoleMappingSaas() *schema.Resource {
@@ -56,8 +57,11 @@ func resourceRoleMappingSaasRead(ctx context.Context, d *schema.ResourceData, m 
 		d.Set("created", r.Created)
 		d.Set("account_id", r.AccountId)
 	} else {
-		log.Println("[DEBUG]  error calling ac.ReadRole: ", r)
-		return diag.FromErr(err)
+		if strings.Contains(err.Error(), "404") {
+			d.SetId("")
+		} else {
+			return diag.FromErr(err)
+		}
 	}
 	return nil
 }
