@@ -79,7 +79,7 @@ func (cli *Client) GetRegistry(name string) (*Registry, error) {
 		}
 	}
 	if response.Name == "" {
-		err = fmt.Errorf("registry not found: %s", name)
+		err = fmt.Errorf("registry: %s not found 404", name)
 		return nil, err
 	}
 	return &response, err

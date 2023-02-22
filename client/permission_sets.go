@@ -60,7 +60,7 @@ func (cli *Client) GetPermissionsSet(name string) (*PermissionsSet, error) {
 	}
 
 	if response.Name == "" {
-		return nil, fmt.Errorf("PermissionSet not found: %s", name)
+		return nil, fmt.Errorf("PermissionSet: %s not found 404", name)
 	}
 	return &response, err
 }

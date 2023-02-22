@@ -87,7 +87,7 @@ func (cli *Client) GetApplicationScope(name string) (*ApplicationScope, error) {
 		return nil, fmt.Errorf("failed getting Application Scope. status: %v. error message: %v", resp.Status, errorResponse.Message)
 	}
 	if response.Name == "" {
-		return nil, fmt.Errorf("application Scope not found: %s", name)
+		return nil, fmt.Errorf("application Scope: %s not found 404", name)
 	}
 	return &response, err
 

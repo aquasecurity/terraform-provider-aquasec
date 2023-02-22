@@ -116,7 +116,7 @@ func (cli *Client) GetEnforcerGroup(name string) (*EnforcerGroup, error) {
 		}
 	}
 	if response.ID == "" {
-		err = fmt.Errorf("enforcer group not found: %s", name)
+		err = fmt.Errorf("enforcer group: %s not found 404", name)
 		return nil, err
 	}
 	return &response, err

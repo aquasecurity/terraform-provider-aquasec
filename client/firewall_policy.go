@@ -99,7 +99,7 @@ func (cli *Client) GetFirewallPolicy(name string) (*FirewallPolicy, error) {
 	}
 
 	if response.Name == "" {
-		return nil, fmt.Errorf("firewall policy not found: %s", name)
+		return nil, fmt.Errorf("firewall policy: %s not found 404", name)
 	}
 	return &response, err
 }
