@@ -55,7 +55,7 @@ func (cli *Client) GetAquaLabel(name string) (*AquaLabel, error) {
 		return nil, fmt.Errorf("failed getting Aqua label. status: %v. error message: %v", resp.Status, errorResponse.Message)
 	}
 	if response.Name == "" {
-		return nil, fmt.Errorf("aqua label not found: %s", name)
+		return nil, fmt.Errorf("aqua label: %s not found 404", name)
 	}
 	return &response, err
 }

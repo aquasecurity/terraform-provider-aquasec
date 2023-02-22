@@ -190,7 +190,7 @@ func (cli *Client) GetAssurancePolicy(name string, at string) (*AssurancePolicy,
 	}
 
 	if response.Name == "" {
-		return nil, fmt.Errorf(" Assurance Policy not found: %s", name)
+		return nil, fmt.Errorf(" Assurance Policy: %s not found 404", name)
 	}
 	return &response, err
 }

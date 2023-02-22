@@ -44,7 +44,7 @@ func (cli *Client) GetGateway(name string) (*Gateway, error) {
 		}
 	}
 	if response.ID == "" {
-		err = fmt.Errorf("gateway not found: %s", name)
+		err = fmt.Errorf("gateway: %s not found 404", name)
 		return nil, err
 	}
 	return &response, err

@@ -110,7 +110,7 @@ func (cli *Client) GetUser(name string) (*FullUser, error) {
 
 	if response.Name == "" {
 		if response.Email == "" {
-			err = fmt.Errorf("user not found: %s", name)
+			err = fmt.Errorf("user: %s not found 404", name)
 			return nil, err
 		}
 	}

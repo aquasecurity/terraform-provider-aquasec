@@ -146,5 +146,5 @@ func dataFirewallPolicyRead(ctx context.Context, d *schema.ResourceData, m inter
 
 	d.SetId("")
 
-	return diag.FromErr(fmt.Errorf("firewall rule %s not found", name))
+	return diag.FromErr(fmt.Errorf("firewall rule %s not found 404", name))
 }

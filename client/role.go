@@ -54,7 +54,7 @@ func (cli *Client) GetRole(name string) (*Role, error) {
 	}
 
 	if response.Name == "" {
-		err = fmt.Errorf("role not found: %s", name)
+		err = fmt.Errorf("role: %s not found 404", name)
 		return nil, err
 	}
 	return &response, err
