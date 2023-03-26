@@ -37,9 +37,7 @@ func (cli *Client) GetLdap() (*Ldap, error) {
 
 	baseUrl := ""
 	apiPath := consts.LdapSettingsApiPath
-	request := gorequest.New()
-	request.Clone()
-	request.Data = nil
+	request := cli.gorequest
 
 	switch cli.clientType {
 	case Csp:

@@ -123,10 +123,7 @@ func (cli *Client) GetSSO() (*SSO, error) {
 func (cli *Client) GetIntegrationState() (*IntegrationState, error) {
 	var err error
 	var response IntegrationState
-	request := gorequest.New()
-	request.Clone()
-	request.Data = nil
-
+	request := cli.gorequest
 	apiPath := ""
 	baseUrl := ""
 
