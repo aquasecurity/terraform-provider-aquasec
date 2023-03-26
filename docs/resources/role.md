@@ -36,11 +36,11 @@ resource "aquasec_role" "IaC" {
 ### Optional
 
 - `description` (String) Free text description for the role.
-- `updated_at` (String) The date of the last modification of the role.
 
 ### Read-Only
 
 - `author` (String) The name of the user who created the role. Only returned from the API for existing permissions, not part of the permission creation/modification structure.
 - `id` (String) The ID of this resource.
+- `updated_at` (String) The date of the last modification of the role.
 
 
