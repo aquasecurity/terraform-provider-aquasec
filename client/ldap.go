@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/aquasecurity/terraform-provider-aquasec/consts"
-	"github.com/parnurzeal/gorequest"
 	"log"
 )
 
@@ -86,9 +85,7 @@ func (cli *Client) CreateLdap(ldap *Ldap) error {
 		}
 		baseUrl := ""
 		apiPath := consts.LdapSettingsApiPath
-		request := gorequest.New()
-		request.Clone()
-		request.Data = nil
+		request := cli.gorequest
 
 		switch cli.clientType {
 		case Csp:
