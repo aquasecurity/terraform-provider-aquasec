@@ -6,7 +6,7 @@ HOSTNAME	 := github.com
 NAMESPACE	 := aquasec
 NAME 		 := aquasec
 BINARY		 := terraform-provider-${NAME}
-VERSION      := 0.8.22-localtest
+VERSION      := 0.8.22
 OS_ARCH      := $(shell go env GOOS)_$(shell go env GOARCH)
 
 default: build
@@ -19,7 +19,7 @@ build:
 install: build
 	mkdir -p ~/.terraform.d/plugins/${HOSTNAME}/${NAMESPACE}/${NAME}/${VERSION}/${OS_ARCH}
 	mv ${BINARY} ~/.terraform.d/plugins/${HOSTNAME}/${NAMESPACE}/${NAME}/${VERSION}/${OS_ARCH}
-	echo ~/.terraform.d/plugins/${HOSTNAME}/${NAMESPACE}/${NAME}/${VERSION}/${OS_ARCH}
+
 .PHONY: build
 
 testacc:
