@@ -5,7 +5,6 @@ import (
 	json "encoding/json"
 	"fmt"
 	"github.com/aquasecurity/terraform-provider-aquasec/consts"
-	"github.com/parnurzeal/gorequest"
 	"github.com/pkg/errors"
 	"log"
 )
@@ -123,10 +122,7 @@ func (cli *Client) GetSSO() (*SSO, error) {
 func (cli *Client) GetIntegrationState() (*IntegrationState, error) {
 	var err error
 	var response IntegrationState
-	request := gorequest.New()
-	request.Clone()
-	request.Data = nil
-
+	request := cli.gorequest
 	apiPath := ""
 	baseUrl := ""
 
@@ -207,9 +203,7 @@ func (cli *Client) DeleteSSO(SSO *SSO) error {
 func (cli *Client) getSsoBasic(apiPath string) (string, error) {
 	baseUrl := ""
 	var err error
-	request := gorequest.New()
-	request.Clone()
-	request.Data = nil
+	request := cli.gorequest
 
 	switch cli.clientType {
 	case Csp:
@@ -250,9 +244,7 @@ func (cli *Client) createSsoBasic(apiPath string, sso interface{}) error {
 		return err
 	}
 	baseUrl := ""
-	request := gorequest.New()
-	request.Clone()
-	request.Data = nil
+	request := cli.gorequest
 
 	switch cli.clientType {
 	case Csp:

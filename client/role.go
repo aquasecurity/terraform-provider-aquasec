@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/parnurzeal/gorequest"
 	"github.com/pkg/errors"
 	"log"
 )
@@ -28,10 +27,7 @@ type RoleList struct {
 func (cli *Client) GetRole(name string) (*Role, error) {
 	var err error
 	var response Role
-	request := gorequest.New()
-	request.Clone()
-	request.Data = nil
-
+	request := cli.gorequest
 	apiPath := fmt.Sprintf("/api/v2/access_management/roles/%s", name)
 	baseUrl := cli.url
 	err = cli.limiter.Wait(context.Background())
@@ -54,7 +50,7 @@ func (cli *Client) GetRole(name string) (*Role, error) {
 	}
 
 	if response.Name == "" {
-		err = fmt.Errorf("role: %s not found 404", name)
+		err = fmt.Errorf("role not found: %s", name)
 		return nil, err
 	}
 	return &response, err
@@ -64,9 +60,7 @@ func (cli *Client) GetRole(name string) (*Role, error) {
 func (cli *Client) GetRoles() ([]Role, error) {
 	var err error
 	var response RoleList
-	request := gorequest.New()
-	request.Clone()
-	request.Data = nil
+	request := cli.gorequest
 
 	apiPath := "/api/v2/access_management/roles"
 	baseUrl := cli.url

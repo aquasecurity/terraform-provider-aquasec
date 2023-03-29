@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/parnurzeal/gorequest"
 	"github.com/pkg/errors"
 )
 
@@ -26,9 +25,7 @@ type GroupList struct {
 func (cli *Client) GetGroup(id int) (*Group, error) {
 	var err error
 	var response Group
-	request := gorequest.New()
-	request.Clone()
-	request.Data = nil
+	request := cli.gorequest
 
 	apiPath := ""
 	baseUrl := ""
@@ -64,10 +61,7 @@ func (cli *Client) GetGroup(id int) (*Group, error) {
 func (cli *Client) GetGroups() ([]Group, error) {
 	var err error
 	var response GroupList
-	request := gorequest.New()
-	request.Clone()
-	request.Data = nil
-
+	request := cli.gorequest
 	apiPath := ""
 	baseUrl := ""
 

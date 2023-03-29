@@ -124,13 +124,13 @@ resource "aquasec_permissions_sets" "my_terraform_perm_set" {
 
 ### Optional
 
-- `author` (String) The name of the user who created the Permission Set.
 - `description` (String) Free text description for the Permission Set.
-- `id` (String) The ID of this resource.
 - `is_super` (Boolean) Give the Permission Set full access, meaning all actions are allowed without restriction.
 
 ### Read-Only
 
+- `author` (String) The name of the user who created the Permission Set.
+- `id` (String) The ID of this resource.
 - `updated_at` (String) The date of the last modification of the Role.
 
 

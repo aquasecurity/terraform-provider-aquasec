@@ -1,7 +1,6 @@
 resource "aquasec_permissions_sets" "my_terraform_perm_set" {
-        name        = "my_terraform_perm_set"
+    name        = "my_terraform_perm_set"
     description = "Test Permissions Sets created by Terraform"
-    author      = "system"
     ui_access   = true
     is_super    = false
     actions = [

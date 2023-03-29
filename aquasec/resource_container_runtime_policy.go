@@ -761,6 +761,7 @@ func expandContainerRuntimePolicy(d *schema.ResourceData) *client.RuntimePolicy 
 	blockReverseShell, ok := d.GetOk("block_reverse_shell")
 	if ok {
 		crp.ReverseShell.BlockReverseShell = blockReverseShell.(bool)
+		crp.ReverseShell.Enabled = blockReverseShell.(bool)
 		reverseShellAllowedProcesses, ok := d.GetOk("reverse_shell_allowed_processes")
 		if ok {
 			crp.ReverseShell.ReverseShellProcWhiteList = convertStringArr(reverseShellAllowedProcesses.([]interface{}))

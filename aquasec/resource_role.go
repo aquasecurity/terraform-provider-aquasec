@@ -43,7 +43,6 @@ func resourceRole() *schema.Resource {
 				Type:        schema.TypeString,
 				Description: "The date of the last modification of the role.",
 				Computed:    true,
-				Optional:    true,
 			},
 			"permission": {
 				Type:        schema.TypeString,
