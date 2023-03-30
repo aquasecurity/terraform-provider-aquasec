@@ -21,7 +21,7 @@ Use the navigation to the left to read about the available resources and data so
 terraform {
   required_providers {
     aquasec = {
-      version = "0.8.23"
+      version = "0.8.24"
       source  = "aquasecurity/aquasec"
     }
   }
