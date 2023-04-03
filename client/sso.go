@@ -286,15 +286,10 @@ func (cli *Client) GetRoleMappingSaas(id string) (*RoleMappingSaas, error) {
 	var response RoleMappingSaas
 	baseUrl := ""
 	apiPath := fmt.Sprintf("/v2/samlmappings/%s", id)
-	switch cli.clientType {
-	case Csp:
-		err = fmt.Errorf("GetRoleMappingSaas is Supported only in Aqua SaaS env")
-		return nil, err
-	case SaasDev:
-		baseUrl = consts.SaasDevTokenUrl
-	case Saas:
-		baseUrl = consts.SaasTokenUrl
-	default:
+
+	if cli.clientType == Saas || cli.clientType == SaasDev {
+		baseUrl = cli.tokenUrl
+	} else {
 		err = fmt.Errorf("GetRoleMappingSaas is Supported only in Aqua SaaS env")
 		return nil, err
 	}
@@ -333,15 +328,9 @@ func (cli *Client) GetRolesMappingSaas() (*RoleMappingSaasList, error) {
 	baseUrl := ""
 	apiPath := "/v2/samlmappings"
 
-	switch cli.clientType {
-	case Csp:
-		err = fmt.Errorf("GetRolesMappingSaas is Supported only in Aqua SaaS env")
-		return nil, err
-	case SaasDev:
-		baseUrl = consts.SaasDevTokenUrl
-	case Saas:
-		baseUrl = consts.SaasTokenUrl
-	default:
+	if cli.clientType == Saas || cli.clientType == SaasDev {
+		baseUrl = cli.tokenUrl
+	} else {
 		err = fmt.Errorf("GetRolesMappingSaas is Supported only in Aqua SaaS env")
 		return nil, err
 	}
@@ -379,18 +368,13 @@ func (cli *Client) CreateRoleMappingSaas(saas *RoleMappingSaas) error {
 	baseUrl := ""
 	apiPath := "/v2/samlmappings"
 
-	switch cli.clientType {
-	case Csp:
-		err = fmt.Errorf("CreateRoleMappingSaas is Supported only in Aqua SaaS env")
-		return err
-	case SaasDev:
-		baseUrl = consts.SaasDevTokenUrl
-	case Saas:
-		baseUrl = consts.SaasTokenUrl
-	default:
+	if cli.clientType == Saas || cli.clientType == SaasDev {
+		baseUrl = cli.tokenUrl
+	} else {
 		err = fmt.Errorf("CreateRoleMappingSaas is Supported only in Aqua SaaS env")
 		return err
 	}
+
 	saasTmp := map[string]interface{}{
 		"csp_role":    saas.CspRole,
 		"saml_groups": saas.SamlGroups,
@@ -431,18 +415,13 @@ func (cli *Client) UpdateRoleMappingSaas(saas *RoleMappingSaas, id string) error
 	baseUrl := ""
 	apiPath := fmt.Sprintf("/v2/samlmappings/%s", id)
 
-	switch cli.clientType {
-	case Csp:
-		err = fmt.Errorf("UpdateRoleMappingSaas is Supported only in Aqua SaaS env")
-		return err
-	case SaasDev:
-		baseUrl = consts.SaasDevTokenUrl
-	case Saas:
-		baseUrl = consts.SaasTokenUrl
-	default:
+	if cli.clientType == Saas || cli.clientType == SaasDev {
+		baseUrl = cli.tokenUrl
+	} else {
 		err = fmt.Errorf("UpdateRoleMappingSaas is Supported only in Aqua SaaS env")
 		return err
 	}
+
 	saasTmp := map[string]interface{}{
 		"saml_groups": saas.SamlGroups,
 	}
@@ -479,15 +458,10 @@ func (cli *Client) DeleteRoleMappingSaas(id string) error {
 	var err error
 	baseUrl := ""
 	apiPath := fmt.Sprintf("/v2/samlmappings/%s", id)
-	switch cli.clientType {
-	case Csp:
-		err = fmt.Errorf("DeleteRoleMappingSaas is Supported only in Aqua SaaS env")
-		return err
-	case SaasDev:
-		baseUrl = consts.SaasDevTokenUrl
-	case Saas:
-		baseUrl = consts.SaasTokenUrl
-	default:
+
+	if cli.clientType == Saas || cli.clientType == SaasDev {
+		baseUrl = cli.tokenUrl
+	} else {
 		err = fmt.Errorf("DeleteRoleMappingSaas is Supported only in Aqua SaaS env")
 		return err
 	}
