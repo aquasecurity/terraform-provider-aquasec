@@ -33,7 +33,7 @@ func (cli *Client) GetGroup(id int) (*Group, error) {
 		apiPath = fmt.Sprintf("/v2/groups/%v", id)
 		baseUrl = cli.tokenUrl
 	} else {
-		err = fmt.Errorf("GetGroup is Supported only in Auaa SAAS")
+		err = fmt.Errorf("GetGroup is Supported only in Aqua SaaS env")
 		return nil, err
 	}
 
@@ -69,7 +69,7 @@ func (cli *Client) GetGroups() ([]Group, error) {
 		apiPath = "/v2/groups"
 		baseUrl = cli.tokenUrl
 	} else {
-		err = fmt.Errorf("GetGroups is Supported only in Auaa SAAS")
+		err = fmt.Errorf("GetGroups is Supported only in Aqua SaaS env")
 		return nil, err
 	}
 
@@ -104,7 +104,7 @@ func (cli *Client) CreateGroup(group *Group) error {
 		apiPath = "/v2/groups"
 		baseUrl = cli.tokenUrl
 	} else {
-		err = fmt.Errorf("CreateGroup is Supported only in Auaa SAAS")
+		err = fmt.Errorf("CreateGroup is Supported only in Aqua SaaS env")
 		return err
 	}
 
@@ -143,7 +143,7 @@ func (cli *Client) UpdateGroup(group *Group) error {
 		apiPath = fmt.Sprintf("/v2/groups/%v", group.Id)
 		baseUrl = cli.tokenUrl
 	} else {
-		err = fmt.Errorf("UpdateGroup is Supported only in Auaa SAAS")
+		err = fmt.Errorf("UpdateGroup is Supported only in Aqua SaaS env")
 		return err
 	}
 
@@ -175,7 +175,7 @@ func (cli *Client) DeleteGroup(id string) error {
 		apiPath = fmt.Sprintf("/v2/groups/%v", id)
 		baseUrl = cli.tokenUrl
 	} else {
-		err = fmt.Errorf("DeleteGroup is Supported only in Auaa SAAS")
+		err = fmt.Errorf("DeleteGroup is Supported only in Aqua SaaS env")
 		return err
 	}
 

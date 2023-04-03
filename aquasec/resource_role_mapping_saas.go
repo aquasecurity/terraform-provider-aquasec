@@ -3,11 +3,12 @@ package aquasec
 import (
 	"context"
 	"fmt"
+	"log"
+	"strings"
+
 	"github.com/aquasecurity/terraform-provider-aquasec/client"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-	"log"
-	"strings"
 )
 
 func resourceRoleMappingSaas() *schema.Resource {
@@ -51,7 +52,7 @@ func resourceRoleMappingSaas() *schema.Resource {
 func resourceRoleMappingSaasRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	ac := m.(*client.Client)
 
-	r, err := ac.GetRoleMappingSass(d.Id())
+	r, err := ac.GetRoleMappingSaas(d.Id())
 	if err == nil {
 		d.Set("role_mapping_id", r.Id)
 		d.Set("created", r.Created)
@@ -103,7 +104,7 @@ func resourceRoleMappingSaasUpdate(ctx context.Context, d *schema.ResourceData, 
 
 func resourceRoleMappingSaasDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	c := m.(*client.Client)
-	err := c.DeleteRoleMappingSass(d.Id())
+	err := c.DeleteRoleMappingSaas(d.Id())
 	if err == nil {
 		d.SetId("")
 	} else {

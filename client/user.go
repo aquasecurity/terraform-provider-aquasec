@@ -45,7 +45,7 @@ type BasicUser struct {
 	Type  string   `json:"type,omitempty"`
 	Plan  string   `json:"plan,omitempty"`
 
-	//SAAS vars:
+	//SaaS vars:
 	//Dashboard
 	CspRoles          []string     `json:"csp_roles,omitempty"`
 	Confirmed         bool         `json:"confirmed,omitempty"`
@@ -75,7 +75,7 @@ type NewPassword struct {
 	Password string `json:"new_password"`
 }
 
-//GetUser - returns single Aqua user
+// GetUser - returns single Aqua user
 func (cli *Client) GetUser(name string) (*FullUser, error) {
 	var err error
 	var response FullUser
@@ -117,7 +117,7 @@ func (cli *Client) GetUser(name string) (*FullUser, error) {
 	return &response, err
 }
 
-//GetUsers - returns all Aqua users
+// GetUsers - returns all Aqua users
 func (cli *Client) GetUsers() ([]FullUser, error) {
 	var err error
 	var response []FullUser

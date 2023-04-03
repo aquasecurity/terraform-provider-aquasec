@@ -3,6 +3,7 @@ package aquasec
 import (
 	"context"
 	"fmt"
+
 	"github.com/aquasecurity/terraform-provider-aquasec/client"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -49,7 +50,7 @@ func dataSourceRolesMappingSaas() *schema.Resource {
 
 func dataRolesMappingSaasRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	c := m.(*client.Client)
-	result, err := c.GetRolesMappingSass()
+	result, err := c.GetRolesMappingSaas()
 	if err == nil {
 		rolesMappingSaas, id := flattenRolesMappingSaasData(result)
 		d.SetId(id)
