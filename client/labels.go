@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"log"
 
 	"github.com/pkg/errors"
@@ -41,7 +41,7 @@ func (cli *Client) GetAquaLabel(name string) (*AquaLabel, error) {
 			return nil, err
 		}
 	} else {
-		body, err := ioutil.ReadAll(resp.Body)
+		body, err := io.ReadAll(resp.Body)
 		if err != nil {
 			log.Printf("Failed to read response Body")
 			return nil, err
@@ -80,7 +80,7 @@ func (cli *Client) GetAquaLabels() (*AquaLabels, error) {
 			return nil, err
 		}
 	} else {
-		body, err := ioutil.ReadAll(resp.Body)
+		body, err := io.ReadAll(resp.Body)
 		if err != nil {
 			log.Printf("Failed to read response Body")
 			return nil, err
@@ -115,7 +115,7 @@ func (cli *Client) CreateAquaLabel(aquaLabel *AquaLabel) error {
 		return errors.Wrap(getMergedError(errs), "failed creating Aqua label.")
 	}
 	if resp.StatusCode != 200 {
-		body, err := ioutil.ReadAll(resp.Body)
+		body, err := io.ReadAll(resp.Body)
 		if err != nil {
 			log.Printf("Failed to read response Body")
 			return err
@@ -148,7 +148,7 @@ func (cli *Client) UpdateAquaLabel(aquaLabel *AquaLabel) error {
 		return errors.Wrap(getMergedError(errs), "failed modifying Aqua label")
 	}
 	if resp.StatusCode != 201 && resp.StatusCode != 204 {
-		body, err := ioutil.ReadAll(resp.Body)
+		body, err := io.ReadAll(resp.Body)
 		if err != nil {
 			log.Printf("Failed to read response Body")
 			return err
@@ -177,7 +177,7 @@ func (cli *Client) DeleteAquaLabel(name string) error {
 		return errors.Wrap(getMergedError(errs), "failed deleting Aqua label")
 	}
 	if resp.StatusCode != 204 {
-		body, err := ioutil.ReadAll(resp.Body)
+		body, err := io.ReadAll(resp.Body)
 		if err != nil {
 			log.Printf("Failed to read response Body")
 			return err

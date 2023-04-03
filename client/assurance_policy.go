@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"log"
 	"strings"
 	"time"
@@ -175,7 +175,7 @@ func (cli *Client) GetAssurancePolicy(name string, at string) (*AssurancePolicy,
 			return nil, err
 		}
 	} else {
-		body, err := ioutil.ReadAll(resp.Body)
+		body, err := io.ReadAll(resp.Body)
 		if err != nil {
 			log.Printf("Failed to read response Body")
 			return nil, err
@@ -222,7 +222,7 @@ func (cli *Client) CreateAssurancePolicy(assurancepolicy *AssurancePolicy, at st
 		return errors.Wrap(getMergedError(errs), "failed creating  Assurance Policy.")
 	}
 	if resp.StatusCode != 201 && resp.StatusCode != 204 {
-		body, err := ioutil.ReadAll(resp.Body)
+		body, err := io.ReadAll(resp.Body)
 		if err != nil {
 			log.Printf("Failed to read response Body")
 			return err
@@ -265,7 +265,7 @@ func (cli *Client) UpdateAssurancePolicy(assurancepolicy *AssurancePolicy, at st
 		return errors.Wrap(getMergedError(errs), "failed modifying  Assurance Policy")
 	}
 	if resp.StatusCode != 201 && resp.StatusCode != 204 {
-		body, err := ioutil.ReadAll(resp.Body)
+		body, err := io.ReadAll(resp.Body)
 		if err != nil {
 			log.Printf("Failed to read response Body")
 			return err
@@ -304,7 +304,7 @@ func (cli *Client) DeleteAssurancePolicy(name string, at string) error {
 		return errors.Wrap(getMergedError(errs), "failed deleting  Assurance Policy")
 	}
 	if resp.StatusCode != 204 {
-		body, err := ioutil.ReadAll(resp.Body)
+		body, err := io.ReadAll(resp.Body)
 		if err != nil {
 			log.Printf("Failed to read response Body")
 			return err

@@ -2,11 +2,11 @@ package aquasec
 
 import (
 	"fmt"
-	"github.com/aquasecurity/terraform-provider-aquasec/client"
-	"io/ioutil"
 	"log"
 	"os"
 	"strconv"
+
+	"github.com/aquasecurity/terraform-provider-aquasec/client"
 )
 
 func init() {
@@ -41,7 +41,7 @@ func init() {
 	caCertPath, present = os.LookupEnv("AQUA_CA_CERT_PATH")
 	if present {
 		if caCertPath != "" {
-			caCertByte, err = ioutil.ReadFile(caCertPath)
+			caCertByte, err = os.ReadFile(caCertPath)
 			if err != nil {
 				panic("Unable to read CA certificates")
 			}

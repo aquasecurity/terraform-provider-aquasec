@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"log"
 
 	"github.com/pkg/errors"
@@ -84,7 +84,7 @@ func (cli *Client) GetFirewallPolicy(name string) (*FirewallPolicy, error) {
 			return nil, err
 		}
 	} else {
-		body, err := ioutil.ReadAll(resp.Body)
+		body, err := io.ReadAll(resp.Body)
 		if err != nil {
 			log.Printf("Failed to read response Body")
 			return nil, err
@@ -121,7 +121,7 @@ func (cli *Client) CreateFirewallPolicy(firewallPolicy FirewallPolicy) error {
 		return errors.Wrap(getMergedError(errs), "failed creating firewall policy.")
 	}
 	if resp.StatusCode != 201 && resp.StatusCode != 204 {
-		body, err := ioutil.ReadAll(resp.Body)
+		body, err := io.ReadAll(resp.Body)
 		if err != nil {
 			log.Printf("Failed to read response Body")
 			return err
@@ -154,7 +154,7 @@ func (cli *Client) UpdateFirewallPolicy(firewallPolicy FirewallPolicy) error {
 		return errors.Wrap(getMergedError(errs), "failed modifying firewall policy")
 	}
 	if resp.StatusCode != 201 && resp.StatusCode != 204 {
-		body, err := ioutil.ReadAll(resp.Body)
+		body, err := io.ReadAll(resp.Body)
 		if err != nil {
 			log.Printf("Failed to read response Body")
 			return err
@@ -183,7 +183,7 @@ func (cli *Client) DeleteFirewallPolicy(name string) error {
 		return errors.Wrap(getMergedError(errs), "failed deleting firewall policy")
 	}
 	if resp.StatusCode != 204 {
-		body, err := ioutil.ReadAll(resp.Body)
+		body, err := io.ReadAll(resp.Body)
 		if err != nil {
 			log.Printf("Failed to read response Body")
 			return err

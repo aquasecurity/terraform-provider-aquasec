@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"log"
 
 	"github.com/pkg/errors"
@@ -45,7 +45,7 @@ func (cli *Client) GetPermissionsSet(name string) (*PermissionsSet, error) {
 			return nil, err
 		}
 	} else {
-		body, err := ioutil.ReadAll(resp.Body)
+		body, err := io.ReadAll(resp.Body)
 		if err != nil {
 			log.Printf("Failed to read response Body")
 			return nil, err
@@ -116,7 +116,7 @@ func (cli *Client) CreatePermissionsSet(permissionset *PermissionsSet) error {
 		return errors.Wrap(getMergedError(errs), "failed creating PermissionSet.")
 	}
 	if resp.StatusCode != 201 && resp.StatusCode != 204 {
-		body, err := ioutil.ReadAll(resp.Body)
+		body, err := io.ReadAll(resp.Body)
 		if err != nil {
 			log.Printf("Failed to read response Body")
 			return err
@@ -149,7 +149,7 @@ func (cli *Client) UpdatePermissionsSet(permissionset *PermissionsSet) error {
 		return errors.Wrap(getMergedError(errs), "failed modifying PermissionSet")
 	}
 	if resp.StatusCode != 201 && resp.StatusCode != 204 {
-		body, err := ioutil.ReadAll(resp.Body)
+		body, err := io.ReadAll(resp.Body)
 		if err != nil {
 			log.Printf("Failed to read response Body")
 			return err
@@ -178,7 +178,7 @@ func (cli *Client) DeletePermissionsSet(name string) error {
 		return errors.Wrap(getMergedError(errs), "failed deleting PermissionSet")
 	}
 	if resp.StatusCode != 204 {
-		body, err := ioutil.ReadAll(resp.Body)
+		body, err := io.ReadAll(resp.Body)
 		if err != nil {
 			log.Printf("Failed to read response Body")
 			return err
