@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"log"
 
 	"github.com/pkg/errors"
@@ -177,7 +177,7 @@ func (cli *Client) UpdateService(service *Service) error {
 		return errors.Wrap(getMergedError(errs), "failed modifying service")
 	}
 	if resp.StatusCode != 201 && resp.StatusCode != 204 {
-		body, err := ioutil.ReadAll(resp.Body)
+		body, err := io.ReadAll(resp.Body)
 		if err != nil {
 			log.Printf("Failed to read response Body")
 			return err

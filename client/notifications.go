@@ -4,13 +4,13 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"log"
 
 	"github.com/pkg/errors"
 )
 
-//NotificationOld defines a NotificationOld
+// NotificationOld defines a NotificationOld
 type NotificationOld struct {
 	Enabled    bool   `json:"enabled"`
 	Channel    string `json:"channel"`
@@ -95,7 +95,7 @@ func (cli *Client) GetNotification(id string) (*Notification, error) {
 			return nil, err
 		}
 	} else {
-		body, err := ioutil.ReadAll(resp.Body)
+		body, err := io.ReadAll(resp.Body)
 		if err != nil {
 			log.Printf("Failed to read response Body")
 			return nil, err
@@ -185,7 +185,7 @@ func (cli *Client) DeleteNotification(id string) error {
 		return err
 	}
 	if resp.StatusCode != 200 {
-		body, err := ioutil.ReadAll(resp.Body)
+		body, err := io.ReadAll(resp.Body)
 		if err != nil {
 			log.Printf("Failed to read response Body")
 			return err
@@ -202,7 +202,7 @@ func (cli *Client) DeleteNotification(id string) error {
 }
 
 // todo: Old Notification, should be removed after next release
-//SlackNotificationCreate enables a Slack NotificationOld
+// SlackNotificationCreate enables a Slack NotificationOld
 func (cli *Client) SlackNotificationCreate(notification NotificationOld) error {
 	payload, err := json.Marshal(notification)
 	if err != nil {
@@ -225,7 +225,7 @@ func (cli *Client) SlackNotificationCreate(notification NotificationOld) error {
 	return nil
 }
 
-//SlackNotificationUpdate enables/disables a Slack NotificationOld
+// SlackNotificationUpdate enables/disables a Slack NotificationOld
 func (cli *Client) SlackNotificationUpdate(notification NotificationOld) error {
 	payload, err := json.Marshal(notification)
 	if err != nil {
@@ -247,7 +247,7 @@ func (cli *Client) SlackNotificationUpdate(notification NotificationOld) error {
 	return nil
 }
 
-//SlackNotificationRead reads the given slack configurations
+// SlackNotificationRead reads the given slack configurations
 func (cli *Client) SlackNotificationRead() (*NotificationOld, error) {
 	var err error
 	var response NotificationOld
@@ -273,9 +273,9 @@ func (cli *Client) SlackNotificationRead() (*NotificationOld, error) {
 	return &response, nil
 }
 
-//SlackNotificationDelete enables/disables a Slack NotificationOld
-//Since there is no DELETE method implementation of the API, we are basically setting the values as spaces
-//and setting the enabled indicator as false
+// SlackNotificationDelete enables/disables a Slack NotificationOld
+// Since there is no DELETE method implementation of the API, we are basically setting the values as spaces
+// and setting the enabled indicator as false
 func (cli *Client) SlackNotificationDelete(notification NotificationOld) error {
 	payload, err := json.Marshal(notification)
 	if err != nil {

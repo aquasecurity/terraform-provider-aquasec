@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"log"
 	"os"
 
@@ -145,7 +145,7 @@ func getProviderConfigurationFromFile(d *schema.ResourceData) (string, string, s
 		}
 		defer configFile.Close()
 
-		configBytes, _ := ioutil.ReadAll(configFile)
+		configBytes, _ := io.ReadAll(configFile)
 		var config Config
 		err = json.Unmarshal(configBytes, &config)
 		if err != nil {
@@ -198,7 +198,7 @@ func providerConfigure(ctx context.Context, d *schema.ResourceData) (interface{}
 
 	var caCertByte []byte
 	if caCertPath != "" {
-		caCertByte, err = ioutil.ReadFile(caCertPath)
+		caCertByte, err = os.ReadFile(caCertPath)
 		if err != nil {
 			diags = append(diags, diag.Diagnostic{
 				Severity: diag.Error,

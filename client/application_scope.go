@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"log"
 
 	"github.com/pkg/errors"
@@ -52,7 +52,7 @@ type Variables struct {
 	Value     string `json:"value"`
 }
 
-//Get Application Scope
+// Get Application Scope
 func (cli *Client) GetApplicationScope(name string) (*ApplicationScope, error) {
 	var err error
 	var response ApplicationScope
@@ -73,7 +73,7 @@ func (cli *Client) GetApplicationScope(name string) (*ApplicationScope, error) {
 			return nil, err
 		}
 	} else {
-		body, err := ioutil.ReadAll(resp.Body)
+		body, err := io.ReadAll(resp.Body)
 		if err != nil {
 			log.Printf("Failed to read response Body")
 			return nil, err
@@ -110,7 +110,7 @@ func (cli *Client) CreateApplicationScope(applicationscope *ApplicationScope) er
 		return errors.Wrap(getMergedError(errs), "failed creating Application Scope.")
 	}
 	if resp.StatusCode != 201 && resp.StatusCode != 204 {
-		body, err := ioutil.ReadAll(resp.Body)
+		body, err := io.ReadAll(resp.Body)
 		if err != nil {
 			log.Printf("Failed to read response Body")
 			return err
@@ -143,7 +143,7 @@ func (cli *Client) UpdateApplicationScope(applicationscope *ApplicationScope, na
 		return errors.Wrap(getMergedError(errs), "failed modifying Application Scope")
 	}
 	if resp.StatusCode != 201 && resp.StatusCode != 204 {
-		body, err := ioutil.ReadAll(resp.Body)
+		body, err := io.ReadAll(resp.Body)
 		if err != nil {
 			log.Printf("Failed to read response Body")
 			return err
@@ -172,7 +172,7 @@ func (cli *Client) DeleteApplicationScope(name string) error {
 		return errors.Wrap(getMergedError(errs), "failed deleting Application Scope")
 	}
 	if resp.StatusCode != 204 {
-		body, err := ioutil.ReadAll(resp.Body)
+		body, err := io.ReadAll(resp.Body)
 		if err != nil {
 			log.Printf("Failed to read response Body")
 			return err

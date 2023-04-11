@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"log"
 	"time"
 
@@ -199,7 +199,7 @@ func (cli *Client) RescanImage(image *Image, fullRescan bool) error {
 		return errors.Wrap(getMergedError(errs), "failed rescaning image")
 	}
 	if resp.StatusCode != 201 && resp.StatusCode != 204 {
-		body, err := ioutil.ReadAll(resp.Body)
+		body, err := io.ReadAll(resp.Body)
 		if err != nil {
 			log.Printf("Failed to read response Body")
 			return err
