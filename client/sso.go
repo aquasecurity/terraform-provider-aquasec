@@ -4,9 +4,10 @@ import (
 	"context"
 	json "encoding/json"
 	"fmt"
+	"log"
+
 	"github.com/aquasecurity/terraform-provider-aquasec/consts"
 	"github.com/pkg/errors"
-	"log"
 )
 
 type Saml struct {
@@ -279,22 +280,17 @@ func (cli *Client) createSsoBasic(apiPath string, sso interface{}) error {
 	return nil
 }
 
-// GetRoleMappingSass - returns Aqua RoleMappingSaas
-func (cli *Client) GetRoleMappingSass(id string) (*RoleMappingSaas, error) {
+// GetRoleMappingSaas - returns Aqua RoleMappingSaas
+func (cli *Client) GetRoleMappingSaas(id string) (*RoleMappingSaas, error) {
 	var err error
 	var response RoleMappingSaas
 	baseUrl := ""
 	apiPath := fmt.Sprintf("/v2/samlmappings/%s", id)
-	switch cli.clientType {
-	case Csp:
-		err = fmt.Errorf("GetRoleMappingSass is Supported only in Aqua SASS env")
-		return nil, err
-	case SaasDev:
-		baseUrl = consts.SaasDevTokenUrl
-	case Saas:
-		baseUrl = consts.SaasTokenUrl
-	default:
-		err = fmt.Errorf("GetRoleMappingSass is Supported only in Aqua SASS env")
+
+	if cli.clientType == Saas || cli.clientType == SaasDev {
+		baseUrl = cli.tokenUrl
+	} else {
+		err = fmt.Errorf("GetRoleMappingSaas is Supported only in Aqua SaaS env")
 		return nil, err
 	}
 
@@ -317,7 +313,7 @@ func (cli *Client) GetRoleMappingSass(id string) (*RoleMappingSaas, error) {
 
 	err = json.Unmarshal([]byte(body), &response)
 	if err != nil {
-		log.Printf("Error calling func GetRolesMappingSass from %s%s, %v ", baseUrl, apiPath, err)
+		log.Printf("Error calling func GetRoleMappingSaas from %s%s, %v ", baseUrl, apiPath, err)
 		return nil, errors.Wrap(err, "could not unmarshal roleMappingSaas response")
 	}
 
@@ -325,23 +321,17 @@ func (cli *Client) GetRoleMappingSass(id string) (*RoleMappingSaas, error) {
 
 }
 
-// GetRolesMappingSass - returns Aqua RoleMappingSaas
-func (cli *Client) GetRolesMappingSass() (*RoleMappingSaasList, error) {
+// GetRolesMappingSaas - returns Aqua RoleMappingSaas
+func (cli *Client) GetRolesMappingSaas() (*RoleMappingSaasList, error) {
 	var err error
 	var response RoleMappingSaasList
 	baseUrl := ""
 	apiPath := "/v2/samlmappings"
 
-	switch cli.clientType {
-	case Csp:
-		err = fmt.Errorf("GetRolesMappingSass is Supported only in Aqua SASS env")
-		return nil, err
-	case SaasDev:
-		baseUrl = consts.SaasDevTokenUrl
-	case Saas:
-		baseUrl = consts.SaasTokenUrl
-	default:
-		err = fmt.Errorf("GetRolesMappingSass is Supported only in Aqua SASS env")
+	if cli.clientType == Saas || cli.clientType == SaasDev {
+		baseUrl = cli.tokenUrl
+	} else {
+		err = fmt.Errorf("GetRolesMappingSaas is Supported only in Aqua SaaS env")
 		return nil, err
 	}
 
@@ -364,7 +354,7 @@ func (cli *Client) GetRolesMappingSass() (*RoleMappingSaasList, error) {
 
 	err = json.Unmarshal([]byte(body), &response)
 	if err != nil {
-		log.Printf("Error calling func GetRolesMappingSass from %s%s, %v ", baseUrl, apiPath, err)
+		log.Printf("Error calling func GetRolesMappingSaas from %s%s, %v ", baseUrl, apiPath, err)
 		return nil, errors.Wrap(err, "could not unmarshal roleMappingSaasList response")
 	}
 
@@ -378,18 +368,13 @@ func (cli *Client) CreateRoleMappingSaas(saas *RoleMappingSaas) error {
 	baseUrl := ""
 	apiPath := "/v2/samlmappings"
 
-	switch cli.clientType {
-	case Csp:
-		err = fmt.Errorf("GetRolesMappingSass is Supported only in Aqua SASS env")
-		return err
-	case SaasDev:
-		baseUrl = consts.SaasDevTokenUrl
-	case Saas:
-		baseUrl = consts.SaasTokenUrl
-	default:
-		err = fmt.Errorf("GetRolesMappingSass is Supported only in Aqua SASS env")
+	if cli.clientType == Saas || cli.clientType == SaasDev {
+		baseUrl = cli.tokenUrl
+	} else {
+		err = fmt.Errorf("CreateRoleMappingSaas is Supported only in Aqua SaaS env")
 		return err
 	}
+
 	saasTmp := map[string]interface{}{
 		"csp_role":    saas.CspRole,
 		"saml_groups": saas.SamlGroups,
@@ -416,7 +401,7 @@ func (cli *Client) CreateRoleMappingSaas(saas *RoleMappingSaas) error {
 
 	err = json.Unmarshal([]byte(body), &roleMappingResponse)
 	if err != nil {
-		log.Printf("Error calling func GetRolesMappingSass from %s%s, %v ", baseUrl, apiPath, err)
+		log.Printf("Error calling func CreateRoleMappingSaas from %s%s, %v ", baseUrl, apiPath, err)
 		return errors.Wrap(err, "could not unmarshal roleMappingSaas response")
 	}
 	saas.Id = roleMappingResponse.RoleMappingSaas.Id
@@ -430,18 +415,13 @@ func (cli *Client) UpdateRoleMappingSaas(saas *RoleMappingSaas, id string) error
 	baseUrl := ""
 	apiPath := fmt.Sprintf("/v2/samlmappings/%s", id)
 
-	switch cli.clientType {
-	case Csp:
-		err = fmt.Errorf("GetRolesMappingSass is Supported only in Aqua SASS env")
-		return err
-	case SaasDev:
-		baseUrl = consts.SaasDevTokenUrl
-	case Saas:
-		baseUrl = consts.SaasTokenUrl
-	default:
-		err = fmt.Errorf("GetRolesMappingSass is Supported only in Aqua SASS env")
+	if cli.clientType == Saas || cli.clientType == SaasDev {
+		baseUrl = cli.tokenUrl
+	} else {
+		err = fmt.Errorf("UpdateRoleMappingSaas is Supported only in Aqua SaaS env")
 		return err
 	}
+
 	saasTmp := map[string]interface{}{
 		"saml_groups": saas.SamlGroups,
 	}
@@ -466,28 +446,23 @@ func (cli *Client) UpdateRoleMappingSaas(saas *RoleMappingSaas, id string) error
 
 	//err = json.Unmarshal([]byte(body), &saas)
 	//if err != nil {
-	//	log.Printf("Error calling func GetRolesMappingSass from %s%s, %v ", baseUrl, apiPath, err)
+	//	log.Printf("Error calling func UpdateRoleMappingSaas from %s%s, %v ", baseUrl, apiPath, err)
 	//	return errors.Wrap(err, "could not unmarshal roleMappingSaas response")
 	//}
 
 	return nil
 }
 
-// DeleteRoleMappingSass - returns Aqua RoleMappingSaas
-func (cli *Client) DeleteRoleMappingSass(id string) error {
+// DeleteRoleMappingSaas - returns Aqua RoleMappingSaas
+func (cli *Client) DeleteRoleMappingSaas(id string) error {
 	var err error
 	baseUrl := ""
 	apiPath := fmt.Sprintf("/v2/samlmappings/%s", id)
-	switch cli.clientType {
-	case Csp:
-		err = fmt.Errorf("GetRoleMappingSass is Supported only in Aqua SASS env")
-		return err
-	case SaasDev:
-		baseUrl = consts.SaasDevTokenUrl
-	case Saas:
-		baseUrl = consts.SaasTokenUrl
-	default:
-		err = fmt.Errorf("GetRoleMappingSass is Supported only in Aqua SASS env")
+
+	if cli.clientType == Saas || cli.clientType == SaasDev {
+		baseUrl = cli.tokenUrl
+	} else {
+		err = fmt.Errorf("DeleteRoleMappingSaas is Supported only in Aqua SaaS env")
 		return err
 	}
 
