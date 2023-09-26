@@ -89,6 +89,82 @@ func dataSourceRegistry() *schema.Resource {
 				Optional:    true,
 				Computed:    true,
 			},
+			"lastupdate": {
+				Type:        schema.TypeInt,
+				Description: "The last time the registry was modified in UNIX time",
+				Optional:    true,
+				Computed:    true,
+			},
+			"advanced_settings_cleanup": {
+				Type:        schema.TypeBool,
+				Description: "Automatically clean up that don't match the pull criteria",
+				Optional:    true,
+			},
+			"always_pull_patterns": {
+				Type:        schema.TypeList,
+				Description: "List of image patterns to pull always",
+				Optional:    true,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+			},
+			"pull_image_tag_pattern": {
+				Type:        schema.TypeList,
+				Description: "List of image tags patterns to pull",
+				Optional:    true,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+			},
+			"pull_repo_patterns_excluded": {
+				Type:        schema.TypeList,
+				Description: "List of image patterns to exclude",
+				Optional:    true,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+			},
+			"webhook": {
+				Type:        schema.TypeSet,
+				Optional:    true,
+				Description: "When enabled, registry events are sent to the given Aqua webhook url",
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"enabled": {
+							Type:     schema.TypeBool,
+							Optional: true,
+						},
+						"url": {
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"auth_token": {
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"un_quarantine": {
+							Type:     schema.TypeBool,
+							Optional: true,
+						},
+					},
+				},
+			},
+			"options": {
+				Type:     schema.TypeList,
+				Optional: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"option": {
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"value": {
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+					},
+				},
+			},
 			"scanner_type": {
 				Type:        schema.TypeString,
 				Description: "Scanner type",
@@ -136,7 +212,14 @@ func dataRegistryRead(d *schema.ResourceData, m interface{}) error {
 		d.Set("auto_pull_time", reg.AutoPullTime)
 		d.Set("auto_pull_interval", reg.AutoPullInterval)
 		d.Set("auto_cleanup", reg.AutoCleanUp)
+		d.Set("lastupdate", reg.Lastupdate)
 		d.Set("scanner_type", reg.ScannerType)
+		d.Set("advanced_settings_cleanup", reg.AdvancedSettingsCleanup)
+		d.Set("always_pull_patterns", reg.AlwaysPullPatterns)
+		d.Set("pull_image_tag_pattern", reg.PullImageTagPattern)
+		d.Set("pull_repo_patterns_excluded", reg.PullRepoPatternsExcluded)
+		d.Set("options", flattenoptions(reg.Options))
+		d.Set("webhook", flattenwebhook(reg.Webhook))
 		d.Set("prefixes", convertStringArr(prefixes))
 		scannerType := d.Get("scanner_type").(string)
 		if scannerType == "specific" {
