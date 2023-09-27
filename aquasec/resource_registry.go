@@ -20,8 +20,8 @@ func resourceRegistry() *schema.Resource {
 			StateContext: schema.ImportStatePassthroughContext,
 		},
 		Schema: map[string]*schema.Schema{
-			"last_updated": {
-				Type:        schema.TypeString,
+			"lastupdate": {
+				Type:        schema.TypeInt,
 				Description: "The last time the registry was modified in UNIX time",
 				Optional:    true,
 				Computed:    true,
@@ -94,6 +94,11 @@ func resourceRegistry() *schema.Resource {
 				Description: "Automatically clean up images and repositories which are no longer present in the registry from Aqua console",
 				Optional:    true,
 			},
+			"advanced_settings_cleanup": {
+				Type:        schema.TypeBool,
+				Description: "Automatically clean up that don't match the pull criteria",
+				Optional:    true,
+			},
 			"image_creation_date_condition": {
 				Type:        schema.TypeString,
 				Description: "Additional condition for pulling and rescanning images, Defaults to 'none'",
@@ -111,6 +116,11 @@ func resourceRegistry() *schema.Resource {
 				Description: "When auto pull image enabled, sets maximum age of auto pulled images tags from each repository (based on image creation date) Requires `image_creation_date_condition = \"image_count\"`",
 				Optional:    true,
 				Computed:    true,
+			},
+			"registry_scan_timeout": {
+				Type:        schema.TypeInt,
+				Description: "Registry scan timeout in Minutes",
+				Optional:    true,
 			},
 			"scanner_type": {
 				Type:        schema.TypeString,
@@ -151,6 +161,58 @@ func resourceRegistry() *schema.Resource {
 					Type: schema.TypeString,
 				},
 			},
+			"always_pull_patterns": {
+				Type:        schema.TypeList,
+				Description: "List of image patterns to pull always",
+				Optional:    true,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+			},
+			"pull_image_tag_pattern": {
+				Type:        schema.TypeList,
+				Description: "List of image tags patterns to pull",
+				Optional:    true,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+			},
+			"pull_repo_patterns_excluded": {
+				Type:        schema.TypeList,
+				Description: "List of image patterns to exclude",
+				Optional:    true,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+			},
+			"webhook": {
+				Type:        schema.TypeSet,
+				Description: "When enabled, registry events are sent to the given Aqua webhook url",
+				Optional:    true,
+				Computed:    true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"enabled": {
+							Type:     schema.TypeBool,
+							Optional: true,
+							Computed: true,
+						},
+						"url": {
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"auth_token": {
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"un_quarantine": {
+							Type:     schema.TypeBool,
+							Optional: true,
+							Computed: true,
+						},
+					},
+				},
+			},
 		},
 	}
 }
@@ -171,6 +233,9 @@ func resourceRegistryCreate(d *schema.ResourceData, m interface{}) error {
 
 	// Get and Convert Roles
 	prefixes := d.Get("prefixes").([]interface{})
+	always_pull_patterns := d.Get("always_pull_patterns").([]interface{})
+	pull_repo_patterns_excluded := d.Get("pull_repo_patterns_excluded").([]interface{})
+	pull_image_tag_pattern := d.Get("pull_image_tag_pattern").([]interface{})
 	scanner_name := d.Get("scanner_name").([]interface{})
 
 	old, new := d.GetChange("scanner_name")
@@ -191,9 +256,11 @@ func resourceRegistryCreate(d *schema.ResourceData, m interface{}) error {
 		AutoPullMax:                d.Get("auto_pull_max").(int),
 		AutoPullTime:               d.Get("auto_pull_time").(string),
 		AutoCleanUp:                d.Get("auto_cleanup").(bool),
+		AdvancedSettingsCleanup:    d.Get("advanced_settings_cleanup").(bool),
 		ImageCreationDateCondition: d.Get("image_creation_date_condition").(string),
 		PullImageAge:               d.Get("pull_image_age").(string),
 		PullImageCount:             d.Get("pull_image_count").(int),
+		RegistryScanTimeout:        d.Get("registry_scan_timeout").(int),
 		AutoPullInterval:           autoPullInterval,
 		ScannerType:                scannerType,
 		ScannerName:                convertStringArr(scanner_name),
@@ -201,6 +268,9 @@ func resourceRegistryCreate(d *schema.ResourceData, m interface{}) error {
 		ScannerNameRemoved:         convertStringArr(scanner_name_removed),
 		ExistingScanners:           convertStringArr(existsing_scanners),
 		Prefixes:                   convertStringArr(prefixes),
+		AlwaysPullPatterns:         convertStringArr(always_pull_patterns),
+		PullRepoPatternsExcluded:   convertStringArr(pull_repo_patterns_excluded),
+		PullImageTagPattern:        convertStringArr(pull_image_tag_pattern),
 	}
 	options, ok := d.GetOk("options")
 	if ok {
@@ -215,6 +285,22 @@ func resourceRegistryCreate(d *schema.ResourceData, m interface{}) error {
 			optionsarray[i] = Options
 		}
 		registry.Options = optionsarray
+	}
+	webhook, ok := d.GetOk("webhook")
+	if ok {
+		for _, webhookMap := range webhook.(*schema.Set).List() {
+			webhookentries, ok := webhookMap.(map[string]interface{})
+			if !ok {
+				continue
+			}
+			Webhook := client.Webhook{
+				Enabled:      webhookentries["enabled"].(bool),
+				URL:          webhookentries["url"].(string),
+				AuthToken:    webhookentries["auth_token"].(string),
+				UnQuarantine: webhookentries["un_quarantine"].(bool),
+			}
+			registry.Webhook = Webhook
+		}
 	}
 
 	err := ac.CreateRegistry(registry)
@@ -260,6 +346,9 @@ func resourceRegistryRead(d *schema.ResourceData, m interface{}) error {
 	if err = d.Set("pull_image_count", r.PullImageCount); err != nil {
 		return err
 	}
+	if err = d.Set("registry_scan_timeout", r.RegistryScanTimeout); err != nil {
+		return err
+	}
 	if err = d.Set("name", r.Name); err != nil {
 		return err
 	}
@@ -287,7 +376,22 @@ func resourceRegistryRead(d *schema.ResourceData, m interface{}) error {
 	if err = d.Set("prefixes", r.Prefixes); err != nil {
 		return err
 	}
+	if err = d.Set("advanced_settings_cleanup", r.AdvancedSettingsCleanup); err != nil {
+		return err
+	}
+	if err = d.Set("always_pull_patterns", r.AlwaysPullPatterns); err != nil {
+		return err
+	}
+	if err = d.Set("pull_repo_patterns_excluded", r.PullRepoPatternsExcluded); err != nil {
+		return err
+	}
+	if err = d.Set("pull_image_tag_pattern", r.PullImageTagPattern); err != nil {
+		return err
+	}
 	if err = d.Set("options", flattenoptions(r.Options)); err != nil {
+		return err
+	}
+	if err = d.Set("webhook", flattenwebhook(r.Webhook)); err != nil {
 		return err
 	}
 	scannerType := d.Get("scanner_type").(string)
@@ -312,9 +416,12 @@ func resourceRegistryUpdate(d *schema.ResourceData, m interface{}) error {
 		autoPullInterval = 1
 	}
 
-	if d.HasChanges("name", "username", "password", "url", "type", "auto_pull", "auto_pull_rescan", "auto_pull_max", "auto_pull_time", "auto_pull_interval", "auto_cleanup", "image_creation_date_condition", "scanner_name", "prefixes", "pull_image_count", "pull_image_age", "options") {
+	if d.HasChanges("name", "registry_scan_timeout", "username", "description", "pull_image_tag_pattern", "password", "url", "type", "auto_pull", "auto_pull_rescan", "auto_pull_max", "advanced_settings_cleanup", "auto_pull_time", "auto_pull_interval", "auto_cleanup", "image_creation_date_condition", "scanner_name", "prefixes", "pull_image_count", "pull_image_age", "options", "webhook", "always_pull_patterns", "pull_repo_patterns_excluded") {
 
 		prefixes := d.Get("prefixes").([]interface{})
+		always_pull_patterns := d.Get("always_pull_patterns").([]interface{})
+		pull_repo_patterns_excluded := d.Get("pull_repo_patterns_excluded").([]interface{})
+		pull_image_tag_pattern := d.Get("pull_image_tag_pattern").([]interface{})
 		scanner_name := d.Get("scanner_name").([]interface{})
 
 		old, new := d.GetChange("scanner_name")
@@ -326,6 +433,7 @@ func resourceRegistryUpdate(d *schema.ResourceData, m interface{}) error {
 		registry := client.Registry{
 			Name:                       d.Get("name").(string),
 			Type:                       d.Get("type").(string),
+			Description:                d.Get("description").(string),
 			Username:                   d.Get("username").(string),
 			Password:                   d.Get("password").(string),
 			URL:                        d.Get("url").(string),
@@ -335,15 +443,20 @@ func resourceRegistryUpdate(d *schema.ResourceData, m interface{}) error {
 			AutoPullTime:               d.Get("auto_pull_time").(string),
 			AutoCleanUp:                d.Get("auto_cleanup").(bool),
 			AutoPullInterval:           autoPullInterval,
+			AdvancedSettingsCleanup:    d.Get("advanced_settings_cleanup").(bool),
 			ImageCreationDateCondition: d.Get("image_creation_date_condition").(string),
 			PullImageAge:               d.Get("pull_image_age").(string),
 			PullImageCount:             d.Get("pull_image_count").(int),
+			RegistryScanTimeout:        d.Get("registry_scan_timeout").(int),
 			ScannerType:                scannerType,
 			ScannerName:                convertStringArr(scanner_name),
 			ScannerNameAdded:           convertStringArr(scanner_name_added),
 			ScannerNameRemoved:         convertStringArr(scanner_name_removed),
 			ExistingScanners:           convertStringArr(existsing_scanners),
 			Prefixes:                   convertStringArr(prefixes),
+			AlwaysPullPatterns:         convertStringArr(always_pull_patterns),
+			PullRepoPatternsExcluded:   convertStringArr(pull_repo_patterns_excluded),
+			PullImageTagPattern:        convertStringArr(pull_image_tag_pattern),
 		}
 
 		options, ok := d.GetOk("options")
@@ -359,6 +472,22 @@ func resourceRegistryUpdate(d *schema.ResourceData, m interface{}) error {
 				optionsarray[i] = Options
 			}
 			registry.Options = optionsarray
+		}
+		webhook, ok := d.GetOk("webhook")
+		if ok {
+			for _, webhookMap := range webhook.(*schema.Set).List() {
+				webhookentries, ok := webhookMap.(map[string]interface{})
+				if !ok {
+					continue
+				}
+				Webhook := client.Webhook{
+					Enabled:      webhookentries["enabled"].(bool),
+					URL:          webhookentries["url"].(string),
+					AuthToken:    webhookentries["auth_token"].(string),
+					UnQuarantine: webhookentries["un_quarantine"].(bool),
+				}
+				registry.Webhook = Webhook
+			}
 		}
 
 		err := c.UpdateRegistry(registry)
@@ -427,4 +556,15 @@ func flattenoptions(options []client.Options) []map[string]interface{} {
 		}
 	}
 	return option
+}
+
+func flattenwebhook(webhook1 client.Webhook) []map[string]interface{} {
+	return []map[string]interface{}{
+		{
+			"enabled":       webhook1.Enabled,
+			"url":           webhook1.URL,
+			"auth_token":    webhook1.AuthToken,
+			"un_quarantine": webhook1.UnQuarantine,
+		},
+	}
 }

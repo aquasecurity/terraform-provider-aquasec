@@ -21,9 +21,12 @@ The provider lets you declaratively define the configuration for your Aqua Enter
 
 ## Contents
 
-* [Requirements](#requirements)
-* [Using the Aquasec provider](#Using_the_Aquasec_provider)
-* [Contributing](#contributing)
+- [Aquasec Provider for Terraform](#aquasec-provider-for-terraform)
+  - [Contents](#contents)
+  - [Requirements](#requirements)
+  - [Using the Aquasec provider](#using-the-aquasec-provider)
+  - [Using the Aquasec provider SaaS solution](#using-the-aquasec-provider-saas-solution)
+  - [Contributing](#contributing)
 
 
 ## Requirements
@@ -40,7 +43,7 @@ To quickly get started using the Aquasec provider for Terraform, configure the p
 terraform {
   required_providers {
     aquasec = {
-      version = "0.8.20"
+      version = "0.8.26"
       source  = "aquasecurity/aquasec"
     }
   }

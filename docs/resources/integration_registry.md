@@ -14,72 +14,58 @@ description: |-
 
 ```terraform
 resource "aquasec_integration_registry" "integration_registry" {
-    name = "integration_registry"
-    type = "AWS"
-    advanced_settings_cleanup = false
-    always_pull_patterns = []
-    author = "aqua@aquasec.com"
-    auto_cleanup = false
-    auto_pull = true
-    auto_pull_interval = 1
-    auto_pull_latest_xff_enabled = false
-    auto_pull_max = 100
-    auto_pull_rescan = false
-    auto_pull_time = "08:45"
-    description = "Automatically discovered registry"
-    detected_type = 4
-    image_creation_date_condition = "image_count"
+  name                          = "integration_registry"
+  type                          = "AWS"
+  advanced_settings_cleanup     = false
+  always_pull_patterns          = [":latest", ":v1"]
+  author                        = "aqua@aquasec.com"
+  auto_cleanup                  = false
+  auto_pull                     = true
+  auto_pull_interval            = 1
+  auto_pull_max                 = 100
+  auto_pull_rescan              = false
+  auto_pull_time                = "08:45"
+  description                   = "Automatically discovered registry"
+  image_creation_date_condition = "image_count"
 
-    options = [
-        {
-            option = "ARNRole"
-            value    = "arn:aws:iam::000000000000:role/aqua-AAAAABBBBCCCDDD-EEEEFFFFGGGG"
-        },
-        {
-            option = "TestImagePull"
-        },
-        {
-            option = "sts:ExternalId"
-            value    = "00000e2a-5353-4ddd-bbbb-ccc"
-        }
-    ]
+  options {
+    option = "ARNRole"
+    value  = "arn:aws:iam::111111111111:role/terraform"
+  }
+  options {
+    option = "sts:ExternalId"
+    value  = "test1-test2-test3"
+  }
+  options {
+    option = "TestImagePull"
+    value  = "nginx:latest"
+  }
 
-    permission = ""
+  prefixes = [
+    "111111111111.dkr.ecr.us-east-1.amazonaws.com"
+  ]
 
-    prefixes = [
-        "111111111111.dkr.ecr.us-east-1.amazonaws.com"
-    ]
+  pull_image_age              = "0D"
+  pull_image_count            = 3
+  pull_image_tag_pattern      = [":Latest", ":latest"]
+  pull_repo_patterns_excluded = [":xyz", ":onlytest"]
 
-    pull_image_age = "0D"
-    pull_image_count = 3
-    pull_image_tag_pattern = []
-    pull_max_tags = 0
-    pull_repo_patterns = null
-    pull_repo_patterns_excluded = []
-    pull_tag_patterns = null
+  scanner_name = [
+    "aqua-scanner-645f867c4f-4sbtj",
+    "aqua-scanner-645f867c4f-8pkdd"
+  ]
 
-    registries_type = "cloud"
-    registry_scan_timeout = 0
+  scanner_type = "specific"
 
-    scanner_name = [
-        "aqua-scanner-222222-cl9qx",
-        "aqua-scanner-111111-fstrc",
-        "513882222222"
-    ]
+  url = "us-east-1"
 
-    scanner_type = "specific"
-
-    url = "ap-northeast-1"
-
-    username = ""
-
-    webhook {
-        auth_token        = ""
-        enabled             = false
-        un_quarantine = false
-        url                     = ""
-    }
-
+  username = ""
+  webhook {
+    enabled       = true
+    url           = "https://aquasec.com/"
+    auth_token    = "test1-test2-test3"
+    un_quarantine = false
+  }
 }
 ```
 
@@ -93,6 +79,8 @@ resource "aquasec_integration_registry" "integration_registry" {
 
 ### Optional
 
+- `advanced_settings_cleanup` (Boolean) Automatically clean up that don't match the pull criteria
+- `always_pull_patterns` (List of String) List of image patterns to pull always
 - `author` (String) The username of the user who created or last modified the registry
 - `auto_cleanup` (Boolean) Automatically clean up images and repositories which are no longer present in the registry from Aqua console
 - `auto_pull` (Boolean) Whether to automatically pull images from the registry on creation and daily
@@ -102,16 +90,20 @@ resource "aquasec_integration_registry" "integration_registry" {
 - `auto_pull_time` (String) The time of day to start pulling new images from the registry, in the format HH:MM (24-hour clock), defaults to 03:00
 - `description` (String) The description of the registry
 - `image_creation_date_condition` (String) Additional condition for pulling and rescanning images, Defaults to 'none'
-- `last_updated` (String) The last time the registry was modified in UNIX time
+- `lastupdate` (Number) The last time the registry was modified in UNIX time
 - `options` (Block List) (see [below for nested schema](#nestedblock--options))
 - `password` (String) The password for registry authentication
 - `prefixes` (List of String) List of possible prefixes to image names pulled from the registry
 - `pull_image_age` (String) When auto pull image enabled, sets maximum age of auto pulled images (for example for 5 Days the value should be: 5D), Requires `image_creation_date_condition = "image_age"`
 - `pull_image_count` (Number) When auto pull image enabled, sets maximum age of auto pulled images tags from each repository (based on image creation date) Requires `image_creation_date_condition = "image_count"`
+- `pull_image_tag_pattern` (List of String) List of image tags patterns to pull
+- `pull_repo_patterns_excluded` (List of String) List of image patterns to exclude
+- `registry_scan_timeout` (Number) Registry scan timeout in Minutes
 - `scanner_name` (List of String) List of scanner names
 - `scanner_type` (String) The Scanner type
 - `url` (String) The URL, address or region of the registry
 - `username` (String) The username for registry authentication.
+- `webhook` (Block Set) When enabled, registry events are sent to the given Aqua webhook url (see [below for nested schema](#nestedblock--webhook))
 
 ### Read-Only
 
@@ -124,5 +116,16 @@ Optional:
 
 - `option` (String)
 - `value` (String)
+
+
+<a id="nestedblock--webhook"></a>
+### Nested Schema for `webhook`
+
+Optional:
+
+- `auth_token` (String)
+- `enabled` (Boolean)
+- `un_quarantine` (Boolean)
+- `url` (String)
 
 
