@@ -24,12 +24,13 @@ description: |-
 - `advanced_settings_cleanup` (Boolean) Automatically clean up that don't match the pull criteria
 - `always_pull_patterns` (List of String) List of image patterns to pull always
 - `image_creation_date_condition` (String) Additional condition for pulling and rescanning images, Defaults to 'none'
-- `lastupdate` (String) The last time the registry was modified in UNIX time
+- `lastupdate` (Number) The last time the registry was modified in UNIX time
 - `options` (Block List) (see [below for nested schema](#nestedblock--options))
 - `pull_image_age` (String) When auto pull image enabled, sets maximum age of auto pulled images
 - `pull_image_count` (Number) When auto pull image enabled, sets maximum age of auto pulled images tags from each repository.
 - `pull_image_tag_pattern` (List of String) List of image tags patterns to pull
 - `pull_repo_patterns_excluded` (List of String) List of image patterns to exclude
+- `registry_scan_timeout` (Number) Registry scan timeout in Minutes
 - `scanner_name` (List of String) List of scanner names
 - `scanner_type` (String) Scanner type
 - `webhook` (Block Set) When enabled, registry events are sent to the given Aqua webhook url (see [below for nested schema](#nestedblock--webhook))

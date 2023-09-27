@@ -90,7 +90,7 @@ resource "aquasec_integration_registry" "integration_registry" {
 - `auto_pull_time` (String) The time of day to start pulling new images from the registry, in the format HH:MM (24-hour clock), defaults to 03:00
 - `description` (String) The description of the registry
 - `image_creation_date_condition` (String) Additional condition for pulling and rescanning images, Defaults to 'none'
-- `lastupdate` (String) The last time the registry was modified in UNIX time
+- `lastupdate` (Number) The last time the registry was modified in UNIX time
 - `options` (Block List) (see [below for nested schema](#nestedblock--options))
 - `password` (String) The password for registry authentication
 - `prefixes` (List of String) List of possible prefixes to image names pulled from the registry
@@ -98,6 +98,7 @@ resource "aquasec_integration_registry" "integration_registry" {
 - `pull_image_count` (Number) When auto pull image enabled, sets maximum age of auto pulled images tags from each repository (based on image creation date) Requires `image_creation_date_condition = "image_count"`
 - `pull_image_tag_pattern` (List of String) List of image tags patterns to pull
 - `pull_repo_patterns_excluded` (List of String) List of image patterns to exclude
+- `registry_scan_timeout` (Number) Registry scan timeout in Minutes
 - `scanner_name` (List of String) List of scanner names
 - `scanner_type` (String) The Scanner type
 - `url` (String) The URL, address or region of the registry
