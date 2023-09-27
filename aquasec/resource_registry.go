@@ -117,6 +117,11 @@ func resourceRegistry() *schema.Resource {
 				Optional:    true,
 				Computed:    true,
 			},
+			"registry_scan_timeout": {
+				Type:        schema.TypeInt,
+				Description: "Registry scan timeout in Minutes",
+				Optional:    true,
+			},
 			"scanner_type": {
 				Type:        schema.TypeString,
 				Description: "The Scanner type",
@@ -255,6 +260,7 @@ func resourceRegistryCreate(d *schema.ResourceData, m interface{}) error {
 		ImageCreationDateCondition: d.Get("image_creation_date_condition").(string),
 		PullImageAge:               d.Get("pull_image_age").(string),
 		PullImageCount:             d.Get("pull_image_count").(int),
+		RegistryScanTimeout:        d.Get("registry_scan_timeout").(int),
 		AutoPullInterval:           autoPullInterval,
 		ScannerType:                scannerType,
 		ScannerName:                convertStringArr(scanner_name),
@@ -340,6 +346,9 @@ func resourceRegistryRead(d *schema.ResourceData, m interface{}) error {
 	if err = d.Set("pull_image_count", r.PullImageCount); err != nil {
 		return err
 	}
+	if err = d.Set("registry_scan_timeout", r.RegistryScanTimeout); err != nil {
+		return err
+	}
 	if err = d.Set("name", r.Name); err != nil {
 		return err
 	}
@@ -407,7 +416,7 @@ func resourceRegistryUpdate(d *schema.ResourceData, m interface{}) error {
 		autoPullInterval = 1
 	}
 
-	if d.HasChanges("name", "username", "description", "pull_image_tag_pattern", "password", "url", "type", "auto_pull", "auto_pull_rescan", "auto_pull_max", "advanced_settings_cleanup", "auto_pull_time", "auto_pull_interval", "auto_cleanup", "image_creation_date_condition", "scanner_name", "prefixes", "pull_image_count", "pull_image_age", "options", "webhook", "always_pull_patterns", "pull_repo_patterns_excluded") {
+	if d.HasChanges("name", "registry_scan_timeout", "username", "description", "pull_image_tag_pattern", "password", "url", "type", "auto_pull", "auto_pull_rescan", "auto_pull_max", "advanced_settings_cleanup", "auto_pull_time", "auto_pull_interval", "auto_cleanup", "image_creation_date_condition", "scanner_name", "prefixes", "pull_image_count", "pull_image_age", "options", "webhook", "always_pull_patterns", "pull_repo_patterns_excluded") {
 
 		prefixes := d.Get("prefixes").([]interface{})
 		always_pull_patterns := d.Get("always_pull_patterns").([]interface{})
@@ -438,6 +447,7 @@ func resourceRegistryUpdate(d *schema.ResourceData, m interface{}) error {
 			ImageCreationDateCondition: d.Get("image_creation_date_condition").(string),
 			PullImageAge:               d.Get("pull_image_age").(string),
 			PullImageCount:             d.Get("pull_image_count").(int),
+			RegistryScanTimeout:        d.Get("registry_scan_timeout").(int),
 			ScannerType:                scannerType,
 			ScannerName:                convertStringArr(scanner_name),
 			ScannerNameAdded:           convertStringArr(scanner_name_added),

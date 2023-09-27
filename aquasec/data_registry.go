@@ -124,6 +124,11 @@ func dataSourceRegistry() *schema.Resource {
 					Type: schema.TypeString,
 				},
 			},
+			"registry_scan_timeout": {
+				Type:        schema.TypeInt,
+				Description: "Registry scan timeout in Minutes",
+				Optional:    true,
+			},
 			"webhook": {
 				Type:        schema.TypeSet,
 				Optional:    true,
@@ -217,6 +222,7 @@ func dataRegistryRead(d *schema.ResourceData, m interface{}) error {
 		d.Set("advanced_settings_cleanup", reg.AdvancedSettingsCleanup)
 		d.Set("always_pull_patterns", reg.AlwaysPullPatterns)
 		d.Set("pull_image_tag_pattern", reg.PullImageTagPattern)
+		d.Set("registry_scan_timeout", reg.RegistryScanTimeout)
 		d.Set("pull_repo_patterns_excluded", reg.PullRepoPatternsExcluded)
 		d.Set("options", flattenoptions(reg.Options))
 		d.Set("webhook", flattenwebhook(reg.Webhook))

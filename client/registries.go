@@ -24,6 +24,7 @@ type Registry struct {
 	AutoPull                   bool      `json:"auto_pull"`
 	AutoPullTime               string    `json:"auto_pull_time"`
 	AutoPullMax                int       `json:"auto_pull_max"`
+	RegistryScanTimeout        int       `json:"registry_scan_timeout"`
 	AutoPullInterval           int       `json:"auto_pull_interval"`
 	AutoCleanUp                bool      `json:"auto_cleanup"`
 	AlwaysPullPatterns         []string  `json:"always_pull_patterns"`
