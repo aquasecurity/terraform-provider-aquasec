@@ -517,17 +517,17 @@ func resourceHostRuntimePolicy() *schema.Resource {
 				Type:        schema.TypeBool,
 				Description: "",
 				Optional:    true,
-			},
+			}, //bool
 			"enable_crypto_mining_dns": {
 				Type:        schema.TypeBool,
 				Description: "",
 				Optional:    true,
-			},
+			}, //bool
 			"enable_ip_reputation": {
 				Type:        schema.TypeBool,
 				Description: "",
 				Optional:    true,
-			},
+			}, //bool
 			"fork_guard_process_limit": {
 				Type:        schema.TypeInt,
 				Description: "",
@@ -537,7 +537,7 @@ func resourceHostRuntimePolicy() *schema.Resource {
 				Type:        schema.TypeBool,
 				Description: "",
 				Optional:    true,
-			},
+			}, //bool
 			"default_security_profile": {
 				Type:        schema.TypeString,
 				Description: "",
@@ -547,17 +547,17 @@ func resourceHostRuntimePolicy() *schema.Resource {
 				Type:        schema.TypeBool,
 				Description: "",
 				Optional:    true,
-			},
+			}, //bool
 			"block_fileless_exec": {
 				Type:        schema.TypeBool,
 				Description: "",
 				Optional:    true,
-			},
+			}, //bool
 			"block_container_exec": {
 				Type:        schema.TypeBool,
 				Description: "",
 				Optional:    true,
-			},
+			}, //bool
 			"registry": {
 				Type:        schema.TypeString,
 				Description: "",
@@ -1205,17 +1205,17 @@ func resourceHostRuntimePolicy() *schema.Resource {
 				Type:        schema.TypeBool,
 				Description: "",
 				Optional:    true,
-			},
+			}, //bool
 			"block_disallowed_images": {
 				Type:        schema.TypeBool,
 				Description: "",
 				Optional:    true,
-			},
+			}, //bool
 			"only_registered_images": {
 				Type:        schema.TypeBool,
 				Description: "",
 				Optional:    true,
-			},
+			}, //bool
 			"scope": {
 				Type:        schema.TypeList,
 				Description: "Scope configuration.",
@@ -1364,7 +1364,7 @@ func resourceHostRuntimePolicy() *schema.Resource {
 				Type:        schema.TypeBool,
 				Description: "",
 				Optional:    true,
-			},
+			}, //bool
 			"restricted_volumes": {
 				Type:        schema.TypeList,
 				Description: "Restricted volumes configuration.",
@@ -1556,7 +1556,7 @@ func resourceHostRuntimePolicy() *schema.Resource {
 				Type:        schema.TypeBool,
 				Description: "",
 				Optional:    true,
-			},
+			}, //bool
 			"enforce_scheduler_added_on": {
 				Type:        schema.TypeInt,
 				Description: "",
@@ -1566,12 +1566,12 @@ func resourceHostRuntimePolicy() *schema.Resource {
 				Type:        schema.TypeBool,
 				Description: "",
 				Optional:    true,
-			},
+			}, //bool
 			"is_auto_generated": {
 				Type:        schema.TypeBool,
 				Description: "",
 				Optional:    true,
-			},
+			}, //bool
 			"updated": {
 				Type:        schema.TypeString,
 				Description: "",
@@ -1700,7 +1700,23 @@ func resourceHostRuntimePolicyUpdate(ctx context.Context, d *schema.ResourceData
 		"monitor_windows_services",
 		"monitor_system_log_integrity",
 		"windows_registry_monitoring",
-		"windows_registry_protection") {
+		"windows_registry_protection",
+		//JSON test bools
+		"enable_port_scan_protection",
+		"enable_crypto_mining_dns",
+		"enable_ip_reputation",
+		"enable_fork_guard",
+		"block_non_k8s_containers",
+		"block_fileless_exec",
+		"block_container_exec",
+		"block_non_compliant_workloads",
+		"block_disallowed_images",
+		"only_registered_images",
+		"no_new_privileges",
+		"is_audit_checked",
+		"is_ootb_policy",
+		"is_auto_generated",
+	) {
 		crp := expandHostRuntimePolicy(d)
 		err := c.UpdateRuntimePolicy(crp)
 		if err == nil {
@@ -1817,12 +1833,12 @@ func expandHostRuntimePolicy(d *schema.ResourceData) *client.RuntimePolicy {
 
 		crp.FileIntegrityMonitoring = client.FileIntegrityMonitoring{
 			Enabled:                            v["enabled"].(bool),
-			MonitoredFiles:                     convertStringArrTest(v["monitored_files"].([]interface{})),
-			ExceptionalMonitoredFiles:          convertStringArrTest(v["exceptional_monitored_files"].([]interface{})),
-			MonitoredFilesProcesses:            convertStringArrTest(v["monitored_files_processes"].([]interface{})),
-			ExceptionalMonitoredFilesProcesses: convertStringArrTest(v["exceptional_monitored_files_processes"].([]interface{})),
-			MonitoredFilesUsers:                convertStringArrTest(v["monitored_files_users"].([]interface{})),
-			ExceptionalMonitoredFilesUsers:     convertStringArrTest(v["exceptional_monitored_files_users"].([]interface{})),
+			MonitoredFiles:                     convertStringArr(v["monitored_files"].([]interface{})),
+			ExceptionalMonitoredFiles:          convertStringArr(v["exceptional_monitored_files"].([]interface{})),
+			MonitoredFilesProcesses:            convertStringArr(v["monitored_files_processes"].([]interface{})),
+			ExceptionalMonitoredFilesProcesses: convertStringArr(v["exceptional_monitored_files_processes"].([]interface{})),
+			MonitoredFilesUsers:                convertStringArr(v["monitored_files_users"].([]interface{})),
+			ExceptionalMonitoredFilesUsers:     convertStringArr(v["exceptional_monitored_files_users"].([]interface{})),
 			MonitoredFilesCreate:               v["monitored_files_create"].(bool),
 			MonitoredFilesRead:                 v["monitored_files_read"].(bool),
 			MonitoredFilesModify:               v["monitored_files_modify"].(bool),
@@ -1974,6 +1990,77 @@ func expandHostRuntimePolicy(d *schema.ResourceData) *client.RuntimePolicy {
 		}
 	}
 
+	//JSON test bool
+	enablePortScanProtection, ok := d.GetOk("enable_port_scan_protection")
+	if ok {
+		crp.EnablePortScanProtection = enablePortScanProtection.(bool)
+	}
+
+	enableCryptoMiningDNS, ok := d.GetOk("enable_crypto_mining_dns")
+	if ok {
+		crp.EnableCryptoMiningDNS = enableCryptoMiningDNS.(bool)
+	}
+
+	enableIPReputation, ok := d.GetOk("enable_ip_reputation")
+	if ok {
+		crp.EnableIPReputation = enableIPReputation.(bool)
+	}
+
+	enableForkGuard, ok := d.GetOk("enable_fork_guard")
+	if ok {
+		crp.EnableForkGuard = enableForkGuard.(bool)
+	}
+
+	blockNonK8sContainers, ok := d.GetOk("block_non_k8s_containers")
+	if ok {
+		crp.BlockNonK8sContainers = blockNonK8sContainers.(bool)
+	}
+
+	blockFilelessExec, ok := d.GetOk("block_fileless_exec")
+	if ok {
+		crp.BlockFilelessExec = blockFilelessExec.(bool)
+	}
+
+	blockContainerExec, ok := d.GetOk("block_container_exec")
+	if ok {
+		crp.BlockContainerExec = blockContainerExec.(bool)
+	}
+
+	blockNonCompliantWorkloads, ok := d.GetOk("block_non_compliant_workloads")
+	if ok {
+		crp.BlockNonCompliantWorkloads = blockNonCompliantWorkloads.(bool)
+	}
+
+	blockDisallowedImages, ok := d.GetOk("block_disallowed_images")
+	if ok {
+		crp.BlockDisallowedImages = blockDisallowedImages.(bool)
+	}
+
+	onlyRegisteredImages, ok := d.GetOk("only_registered_images")
+	if ok {
+		crp.OnlyRegisteredImages = onlyRegisteredImages.(bool)
+	}
+
+	noNewPrivileges, ok := d.GetOk("no_new_privileges")
+	if ok {
+		crp.NoNewPrivileges = noNewPrivileges.(bool)
+	}
+
+	isAuditChecked, ok := d.GetOk("is_audit_checked")
+	if ok {
+		crp.IsAuditChecked = isAuditChecked.(bool)
+	}
+
+	isOOTBPolicy, ok := d.GetOk("is_ootb_policy")
+	if ok {
+		crp.IsOOTBPolicy = isOOTBPolicy.(bool)
+	}
+
+	isAutoGenerated, ok := d.GetOk("is_auto_generated")
+	if ok {
+		crp.IsAutoGenerated = isAutoGenerated.(bool)
+	}
+
 	return &crp
 }
 
@@ -1983,17 +2070,18 @@ func flattenFileIntegrityMonitoring(monitoring client.FileIntegrityMonitoring) [
 	}
 	return []map[string]interface{}{
 		{
-			"monitor_create":      monitoring.MonitoredFilesCreate,
-			"monitor_read":        monitoring.MonitoredFilesRead,
-			"monitor_modify":      monitoring.MonitoredFilesModify,
-			"monitor_delete":      monitoring.MonitoredFilesDelete,
-			"monitor_attributes":  monitoring.MonitoredFilesAttributes,
-			"monitored_paths":     monitoring.MonitoredFiles,
-			"excluded_paths":      monitoring.ExceptionalMonitoredFiles,
-			"monitored_processes": monitoring.MonitoredFilesProcesses,
-			"excluded_processes":  monitoring.ExceptionalMonitoredFilesProcesses,
-			"monitored_users":     monitoring.MonitoredFilesUsers,
-			"excluded_users":      monitoring.ExceptionalMonitoredFilesUsers,
+			"enabled":                               monitoring.Enabled,
+			"monitored_files_create":                monitoring.MonitoredFilesCreate,
+			"monitored_files_read":                  monitoring.MonitoredFilesRead,
+			"monitored_files_modify":                monitoring.MonitoredFilesModify,
+			"monitored_files_delete":                monitoring.MonitoredFilesDelete,
+			"monitored_files_attributes":            monitoring.MonitoredFilesAttributes,
+			"monitored_files":                       monitoring.MonitoredFiles,
+			"exceptional_monitored_files":           monitoring.ExceptionalMonitoredFiles,
+			"monitored_files_processes":             monitoring.MonitoredFilesProcesses,
+			"exceptional_monitored_files_processes": monitoring.ExceptionalMonitoredFilesProcesses,
+			"monitored_files_users":                 monitoring.MonitoredFilesUsers,
+			"exceptional_monitored_files_users":     monitoring.ExceptionalMonitoredFilesUsers,
 		},
 	}
 }

@@ -86,6 +86,10 @@ type RuntimePolicy struct {
 	VpatchVersion                string                       `json:"vpatch_version"`
 	VulnID                       int                          `json:"vuln_id"`
 	WhitelistedOsUsers           WhitelistedOsUsers           `json:"whitelisted_os_users"`
+	//JSON test bool
+	EnableCryptoMiningDNS bool `json:"enable_crypto_mining_dns"`
+	BlockContainerExec    bool `json:"block_container_exec"`
+	IsOOTBPolicy          bool `json:"is_ootb_policy"`
 }
 
 type AllowedExecutables struct {
