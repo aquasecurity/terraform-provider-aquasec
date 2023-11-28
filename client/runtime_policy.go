@@ -177,8 +177,13 @@ type FileBlock struct {
 }
 
 type PackageBlock struct {
-	Enabled           bool     `json:"enabled"`
-	PackagesBlackList []string `json:"packages_black_list"`
+	Enabled                           bool     `json:"enabled"`
+	PackagesBlackList                 []string `json:"packages_black_list,omitempty"`
+	ExceptionalBlockPackagesFiles     []string `json:"exceptional_block_packages_files,omitempty"`
+	BlockPackagesUsers                []string `json:"block_packages_users,omitempty"`
+	BlockPackagesProcesses            []string `json:"block_packages_processes,omitempty"`
+	ExceptionalBlockPackagesUsers     []string `json:"exceptional_block_packages_users,omitempty"`
+	ExceptionalBlockPackagesProcesses []string `json:"exceptional_block_packages_processes,omitempty"`
 }
 
 type LinuxCapabilities struct {
@@ -209,17 +214,17 @@ type Tripwire struct {
 
 type FileIntegrityMonitoring struct {
 	Enabled                            bool     `json:"enabled"`
-	MonitoredFiles                     []string `json:"monitored_files"`
-	ExceptionalMonitoredFiles          []string `json:"exceptional_monitored_files"`
-	MonitoredFilesProcesses            []string `json:"monitored_files_processes"`
-	ExceptionalMonitoredFilesProcesses []string `json:"exceptional_monitored_files_processes"`
-	MonitoredFilesUsers                []string `json:"monitored_files_users"`
-	ExceptionalMonitoredFilesUsers     []string `json:"exceptional_monitored_files_users"`
-	MonitoredFilesCreate               bool     `json:"monitored_files_create"`
-	MonitoredFilesRead                 bool     `json:"monitored_files_read"`
-	MonitoredFilesModify               bool     `json:"monitored_files_modify"`
-	MonitoredFilesDelete               bool     `json:"monitored_files_delete"`
-	MonitoredFilesAttributes           bool     `json:"monitored_files_attributes"`
+	MonitoredFiles                     []string `json:"monitored_files,omitempty"`
+	ExceptionalMonitoredFiles          []string `json:"exceptional_monitored_files,omitempty"`
+	MonitoredFilesProcesses            []string `json:"monitored_files_processes,omitempty"`
+	ExceptionalMonitoredFilesProcesses []string `json:"exceptional_monitored_files_processes,omitempty"`
+	MonitoredFilesUsers                []string `json:"monitored_files_users,omitempty"`
+	ExceptionalMonitoredFilesUsers     []string `json:"exceptional_monitored_files_users,omitempty"`
+	MonitoredFilesCreate               bool     `json:"monitored_files_create,omitempty"`
+	MonitoredFilesRead                 bool     `json:"monitored_files_read,omitempty"`
+	MonitoredFilesModify               bool     `json:"monitored_files_modify,omitempty"`
+	MonitoredFilesDelete               bool     `json:"monitored_files_delete,omitempty"`
+	MonitoredFilesAttributes           bool     `json:"monitored_files_attributes,omitempty"`
 }
 
 type RegistryAccessMonitoring struct {
