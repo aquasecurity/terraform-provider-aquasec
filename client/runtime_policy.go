@@ -4,11 +4,10 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/pkg/errors"
 	"io"
 	"log"
 	"time"
-
-	"github.com/pkg/errors"
 )
 
 type RuntimePolicy struct {
@@ -90,6 +89,8 @@ type RuntimePolicy struct {
 	EnableCryptoMiningDNS bool `json:"enable_crypto_mining_dns"`
 	BlockContainerExec    bool `json:"block_container_exec"`
 	IsOOTBPolicy          bool `json:"is_ootb_policy"`
+	//JSON test bool int
+	RuntimeMode int `json:"runtime_mode"`
 }
 
 type AllowedExecutables struct {
@@ -296,6 +297,7 @@ func (cli *Client) CreateRuntimePolicy(runtimePolicy *RuntimePolicy) error {
 		return err
 	}
 	resp, body, errs := request.Clone().Set("Authorization", "Bearer "+cli.token).Post(cli.url + apiPath).Send(string(payload)).End()
+	log.Println(string(payload))
 	if errs != nil {
 		return errors.Wrap(getMergedError(errs), "failed creating runtime policy.")
 	}
