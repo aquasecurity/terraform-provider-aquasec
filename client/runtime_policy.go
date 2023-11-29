@@ -308,7 +308,16 @@ func (cli *Client) CreateRuntimePolicy(runtimePolicy *RuntimePolicy) error {
 		return err
 	}
 	resp, body, errs := request.Clone().Set("Authorization", "Bearer "+cli.token).Post(cli.url + apiPath).Send(string(payload)).End()
-	log.Println(string(payload))
+
+	// JSON TEST
+	jsonPayload, err := json.Marshal(string(payload))
+	if err != nil {
+		log.Printf("Error marshaling payload to JSON: %v", err)
+		return nil
+	}
+	log.Println(string(jsonPayload))
+
+	// JSON TEST
 	if errs != nil {
 		return errors.Wrap(getMergedError(errs), "failed creating runtime policy.")
 	}
