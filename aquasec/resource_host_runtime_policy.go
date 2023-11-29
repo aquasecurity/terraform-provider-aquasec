@@ -511,7 +511,7 @@ func resourceHostRuntimePolicy() *schema.Resource {
 					},
 				},
 				Optional: true,
-			},
+			}, // list
 			"enable_port_scan_protection": {
 				Type:        schema.TypeBool,
 				Description: "",
@@ -597,7 +597,7 @@ func resourceHostRuntimePolicy() *schema.Resource {
 					},
 				},
 				Optional: true,
-			},
+			}, // list
 			"container_exec": {
 				Type:        schema.TypeList,
 				MaxItems:    1,
@@ -622,10 +622,18 @@ func resourceHostRuntimePolicy() *schema.Resource {
 							},
 							Optional: true,
 						},
+						"reverse_shell_ip_white_list": {
+							Type:        schema.TypeList,
+							Description: "",
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+							Optional: true,
+						},
 					},
 				},
 				Optional: true,
-			},
+			}, // list
 			"system_integrity_protection": {
 				Type:        schema.TypeList,
 				MaxItems:    1,
@@ -655,7 +663,7 @@ func resourceHostRuntimePolicy() *schema.Resource {
 					},
 				},
 				Optional: true,
-			},
+			}, // list
 			"readonly_registry": {
 				Type:        schema.TypeList,
 				MaxItems:    1,
@@ -718,7 +726,7 @@ func resourceHostRuntimePolicy() *schema.Resource {
 					},
 				},
 				Optional: true,
-			},
+			}, // list
 			"registry_access_monitoring": {
 				Type:        schema.TypeList,
 				MaxItems:    1,
@@ -806,7 +814,7 @@ func resourceHostRuntimePolicy() *schema.Resource {
 					},
 				},
 				Optional: true,
-			},
+			}, //list
 			"readonly_files": {
 				Type:        schema.TypeList,
 				MaxItems:    1,
@@ -869,7 +877,7 @@ func resourceHostRuntimePolicy() *schema.Resource {
 					},
 				},
 				Optional: true,
-			},
+			}, //list
 			"tripwire": {
 				Type:        schema.TypeList,
 				MaxItems:    1,
@@ -907,7 +915,7 @@ func resourceHostRuntimePolicy() *schema.Resource {
 					},
 				},
 				Optional: true,
-			},
+			}, // list
 			"port_block": {
 				Type:        schema.TypeList,
 				MaxItems:    1,
@@ -938,7 +946,7 @@ func resourceHostRuntimePolicy() *schema.Resource {
 					},
 				},
 				Optional: true,
-			},
+			}, // list
 			"linux_capabilities": {
 				Type:        schema.TypeList,
 				MaxItems:    1,
@@ -961,7 +969,7 @@ func resourceHostRuntimePolicy() *schema.Resource {
 					},
 				},
 				Optional: true,
-			},
+			}, // list
 			"package_block": {
 				Type:        schema.TypeList,
 				MaxItems:    1,
@@ -1024,7 +1032,7 @@ func resourceHostRuntimePolicy() *schema.Resource {
 					},
 				},
 				Optional: true,
-			},
+			}, // list
 			"file_block": {
 				Type:        schema.TypeList,
 				MaxItems:    1,
@@ -1087,7 +1095,7 @@ func resourceHostRuntimePolicy() *schema.Resource {
 					},
 				},
 				Optional: true,
-			},
+			}, // list
 			"whitelisted_os_users": {
 				Type:        schema.TypeList,
 				MaxItems:    1,
@@ -1118,7 +1126,7 @@ func resourceHostRuntimePolicy() *schema.Resource {
 					},
 				},
 				Optional: true,
-			},
+			}, // list
 			"blacklisted_os_users": {
 				Type:        schema.TypeList,
 				MaxItems:    1,
@@ -1149,7 +1157,7 @@ func resourceHostRuntimePolicy() *schema.Resource {
 					},
 				},
 				Optional: true,
-			},
+			}, // list
 			"auditing": {
 				Type:        schema.TypeList,
 				MaxItems:    1,
@@ -1199,7 +1207,7 @@ func resourceHostRuntimePolicy() *schema.Resource {
 					},
 				},
 				Optional: true,
-			},
+			}, // list
 			"block_non_compliant_workloads": {
 				Type:        schema.TypeBool,
 				Description: "",
@@ -1247,7 +1255,7 @@ func resourceHostRuntimePolicy() *schema.Resource {
 						},
 					},
 				},
-			},
+			}, // todo
 			"limit_container_privileges": {
 				Type:        schema.TypeList,
 				Description: "Container privileges configuration.",
@@ -1311,7 +1319,7 @@ func resourceHostRuntimePolicy() *schema.Resource {
 						},
 					},
 				},
-			},
+			}, // list
 			"bypass_scope": {
 				Type:        schema.TypeList,
 				Description: "Bypass scope configuration.",
@@ -1358,7 +1366,7 @@ func resourceHostRuntimePolicy() *schema.Resource {
 						},
 					},
 				},
-			},
+			}, //todo
 			"no_new_privileges": {
 				Type:        schema.TypeBool,
 				Description: "",
@@ -1385,7 +1393,7 @@ func resourceHostRuntimePolicy() *schema.Resource {
 						},
 					},
 				},
-			},
+			}, // list
 			"drift_prevention": {
 				Type:        schema.TypeList,
 				Description: "Drift prevention configuration.",
@@ -1417,7 +1425,7 @@ func resourceHostRuntimePolicy() *schema.Resource {
 						},
 					},
 				},
-			},
+			}, // list
 			"executable_blacklist": {
 				Type:        schema.TypeList,
 				Description: "Executable blacklist configuration.",
@@ -1439,7 +1447,7 @@ func resourceHostRuntimePolicy() *schema.Resource {
 						},
 					},
 				},
-			},
+			}, // list
 			"allowed_registries": {
 				Type:        schema.TypeList,
 				Description: "Allowed registries configuration.",
@@ -1461,7 +1469,7 @@ func resourceHostRuntimePolicy() *schema.Resource {
 						},
 					},
 				},
-			},
+			}, // list
 			"allowed_executables": {
 				Type:        schema.TypeList,
 				Description: "Allowed executables configuration.",
@@ -1496,7 +1504,7 @@ func resourceHostRuntimePolicy() *schema.Resource {
 						},
 					},
 				},
-			},
+			}, // list
 			"type": {
 				Type:        schema.TypeString,
 				Description: "",
@@ -1545,7 +1553,7 @@ func resourceHostRuntimePolicy() *schema.Resource {
 					Type:        schema.TypeString,
 					Description: "Excluded application scope.",
 				},
-			},
+			}, // list of strings
 			"permission": {
 				Type:        schema.TypeString,
 				Description: "",
@@ -1661,7 +1669,9 @@ func resourceHostRuntimePolicyRead(ctx context.Context, d *schema.ResourceData, 
 	d.Set("monitor_windows_services", crp.SystemIntegrityProtection.WindowsServicesMonitoring)
 	d.Set("windows_registry_monitoring", flattenWindowsRegistryMonitoring(crp.RegistryAccessMonitoring))
 	d.Set("windows_registry_protection", flattenWindowsRegistryProtection(crp.ReadonlyRegistry))
-
+	//JSON test
+	d.Set("failed_kubernetes_checks", flattenFailedKubernetesChecks(crp.FailedKubernetesChecks))
+	d.Set("reverse_shell", flattenReverseShell(crp.ReverseShell))
 	d.SetId(crp.Name)
 
 	return nil
@@ -2158,7 +2168,300 @@ func expandHostRuntimePolicy(d *schema.ResourceData) *client.RuntimePolicy {
 		crp.RuntimeType = runtimeType.(string)
 	}
 
+	//JSON list
+
+	crp.FailedKubernetesChecks = client.FailedKubernetesChecks{}
+	failedKubernetesChecksMap, ok := d.GetOk("failed_kubernetes_checks")
+	if ok {
+		v := failedKubernetesChecksMap.([]interface{})[0].(map[string]interface{})
+
+		crp.FailedKubernetesChecks = client.FailedKubernetesChecks{
+			Enabled:      v["enabled"].(bool),
+			FailedChecks: convertStringArr(v["failed_checks"].([]interface{})),
+		}
+	}
+
+	crp.ReverseShell = client.ReverseShell{}
+	reverseShellMap, ok := d.GetOk("reverse_shell")
+	if ok {
+		v := reverseShellMap.([]interface{})[0].(map[string]interface{})
+
+		crp.ReverseShell = client.ReverseShell{
+			Enabled:                   v["enabled"].(bool),
+			BlockReverseShell:         v["block_reverse_shell"].(bool),
+			ReverseShellProcWhiteList: convertStringArr(v["reverse_shell_proc_white_list"].([]interface{})),
+		}
+	}
+
+	crp.ContainerExec = client.ContainerExec{}
+	containerExecMap, ok := d.GetOk("container_exec")
+	if ok {
+		v := containerExecMap.([]interface{})[0].(map[string]interface{})
+
+		crp.ContainerExec = client.ContainerExec{
+			Enabled:                    v["enabled"].(bool),
+			BlockContainerExec:         v["block_container_exec"].(bool),
+			ContainerExecProcWhiteList: convertStringArr(v["container_exec_proc_white_list"].([]interface{})),
+		}
+	}
+
+	crp.SystemIntegrityProtection = client.SystemIntegrityProtection{}
+	systemIntegrityProtectionMap, ok := d.GetOk("system_integrity_protection")
+	if ok {
+		v := systemIntegrityProtectionMap.([]interface{})[0].(map[string]interface{})
+
+		crp.SystemIntegrityProtection = client.SystemIntegrityProtection{
+			Enabled:                   v["enabled"].(bool),
+			AuditSystemtimeChange:     v["audit_systemtime_change"].(bool),
+			WindowsServicesMonitoring: v["windows_services_monitoring"].(bool),
+			MonitorAuditLogIntegrity:  v["monitor_audit_log_integrity"].(bool),
+		}
+	}
+
+	crp.ReadonlyRegistry = client.ReadonlyRegistry{}
+	readonlyRegistryMap, ok := d.GetOk("readonly_registry")
+	if ok {
+		v := readonlyRegistryMap.([]interface{})[0].(map[string]interface{})
+
+		crp.ReadonlyRegistry = client.ReadonlyRegistry{
+			Enabled:                              v["enabled"].(bool),
+			ReadonlyRegistryPaths:                convertStringArr(v["readonly_registry_paths"].([]interface{})),
+			ExceptionalReadonlyRegistryPaths:     convertStringArr(v["exceptional_readonly_registry_paths"].([]interface{})),
+			ReadonlyRegistryUsers:                convertStringArr(v["readonly_registry_users"].([]interface{})),
+			ExceptionalReadonlyRegistryUsers:     convertStringArr(v["exceptional_readonly_registry_users"].([]interface{})),
+			ReadonlyRegistryProcesses:            convertStringArr(v["readonly_registry_processes"].([]interface{})),
+			ExceptionalReadonlyRegistryProcesses: convertStringArr(v["exceptional_readonly_registry_processes"].([]interface{})),
+		}
+	}
+
+	crp.RegistryAccessMonitoring = client.RegistryAccessMonitoring{}
+	registryAccessMonitoringMap, ok := d.GetOk("registry_access_monitoring")
+	if ok {
+		v := registryAccessMonitoringMap.([]interface{})[0].(map[string]interface{})
+
+		crp.RegistryAccessMonitoring = client.RegistryAccessMonitoring{
+			Enabled:                               v["enabled"].(bool),
+			MonitoredRegistryPaths:                convertStringArr(v["monitored_registry_paths"].([]interface{})),
+			ExceptionalMonitoredRegistryPaths:     convertStringArr(v["exceptional_monitored_registry_paths"].([]interface{})),
+			MonitoredRegistryUsers:                convertStringArr(v["monitored_registry_users"].([]interface{})),
+			ExceptionalMonitoredRegistryUsers:     convertStringArr(v["exceptional_monitored_registry_users"].([]interface{})),
+			MonitoredRegistryProcesses:            convertStringArr(v["monitored_registry_processes"].([]interface{})),
+			ExceptionalMonitoredRegistryProcesses: convertStringArr(v["exceptional_monitored_registry_processes"].([]interface{})),
+			MonitoredRegistryCreate:               v["monitored_registry_create"].(bool),
+			MonitoredRegistryRead:                 v["monitored_registry_read"].(bool),
+			MonitoredRegistryModify:               v["monitored_registry_modify"].(bool),
+			MonitoredRegistryDelete:               v["monitored_registry_delete"].(bool),
+			MonitoredRegistryAttributes:           v["monitored_registry_attributes"].(bool),
+		}
+	}
+
+	crp.ReadonlyFiles = client.ReadonlyFiles{}
+	readonlyFilesMap, ok := d.GetOk("readonly_files")
+	if ok {
+		v := readonlyFilesMap.([]interface{})[0].(map[string]interface{})
+
+		crp.ReadonlyFiles = client.ReadonlyFiles{
+			Enabled:                           v["enabled"].(bool),
+			ReadonlyFiles:                     convertStringArr(v["readonly_files"].([]interface{})),
+			ExceptionalReadonlyFiles:          convertStringArr(v["exceptional_readonly_files"].([]interface{})),
+			ReadonlyFilesProcesses:            convertStringArr(v["readonly_files_processes"].([]interface{})),
+			ExceptionalReadonlyFilesProcesses: convertStringArr(v["exceptional_readonly_files_processes"].([]interface{})),
+			ReadonlyFilesUsers:                convertStringArr(v["readonly_files_users"].([]interface{})),
+			ExceptionalReadonlyFilesUsers:     convertStringArr(v["exceptional_readonly_files_users"].([]interface{})),
+		}
+	}
+
+	crp.Tripwire = client.Tripwire{}
+	tripwireMap, ok := d.GetOk("tripwire")
+	if ok {
+		v := tripwireMap.([]interface{})[0].(map[string]interface{})
+
+		crp.Tripwire = client.Tripwire{
+			Enabled:       v["enabled"].(bool),
+			UserID:        v["user_id"].(string),
+			UserPassword:  v["user_password"].(string),
+			ApplyOn:       convertStringArr(v["apply_on"].([]interface{})),
+			ServerlessApp: v["serverless_app"].(string),
+		}
+	}
+
+	crp.PortBlock = client.PortBlock{}
+	portBlockMap, ok := d.GetOk("port_block")
+	if ok {
+		v := portBlockMap.([]interface{})[0].(map[string]interface{})
+
+		crp.PortBlock = client.PortBlock{
+			Enabled:            v["enabled"].(bool),
+			BlockInboundPorts:  convertStringArr(v["block_inbound_ports"].([]interface{})),
+			BlockOutboundPorts: convertStringArr(v["block_outbound_ports"].([]interface{})),
+		}
+	}
+
+	crp.LinuxCapabilities = client.LinuxCapabilities{}
+	linuxCapabilitiesMap, ok := d.GetOk("linux_capabilities")
+	if ok {
+		v := linuxCapabilitiesMap.([]interface{})[0].(map[string]interface{})
+
+		crp.LinuxCapabilities = client.LinuxCapabilities{
+			Enabled:                 v["enabled"].(bool),
+			RemoveLinuxCapabilities: convertStringArr(v["remove_linux_capabilities"].([]interface{})),
+		}
+	}
+
+	crp.PackageBlock = client.PackageBlock{}
+	packageBlockMap, ok := d.GetOk("package_block")
+	if ok {
+		v := packageBlockMap.([]interface{})[0].(map[string]interface{})
+
+		crp.PackageBlock = client.PackageBlock{
+			Enabled:                           v["enabled"].(bool),
+			PackagesBlackList:                 convertStringArr(v["packages_black_list"].([]interface{})),
+			ExceptionalBlockPackagesFiles:     convertStringArr(v["exceptional_block_packages_files"].([]interface{})),
+			BlockPackagesUsers:                convertStringArr(v["block_packages_users"].([]interface{})),
+			BlockPackagesProcesses:            convertStringArr(v["block_packages_processes"].([]interface{})),
+			ExceptionalBlockPackagesUsers:     convertStringArr(v["exceptional_block_packages_users"].([]interface{})),
+			ExceptionalBlockPackagesProcesses: convertStringArr(v["exceptional_block_packages_processes"].([]interface{})),
+		}
+	}
+
+	crp.FileBlock = client.FileBlock{}
+	fileBlockMap, ok := d.GetOk("file_block")
+	if ok {
+		v := fileBlockMap.([]interface{})[0].(map[string]interface{})
+
+		crp.FileBlock = client.FileBlock{
+			Enabled:                        v["enabled"].(bool),
+			FilenameBlockList:              convertStringArr(v["filename_block_list"].([]interface{})),
+			ExceptionalBlockFiles:          convertStringArr(v["exceptional_block_files"].([]interface{})),
+			BlockFilesUsers:                convertStringArr(v["block_files_users"].([]interface{})),
+			BlockFilesProcesses:            convertStringArr(v["block_files_processes"].([]interface{})),
+			ExceptionalBlockFilesUsers:     convertStringArr(v["exceptional_block_files_users"].([]interface{})),
+			ExceptionalBlockFilesProcesses: convertStringArr(v["exceptional_block_files_processes"].([]interface{})),
+		}
+	}
+
+	crp.WhitelistedOsUsers = client.WhitelistedOsUsers{}
+	whitelistedOSUsersMap, ok := d.GetOk("whitelisted_os_users")
+	if ok {
+		v := whitelistedOSUsersMap.([]interface{})[0].(map[string]interface{})
+
+		crp.WhitelistedOsUsers = client.WhitelistedOsUsers{
+			Enabled:        v["enabled"].(bool),
+			UserWhiteList:  convertStringArr(v["user_white_list"].([]interface{})),
+			GroupWhiteList: convertStringArr(v["group_white_list"].([]interface{})),
+		}
+	}
+
+	crp.BlacklistedOsUsers = client.BlacklistedOsUsers{}
+	blacklistedOSUsersMap, ok := d.GetOk("blacklisted_os_users")
+	if ok {
+		v := blacklistedOSUsersMap.([]interface{})[0].(map[string]interface{})
+
+		crp.BlacklistedOsUsers = client.BlacklistedOsUsers{
+			Enabled:        v["enabled"].(bool),
+			GroupBlackList: convertStringArr(v["group_black_list"].([]interface{})),
+			UserBlackList:  convertStringArr(v["user_black_list"].([]interface{})),
+		}
+	}
+
+	crp.Auditing = client.Auditing{}
+	auditingMap, ok := d.GetOk("auditing")
+	if ok {
+		v := auditingMap.([]interface{})[0].(map[string]interface{})
+
+		crp.Auditing = client.Auditing{
+			Enabled:                    v["enabled"].(bool),
+			AuditAllProcesses:          v["audit_all_processes"].(bool),
+			AuditProcessCmdline:        v["audit_process_cmdline"].(bool),
+			AuditAllNetwork:            v["audit_all_network"].(bool),
+			AuditOsUserActivity:        v["audit_os_user_activity"].(bool),
+			AuditSuccessLogin:          v["audit_success_login"].(bool),
+			AuditFailedLogin:           v["audit_failed_login"].(bool),
+			AuditUserAccountManagement: v["audit_user_account_management"].(bool),
+		}
+	}
+
+	crp.LimitContainerPrivileges = client.LimitContainerPrivileges{}
+	limitContainerPrivilegesMap, ok := d.GetOk("limit_container_privileges")
+	if ok {
+		v := limitContainerPrivilegesMap.([]interface{})[0].(map[string]interface{})
+
+		crp.LimitContainerPrivileges = client.LimitContainerPrivileges{
+			Enabled:               v["enabled"].(bool),
+			Privileged:            v["privileged"].(bool),
+			Netmode:               v["netmode"].(bool),
+			Pidmode:               v["pidmode"].(bool),
+			Utsmode:               v["utsmode"].(bool),
+			Usermode:              v["usermode"].(bool),
+			Ipcmode:               v["ipcmode"].(bool),
+			PreventRootUser:       v["prevent_root_user"].(bool),
+			PreventLowPortBinding: v["prevent_low_port_binding"].(bool),
+			BlockAddCapabilities:  v["block_add_capabilities"].(bool),
+			UseHostUser:           v["use_host_user"].(bool),
+		}
+	}
+
+	crp.RestrictedVolumes = client.RestrictedVolumes{}
+	restrictedVolumesMap, ok := d.GetOk("restricted_volumes")
+	if ok {
+		v := restrictedVolumesMap.([]interface{})[0].(map[string]interface{})
+
+		crp.RestrictedVolumes = client.RestrictedVolumes{
+			Enabled: v["enabled"].(bool),
+			Volumes: convertStringArr(v["volumes"].([]interface{})),
+		}
+	}
+
+	crp.ExecutableBlacklist = client.ExecutableBlacklist{}
+	executableBlacklistMap, ok := d.GetOk("executable_blacklist")
+	if ok {
+		v := executableBlacklistMap.([]interface{})[0].(map[string]interface{})
+
+		crp.ExecutableBlacklist = client.ExecutableBlacklist{
+			Enabled:     v["enabled"].(bool),
+			Executables: convertStringArr(v["executables"].([]interface{})),
+		}
+	}
+
+	crp.DriftPrevention = client.DriftPrevention{}
+	driftPreventionMap, ok := d.GetOk("drift_prevention")
+	if ok {
+		v := driftPreventionMap.([]interface{})[0].(map[string]interface{})
+
+		crp.DriftPrevention = client.DriftPrevention{
+			Enabled:               v["enabled"].(bool),
+			ExecLockdown:          v["exec_lockdown"].(bool),
+			ImageLockdown:         v["image_lockdown"].(bool),
+			ExecLockdownWhiteList: convertStringArr(v["exec_lockdown_white_list"].([]interface{})),
+		}
+	}
+
+	crp.AllowedRegistries = client.AllowedRegistries{}
+	allowedRegistriesMap, ok := d.GetOk("allowed_registries")
+	if ok {
+		v := allowedRegistriesMap.([]interface{})[0].(map[string]interface{})
+
+		crp.AllowedRegistries = client.AllowedRegistries{
+			Enabled:           v["enabled"].(bool),
+			AllowedRegistries: convertStringArr(v["allowed_registries"].([]interface{})),
+		}
+	}
+
+	crp.AllowedExecutables = client.AllowedExecutables{}
+	allowedExecutablesMap, ok := d.GetOk("allowed_executables")
+	if ok {
+		v := allowedExecutablesMap.([]interface{})[0].(map[string]interface{})
+
+		crp.AllowedExecutables = client.AllowedExecutables{
+			Enabled:              v["enabled"].(bool),
+			AllowExecutables:     convertStringArr(v["allow_executables"].([]interface{})),
+			SeparateExecutables:  v["separate_executables"].(bool),
+			AllowRootExecutables: convertStringArr(v["allow_root_executables"].([]interface{})),
+		}
+	}
+
 	return &crp
+
 }
 
 func flattenFileIntegrityMonitoring(monitoring client.FileIntegrityMonitoring) []map[string]interface{} {
@@ -2230,6 +2533,320 @@ func flattenMalwareScanOptions(monitoring client.MalwareScanOptions) []map[strin
 			"action":              monitoring.Action,
 			"exclude_directories": monitoring.ExcludeDirectories,
 			"exclude_processes":   monitoring.ExcludeProcesses,
+		},
+	}
+}
+
+// JSON test
+
+func flattenFailedKubernetesChecks(checks client.FailedKubernetesChecks) []map[string]interface{} {
+	if !checks.Enabled || len(checks.FailedChecks) == 0 {
+		return []map[string]interface{}{}
+	}
+	return []map[string]interface{}{
+		{
+			"enabled":       checks.Enabled,
+			"failed_checks": checks.FailedChecks,
+		},
+	}
+}
+
+func flattenReverseShell(shell client.ReverseShell) []map[string]interface{} {
+	if !shell.Enabled {
+		return []map[string]interface{}{}
+	}
+	return []map[string]interface{}{
+		{
+			"enabled":                       shell.Enabled,
+			"block_reverse_shell":           shell.BlockReverseShell,
+			"reverse_shell_proc_white_list": shell.ReverseShellProcWhiteList,
+			"reverse_shell_ip_white_list":   shell.ReverseShellIpWhiteList,
+		},
+	}
+}
+
+func flattenContainerExec(exec client.ContainerExec) []map[string]interface{} {
+	if !exec.Enabled {
+		return []map[string]interface{}{}
+	}
+	return []map[string]interface{}{
+		{
+			"enabled":                        exec.Enabled,
+			"block_container_exec":           exec.BlockContainerExec,
+			"container_exec_proc_white_list": exec.ContainerExecProcWhiteList,
+		},
+	}
+}
+
+func flattenSystemIntegrityProtection(protection client.SystemIntegrityProtection) []map[string]interface{} {
+	if !protection.Enabled {
+		return []map[string]interface{}{}
+	}
+	return []map[string]interface{}{
+		{
+			"enabled":                     protection.Enabled,
+			"audit_systemtime_change":     protection.AuditSystemtimeChange,
+			"windows_services_monitoring": protection.WindowsServicesMonitoring,
+			"monitor_audit_log_integrity": protection.MonitorAuditLogIntegrity,
+		},
+	}
+}
+
+func flattenReadonlyRegistry(registry client.ReadonlyRegistry) []map[string]interface{} {
+	if !registry.Enabled {
+		return []map[string]interface{}{}
+	}
+	return []map[string]interface{}{
+		{
+			"enabled":                                 registry.Enabled,
+			"readonly_registry_paths":                 registry.ReadonlyRegistryPaths,
+			"exceptional_readonly_registry_paths":     registry.ExceptionalReadonlyRegistryPaths,
+			"readonly_registry_users":                 registry.ReadonlyRegistryUsers,
+			"exceptional_readonly_registry_users":     registry.ExceptionalReadonlyRegistryUsers,
+			"readonly_registry_processes":             registry.ReadonlyRegistryProcesses,
+			"exceptional_readonly_registry_processes": registry.ExceptionalReadonlyRegistryProcesses,
+		},
+	}
+}
+
+func flattenRegistryAccessMonitoring(monitoring client.RegistryAccessMonitoring) []map[string]interface{} {
+	if !monitoring.Enabled {
+		return []map[string]interface{}{}
+	}
+	return []map[string]interface{}{
+		{
+			"enabled":                                  monitoring.Enabled,
+			"monitored_registry_paths":                 monitoring.MonitoredRegistryPaths,
+			"exceptional_monitored_registry_paths":     monitoring.ExceptionalMonitoredRegistryPaths,
+			"monitored_registry_users":                 monitoring.MonitoredRegistryUsers,
+			"exceptional_monitored_registry_users":     monitoring.ExceptionalMonitoredRegistryUsers,
+			"monitored_registry_processes":             monitoring.MonitoredRegistryProcesses,
+			"exceptional_monitored_registry_processes": monitoring.ExceptionalMonitoredRegistryProcesses,
+			"monitored_registry_create":                monitoring.MonitoredRegistryCreate,
+			"monitored_registry_read":                  monitoring.MonitoredRegistryRead,
+			"monitored_registry_modify":                monitoring.MonitoredRegistryModify,
+			"monitored_registry_delete":                monitoring.MonitoredRegistryDelete,
+			"monitored_registry_attributes":            monitoring.MonitoredRegistryAttributes,
+		},
+	}
+}
+
+func flattenReadonlyFiles(files client.ReadonlyFiles) []map[string]interface{} {
+	if !files.Enabled {
+		return []map[string]interface{}{}
+	}
+	return []map[string]interface{}{
+		{
+			"enabled":                              files.Enabled,
+			"readonly_files":                       files.ReadonlyFiles,
+			"exceptional_readonly_files":           files.ExceptionalReadonlyFiles,
+			"readonly_files_processes":             files.ReadonlyFilesProcesses,
+			"exceptional_readonly_files_processes": files.ExceptionalReadonlyFilesProcesses,
+			"readonly_files_users":                 files.ReadonlyFilesUsers,
+			"exceptional_readonly_files_users":     files.ExceptionalReadonlyFilesUsers,
+		},
+	}
+}
+
+func flattenTripwire(tripwire client.Tripwire) []map[string]interface{} {
+	if !tripwire.Enabled {
+		return []map[string]interface{}{}
+	}
+	return []map[string]interface{}{
+		{
+			"enabled":        tripwire.Enabled,
+			"user_id":        tripwire.UserID,
+			"user_password":  tripwire.UserPassword,
+			"apply_on":       tripwire.ApplyOn,
+			"serverless_app": tripwire.ServerlessApp,
+		},
+	}
+}
+
+func flattenPortBlock(portBlock client.PortBlock) []map[string]interface{} {
+	if !portBlock.Enabled {
+		return []map[string]interface{}{}
+	}
+	return []map[string]interface{}{
+		{
+			"enabled":              portBlock.Enabled,
+			"block_inbound_ports":  portBlock.BlockInboundPorts,
+			"block_outbound_ports": portBlock.BlockOutboundPorts,
+		},
+	}
+}
+
+func flattenLinuxCapabilities(linuxCapabilities client.LinuxCapabilities) []map[string]interface{} {
+	if !linuxCapabilities.Enabled {
+		return []map[string]interface{}{}
+	}
+	return []map[string]interface{}{
+		{
+			"enabled":                   linuxCapabilities.Enabled,
+			"remove_linux_capabilities": linuxCapabilities.RemoveLinuxCapabilities,
+		},
+	}
+}
+
+func flattenPackageBlock(packageBlock client.PackageBlock) []map[string]interface{} {
+	if !packageBlock.Enabled {
+		return []map[string]interface{}{}
+	}
+	return []map[string]interface{}{
+		{
+			"enabled":                              packageBlock.Enabled,
+			"packages_black_list":                  packageBlock.PackagesBlackList,
+			"exceptional_block_packages_files":     packageBlock.ExceptionalBlockPackagesFiles,
+			"block_packages_users":                 packageBlock.BlockPackagesUsers,
+			"block_packages_processes":             packageBlock.BlockPackagesProcesses,
+			"exceptional_block_packages_users":     packageBlock.ExceptionalBlockPackagesUsers,
+			"exceptional_block_packages_processes": packageBlock.ExceptionalBlockPackagesProcesses,
+		},
+	}
+}
+
+func flattenFileBlock(fileBlock client.FileBlock) []map[string]interface{} {
+	if !fileBlock.Enabled {
+		return []map[string]interface{}{}
+	}
+	return []map[string]interface{}{
+		{
+			"enabled":                           fileBlock.Enabled,
+			"filename_block_list":               fileBlock.FilenameBlockList,
+			"exceptional_block_files":           fileBlock.ExceptionalBlockFiles,
+			"block_files_users":                 fileBlock.BlockFilesUsers,
+			"block_files_processes":             fileBlock.BlockFilesProcesses,
+			"exceptional_block_files_users":     fileBlock.ExceptionalBlockFilesUsers,
+			"exceptional_block_files_processes": fileBlock.ExceptionalBlockFilesProcesses,
+		},
+	}
+}
+
+func flattenWhitelistedOSUsers(whitelistedOsUsers client.WhitelistedOsUsers) []map[string]interface{} {
+	if !whitelistedOsUsers.Enabled {
+		return []map[string]interface{}{}
+	}
+	return []map[string]interface{}{
+		{
+			"enabled":          whitelistedOsUsers.Enabled,
+			"user_white_list":  whitelistedOsUsers.UserWhiteList,
+			"group_white_list": whitelistedOsUsers.GroupWhiteList,
+		},
+	}
+}
+
+func flattenBlacklistedOSUsers(blacklistedOsUsers client.BlacklistedOsUsers) []map[string]interface{} {
+	if !blacklistedOsUsers.Enabled {
+		return []map[string]interface{}{}
+	}
+	return []map[string]interface{}{
+		{
+			"enabled":          blacklistedOsUsers.Enabled,
+			"group_black_list": blacklistedOsUsers.GroupBlackList,
+			"user_black_list":  blacklistedOsUsers.UserBlackList,
+		},
+	}
+}
+
+func flattenAuditing(auditing client.Auditing) []map[string]interface{} {
+	if !auditing.Enabled {
+		return []map[string]interface{}{}
+	}
+	return []map[string]interface{}{
+		{
+			"enabled":                       auditing.Enabled,
+			"audit_all_processes":           auditing.AuditAllProcesses,
+			"audit_process_cmdline":         auditing.AuditProcessCmdline,
+			"audit_all_network":             auditing.AuditAllNetwork,
+			"audit_os_user_activity":        auditing.AuditOsUserActivity,
+			"audit_success_login":           auditing.AuditSuccessLogin,
+			"audit_failed_login":            auditing.AuditFailedLogin,
+			"audit_user_account_management": auditing.AuditUserAccountManagement,
+		},
+	}
+}
+
+func flattenLimitContainerPrivileges(limitContainerPrivileges client.LimitContainerPrivileges) []map[string]interface{} {
+	if !limitContainerPrivileges.Enabled {
+		return []map[string]interface{}{}
+	}
+	return []map[string]interface{}{
+		{
+			"enabled":                  limitContainerPrivileges.Enabled,
+			"privileged":               limitContainerPrivileges.Privileged,
+			"netmode":                  limitContainerPrivileges.Netmode,
+			"pidmode":                  limitContainerPrivileges.Pidmode,
+			"utsmode":                  limitContainerPrivileges.Utsmode,
+			"usermode":                 limitContainerPrivileges.Usermode,
+			"ipcmode":                  limitContainerPrivileges.Ipcmode,
+			"prevent_root_user":        limitContainerPrivileges.PreventRootUser,
+			"prevent_low_port_binding": limitContainerPrivileges.PreventLowPortBinding,
+			"block_add_capabilities":   limitContainerPrivileges.BlockAddCapabilities,
+			"use_host_user":            limitContainerPrivileges.UseHostUser,
+		},
+	}
+}
+
+func flattenRestrictedVolumes(restrictedVolumes client.RestrictedVolumes) []map[string]interface{} {
+	if !restrictedVolumes.Enabled {
+		return []map[string]interface{}{}
+	}
+	return []map[string]interface{}{
+		{
+			"enabled": restrictedVolumes.Enabled,
+			"volumes": restrictedVolumes.Volumes,
+		},
+	}
+}
+
+func flattenDriftPrevention(driftPrevention client.DriftPrevention) []map[string]interface{} {
+	if !driftPrevention.Enabled {
+		return []map[string]interface{}{}
+	}
+	return []map[string]interface{}{
+		{
+			"enabled":                  driftPrevention.Enabled,
+			"exec_lockdown":            driftPrevention.ExecLockdown,
+			"image_lockdown":           driftPrevention.ImageLockdown,
+			"exec_lockdown_white_list": driftPrevention.ExecLockdownWhiteList,
+		},
+	}
+}
+
+func flattenExecutableBlacklist(executableBlacklist client.ExecutableBlacklist) []map[string]interface{} {
+	if !executableBlacklist.Enabled {
+		return []map[string]interface{}{}
+	}
+	return []map[string]interface{}{
+		{
+			"enabled":     executableBlacklist.Enabled,
+			"executables": executableBlacklist.Executables,
+		},
+	}
+}
+
+func flattenAllowedRegistries(allowedRegistries client.AllowedRegistries) []map[string]interface{} {
+	if !allowedRegistries.Enabled {
+		return []map[string]interface{}{}
+	}
+	return []map[string]interface{}{
+		{
+			"enabled":            allowedRegistries.Enabled,
+			"allowed_registries": allowedRegistries.AllowedRegistries,
+		},
+	}
+}
+
+func flattenAllowedExecutables(allowedExecutables client.AllowedExecutables) []map[string]interface{} {
+	if !allowedExecutables.Enabled {
+		return []map[string]interface{}{}
+	}
+	return []map[string]interface{}{
+		{
+			"enabled":                allowedExecutables.Enabled,
+			"allow_executables":      allowedExecutables.AllowExecutables,
+			"separate_executables":   allowedExecutables.SeparateExecutables,
+			"allow_root_executables": allowedExecutables.AllowRootExecutables,
 		},
 	}
 }

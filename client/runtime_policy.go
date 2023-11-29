@@ -177,8 +177,13 @@ type WhitelistedOsUsers struct {
 }
 
 type FileBlock struct {
-	Enabled           bool     `json:"enabled"`
-	FilenameBlockList []string `json:"filename_block_list"`
+	Enabled                        bool     `json:"enabled"`
+	FilenameBlockList              []string `json:"filename_block_list"`
+	ExceptionalBlockFiles          []string `json:"exceptional_block_files"`
+	BlockFilesUsers                []string `json:"block_files_users"`
+	BlockFilesProcesses            []string `json:"block_files_processes"`
+	ExceptionalBlockFilesUsers     []string `json:"exceptional_block_files_users"`
+	ExceptionalBlockFilesProcesses []string `json:"exceptional_block_files_processes"`
 }
 
 type PackageBlock struct {
@@ -255,9 +260,13 @@ type SystemIntegrityProtection struct {
 }
 
 type ReadonlyFiles struct {
-	Enabled                  bool     `json:"enabled"`
-	ReadonlyFiles            []string `json:"readonly_files"`
-	ExceptionalReadonlyFiles []string `json:"exceptional_readonly_files"`
+	Enabled                           bool     `json:"enabled"`
+	ReadonlyFiles                     []string `json:"readonly_files"`
+	ExceptionalReadonlyFiles          []string `json:"exceptional_readonly_files"`
+	ReadonlyFilesProcesses            []string `json:"readonly_files_processes"`
+	ExceptionalReadonlyFilesProcesses []string `json:"exceptional_readonly_files_processes"`
+	ReadonlyFilesUsers                []string `json:"readonly_files_users"`
+	ExceptionalReadonlyFilesUsers     []string `json:"exceptional_readonly_files_users"`
 }
 
 type ReadonlyRegistry struct {
@@ -271,17 +280,19 @@ type ReadonlyRegistry struct {
 }
 
 type ContainerExec struct {
+	Enabled                    bool     `json:"enabled"`
 	BlockContainerExec         bool     `json:"block_container_exec"`
 	ContainerExecProcWhiteList []string `json:"container_exec_proc_white_list"`
-	Enabled                    bool     `json:"enabled"`
 }
 
 type ReverseShell struct {
-	BlockReverseShell         bool     `json:"block_reverse_shell"`
 	Enabled                   bool     `json:"enabled"`
-	ReverseShellIpWhiteList   []string `json:"reverse_shell_ip_white_list"`
+	BlockReverseShell         bool     `json:"block_reverse_shell"`
 	ReverseShellProcWhiteList []string `json:"reverse_shell_proc_white_list"`
+	ReverseShellIpWhiteList   []string `json:"reverse_shell_ip_white_list"`
 }
+
+// JSON test
 
 // CreateRuntimePolicy creates an Aqua RuntimePolicy
 func (cli *Client) CreateRuntimePolicy(runtimePolicy *RuntimePolicy) error {
