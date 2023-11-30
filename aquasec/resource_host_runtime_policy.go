@@ -119,7 +119,6 @@ func resourceHostRuntimePolicy() *schema.Resource {
 			},
 			"file_integrity_monitoring": {
 				Type:        schema.TypeList,
-				MaxItems:    1,
 				Description: "Configuration for file integrity monitoring.",
 				Optional:    true,
 				Elem: &schema.Resource{
@@ -1255,7 +1254,7 @@ func resourceHostRuntimePolicy() *schema.Resource {
 						},
 					},
 				},
-			}, // todo
+			},
 			"limit_container_privileges": {
 				Type:        schema.TypeList,
 				Description: "Container privileges configuration.",
@@ -1672,7 +1671,7 @@ func resourceHostRuntimePolicyRead(ctx context.Context, d *schema.ResourceData, 
 	//JSON test
 	d.Set("failed_kubernetes_checks", flattenFailedKubernetesChecks(crp.FailedKubernetesChecks))
 	d.Set("enable_port_scan_protection", crp.EnablePortScanProtection)
-	d.Set("enable_crypto_mining_dns", crp.EnableCryptoMiningDNS)
+	d.Set("enable_crypto_mining_dns", crp.EnableCryptoMiningDns)
 	d.Set("enable_ip_reputation", crp.EnableIPReputation)
 	d.Set("fork_guard_process_limit", crp.ForkGuardProcessLimit)
 	d.Set("enable_fork_guard", crp.EnableForkGuard)
@@ -1713,7 +1712,7 @@ func resourceHostRuntimePolicyRead(ctx context.Context, d *schema.ResourceData, 
 	d.Set("cve", crp.Cve)
 	d.Set("repo_name", crp.RepoName)
 	d.Set("image_name", crp.ImageName)
-	//d.Set("exclude_application_scopes", flatten(crp.FailedKubernetesChecks)) // todo
+	d.Set("exclude_application_scopes", crp.ExcludeApplicationScopes)
 	d.Set("permission", crp.Permission)
 	d.Set("is_audit_checked", crp.IsAuditChecked)
 	d.Set("enforce_scheduler_added_on", crp.EnforceSchedulerAddedOn)
@@ -1896,12 +1895,12 @@ func expandHostRuntimePolicy(d *schema.ResourceData) *client.RuntimePolicy {
 
 		crp.FileIntegrityMonitoring = client.FileIntegrityMonitoring{
 			Enabled:                            v["enabled"].(bool),
-			MonitoredFiles:                     convertStringArr(v["monitored_files"].([]interface{})),
-			ExceptionalMonitoredFiles:          convertStringArr(v["exceptional_monitored_files"].([]interface{})),
-			MonitoredFilesProcesses:            convertStringArr(v["monitored_files_processes"].([]interface{})),
-			ExceptionalMonitoredFilesProcesses: convertStringArr(v["exceptional_monitored_files_processes"].([]interface{})),
-			MonitoredFilesUsers:                convertStringArr(v["monitored_files_users"].([]interface{})),
-			ExceptionalMonitoredFilesUsers:     convertStringArr(v["exceptional_monitored_files_users"].([]interface{})),
+			MonitoredFiles:                     convertStringArrNull(v["monitored_files"].([]interface{})),
+			ExceptionalMonitoredFiles:          convertStringArrNull(v["exceptional_monitored_files"].([]interface{})),
+			MonitoredFilesProcesses:            convertStringArrNull(v["monitored_files_processes"].([]interface{})),
+			ExceptionalMonitoredFilesProcesses: convertStringArrNull(v["exceptional_monitored_files_processes"].([]interface{})),
+			MonitoredFilesUsers:                convertStringArrNull(v["monitored_files_users"].([]interface{})),
+			ExceptionalMonitoredFilesUsers:     convertStringArrNull(v["exceptional_monitored_files_users"].([]interface{})),
 			MonitoredFilesCreate:               v["monitored_files_create"].(bool),
 			MonitoredFilesRead:                 v["monitored_files_read"].(bool),
 			MonitoredFilesModify:               v["monitored_files_modify"].(bool),
@@ -1972,14 +1971,6 @@ func expandHostRuntimePolicy(d *schema.ResourceData) *client.RuntimePolicy {
 		crp.BlacklistedOsUsers.GroupBlackList = strArr
 	}
 
-	crp.PackageBlock.PackagesBlackList = []string{}
-	packageBlock, ok := d.GetOk("package_block")
-	if ok {
-		strArr := convertStringArrTest(packageBlock.([]interface{}))
-		crp.PackageBlock.Enabled = len(strArr) != 0
-		crp.PackageBlock.PackagesBlackList = strArr
-	}
-
 	portScanningDetection, ok := d.GetOk("port_scanning_detection")
 	if ok {
 		crp.EnablePortScanProtection = portScanningDetection.(bool)
@@ -2048,8 +2039,9 @@ func expandHostRuntimePolicy(d *schema.ResourceData) *client.RuntimePolicy {
 		crp.MalwareScanOptions = client.MalwareScanOptions{
 			Enabled:            v["enabled"].(bool),
 			Action:             v["action"].(string),
-			ExcludeDirectories: convertStringArr(v["exclude_directories"].([]interface{})),
-			ExcludeProcesses:   convertStringArr(v["exclude_processes"].([]interface{})),
+			ExcludeDirectories: convertStringArrNull(v["exclude_directories"].([]interface{})),
+			ExcludeProcesses:   convertStringArrNull(v["exclude_processes"].([]interface{})),
+			IncludeDirectories: convertStringArrNull(v["include_directories"].([]interface{})),
 		}
 	}
 
@@ -2061,7 +2053,7 @@ func expandHostRuntimePolicy(d *schema.ResourceData) *client.RuntimePolicy {
 
 	enableCryptoMiningDNS, ok := d.GetOk("enable_crypto_mining_dns")
 	if ok {
-		crp.EnableCryptoMiningDNS = enableCryptoMiningDNS.(bool)
+		crp.EnableCryptoMiningDns = enableCryptoMiningDNS.(bool)
 	}
 
 	enableIPReputation, ok := d.GetOk("enable_ip_reputation")
@@ -2223,6 +2215,18 @@ func expandHostRuntimePolicy(d *schema.ResourceData) *client.RuntimePolicy {
 
 	//JSON list
 
+	excludeApplicationScopes, ok := d.GetOk("exclude_application_scopes")
+	if ok {
+		var scopes []string
+		for _, scope := range excludeApplicationScopes.([]interface{}) {
+			scopes = append(scopes, scope.(string))
+		}
+		crp.ExcludeApplicationScopes = scopes
+	} else {
+		// If "exclude_application_scopes" is not provided, set it to an empty array
+		crp.ExcludeApplicationScopes = []string{}
+	}
+
 	crp.FailedKubernetesChecks = client.FailedKubernetesChecks{}
 	failedKubernetesChecksMap, ok := d.GetOk("failed_kubernetes_checks")
 	if ok {
@@ -2242,7 +2246,8 @@ func expandHostRuntimePolicy(d *schema.ResourceData) *client.RuntimePolicy {
 		crp.ReverseShell = client.ReverseShell{
 			Enabled:                   v["enabled"].(bool),
 			BlockReverseShell:         v["block_reverse_shell"].(bool),
-			ReverseShellProcWhiteList: convertStringArr(v["reverse_shell_proc_white_list"].([]interface{})),
+			ReverseShellProcWhiteList: convertStringArrNull(v["reverse_shell_proc_white_list"].([]interface{})),
+			ReverseShellIpWhiteList:   convertStringArrNull(v["reverse_shell_ip_white_list"].([]interface{})),
 		}
 	}
 
@@ -2252,9 +2257,15 @@ func expandHostRuntimePolicy(d *schema.ResourceData) *client.RuntimePolicy {
 		v := containerExecMap.([]interface{})[0].(map[string]interface{})
 
 		crp.ContainerExec = client.ContainerExec{
-			Enabled:                    v["enabled"].(bool),
-			BlockContainerExec:         v["block_container_exec"].(bool),
-			ContainerExecProcWhiteList: convertStringArr(v["container_exec_proc_white_list"].([]interface{})),
+			Enabled:            v["enabled"].(bool),
+			BlockContainerExec: v["block_container_exec"].(bool),
+		}
+
+		// Check if "container_exec_proc_white_list" is provided and not an empty array
+		if whiteList, whiteListOk := v["container_exec_proc_white_list"]; whiteListOk && len(whiteList.([]interface{})) > 0 {
+			crp.ContainerExec.ContainerExecProcWhiteList = convertStringArr(whiteList.([]interface{}))
+		} else {
+			crp.ContainerExec.ContainerExecProcWhiteList = nil
 		}
 	}
 
@@ -2333,7 +2344,7 @@ func expandHostRuntimePolicy(d *schema.ResourceData) *client.RuntimePolicy {
 			Enabled:       v["enabled"].(bool),
 			UserID:        v["user_id"].(string),
 			UserPassword:  v["user_password"].(string),
-			ApplyOn:       convertStringArr(v["apply_on"].([]interface{})),
+			ApplyOn:       convertStringArrNull(v["apply_on"].([]interface{})),
 			ServerlessApp: v["serverless_app"].(string),
 		}
 	}
@@ -2472,7 +2483,7 @@ func expandHostRuntimePolicy(d *schema.ResourceData) *client.RuntimePolicy {
 
 		crp.ExecutableBlacklist = client.ExecutableBlacklist{
 			Enabled:     v["enabled"].(bool),
-			Executables: convertStringArr(v["executables"].([]interface{})),
+			Executables: convertStringArrNull(v["executables"].([]interface{})),
 		}
 	}
 
@@ -2485,7 +2496,7 @@ func expandHostRuntimePolicy(d *schema.ResourceData) *client.RuntimePolicy {
 			Enabled:               v["enabled"].(bool),
 			ExecLockdown:          v["exec_lockdown"].(bool),
 			ImageLockdown:         v["image_lockdown"].(bool),
-			ExecLockdownWhiteList: convertStringArr(v["exec_lockdown_white_list"].([]interface{})),
+			ExecLockdownWhiteList: convertStringArrNull(v["exec_lockdown_white_list"].([]interface{})),
 		}
 	}
 
@@ -2507,9 +2518,20 @@ func expandHostRuntimePolicy(d *schema.ResourceData) *client.RuntimePolicy {
 
 		crp.AllowedExecutables = client.AllowedExecutables{
 			Enabled:              v["enabled"].(bool),
-			AllowExecutables:     convertStringArr(v["allow_executables"].([]interface{})),
+			AllowExecutables:     convertStringArrNull(v["allow_executables"].([]interface{})),
 			SeparateExecutables:  v["separate_executables"].(bool),
-			AllowRootExecutables: convertStringArr(v["allow_root_executables"].([]interface{})),
+			AllowRootExecutables: convertStringArrNull(v["allow_root_executables"].([]interface{})),
+		}
+	}
+
+	crp.Scope = client.Scope{}
+	scopeMap, ok := d.GetOk("scope")
+	if ok {
+		v := scopeMap.([]interface{})[0].(map[string]interface{})
+
+		crp.Scope = client.Scope{
+			Expression: v["expression"].(string),
+			Variables:  flattenVariables(v["variables"].([]interface{})),
 		}
 	}
 
@@ -2586,6 +2608,7 @@ func flattenMalwareScanOptions(monitoring client.MalwareScanOptions) []map[strin
 			"action":              monitoring.Action,
 			"exclude_directories": monitoring.ExcludeDirectories,
 			"exclude_processes":   monitoring.ExcludeProcesses,
+			"include_directories": monitoring.IncludeDirectories,
 		},
 	}
 }
@@ -2902,4 +2925,16 @@ func flattenAllowedExecutables(allowedExecutables client.AllowedExecutables) []m
 			"allow_root_executables": allowedExecutables.AllowRootExecutables,
 		},
 	}
+}
+
+func flattenVariables(variables []interface{}) []client.Variable {
+	var result []client.Variable
+	for _, v := range variables {
+		val := v.(map[string]interface{})
+		result = append(result, client.Variable{
+			Attribute: val["attribute"].(string),
+			Value:     val["value"].(string),
+		})
+	}
+	return result
 }
