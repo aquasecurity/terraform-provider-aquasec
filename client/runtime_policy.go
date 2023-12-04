@@ -19,7 +19,7 @@ type RuntimePolicy struct {
 	Auditing                   Auditing                 `json:"auditing"`
 	Author                     string                   `json:"author"`
 	BlacklistedOsUsers         BlacklistedOsUsers       `json:"blacklisted_os_users"`
-	BlockDisallowedImages      bool                     `json:"block_disallowed_images"`
+	BlockDisallowedImages      bool                     `json:"block_disallowed_images,omitempty"`
 	BlockFailed                bool                     `json:"block_failed,omitempty"`
 	BlockFilelessExec          bool                     `json:"block_fileless_exec"`
 	BlockNonCompliantWorkloads bool                     `json:"block_non_compliant_workloads"`
@@ -35,7 +35,7 @@ type RuntimePolicy struct {
 	Domain                     string                   `json:"domain,omitempty"`
 	DomainName                 string                   `json:"domain_name,omitempty"`
 	DriftPrevention            DriftPrevention          `json:"drift_prevention"`
-	EnableCryptoMiningDns      bool                     `json:"enable_crypto_mining_dns"`
+	EnableCryptoMiningDns      bool                     `json:"enable_crypto_mining_dns,omitempty"`
 	EnableForkGuard            bool                     `json:"enable_fork_guard"`
 	EnableIPReputation         bool                     `json:"enable_ip_reputation"`
 	EnablePortScanProtection   bool                     `json:"enable_port_scan_protection"`
@@ -60,7 +60,7 @@ type RuntimePolicy struct {
 	MalwareScanOptions         MalwareScanOptions       `json:"malware_scan_options"`
 	Name                       string                   `json:"name"`
 	NoNewPrivileges            bool                     `json:"no_new_privileges"`
-	OnlyRegisteredImages       bool                     `json:"only_registered_images"`
+	OnlyRegisteredImages       bool                     `json:"only_registered_images,omitempty"`
 	PackageBlock               PackageBlock             `json:"package_block"`
 	Permission                 string                   `json:"permission"`
 	PortBlock                  PortBlock                `json:"port_block"`
