@@ -4,21 +4,19 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/pkg/errors"
 	"io"
 	"log"
 	"strings"
-	"time"
-
-	"github.com/pkg/errors"
 )
 
 type AssurancePolicy struct {
 	AssuranceType                    string              `json:"assurance_type"`
-	Id                               int                 `json:"id"`
+	Id                               int                 `json:"id,omitempty"`
 	Name                             string              `json:"name"`
 	Author                           string              `json:"author"`
-	Registry                         string              `json:"registry"`
-	Lastupdate                       time.Time           `json:"lastupdate"`
+	Registry                         string              `json:"registry,omitempty"`
+	Lastupdate                       string              `json:"lastupdate"`
 	CvssSeverityEnabled              bool                `json:"cvss_severity_enabled"`
 	CvssSeverity                     string              `json:"cvss_severity"`
 	CvssSeverityExcludeNoFix         bool                `json:"cvss_severity_exclude_no_fix"`
@@ -66,9 +64,9 @@ type AssurancePolicy struct {
 	CvesWhiteListEnabled             bool                `json:"cves_white_list_enabled"`
 	BlacklistPermissionsEnabled      bool                `json:"blacklist_permissions_enabled"`
 	BlacklistPermissions             []interface{}       `json:"blacklist_permissions"`
-	Enabled                          bool                `json:"enabled"`
-	Enforce                          bool                `json:"enforce"`
-	EnforceAfterDays                 int                 `json:"enforce_after_days"`
+	Enabled                          bool                `json:"enabled,omitempty"`
+	Enforce                          bool                `json:"enforce,omitempty"`
+	EnforceAfterDays                 int                 `json:"enforce_after_days,omitempty"`
 	IgnoreRecentlyPublishedVln       bool                `json:"ignore_recently_published_vln"`
 	IgnoreRecentlyPublishedVlnPeriod int                 `json:"ignore_recently_published_vln_period"`
 	IgnoreRiskResourcesEnabled       bool                `json:"ignore_risk_resources_enabled"`
@@ -76,13 +74,13 @@ type AssurancePolicy struct {
 	ApplicationScopes                []string            `json:"application_scopes"`
 	AutoScanEnabled                  bool                `json:"auto_scan_enabled"`
 	AutoScanConfigured               bool                `json:"auto_scan_configured"`
-	AutoScanTime                     ScanTimeAuto        `json:"auto_scan_time"`
+	AutoScanTime                     ScanTimeAuto        `json:"auto_scan_time,omitempty"`
 	RequiredLabelsEnabled            bool                `json:"required_labels_enabled"`
 	RequiredLabels                   []Labels            `json:"required_labels"`
 	ForbiddenLabelsEnabled           bool                `json:"forbidden_labels_enabled"`
 	ForbiddenLabels                  []Labels            `json:"forbidden_labels"`
-	DomainName                       string              `json:"domain_name"`
-	Domain                           string              `json:"domain"`
+	DomainName                       string              `json:"domain_name,omitempty"`
+	Domain                           string              `json:"domain,omitempty"`
 	Description                      string              `json:"description"`
 	DtaSeverity                      string              `json:"dta_severity"`
 	ScanNfsMounts                    bool                `json:"scan_nfs_mounts"`
@@ -90,6 +88,24 @@ type AssurancePolicy struct {
 	PartialResultsImageFail          bool                `json:"partial_results_image_fail"`
 	MaximumScoreExcludeNoFix         bool                `json:"maximum_score_exclude_no_fix"`
 	KubenetesControlsNames           []string            `json:"kubernetes_controls_names"`
+	//JSON
+	CustomSeverity              string                  `json:"custom_severity"`
+	VulnerabilityExploitability bool                    `json:"vulnerability_exploitability"`
+	DisallowExploitTypes        []string                `json:"disallow_exploit_types"`
+	IgnoreBaseImageVln          bool                    `json:"ignore_base_image_vln"`
+	IgnoredSensitiveResources   []string                `json:"ignored_sensitive_resources"`
+	Permission                  string                  `json:"permission"`
+	ScanMalwareInArchives       bool                    `json:"scan_malware_in_archives"`
+	KubernetesControls          KubernetesControlsArray `json:"kubernetes_controls"`
+	KubernetesControlsNames     []string                `json:"kubernetes_controls_names"`
+	ScanWindowsRegistry         bool                    `json:"scan_windows_registry"`
+	ScanProcessMemory           bool                    `json:"scan_process_memory"`
+	PolicySettings              PolicySettings          `json:"policy_settings"`
+	ExcludeApplicationScopes    []string                `json:"exclude_application_scopes"`
+	LinuxCisEnabled             bool                    `json:"linux_cis_enabled"`
+	OpenshiftHardeningEnabled   bool                    `json:"openshift_hardening_enabled"`
+	KubernetesControlsAvdIds    []string                `json:"kubernetes_controls_avd_ids"`
+	VulnerabilityScoreRange     []int                   `json:"vulnerability_score_range"`
 }
 
 type Checks struct {
@@ -145,6 +161,28 @@ type ScanTimeAuto struct {
 	WeekDays      []interface{} `json:"week_days"`
 }
 
+//JSON
+
+type PolicySettings struct {
+	Enforce        bool   `json:"enforce"`
+	Warn           bool   `json:"warn"`
+	WarningMessage string `json:"warning_message"`
+	IsAuditChecked bool   `json:"is_audit_checked"`
+}
+
+type KubernetesControls struct {
+	ScriptID    int    `json:"script_id"`
+	Name        string `json:"name"`
+	Description string `json:"description"`
+	Enabled     bool   `json:"enabled"`
+	Severity    string `json:"severity"`
+	Kind        string `json:"kind"`
+	OOTB        bool   `json:"ootb"`
+	AvdID       string `json:"avd_id"`
+}
+
+type KubernetesControlsArray []KubernetesControls
+
 // GetAssurancePolicy - returns single  Assurance Policy
 func (cli *Client) GetAssurancePolicy(name string, at string) (*AssurancePolicy, error) {
 	var err error
@@ -158,7 +196,10 @@ func (cli *Client) GetAssurancePolicy(name string, at string) (*AssurancePolicy,
 		atype = "function"
 	} else if strings.EqualFold(at, "kubernetes") {
 		atype = "kubernetes"
+	} else if strings.EqualFold(at, "cf_application") {
+		atype = "cf_application"
 	}
+
 	apiPath := "/api/v2/assurance_policy/" + atype + "/" + name
 	err = cli.limiter.Wait(context.Background())
 	if err != nil {
@@ -207,7 +248,10 @@ func (cli *Client) CreateAssurancePolicy(assurancepolicy *AssurancePolicy, at st
 		atype = "function"
 	} else if strings.EqualFold(at, "kubernetes") {
 		atype = "kubernetes"
+	} else if strings.EqualFold(at, "cf_application") {
+		atype = "cf_application"
 	}
+
 	apiPath := "/api/v2/assurance_policy/" + atype
 	if err != nil {
 		return err
@@ -253,6 +297,8 @@ func (cli *Client) UpdateAssurancePolicy(assurancepolicy *AssurancePolicy, at st
 		atype = "function"
 	} else if strings.EqualFold(at, "kubernetes") {
 		atype = "kubernetes"
+	} else if strings.EqualFold(at, "cf_application") {
+		atype = "cf_application"
 	}
 	apiPath := "/api/v2/assurance_policy/" + atype + "/" + assurancepolicy.Name
 	request := cli.gorequest
@@ -293,6 +339,8 @@ func (cli *Client) DeleteAssurancePolicy(name string, at string) error {
 		atype = "function"
 	} else if strings.EqualFold(at, "kubernetes") {
 		atype = "kubernetes"
+	} else if strings.EqualFold(at, "cf_application") {
+		atype = "cf_application"
 	}
 	apiPath := "/api/v2/assurance_policy/" + atype + "/" + name
 	err := cli.limiter.Wait(context.Background())

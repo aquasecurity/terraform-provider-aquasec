@@ -7,12 +7,12 @@ import (
 	"strings"
 )
 
-func resourceKubernetesAssurancePolicy() *schema.Resource {
+func resourceVMwareAssurancePolicy() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceKubernetesAssurancePolicyCreate,
-		Read:   resourceKubernetesAssurancePolicyRead,
-		Update: resourceKubernetesAssurancePolicyUpdate,
-		Delete: resourceKubernetesAssurancePolicyDelete,
+		Create: resourceVMwareAssurancePolicyCreate,
+		Read:   resourceVMwareAssurancePolicyRead,
+		Update: resourceVMwareAssurancePolicyUpdate,
+		Delete: resourceVMwareAssurancePolicyDelete,
 		Importer: &schema.ResourceImporter{
 			StateContext: schema.ImportStatePassthroughContext,
 		},
@@ -24,9 +24,11 @@ func resourceKubernetesAssurancePolicy() *schema.Resource {
 				Optional:    true,
 				Computed:    true,
 			},
+
 			"id": {
 				Type:     schema.TypeString,
 				Computed: true,
+				Optional: true,
 			},
 			"name": {
 				Type:     schema.TypeString,
@@ -461,14 +463,6 @@ func resourceKubernetesAssurancePolicy() *schema.Resource {
 					Type: schema.TypeString,
 				},
 			},
-			"kubernetes_controls_names": {
-				Type:        schema.TypeList,
-				Description: "List of kubernetes control names and available kubernetes controls are: 'Access to host IPC namespace', 'Access to host PID', 'Access to host network', 'Access to host ports', 'All container images must start with a GCR domain', 'All container images must start with an ECR domain', 'All container images must start with the *.azurecr.io domain', 'CPU not limited', 'CPU requests not specified', 'Can elevate its own privileges', 'ConfigMap with secrets', 'ConfigMap with sensitive content', 'Container images from public registries used', 'Default capabilitiessome containers do not drop all', 'Default capabilitiessome containers do not drop any', 'Delete pod logs', 'Exec into Pods', 'Image tag :latest used', 'Manage EKS IAM Auth ConfigMap', 'Manage Kubernetes RBAC resources', 'Manage Kubernetes networking', 'Manage Kubernetes workloads and pods', 'Manage all resources', 'Manage all resources at the namespace', 'Manage configmaps', 'Manage namespace secrets', 'Manage secrets', 'Manage webhookconfigurations', 'Manages /etc/hosts', 'Memory not limited', 'Memory requests not specified', 'Non-core volume types used.', 'Non-default /proc masks set', 'Privileged', 'Root file system is not read-only', 'Runs as root user', 'Runs with GID <= 10000', 'Runs with UID <= 10000', 'Runs with a root primary or supplementary GID', 'Runtime/Default AppArmor profile not set', 'Runtime/Default Seccomp profile not set', 'SELinux custom options set', 'SYS_ADMIN capability added', 'Seccomp policies disabled', 'Service with External IP', 'Specific capabilities added', 'Unsafe sysctl options set', 'User with admin access', 'Workloads in the default namespace', 'hostPath volume mounted with docker.sock', 'hostPath volumes mounted'",
-				Optional:    true,
-				Elem: &schema.Schema{
-					Type: schema.TypeString,
-				},
-			},
 			"blacklist_permissions_enabled": {
 				Type:        schema.TypeBool,
 				Description: "Indicates if blacklist permissions is relevant.",
@@ -635,7 +629,7 @@ func resourceKubernetesAssurancePolicy() *schema.Resource {
 				Description: "Indicates that policy should ignore cases that do not have a known fix.",
 				Optional:    true,
 			},
-			//JSON
+			//JSON Test
 			"lastupdate": {
 				Type:        schema.TypeString,
 				Description: "",
@@ -655,10 +649,37 @@ func resourceKubernetesAssurancePolicy() *schema.Resource {
 			}, //bool
 			"disallow_exploit_types": {
 				Type:        schema.TypeList,
-				Description: "",
+				Description: "Allowed executables configuration.",
 				Optional:    true,
-				Elem: &schema.Schema{
-					Type: schema.TypeString,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"enabled": {
+							Type:        schema.TypeBool,
+							Description: "Whether allowed executables configuration is enabled.",
+							Optional:    true,
+						},
+						"allow_executables": {
+							Type:        schema.TypeList,
+							Description: "List of allowed executables.",
+							Optional:    true,
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+						},
+						"separate_executables": {
+							Type:        schema.TypeBool,
+							Description: "Whether to treat executables separately.",
+							Optional:    true,
+						},
+						"allow_root_executables": {
+							Type:        schema.TypeList,
+							Description: "List of allowed root executables.",
+							Optional:    true,
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+						},
+					},
 				},
 			}, // list
 			"ignore_base_image_vln": {
@@ -668,10 +689,37 @@ func resourceKubernetesAssurancePolicy() *schema.Resource {
 			}, //bool
 			"ignored_sensitive_resources": {
 				Type:        schema.TypeList,
-				Description: "",
+				Description: "Allowed executables configuration.",
 				Optional:    true,
-				Elem: &schema.Schema{
-					Type: schema.TypeString,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"enabled": {
+							Type:        schema.TypeBool,
+							Description: "Whether allowed executables configuration is enabled.",
+							Optional:    true,
+						},
+						"allow_executables": {
+							Type:        schema.TypeList,
+							Description: "List of allowed executables.",
+							Optional:    true,
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+						},
+						"separate_executables": {
+							Type:        schema.TypeBool,
+							Description: "Whether to treat executables separately.",
+							Optional:    true,
+						},
+						"allow_root_executables": {
+							Type:        schema.TypeList,
+							Description: "List of allowed root executables.",
+							Optional:    true,
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+						},
+					},
 				},
 			}, // list
 			"permission": {
@@ -687,54 +735,74 @@ func resourceKubernetesAssurancePolicy() *schema.Resource {
 			}, //bool
 			"kubernetes_controls": {
 				Type:        schema.TypeList,
-				Description: "List of Kubernetes controls.",
+				Description: "Allowed executables configuration.",
 				Optional:    true,
-				MaxItems:    1,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
-						"script_id": {
-							Type:        schema.TypeInt,
-							Description: "",
-							Optional:    true,
-						},
-						"name": {
-							Type:        schema.TypeString,
-							Description: "",
-							Optional:    true,
-						},
-						"description": {
-							Type:        schema.TypeString,
-							Description: "",
-							Optional:    true,
-						},
 						"enabled": {
 							Type:        schema.TypeBool,
-							Description: "",
+							Description: "Whether allowed executables configuration is enabled.",
 							Optional:    true,
 						},
-						"severity": {
-							Type:        schema.TypeString,
-							Description: "",
+						"allow_executables": {
+							Type:        schema.TypeList,
+							Description: "List of allowed executables.",
 							Optional:    true,
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
 						},
-						"kind": {
-							Type:        schema.TypeString,
-							Description: "",
-							Optional:    true,
-						},
-						"ootb": {
+						"separate_executables": {
 							Type:        schema.TypeBool,
-							Description: "",
+							Description: "Whether to treat executables separately.",
 							Optional:    true,
 						},
-						"avd_id": {
-							Type:        schema.TypeString,
-							Description: "",
+						"allow_root_executables": {
+							Type:        schema.TypeList,
+							Description: "List of allowed root executables.",
 							Optional:    true,
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
 						},
 					},
 				},
-			},
+			}, // list
+			"kubernetes_controls_names": {
+				Type:        schema.TypeList,
+				Description: "Allowed executables configuration.",
+				Optional:    true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"enabled": {
+							Type:        schema.TypeBool,
+							Description: "Whether allowed executables configuration is enabled.",
+							Optional:    true,
+						},
+						"allow_executables": {
+							Type:        schema.TypeList,
+							Description: "List of allowed executables.",
+							Optional:    true,
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+						},
+						"separate_executables": {
+							Type:        schema.TypeBool,
+							Description: "Whether to treat executables separately.",
+							Optional:    true,
+						},
+						"allow_root_executables": {
+							Type:        schema.TypeList,
+							Description: "List of allowed root executables.",
+							Optional:    true,
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+						},
+					},
+				},
+			}, // list
 			"scan_windows_registry": {
 				Type:        schema.TypeBool,
 				Description: "",
@@ -777,10 +845,37 @@ func resourceKubernetesAssurancePolicy() *schema.Resource {
 			}, // list
 			"exclude_application_scopes": {
 				Type:        schema.TypeList,
-				Description: "",
+				Description: "Allowed executables configuration.",
 				Optional:    true,
-				Elem: &schema.Schema{
-					Type: schema.TypeString,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"enabled": {
+							Type:        schema.TypeBool,
+							Description: "Whether allowed executables configuration is enabled.",
+							Optional:    true,
+						},
+						"allow_executables": {
+							Type:        schema.TypeList,
+							Description: "List of allowed executables.",
+							Optional:    true,
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+						},
+						"separate_executables": {
+							Type:        schema.TypeBool,
+							Description: "Whether to treat executables separately.",
+							Optional:    true,
+						},
+						"allow_root_executables": {
+							Type:        schema.TypeList,
+							Description: "List of allowed root executables.",
+							Optional:    true,
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+						},
+					},
 				},
 			}, // list
 			"linux_cis_enabled": {
@@ -793,14 +888,6 @@ func resourceKubernetesAssurancePolicy() *schema.Resource {
 				Description: "",
 				Optional:    true,
 			}, //bool
-			"vulnerability_score_range": {
-				Type:        schema.TypeList,
-				Description: "",
-				Optional:    true,
-				Elem: &schema.Schema{
-					Type: schema.TypeInt,
-				},
-			}, // list
 			"kubernetes_controls_avd_ids": {
 				Type:        schema.TypeList,
 				Description: "",
@@ -809,23 +896,23 @@ func resourceKubernetesAssurancePolicy() *schema.Resource {
 					Type: schema.TypeString,
 				},
 			}, // list
+			"vulnerability_score_range": {
+				Type:        schema.TypeList,
+				Description: "",
+				Optional:    true,
+				Elem: &schema.Schema{
+					Type: schema.TypeInt,
+				},
+			}, // list
 
-			//"aggregated_vulnerability": {
-			//	Type:        schema.TypeString,
-			//	Optional:    true,
-			//	Description: "List of aggregated vulnerabilities",
-			//	//Elem: &schema.Schema{
-			//	//	Type: schema.TypeString,
-			//	//},
-			//}, // list
 		},
 	}
 }
 
-func resourceKubernetesAssurancePolicyCreate(d *schema.ResourceData, m interface{}) error {
+func resourceVMwareAssurancePolicyCreate(d *schema.ResourceData, m interface{}) error {
 	ac := m.(*client.Client)
 	name := d.Get("name").(string)
-	assurance_type := "kubernetes"
+	assurance_type := "cf_application"
 
 	iap := expandAssurancePolicy(d, assurance_type)
 	err := ac.CreateAssurancePolicy(iap, assurance_type)
@@ -834,28 +921,112 @@ func resourceKubernetesAssurancePolicyCreate(d *schema.ResourceData, m interface
 		return err
 	}
 	d.SetId(name)
-	return resourceKubernetesAssurancePolicyRead(d, m)
+	return resourceVMwareAssurancePolicyRead(d, m)
 
 }
 
-func resourceKubernetesAssurancePolicyUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceVMwareAssurancePolicyUpdate(d *schema.ResourceData, m interface{}) error {
 	ac := m.(*client.Client)
-	name := d.Get("name").(string)
-	assurance_type := "kubernetes"
+	assurance_type := "cf_application"
 
-	if d.HasChanges("description", "registry", "cvss_severity_enabled", "cvss_severity", "cvss_severity_exclude_no_fix", "custom_severity_enabled", "maximum_score_enabled", "maximum_score", "control_exclude_no_fix", "custom_checks_enabled",
-		"scap_enabled", "cves_black_list_enabled", "packages_black_list_enabled", "packages_white_list_enabled", "only_none_root_users", "trusted_base_images_enabled", "scan_sensitive_data", "audit_on_failure", "block_failed",
-		"disallow_malware", "monitored_malware_paths", "exceptional_monitored_malware_paths", "blacklisted_licenses_enabled", "blacklisted_licenses", "whitelisted_licenses_enabled", "whitelisted_licenses", "custom_checks", "scap_files", "scope",
-		"registries", "labels", "images", "cves_black_list", "packages_black_list", "packages_white_list", "allowed_images", "trusted_base_images", "read_only", "force_microenforcer", "docker_cis_enabled", "kube_cis_enabled", "enforce_excessive_permissions",
-		"function_integrity_enabled", "dta_enabled", "cves_white_list", "kubernetes_controls_names", "cves_white_list_enabled", "blacklist_permissions_enabled", "blacklist_permissions", "enabled", "enforce", "enforce_after_days", "ignore_recently_published_vln", "ignore_recently_published_vln_period",
-		"ignore_risk_resources_enabled", "ignored_risk_resources", "application_scopes", "auto_scan_enabled", "auto_scan_configured", "auto_scan_time", "required_labels_enabled", "required_labels", "forbidden_labels_enabled", "forbidden_labels", "domain_name",
-		"domain", "description", "dta_severity", "scan_nfs_mounts", "malware_action", "partial_results_image_fail", "maximum_score_exclude_no_fix") {
+	if d.HasChanges("description",
+		"registry",
+		"cvss_severity_enabled",
+		"cvss_severity",
+		"cvss_severity_exclude_no_fix",
+		"custom_severity_enabled",
+		"maximum_score_enabled",
+		"maximum_score",
+		"control_exclude_no_fix",
+		"custom_checks_enabled",
+		"scap_enabled",
+		"cves_black_list_enabled",
+		"packages_black_list_enabled",
+		"packages_white_list_enabled",
+		"only_none_root_users",
+		"trusted_base_images_enabled",
+		"scan_sensitive_data",
+		"audit_on_failure",
+		"fail_cicd",
+		"block_failed",
+		"disallow_malware",
+		"monitored_malware_paths",
+		"exceptional_monitored_malware_paths",
+		"blacklisted_licenses_enabled",
+		"blacklisted_licenses",
+		"whitelisted_licenses_enabled",
+		"whitelisted_licenses",
+		"custom_checks",
+		"scap_files",
+		"scope",
+		"registries",
+		"labels",
+		"images",
+		"cves_black_list",
+		"packages_black_list",
+		"packages_white_list",
+		"allowed_images",
+		"trusted_base_images",
+		"read_only",
+		"force_microenforcer",
+		"docker_cis_enabled",
+		"kube_cis_enabled",
+		"enforce_excessive_permissions",
+		"function_integrity_enabled",
+		"dta_enabled",
+		"cves_white_list",
+		"cves_white_list_enabled",
+		"blacklist_permissions_enabled",
+		"blacklist_permissions",
+		"enabled",
+		"enforce",
+		"enforce_after_days",
+		"ignore_recently_published_vln",
+		"ignore_recently_published_vln_period",
+		"ignore_risk_resources_enabled",
+		"ignored_risk_resources",
+		"application_scopes",
+		"auto_scan_enabled",
+		"auto_scan_configured",
+		"auto_scan_time",
+		"required_labels_enabled",
+		"required_labels",
+		"forbidden_labels_enabled",
+		"forbidden_labels",
+		"domain_name",
+		"domain",
+		"description",
+		"dta_severity",
+		"scan_nfs_mounts",
+		"malware_action",
+		"partial_results_image_fail",
+		"maximum_score_exclude_no_fix",
+		//JSOT Test
+		//"author",
+		"lastupdate",
+		"custom_severity",
+		"vulnerability_exploitability",
+		"disallow_exploit_types",
+		"ignore_base_image_vln",
+		"ignored_sensitive_resources",
+		"permission",
+		"scan_malware_in_archives",
+		"kubernetes_controls",
+		"kubernetes_controls_names",
+		"scan_windows_registry",
+		"scan_process_memory",
+		"policy_settings",
+		"exclude_application_scopes",
+		"linux_cis_enabled",
+		"openshift_hardening_enabled",
+		"kubernetes_controls_avd_ids",
+	) {
 		iap := expandAssurancePolicy(d, assurance_type)
 		err := ac.UpdateAssurancePolicy(iap, assurance_type)
 		if err == nil {
-			err1 := resourceKubernetesAssurancePolicyRead(d, m)
+			err1 := resourceVMwareAssurancePolicyRead(d, m)
 			if err1 == nil {
-				d.SetId(name)
+				d.SetId(iap.Name)
 			} else {
 				return err1
 			}
@@ -866,9 +1037,9 @@ func resourceKubernetesAssurancePolicyUpdate(d *schema.ResourceData, m interface
 	return nil
 }
 
-func resourceKubernetesAssurancePolicyRead(d *schema.ResourceData, m interface{}) error {
+func resourceVMwareAssurancePolicyRead(d *schema.ResourceData, m interface{}) error {
 	ac := m.(*client.Client)
-	assurance_type := "kubernetes"
+	assurance_type := "cf_application"
 
 	iap, err := ac.GetAssurancePolicy(d.Id(), assurance_type)
 
@@ -880,10 +1051,10 @@ func resourceKubernetesAssurancePolicyRead(d *schema.ResourceData, m interface{}
 		return err
 	}
 
-	//d.Set("assurance_type", iap.AssuranceType)
+	d.Set("assurance_type", iap.AssuranceType)
 	d.Set("name", iap.Name)
 	d.Set("description", iap.Description)
-	d.Set("author", iap.Author)
+	//d.Set("author", iap.Author)
 	d.Set("application_scopes", iap.ApplicationScopes)
 	d.Set("registry", iap.Registry)
 	d.Set("cvss_severity_enabled", iap.CvssSeverityEnabled)
@@ -902,6 +1073,7 @@ func resourceKubernetesAssurancePolicyRead(d *schema.ResourceData, m interface{}
 	d.Set("trusted_base_images_enabled", iap.TrustedBaseImagesEnabled)
 	d.Set("scan_sensitive_data", iap.ScanSensitiveData)
 	d.Set("audit_on_failure", iap.AuditOnFailure)
+	d.Set("fail_cicd", iap.FailCicd)
 	d.Set("block_failed", iap.BlockFailed)
 	d.Set("disallow_malware", iap.DisallowMalware)
 	d.Set("monitored_malware_paths", iap.MonitoredMalwarePaths)
@@ -930,7 +1102,6 @@ func resourceKubernetesAssurancePolicyRead(d *schema.ResourceData, m interface{}
 	d.Set("dta_enabled", iap.DtaEnabled)
 	d.Set("cves_white_list_enabled", iap.CvesWhiteListEnabled)
 	d.Set("cves_white_list", iap.CvesWhiteList)
-	d.Set("kubernetes_controls_names", iap.KubenetesControlsNames)
 	d.Set("blacklist_permissions_enabled", iap.BlacklistPermissionsEnabled)
 	d.Set("blacklist_permissions", iap.BlacklistPermissions)
 	d.Set("enabled", iap.Enabled)
@@ -955,7 +1126,7 @@ func resourceKubernetesAssurancePolicyRead(d *schema.ResourceData, m interface{}
 	d.Set("malware_action", iap.MalwareAction)
 	d.Set("partial_results_image_fail", iap.PartialResultsImageFail)
 	d.Set("maximum_score_exclude_no_fix", iap.MaximumScoreExcludeNoFix)
-	//JSON
+	//JSON Test
 	//d.Set("lastupdate", iap.Lastupdate)
 	d.Set("custom_severity", iap.CustomSeverity)
 	d.Set("vulnerability_exploitability", iap.VulnerabilityExploitability)
@@ -964,21 +1135,23 @@ func resourceKubernetesAssurancePolicyRead(d *schema.ResourceData, m interface{}
 	d.Set("ignored_sensitive_resources", iap.IgnoredSensitiveResources)
 	d.Set("permission", iap.Permission)
 	d.Set("scan_malware_in_archives", iap.ScanMalwareInArchives)
-	d.Set("kubernetes_controls", flattenKubernetesControls(iap.KubernetesControls))
+	d.Set("kubernetes_controls", iap.KubernetesControls)
+	d.Set("kubernetes_controls_names", iap.KubernetesControlsNames)
 	d.Set("scan_windows_registry", iap.ScanWindowsRegistry)
 	d.Set("scan_process_memory", iap.ScanProcessMemory)
 	d.Set("policy_settings", flattenPolicySettings(iap.PolicySettings))
 	d.Set("exclude_application_scopes", iap.ExcludeApplicationScopes)
 	d.Set("linux_cis_enabled", iap.LinuxCisEnabled)
 	d.Set("openshift_hardening_enabled", iap.OpenshiftHardeningEnabled)
+	d.Set("kubernetes_controls_avd_ids", iap.KubernetesControlsAvdIds)
 
 	return nil
 }
 
-func resourceKubernetesAssurancePolicyDelete(d *schema.ResourceData, m interface{}) error {
+func resourceVMwareAssurancePolicyDelete(d *schema.ResourceData, m interface{}) error {
 	ac := m.(*client.Client)
 	name := d.Get("name").(string)
-	assurance_type := "kubernetes"
+	assurance_type := "cf_application"
 	err := ac.DeleteAssurancePolicy(name, assurance_type)
 
 	if err == nil {
