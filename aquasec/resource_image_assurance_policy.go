@@ -626,7 +626,7 @@ func resourceImageAssurancePolicy() *schema.Resource {
 			},
 			"maximum_score_exclude_no_fix": {
 				Type:        schema.TypeBool,
-				Description: "Indicates that policy should ignore cases that do not have a known fix.",
+				Description: "",
 				Optional:    true,
 			},
 			//JSON
@@ -648,38 +648,10 @@ func resourceImageAssurancePolicy() *schema.Resource {
 				Optional:    true,
 			}, //bool
 			"disallow_exploit_types": {
-				Type:        schema.TypeList,
-				Description: "Allowed executables configuration.",
-				Optional:    true,
-				Elem: &schema.Resource{
-					Schema: map[string]*schema.Schema{
-						"enabled": {
-							Type:        schema.TypeBool,
-							Description: "Whether allowed executables configuration is enabled.",
-							Optional:    true,
-						},
-						"allow_executables": {
-							Type:        schema.TypeList,
-							Description: "List of allowed executables.",
-							Optional:    true,
-							Elem: &schema.Schema{
-								Type: schema.TypeString,
-							},
-						},
-						"separate_executables": {
-							Type:        schema.TypeBool,
-							Description: "Whether to treat executables separately.",
-							Optional:    true,
-						},
-						"allow_root_executables": {
-							Type:        schema.TypeList,
-							Description: "List of allowed root executables.",
-							Optional:    true,
-							Elem: &schema.Schema{
-								Type: schema.TypeString,
-							},
-						},
-					},
+				Type:     schema.TypeList,
+				Optional: true,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
 				},
 			}, // list
 			"ignore_base_image_vln": {
@@ -688,40 +660,12 @@ func resourceImageAssurancePolicy() *schema.Resource {
 				Optional:    true,
 			}, //bool
 			"ignored_sensitive_resources": {
-				Type:        schema.TypeList,
-				Description: "Allowed executables configuration.",
-				Optional:    true,
-				Elem: &schema.Resource{
-					Schema: map[string]*schema.Schema{
-						"enabled": {
-							Type:        schema.TypeBool,
-							Description: "Whether allowed executables configuration is enabled.",
-							Optional:    true,
-						},
-						"allow_executables": {
-							Type:        schema.TypeList,
-							Description: "List of allowed executables.",
-							Optional:    true,
-							Elem: &schema.Schema{
-								Type: schema.TypeString,
-							},
-						},
-						"separate_executables": {
-							Type:        schema.TypeBool,
-							Description: "Whether to treat executables separately.",
-							Optional:    true,
-						},
-						"allow_root_executables": {
-							Type:        schema.TypeList,
-							Description: "List of allowed root executables.",
-							Optional:    true,
-							Elem: &schema.Schema{
-								Type: schema.TypeString,
-							},
-						},
-					},
+				Type:     schema.TypeList,
+				Optional: true,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
 				},
-			}, // list
+			},
 			"permission": {
 				Type:        schema.TypeString,
 				Description: "",
@@ -734,9 +678,10 @@ func resourceImageAssurancePolicy() *schema.Resource {
 				Optional:    true,
 			}, //bool
 			"kubernetes_controls": {
-				Type:        schema.TypeSet,
+				Type:        schema.TypeList,
 				Description: "List of Kubernetes controls.",
 				Optional:    true,
+				MaxItems:    1,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"script_id": {
@@ -783,40 +728,12 @@ func resourceImageAssurancePolicy() *schema.Resource {
 				},
 			},
 			"kubernetes_controls_names": {
-				Type:        schema.TypeList,
-				Description: "Allowed executables configuration.",
-				Optional:    true,
-				Elem: &schema.Resource{
-					Schema: map[string]*schema.Schema{
-						"enabled": {
-							Type:        schema.TypeBool,
-							Description: "Whether allowed executables configuration is enabled.",
-							Optional:    true,
-						},
-						"allow_executables": {
-							Type:        schema.TypeList,
-							Description: "List of allowed executables.",
-							Optional:    true,
-							Elem: &schema.Schema{
-								Type: schema.TypeString,
-							},
-						},
-						"separate_executables": {
-							Type:        schema.TypeBool,
-							Description: "Whether to treat executables separately.",
-							Optional:    true,
-						},
-						"allow_root_executables": {
-							Type:        schema.TypeList,
-							Description: "List of allowed root executables.",
-							Optional:    true,
-							Elem: &schema.Schema{
-								Type: schema.TypeString,
-							},
-						},
-					},
+				Type:     schema.TypeList,
+				Optional: true,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
 				},
-			}, // list
+			},
 			"scan_windows_registry": {
 				Type:        schema.TypeBool,
 				Description: "",
@@ -858,40 +775,12 @@ func resourceImageAssurancePolicy() *schema.Resource {
 				Optional: true,
 			}, // list
 			"exclude_application_scopes": {
-				Type:        schema.TypeList,
-				Description: "Allowed executables configuration.",
-				Optional:    true,
-				Elem: &schema.Resource{
-					Schema: map[string]*schema.Schema{
-						"enabled": {
-							Type:        schema.TypeBool,
-							Description: "Whether allowed executables configuration is enabled.",
-							Optional:    true,
-						},
-						"allow_executables": {
-							Type:        schema.TypeList,
-							Description: "List of allowed executables.",
-							Optional:    true,
-							Elem: &schema.Schema{
-								Type: schema.TypeString,
-							},
-						},
-						"separate_executables": {
-							Type:        schema.TypeBool,
-							Description: "Whether to treat executables separately.",
-							Optional:    true,
-						},
-						"allow_root_executables": {
-							Type:        schema.TypeList,
-							Description: "List of allowed root executables.",
-							Optional:    true,
-							Elem: &schema.Schema{
-								Type: schema.TypeString,
-							},
-						},
-					},
+				Type:     schema.TypeList,
+				Optional: true,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
 				},
-			}, // list
+			},
 			"linux_cis_enabled": {
 				Type:        schema.TypeBool,
 				Description: "",
@@ -902,6 +791,23 @@ func resourceImageAssurancePolicy() *schema.Resource {
 				Description: "",
 				Optional:    true,
 			}, //bool
+			"kubernetes_controls_avd_ids": {
+				Type:        schema.TypeList,
+				Description: "",
+				Optional:    true,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+			}, // list
+			"vulnerability_score_range": {
+				Type:        schema.TypeList,
+				Description: "",
+				Optional:    true,
+				Elem: &schema.Schema{
+					Type: schema.TypeInt,
+				},
+			}, // list
+
 		},
 	}
 }
@@ -999,7 +905,7 @@ func resourceImageAssurancePolicyUpdate(d *schema.ResourceData, m interface{}) e
 		"malware_action",
 		"partial_results_image_fail",
 		"maximum_score_exclude_no_fix",
-		//JSOT Test
+		//JSOT
 		//"author",
 		"lastupdate",
 		"custom_severity",
@@ -1051,7 +957,7 @@ func resourceImageAssurancePolicyRead(d *schema.ResourceData, m interface{}) err
 	d.Set("assurance_type", iap.AssuranceType)
 	d.Set("name", iap.Name)
 	d.Set("description", iap.Description)
-	d.Set("author", iap.Author)
+	//d.Set("author", iap.Author)
 	d.Set("application_scopes", iap.ApplicationScopes)
 	d.Set("registry", iap.Registry)
 	d.Set("cvss_severity_enabled", iap.CvssSeverityEnabled)
@@ -1132,7 +1038,7 @@ func resourceImageAssurancePolicyRead(d *schema.ResourceData, m interface{}) err
 	d.Set("ignored_sensitive_resources", iap.IgnoredSensitiveResources)
 	d.Set("permission", iap.Permission)
 	d.Set("scan_malware_in_archives", iap.ScanMalwareInArchives)
-	d.Set("kubernetes_controls", iap.KubernetesControls)
+	d.Set("kubernetes_controls", flattenKubernetesControls(iap.KubernetesControls))
 	d.Set("kubernetes_controls_names", iap.KubernetesControlsNames)
 	d.Set("scan_windows_registry", iap.ScanWindowsRegistry)
 	d.Set("scan_process_memory", iap.ScanProcessMemory)

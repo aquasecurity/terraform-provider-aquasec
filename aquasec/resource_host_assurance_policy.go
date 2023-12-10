@@ -873,7 +873,7 @@ func resourceHostAssurancePolicyUpdate(d *schema.ResourceData, m interface{}) er
 		"malware_action",
 		"partial_results_image_fail",
 		"maximum_score_exclude_no_fix",
-		//JSOT Test
+		//JSON
 		//"author",
 		"lastupdate",
 		"custom_severity",
