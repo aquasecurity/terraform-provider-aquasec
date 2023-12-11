@@ -807,7 +807,14 @@ func resourceFunctionAssurancePolicy() *schema.Resource {
 					Type: schema.TypeInt,
 				},
 			}, // list
-
+			"aggregated_vulnerability": {
+				Type:        schema.TypeMap,
+				Description: "Aggregated vulnerability information.",
+				Optional:    true,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+			},
 		},
 	}
 }

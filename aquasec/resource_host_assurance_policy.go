@@ -761,14 +761,14 @@ func resourceHostAssurancePolicy() *schema.Resource {
 					Type: schema.TypeString,
 				},
 			}, // list
-			//"aggregated_vulnerability": {
-			//	Type:        schema.TypeString,
-			//	Optional:    true,
-			//	Description: "List of aggregated vulnerabilities",
-			//	//Elem: &schema.Schema{
-			//	//	Type: schema.TypeString,
-			//	//},
-			//}, // list
+			"aggregated_vulnerability": {
+				Type:        schema.TypeMap,
+				Description: "Aggregated vulnerability information.",
+				Optional:    true,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+			},
 			"vulnerability_score_range": {
 				Type:        schema.TypeList,
 				Description: "",

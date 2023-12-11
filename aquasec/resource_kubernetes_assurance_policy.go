@@ -809,6 +809,14 @@ func resourceKubernetesAssurancePolicy() *schema.Resource {
 					Type: schema.TypeString,
 				},
 			}, // list
+			"aggregated_vulnerability": {
+				Type:        schema.TypeMap,
+				Description: "Aggregated vulnerability information.",
+				Optional:    true,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+			},
 
 			//"aggregated_vulnerability": {
 			//	Type:        schema.TypeString,
