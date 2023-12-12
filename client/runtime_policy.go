@@ -85,11 +85,10 @@ type RuntimePolicy struct {
 	VpatchVersion             string                    `json:"vpatch_version"`
 	VulnID                    int                       `json:"vuln_id,omitempty"`
 	WhitelistedOsUsers        WhitelistedOsUsers        `json:"whitelisted_os_users"`
-	//JSON test bool
+	//JSON
 	//EnableCryptoMiningDNS bool `json:"enable_crypto_mining_dns"`
-	BlockContainerExec bool `json:"block_container_exec"`
-	IsOOTBPolicy       bool `json:"is_ootb_policy"`
-	//JSON test bool int
+	BlockContainerExec       bool     `json:"block_container_exec"`
+	IsOOTBPolicy             bool     `json:"is_ootb_policy"`
 	RuntimeMode              int      `json:"runtime_mode"`
 	ExcludeApplicationScopes []string `json:"exclude_application_scopes"`
 }
@@ -294,7 +293,7 @@ type ReverseShell struct {
 	ReverseShellIpWhiteList   []string `json:"reverse_shell_ip_white_list"`
 }
 
-// JSON test
+// JSON
 
 // CreateRuntimePolicy creates an Aqua RuntimePolicy
 func (cli *Client) CreateRuntimePolicy(runtimePolicy *RuntimePolicy) error {
@@ -310,16 +309,6 @@ func (cli *Client) CreateRuntimePolicy(runtimePolicy *RuntimePolicy) error {
 		return err
 	}
 	resp, body, errs := request.Clone().Set("Authorization", "Bearer "+cli.token).Post(cli.url + apiPath).Send(string(payload)).End()
-
-	// JSON TEST
-	//jsonPayload, err := json.Marshal(string(payload))
-	if err != nil {
-		log.Printf("Error marshaling payload to JSON: %v", err)
-		return nil
-	}
-	log.Println(string(payload))
-
-	// JSON TEST
 	if errs != nil {
 		return errors.Wrap(getMergedError(errs), "failed creating runtime policy.")
 	}
