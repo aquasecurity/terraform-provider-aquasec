@@ -122,5 +122,3 @@ Read-Only:
 - `properties` (Map of String)
 - `template` (Map of String)
 - `type` (String)
-
-

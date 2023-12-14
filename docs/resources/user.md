@@ -54,5 +54,3 @@ resource "aquasec_user" "IaC" {
 - `role` (String) The first role that assigned to the user for backward compatibility.
 - `type` (String) The user type (Aqua, LDAP, SAML, OAuth2, OpenID, Tenant Manager).
 - `ui_access` (Boolean) Whether to allow UI access for users with this Permission Set.
-
-

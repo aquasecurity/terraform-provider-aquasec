@@ -55,5 +55,3 @@ Read-Only:
 - `resource_path` (String)
 - `resource_type` (String)
 - `resource_version` (String)
-
-

@@ -169,5 +169,3 @@ Read-Only:
 - `vendor_severity` (String)
 - `vendor_statement` (String)
 - `vendor_url` (String)
-
-

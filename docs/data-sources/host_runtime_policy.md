@@ -131,5 +131,3 @@ Read-Only:
 - `protected_paths` (List of String)
 - `protected_processes` (List of String)
 - `protected_users` (List of String)
-
-

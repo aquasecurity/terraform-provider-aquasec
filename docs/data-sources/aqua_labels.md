@@ -38,5 +38,3 @@ Read-Only:
 - `created` (String)
 - `description` (String)
 - `name` (String)
-
-

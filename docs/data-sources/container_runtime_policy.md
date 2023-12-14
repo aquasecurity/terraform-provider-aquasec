@@ -122,5 +122,3 @@ Read-Only:
 - `attribute` (String)
 - `name` (String)
 - `value` (String)
-
-

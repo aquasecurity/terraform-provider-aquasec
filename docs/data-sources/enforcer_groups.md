@@ -120,5 +120,3 @@ Read-Only:
 - `namespace` (String)
 - `service_account` (String)
 - `type` (String)
-
-
