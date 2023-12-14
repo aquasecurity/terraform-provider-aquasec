@@ -242,5 +242,3 @@ Required:
 Optional:
 
 - `name` (String) Name assigned to the attribute.
-
-

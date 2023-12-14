@@ -200,5 +200,3 @@ Read-Only:
 
 - `imagename` (String)
 - `registry` (String)
-
-

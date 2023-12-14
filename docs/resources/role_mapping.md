@@ -70,5 +70,3 @@ Required:
 Required:
 
 - `role_mapping` (Map of String) Role Mapping is used to define the IdP role that the user will assume in Aqua
-
-

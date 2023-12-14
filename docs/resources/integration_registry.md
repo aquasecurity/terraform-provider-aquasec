@@ -50,16 +50,12 @@ resource "aquasec_integration_registry" "integration_registry" {
   pull_image_tag_pattern      = [":Latest", ":latest"]
   pull_repo_patterns_excluded = [":xyz", ":onlytest"]
 
-  scanner_name = [
-    "aqua-scanner-645f867c4f-4sbtj",
-    "aqua-scanner-645f867c4f-8pkdd"
-  ]
-
-  scanner_type = "specific"
-
   url = "us-east-1"
+  scanner_name = []
+  scanner_type = "any"
 
   username = ""
+  password = ""
   webhook {
     enabled       = true
     url           = "https://aquasec.com/"
@@ -75,7 +71,7 @@ resource "aquasec_integration_registry" "integration_registry" {
 ### Required
 
 - `name` (String) The name of the registry; string, required - this will be treated as the registry's ID, so choose a simple alphanumerical name without special signs and spaces
-- `type` (String) Registry type (HUB / V1 / V2 / ENGINE / AWS / GCR).
+- `type` (String) Registry type (HUB / V1 / V2 / ACR / ENGINE / AWS / GCR).
 
 ### Optional
 
@@ -127,5 +123,3 @@ Optional:
 - `enabled` (Boolean)
 - `un_quarantine` (Boolean)
 - `url` (String)
-
-

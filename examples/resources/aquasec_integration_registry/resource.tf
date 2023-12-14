@@ -35,16 +35,12 @@ resource "aquasec_integration_registry" "integration_registry" {
   pull_image_tag_pattern      = [":Latest", ":latest"]
   pull_repo_patterns_excluded = [":xyz", ":onlytest"]
 
-  scanner_name = [
-    "aqua-scanner-645f867c4f-4sbtj",
-    "aqua-scanner-645f867c4f-8pkdd"
-  ]
-
-  scanner_type = "specific"
-
   url = "us-east-1"
+  scanner_name = []
+  scanner_type = "any"
 
   username = ""
+  password = ""
   webhook {
     enabled       = true
     url           = "https://aquasec.com/"

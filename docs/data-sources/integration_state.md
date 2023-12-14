@@ -29,5 +29,3 @@ output "aquasec_integration_state" {
 - `oidc_settings` (Boolean) OIDCSettings enabled status
 - `openid_settings` (Boolean) OpenIdSettings enabled status
 - `saml_settings` (Boolean) SAMLSettings enabled status
-
-

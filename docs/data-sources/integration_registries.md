@@ -69,5 +69,3 @@ Optional:
 - `enabled` (Boolean)
 - `un_quarantine` (Boolean)
 - `url` (String)
-
-
