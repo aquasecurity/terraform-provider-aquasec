@@ -65,5 +65,3 @@ Read-Only:
 Read-Only:
 
 - `role_mapping` (Map of String)
-
-

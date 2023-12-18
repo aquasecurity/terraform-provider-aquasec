@@ -116,5 +116,3 @@ resource "aquasec_notification" "email_with_mx" {
 - `id` (String) Notification Id
 - `last_updated` (String) Notification last update time
 - `template` (Map of String) Notification Template
-
-

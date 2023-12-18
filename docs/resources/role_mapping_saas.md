@@ -37,5 +37,3 @@ output "roles_mapping_saas" {
 - `created` (String)
 - `id` (String) The ID of this resource.
 - `role_mapping_id` (Number)
-
-

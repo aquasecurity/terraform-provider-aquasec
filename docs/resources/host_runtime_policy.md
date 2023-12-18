@@ -213,5 +213,3 @@ Optional:
 - `protected_paths` (List of String) List of registry paths to be protected.
 - `protected_processes` (List of String) List of registry processes to be protected.
 - `protected_users` (List of String) List of registry users to be protected.
-
-

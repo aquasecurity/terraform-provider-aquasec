@@ -202,5 +202,3 @@ Optional:
 
 - `imagename` (String)
 - `registry` (String)
-
-
