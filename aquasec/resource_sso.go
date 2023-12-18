@@ -356,7 +356,7 @@ func convertRoleMapping(m map[string]interface{}) map[string][]string {
 
 	if len(m["role_mapping"].(map[string]interface{})) > 0 {
 		for key, element := range m["role_mapping"].(map[string]interface{}) {
-			elementArry := strings.Split(element.(string), ",")
+			elementArry := strings.Split(element.(string), "|")
 			roleMapping[key] = elementArry
 		}
 	}

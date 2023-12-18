@@ -17,6 +17,7 @@ resource "aquasec_role_mapping" "role_mapping" {
     saml {
         role_mapping = {
             Administrator = "group1"
+            Scanner       = "group2|group3"
         }
     }
 }
@@ -45,7 +46,7 @@ output "role_mapping" {
 
 Required:
 
-- `role_mapping` (Map of String) Role Mapping is used to define the IdP role that the user will assume in Aqua
+- `role_mapping` (Map of String) Role Mapping is used to define the IdP role that the user will assume in Aqua. Use '|' as a separator for multiple roles.
 
 
 <a id="nestedblock--oauth2"></a>
@@ -53,7 +54,7 @@ Required:
 
 Required:
 
-- `role_mapping` (Map of String) Role Mapping is used to define the IdP role that the user will assume in Aqua
+- `role_mapping` (Map of String) Role Mapping is used to define the IdP role that the user will assume in Aqua. Use '|' as a separator for multiple roles.
 
 
 <a id="nestedblock--openid"></a>
@@ -61,7 +62,7 @@ Required:
 
 Required:
 
-- `role_mapping` (Map of String) Role Mapping is used to define the IdP role that the user will assume in Aqua
+- `role_mapping` (Map of String) Role Mapping is used to define the IdP role that the user will assume in Aqua. Use '|' as a separator for multiple roles.
 
 
 <a id="nestedblock--saml"></a>
@@ -69,6 +70,6 @@ Required:
 
 Required:
 
-- `role_mapping` (Map of String) Role Mapping is used to define the IdP role that the user will assume in Aqua
+- `role_mapping` (Map of String) Role Mapping is used to define the IdP role that the user will assume in Aqua. Use '|' as a separator for multiple roles.
 
 

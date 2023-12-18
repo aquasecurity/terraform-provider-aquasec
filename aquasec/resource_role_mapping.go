@@ -24,7 +24,7 @@ func resourceRoleMapping() *schema.Resource {
 					Schema: map[string]*schema.Schema{
 						"role_mapping": {
 							Type:        schema.TypeMap,
-							Description: "Role Mapping is used to define the IdP role that the user will assume in Aqua",
+							Description: "Role Mapping is used to define the IdP role that the user will assume in Aqua. Use '|' as a separator for multiple roles.",
 							Elem: &schema.Schema{
 								Type: schema.TypeString,
 							},
@@ -43,7 +43,7 @@ func resourceRoleMapping() *schema.Resource {
 					Schema: map[string]*schema.Schema{
 						"role_mapping": {
 							Type:        schema.TypeMap,
-							Description: "Role Mapping is used to define the IdP role that the user will assume in Aqua",
+							Description: "Role Mapping is used to define the IdP role that the user will assume in Aqua. Use '|' as a separator for multiple roles.",
 							Elem: &schema.Schema{
 								Type: schema.TypeString,
 							},
@@ -62,7 +62,7 @@ func resourceRoleMapping() *schema.Resource {
 					Schema: map[string]*schema.Schema{
 						"role_mapping": {
 							Type:        schema.TypeMap,
-							Description: "Role Mapping is used to define the IdP role that the user will assume in Aqua",
+							Description: "Role Mapping is used to define the IdP role that the user will assume in Aqua. Use '|' as a separator for multiple roles.",
 							Elem: &schema.Schema{
 								Type: schema.TypeString,
 							},
@@ -81,7 +81,7 @@ func resourceRoleMapping() *schema.Resource {
 					Schema: map[string]*schema.Schema{
 						"role_mapping": {
 							Type:        schema.TypeMap,
-							Description: "Role Mapping is used to define the IdP role that the user will assume in Aqua",
+							Description: "Role Mapping is used to define the IdP role that the user will assume in Aqua. Use '|' as a separator for multiple roles.",
 							Elem: &schema.Schema{
 								Type: schema.TypeString,
 							},
