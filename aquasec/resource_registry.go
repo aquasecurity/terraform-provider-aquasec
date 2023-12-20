@@ -50,7 +50,7 @@ func resourceRegistry() *schema.Resource {
 			},
 			"type": {
 				Type:        schema.TypeString,
-				Description: "Registry type (HUB / V1 / V2 / ACR / ENGINE / AWS / GCR).",
+				Description: "Registry type (HUB / V1 / V2 / ACR / GAR / ENGINE / AWS / GCR).",
 				Required:    true,
 			},
 			"username": {

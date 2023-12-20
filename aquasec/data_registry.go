@@ -23,7 +23,7 @@ func dataSourceRegistry() *schema.Resource {
 			},
 			"type": {
 				Type:        schema.TypeString,
-				Description: "Registry type (HUB / V1 / V2 / ENGINE / AWS / GCR).",
+				Description: "Registry type (HUB / V1 / V2 / ACR / GAR / ENGINE / AWS / GCR).",
 				Computed:    true,
 			},
 			"name": {

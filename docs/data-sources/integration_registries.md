@@ -47,7 +47,7 @@ description: |-
 - `id` (String) The ID of this resource.
 - `password` (String) The password for registry authentication
 - `prefixes` (List of String) List of possible prefixes to image names pulled from the registry
-- `type` (String) Registry type (HUB / V1 / V2 / ENGINE / AWS / GCR).
+- `type` (String) Registry type (HUB / V1 / V2 / ACR / GAR / ENGINE / AWS / GCR).
 - `url` (String) The URL, address or region of the registry
 - `username` (String) The username for registry authentication.
 
