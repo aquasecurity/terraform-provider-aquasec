@@ -90,7 +90,7 @@ func dataHostRuntimePolicy() *schema.Resource {
 				Description: "Detects brute force login attempts",
 				Computed:    true,
 			},
-			"enable_ip_reputation_security": {
+			"enable_ip_reputation": {
 				Type:        schema.TypeBool,
 				Description: "If true, detect and prevent communication from containers to IP addresses known to have a bad reputation.",
 				Computed:    true,
@@ -106,84 +106,89 @@ func dataHostRuntimePolicy() *schema.Resource {
 			"file_integrity_monitoring": {
 				Type:        schema.TypeList,
 				Description: "Configuration for file integrity monitoring.",
+				Optional:    true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
-						"monitor_create": {
+						"enabled": {
 							Type:        schema.TypeBool,
-							Description: "If true, create operations will be monitored.",
-							Computed:    true,
+							Description: "If true, file integrity monitoring is enabled.",
+							Optional:    true,
 						},
-						"monitor_read": {
-							Type:        schema.TypeBool,
-							Description: "If true, read operations will be monitored.",
-							Computed:    true,
-						},
-						"monitor_modify": {
-							Type:        schema.TypeBool,
-							Description: "If true, modification operations will be monitored.",
-							Computed:    true,
-						},
-						"monitor_delete": {
-							Type:        schema.TypeBool,
-							Description: "If true, deletion operations will be monitored.",
-							Computed:    true,
-						},
-						"monitor_attributes": {
-							Type:        schema.TypeBool,
-							Description: "If true, add attributes operations will be monitored.",
-							Computed:    true,
-						},
-						"monitored_paths": {
+						"monitored_files": {
 							Type:        schema.TypeList,
 							Description: "List of paths to be monitored.",
 							Elem: &schema.Schema{
 								Type: schema.TypeString,
 							},
-							Computed: true,
+							Optional: true,
 						},
-						"excluded_paths": {
+						"exceptional_monitored_files": {
 							Type:        schema.TypeList,
-							Description: "List of paths to be excluded from being monitored.",
+							Description: "List of paths to be excluded from monitoring.",
 							Elem: &schema.Schema{
 								Type: schema.TypeString,
 							},
-							Computed: true,
+							Optional: true,
 						},
-						"monitored_processes": {
+						"monitored_files_read": {
+							Type:        schema.TypeBool,
+							Description: "Whether to monitor file read operations.",
+							Optional:    true,
+						},
+						"monitored_files_modify": {
+							Type:        schema.TypeBool,
+							Description: "Whether to monitor file modify operations.",
+							Optional:    true,
+						},
+						"monitored_files_attributes": {
+							Type:        schema.TypeBool,
+							Description: "Whether to monitor file attribute operations.",
+							Optional:    true,
+						},
+						"monitored_files_create": {
+							Type:        schema.TypeBool,
+							Description: "Whether to monitor file create operations.",
+							Optional:    true,
+						},
+						"monitored_files_delete": {
+							Type:        schema.TypeBool,
+							Description: "Whether to monitor file delete operations.",
+							Optional:    true,
+						},
+						"monitored_files_processes": {
 							Type:        schema.TypeList,
-							Description: "List of processes to be monitored.",
+							Description: "List of processes associated with monitored files.",
 							Elem: &schema.Schema{
 								Type: schema.TypeString,
 							},
-							Computed: true,
+							Optional: true,
 						},
-						"excluded_processes": {
+						"exceptional_monitored_files_processes": {
 							Type:        schema.TypeList,
-							Description: "List of processes to be excluded from being monitored.",
+							Description: "List of processes to be excluded from monitoring.",
 							Elem: &schema.Schema{
 								Type: schema.TypeString,
 							},
-							Computed: true,
+							Optional: true,
 						},
-						"monitored_users": {
+						"monitored_files_users": {
 							Type:        schema.TypeList,
-							Description: "List of users to be monitored.",
+							Description: "List of users associated with monitored files.",
 							Elem: &schema.Schema{
 								Type: schema.TypeString,
 							},
-							Computed: true,
+							Optional: true,
 						},
-						"excluded_users": {
+						"exceptional_monitored_files_users": {
 							Type:        schema.TypeList,
-							Description: "List of users to be excluded from being monitored.",
+							Description: "List of users to be excluded from monitoring.",
 							Elem: &schema.Schema{
 								Type: schema.TypeString,
 							},
-							Computed: true,
+							Optional: true,
 						},
 					},
 				},
-				Computed: true,
 			},
 			"audit_all_os_user_activity": {
 				Type:        schema.TypeBool,
@@ -244,12 +249,67 @@ func dataHostRuntimePolicy() *schema.Resource {
 			},
 			"package_block": {
 				Type:        schema.TypeList,
-				Description: "List of packages that are not allowed read, write or execute all files that under the packages.",
-				Elem: &schema.Schema{
-					Type: schema.TypeString,
+				MaxItems:    1,
+				Description: "",
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"enabled": {
+							Type:        schema.TypeBool,
+							Description: "",
+							Optional:    true,
+						},
+						"packages_black_list": {
+							Type:        schema.TypeList,
+							Description: "",
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+							Optional: true,
+						},
+						"exceptional_block_packages_files": {
+							Type:        schema.TypeList,
+							Description: "",
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+							Optional: true,
+						},
+						"block_packages_users": {
+							Type:        schema.TypeList,
+							Description: "",
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+							Optional: true,
+						},
+						"block_packages_processes": {
+							Type:        schema.TypeList,
+							Description: "",
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+							Optional: true,
+						},
+						"exceptional_block_packages_users": {
+							Type:        schema.TypeList,
+							Description: "",
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+							Optional: true,
+						},
+						"exceptional_block_packages_processes": {
+							Type:        schema.TypeList,
+							Description: "",
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+							Optional: true,
+						},
+					},
 				},
-				Computed: true,
-			},
+				Optional: true,
+			}, // list
 			"port_scanning_detection": {
 				Type:        schema.TypeBool,
 				Description: "If true, port scanning behaviors will be audited.",
@@ -450,6 +510,64 @@ func dataHostRuntimePolicy() *schema.Resource {
 				},
 				Computed: true,
 			},
+			"auditing": {
+				Type:        schema.TypeList,
+				MaxItems:    1,
+				Description: "",
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"enabled": {
+							Type:        schema.TypeBool,
+							Description: "",
+							Optional:    true,
+							Default:     true,
+						},
+						"audit_all_processes": {
+							Type:        schema.TypeBool,
+							Description: "",
+							Optional:    true,
+							Default:     false,
+						},
+						"audit_process_cmdline": {
+							Type:        schema.TypeBool,
+							Description: "",
+							Optional:    true,
+							Default:     false,
+						},
+						"audit_all_network": {
+							Type:        schema.TypeBool,
+							Description: "",
+							Optional:    true,
+							Default:     false,
+						},
+						"audit_os_user_activity": {
+							Type:        schema.TypeBool,
+							Description: "",
+							Optional:    true,
+							Default:     false,
+						},
+						"audit_success_login": {
+							Type:        schema.TypeBool,
+							Description: "",
+							Optional:    true,
+							Default:     false,
+						},
+						"audit_failed_login": {
+							Type:        schema.TypeBool,
+							Description: "",
+							Optional:    true,
+							Default:     false,
+						},
+						"audit_user_account_management": {
+							Type:        schema.TypeBool,
+							Description: "",
+							Optional:    true,
+							Default:     false,
+						},
+					},
+				},
+				Optional: true,
+			}, // list
 		},
 	}
 }
@@ -472,7 +590,7 @@ func dataHostRuntimePolicyRead(ctx context.Context, d *schema.ResourceData, m in
 		// controls
 		d.Set("block_cryptocurrency_mining", crp.EnableCryptoMiningDns)
 		d.Set("audit_brute_force_login", crp.AuditBruteForceLogin)
-		d.Set("enable_ip_reputation_security", crp.EnableIPReputation)
+		d.Set("enable_ip_reputation", crp.EnableIPReputation)
 		d.Set("blocked_files", crp.FileBlock.FilenameBlockList)
 		d.Set("file_integrity_monitoring", flattenFileIntegrityMonitoring(crp.FileIntegrityMonitoring))
 		d.Set("audit_all_os_user_activity", crp.Auditing.AuditOsUserActivity)
@@ -492,6 +610,7 @@ func dataHostRuntimePolicyRead(ctx context.Context, d *schema.ResourceData, m in
 		d.Set("monitor_system_log_integrity", crp.SystemIntegrityProtection.Enabled)
 		d.Set("windows_registry_monitoring", flattenWindowsRegistryMonitoring(crp.RegistryAccessMonitoring))
 		d.Set("windows_registry_protection", flattenWindowsRegistryProtection(crp.ReadonlyRegistry))
+		d.Set("auditing", flattenAuditing(crp.Auditing))
 
 		d.SetId(name)
 	} else {

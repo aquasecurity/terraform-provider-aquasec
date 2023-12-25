@@ -104,11 +104,11 @@ func resourceHostRuntimePolicy() *schema.Resource {
 				Description: "Detects brute force login attempts",
 				Optional:    true,
 			},
-			"enable_ip_reputation_security": {
-				Type:        schema.TypeBool,
-				Description: "If true, detect and prevent communication from containers to IP addresses known to have a bad reputation.",
-				Optional:    true,
-			},
+			//"enable_ip_reputation_security": {
+			//	Type:        schema.TypeBool,
+			//	Description: "If true, detect and prevent communication from containers to IP addresses known to have a bad reputation.",
+			//	Optional:    true,
+			//},
 			"blocked_files": {
 				Type:        schema.TypeList,
 				Description: "List of files that are prevented from being read, modified and executed in the containers.",
@@ -204,11 +204,11 @@ func resourceHostRuntimePolicy() *schema.Resource {
 					},
 				},
 			},
-			"audit_all_os_user_activity": {
-				Type:        schema.TypeBool,
-				Description: "If true, all process activity will be audited.",
-				Optional:    true,
-			},
+			//"audit_os_user_activity": {
+			//	Type:        schema.TypeBool,
+			//	Description: "If true, all process activity will be audited.",
+			//	Optional:    true,
+			//},
 			"audit_full_command_arguments": {
 				Type:        schema.TypeBool,
 				Description: "If true, full command arguments will be audited.",
@@ -261,11 +261,11 @@ func resourceHostRuntimePolicy() *schema.Resource {
 				},
 				Optional: true,
 			},
-			"port_scanning_detection": {
-				Type:        schema.TypeBool,
-				Description: "If true, port scanning behaviors will be audited.",
-				Optional:    true,
-			},
+			//"port_scanning_detection": {
+			//	Type:        schema.TypeBool,
+			//	Description: "If true, port scanning behaviors will be audited.",
+			//	Optional:    true,
+			//},
 			"monitor_system_time_changes": {
 				Type:        schema.TypeBool,
 				Description: "If true, system time changes will be monitored.",
@@ -288,34 +288,29 @@ func resourceHostRuntimePolicy() *schema.Resource {
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"monitor_create": {
-							Type:         schema.TypeBool,
-							Description:  "If true, create operations will be monitored.",
-							Optional:     true,
-							RequiredWith: []string{"windows_registry_monitoring.0.monitored_paths"},
+							Type:        schema.TypeBool,
+							Description: "If true, create operations will be monitored.",
+							Optional:    true,
 						},
 						"monitor_read": {
-							Type:         schema.TypeBool,
-							Description:  "If true, read operations will be monitored.",
-							Optional:     true,
-							RequiredWith: []string{"windows_registry_monitoring.0.monitored_paths"},
+							Type:        schema.TypeBool,
+							Description: "If true, read operations will be monitored.",
+							Optional:    true,
 						},
 						"monitor_modify": {
-							Type:         schema.TypeBool,
-							Description:  "If true, modification operations will be monitored.",
-							Optional:     true,
-							RequiredWith: []string{"windows_registry_monitoring.0.monitored_paths"},
+							Type:        schema.TypeBool,
+							Description: "If true, modification operations will be monitored.",
+							Optional:    true,
 						},
 						"monitor_delete": {
-							Type:         schema.TypeBool,
-							Description:  "If true, deletion operations will be monitored.",
-							Optional:     true,
-							RequiredWith: []string{"windows_registry_monitoring.0.monitored_paths"},
+							Type:        schema.TypeBool,
+							Description: "If true, deletion operations will be monitored.",
+							Optional:    true,
 						},
 						"monitor_attributes": {
-							Type:         schema.TypeBool,
-							Description:  "If true, add attributes operations will be monitored.",
-							Optional:     true,
-							RequiredWith: []string{"windows_registry_monitoring.0.monitored_paths"},
+							Type:        schema.TypeBool,
+							Description: "If true, add attributes operations will be monitored.",
+							Optional:    true,
 						},
 						"monitored_paths": {
 							Type:        schema.TypeList,
@@ -331,8 +326,7 @@ func resourceHostRuntimePolicy() *schema.Resource {
 							Elem: &schema.Schema{
 								Type: schema.TypeString,
 							},
-							Optional:     true,
-							RequiredWith: []string{"windows_registry_monitoring.0.monitored_paths"},
+							Optional: true,
 						},
 						"monitored_processes": {
 							Type:        schema.TypeList,
@@ -340,8 +334,7 @@ func resourceHostRuntimePolicy() *schema.Resource {
 							Elem: &schema.Schema{
 								Type: schema.TypeString,
 							},
-							Optional:     true,
-							RequiredWith: []string{"windows_registry_monitoring.0.monitored_paths"},
+							Optional: true,
 						},
 						"excluded_processes": {
 							Type:        schema.TypeList,
@@ -349,8 +342,7 @@ func resourceHostRuntimePolicy() *schema.Resource {
 							Elem: &schema.Schema{
 								Type: schema.TypeString,
 							},
-							Optional:     true,
-							RequiredWith: []string{"windows_registry_monitoring.0.monitored_paths"},
+							Optional: true,
 						},
 						"monitored_users": {
 							Type:        schema.TypeList,
@@ -358,8 +350,7 @@ func resourceHostRuntimePolicy() *schema.Resource {
 							Elem: &schema.Schema{
 								Type: schema.TypeString,
 							},
-							Optional:     true,
-							RequiredWith: []string{"windows_registry_monitoring.0.monitored_paths"},
+							Optional: true,
 						},
 						"excluded_users": {
 							Type:        schema.TypeList,
@@ -367,8 +358,7 @@ func resourceHostRuntimePolicy() *schema.Resource {
 							Elem: &schema.Schema{
 								Type: schema.TypeString,
 							},
-							Optional:     true,
-							RequiredWith: []string{"windows_registry_monitoring.0.monitored_paths"},
+							Optional: true,
 						},
 					},
 				},
@@ -524,6 +514,7 @@ func resourceHostRuntimePolicy() *schema.Resource {
 			"enable_ip_reputation": {
 				Type:        schema.TypeBool,
 				Description: "",
+				Default:     true,
 				Optional:    true,
 			}, //bool
 			"fork_guard_process_limit": {
@@ -1105,6 +1096,7 @@ func resourceHostRuntimePolicy() *schema.Resource {
 							Type:        schema.TypeBool,
 							Description: "",
 							Optional:    true,
+							Default:     false,
 						},
 						"user_white_list": {
 							Type:        schema.TypeList,
@@ -1113,6 +1105,7 @@ func resourceHostRuntimePolicy() *schema.Resource {
 								Type: schema.TypeString,
 							},
 							Optional: true,
+							Default:  nil,
 						},
 						"group_white_list": {
 							Type:        schema.TypeList,
@@ -1121,6 +1114,7 @@ func resourceHostRuntimePolicy() *schema.Resource {
 								Type: schema.TypeString,
 							},
 							Optional: true,
+							Default:  nil,
 						},
 					},
 				},
@@ -1167,41 +1161,49 @@ func resourceHostRuntimePolicy() *schema.Resource {
 							Type:        schema.TypeBool,
 							Description: "",
 							Optional:    true,
+							Default:     true,
 						},
 						"audit_all_processes": {
 							Type:        schema.TypeBool,
 							Description: "",
 							Optional:    true,
+							Default:     false,
 						},
 						"audit_process_cmdline": {
 							Type:        schema.TypeBool,
 							Description: "",
 							Optional:    true,
+							Default:     false,
 						},
 						"audit_all_network": {
 							Type:        schema.TypeBool,
 							Description: "",
 							Optional:    true,
+							Default:     false,
 						},
 						"audit_os_user_activity": {
 							Type:        schema.TypeBool,
 							Description: "",
 							Optional:    true,
+							Default:     false,
 						},
 						"audit_success_login": {
 							Type:        schema.TypeBool,
 							Description: "",
 							Optional:    true,
+							Default:     false,
 						},
 						"audit_failed_login": {
 							Type:        schema.TypeBool,
 							Description: "",
 							Optional:    true,
+							Default:     false,
 						},
 						"audit_user_account_management": {
 							Type:        schema.TypeBool,
 							Description: "",
 							Optional:    true,
+							Default:     false,
 						},
 					},
 				},
@@ -1508,6 +1510,7 @@ func resourceHostRuntimePolicy() *schema.Resource {
 				Type:        schema.TypeString,
 				Description: "",
 				Optional:    true,
+				Computed:    true,
 			}, // string
 			"digest": {
 				Type:        schema.TypeString,
@@ -1556,6 +1559,7 @@ func resourceHostRuntimePolicy() *schema.Resource {
 			"permission": {
 				Type:        schema.TypeString,
 				Description: "",
+				Default:     "Write",
 				Optional:    true,
 			}, // string
 			"is_audit_checked": {
@@ -1567,6 +1571,7 @@ func resourceHostRuntimePolicy() *schema.Resource {
 				Type:        schema.TypeInt,
 				Description: "",
 				Optional:    true,
+				Computed:    true,
 			}, // int
 			"is_ootb_policy": {
 				Type:        schema.TypeBool,
@@ -1594,10 +1599,12 @@ func resourceHostRuntimePolicy() *schema.Resource {
 				Type:        schema.TypeString,
 				Description: "",
 				Optional:    true,
+				Default:     "1.0",
 			}, // string
 			"created": {
 				Type:        schema.TypeString,
 				Description: "",
+				Computed:    true,
 				Optional:    true,
 			}, // string
 			"runtime_mode": {
@@ -1609,7 +1616,9 @@ func resourceHostRuntimePolicy() *schema.Resource {
 				Type:        schema.TypeString,
 				Description: "",
 				Optional:    true,
+				Computed:    true,
 			}, // string
+
 		},
 	}
 }
@@ -1653,13 +1662,13 @@ func resourceHostRuntimePolicyRead(ctx context.Context, d *schema.ResourceData, 
 	d.Set("author", crp.Author)
 	//d.Set("block_cryptocurrency_mining", crp.EnableCryptoMiningDns)
 	d.Set("audit_brute_force_login", crp.AuditBruteForceLogin)
-	d.Set("enable_ip_reputation_security", crp.EnableIPReputation)
+	//d.Set("enable_ip_reputation_security", crp.EnableIPReputation)
 	d.Set("blocked_files", crp.FileBlock.FilenameBlockList)
 	d.Set("file_integrity_monitoring", flattenFileIntegrityMonitoring(crp.FileIntegrityMonitoring))
-	d.Set("audit_all_os_user_activity", crp.Auditing.AuditOsUserActivity)
-	d.Set("audit_full_command_arguments", crp.Auditing.AuditProcessCmdline)
-	d.Set("audit_host_successful_login_events", crp.Auditing.AuditSuccessLogin)
-	d.Set("audit_host_failed_login_events", crp.Auditing.AuditFailedLogin)
+	//d.Set("audit_os_user_activity", crp.Auditing.AuditOsUserActivity)
+	//d.Set("audit_full_command_arguments", crp.Auditing.AuditProcessCmdline)
+	//d.Set("audit_host_successful_login_events", crp.Auditing.AuditSuccessLogin)
+	//d.Set("audit_host_failed_login_events", crp.Auditing.AuditFailedLogin)
 	d.Set("os_users_allowed", crp.WhitelistedOsUsers.UserWhiteList)
 	d.Set("os_groups_allowed", crp.WhitelistedOsUsers.GroupWhiteList)
 	d.Set("os_users_blocked", crp.BlacklistedOsUsers.UserBlackList)
@@ -1744,10 +1753,10 @@ func resourceHostRuntimePolicyUpdate(ctx context.Context, d *schema.ResourceData
 		"author",
 		"block_cryptocurrency_mining",
 		"audit_brute_force_login",
-		"enable_ip_reputation_security",
+		//"enable_ip_reputation_security",
 		"blocked_files",
 		"file_integrity_monitoring",
-		"audit_all_os_user_activity",
+		"audit_os_user_activity",
 		"audit_full_command_arguments",
 		"audit_host_successful_login_events",
 		"audit_host_failed_login_events",
@@ -1757,7 +1766,7 @@ func resourceHostRuntimePolicyUpdate(ctx context.Context, d *schema.ResourceData
 		"os_users_blocked",
 		"os_groups_blocked",
 		"package_block",
-		"port_scanning_detection",
+		//"port_scanning_detection",
 		"malware_scan_options",
 		"monitor_system_time_changes",
 		"monitor_windows_services",
@@ -1794,7 +1803,7 @@ func resourceHostRuntimePolicyUpdate(ctx context.Context, d *schema.ResourceData
 		"updated",
 		"lastupdate",
 		"version",
-		"created",
+		// "created",
 		"runtime_type",
 		"runtime_mode",
 		"enforce_scheduler_added_on",
@@ -1919,10 +1928,10 @@ func expandHostRuntimePolicy(d *schema.ResourceData) *client.RuntimePolicy {
 		crp.AuditBruteForceLogin = auditBruteForceLogin.(bool)
 	}
 
-	enableIpReputation, ok := d.GetOk("enable_ip_reputation_security")
-	if ok {
-		crp.EnableIPReputation = enableIpReputation.(bool)
-	}
+	//enableIpReputation, ok := d.GetOk("enable_ip_reputation_security")
+	//if ok {
+	//	crp.EnableIPReputation = enableIpReputation.(bool)
+	//}
 
 	blockedFiles, ok := d.GetOk("blocked_files")
 	if ok {
@@ -1952,7 +1961,7 @@ func expandHostRuntimePolicy(d *schema.ResourceData) *client.RuntimePolicy {
 		}
 	}
 
-	auditOsUserActivity, ok := d.GetOk("audit_all_os_user_activity")
+	auditOsUserActivity, ok := d.GetOk("audit_os_user_activity")
 	if ok {
 		crp.Auditing.Enabled = true
 		crp.Auditing.AuditOsUserActivity = auditOsUserActivity.(bool)
@@ -2231,7 +2240,7 @@ func expandHostRuntimePolicy(d *schema.ResourceData) *client.RuntimePolicy {
 
 	lastupdate, ok := d.GetOk("lastupdate")
 	if ok {
-		crp.Lastupdate = lastupdate.(int)
+		crp.Lastupdate = lastupdate.(int64)
 	}
 
 	version, ok := d.GetOk("version")
@@ -2581,9 +2590,9 @@ func expandHostRuntimePolicy(d *schema.ResourceData) *client.RuntimePolicy {
 }
 
 func flattenFileIntegrityMonitoring(monitoring client.FileIntegrityMonitoring) []map[string]interface{} {
-	//if len(monitoring.MonitoredFiles) == 0 {
-	//	return []map[string]interface{}{}
-	//}
+	if len(monitoring.MonitoredFiles) == 0 {
+		return []map[string]interface{}{}
+	}
 	return []map[string]interface{}{
 		{
 			"enabled":                               monitoring.Enabled,
@@ -2640,9 +2649,9 @@ func flattenWindowsRegistryMonitoring(monitoring client.RegistryAccessMonitoring
 }
 
 func flattenMalwareScanOptions(monitoring client.MalwareScanOptions) []map[string]interface{} {
-	//if len(monitoring.ExcludeDirectories) == 0 {
-	//	return []map[string]interface{}{}
-	//}
+	if len(monitoring.ExcludeDirectories) == 0 {
+		return []map[string]interface{}{}
+	}
 	return []map[string]interface{}{
 		{
 			"enabled":             monitoring.Enabled,
@@ -2657,9 +2666,9 @@ func flattenMalwareScanOptions(monitoring client.MalwareScanOptions) []map[strin
 // JSON
 
 func flattenFailedKubernetesChecks(checks client.FailedKubernetesChecks) []map[string]interface{} {
-	//if len(checks.FailedChecks) == 0 {
-	//	return []map[string]interface{}{}
-	//}
+	if len(checks.FailedChecks) == 0 {
+		return []map[string]interface{}{}
+	}
 	return []map[string]interface{}{
 		{
 			"enabled":       checks.Enabled,
@@ -2669,9 +2678,9 @@ func flattenFailedKubernetesChecks(checks client.FailedKubernetesChecks) []map[s
 }
 
 func flattenReverseShell(shell client.ReverseShell) []map[string]interface{} {
-	//if !shell.Enabled {
-	//	return []map[string]interface{}{}
-	//}
+	if !shell.Enabled {
+		return []map[string]interface{}{}
+	}
 	return []map[string]interface{}{
 		{
 			"enabled":                       shell.Enabled,
@@ -2683,9 +2692,9 @@ func flattenReverseShell(shell client.ReverseShell) []map[string]interface{} {
 }
 
 func flattenContainerExec(exec client.ContainerExec) []map[string]interface{} {
-	//if !exec.Enabled {
-	//	return []map[string]interface{}{}
-	//}
+	if !exec.Enabled {
+		return []map[string]interface{}{}
+	}
 	return []map[string]interface{}{
 		{
 			"enabled":                        exec.Enabled,
@@ -2696,9 +2705,9 @@ func flattenContainerExec(exec client.ContainerExec) []map[string]interface{} {
 }
 
 func flattenSystemIntegrityProtection(protection client.SystemIntegrityProtection) []map[string]interface{} {
-	//if !protection.Enabled {
-	//	return []map[string]interface{}{}
-	//}
+	if !protection.Enabled {
+		return []map[string]interface{}{}
+	}
 	return []map[string]interface{}{
 		{
 			"enabled":                     protection.Enabled,
@@ -2710,9 +2719,9 @@ func flattenSystemIntegrityProtection(protection client.SystemIntegrityProtectio
 }
 
 func flattenReadonlyRegistry(registry client.ReadonlyRegistry) []map[string]interface{} {
-	//if !registry.Enabled {
-	//	return []map[string]interface{}{}
-	//}
+	if !registry.Enabled {
+		return []map[string]interface{}{}
+	}
 	return []map[string]interface{}{
 		{
 			"enabled":                                 registry.Enabled,
@@ -2727,9 +2736,9 @@ func flattenReadonlyRegistry(registry client.ReadonlyRegistry) []map[string]inte
 }
 
 func flattenRegistryAccessMonitoring(monitoring client.RegistryAccessMonitoring) []map[string]interface{} {
-	//if !monitoring.Enabled {
-	//	return []map[string]interface{}{}
-	//}
+	if !monitoring.Enabled {
+		return []map[string]interface{}{}
+	}
 	return []map[string]interface{}{
 		{
 			"enabled":                                  monitoring.Enabled,
@@ -2749,9 +2758,9 @@ func flattenRegistryAccessMonitoring(monitoring client.RegistryAccessMonitoring)
 }
 
 func flattenReadonlyFiles(files client.ReadonlyFiles) []map[string]interface{} {
-	//if !files.Enabled {
-	//	return []map[string]interface{}{}
-	//}
+	if !files.Enabled {
+		return []map[string]interface{}{}
+	}
 	return []map[string]interface{}{
 		{
 			"enabled":                              files.Enabled,
@@ -2766,9 +2775,9 @@ func flattenReadonlyFiles(files client.ReadonlyFiles) []map[string]interface{} {
 }
 
 func flattenTripwire(tripwire client.Tripwire) []map[string]interface{} {
-	//if !tripwire.Enabled {
-	//	return []map[string]interface{}{}
-	//}
+	if !tripwire.Enabled {
+		return []map[string]interface{}{}
+	}
 	return []map[string]interface{}{
 		{
 			"enabled":        tripwire.Enabled,
@@ -2781,9 +2790,9 @@ func flattenTripwire(tripwire client.Tripwire) []map[string]interface{} {
 }
 
 func flattenPortBlock(portBlock client.PortBlock) []map[string]interface{} {
-	//if !portBlock.Enabled {
-	//	return []map[string]interface{}{}
-	//}
+	if !portBlock.Enabled {
+		return []map[string]interface{}{}
+	}
 	return []map[string]interface{}{
 		{
 			"enabled":              portBlock.Enabled,
@@ -2794,9 +2803,9 @@ func flattenPortBlock(portBlock client.PortBlock) []map[string]interface{} {
 }
 
 func flattenLinuxCapabilities(linuxCapabilities client.LinuxCapabilities) []map[string]interface{} {
-	//if !linuxCapabilities.Enabled {
-	//	return []map[string]interface{}{}
-	//}
+	if !linuxCapabilities.Enabled {
+		return []map[string]interface{}{}
+	}
 	return []map[string]interface{}{
 		{
 			"enabled":                   linuxCapabilities.Enabled,
@@ -2806,9 +2815,9 @@ func flattenLinuxCapabilities(linuxCapabilities client.LinuxCapabilities) []map[
 }
 
 func flattenPackageBlock(packageBlock client.PackageBlock) []map[string]interface{} {
-	//if !packageBlock.Enabled {
-	//	return []map[string]interface{}{}
-	//}
+	if !packageBlock.Enabled {
+		return []map[string]interface{}{}
+	}
 	return []map[string]interface{}{
 		{
 			"enabled":                              packageBlock.Enabled,
@@ -2823,9 +2832,9 @@ func flattenPackageBlock(packageBlock client.PackageBlock) []map[string]interfac
 }
 
 func flattenFileBlock(fileBlock client.FileBlock) []map[string]interface{} {
-	//if !fileBlock.Enabled {
-	//	return []map[string]interface{}{}
-	//}
+	if !fileBlock.Enabled {
+		return []map[string]interface{}{}
+	}
 	return []map[string]interface{}{
 		{
 			"enabled":                           fileBlock.Enabled,
@@ -2840,9 +2849,9 @@ func flattenFileBlock(fileBlock client.FileBlock) []map[string]interface{} {
 }
 
 func flattenWhitelistedOSUsers(whitelistedOsUsers client.WhitelistedOsUsers) []map[string]interface{} {
-	//if !whitelistedOsUsers.Enabled {
-	//	return []map[string]interface{}{}
-	//}
+	if !whitelistedOsUsers.Enabled {
+		return []map[string]interface{}{}
+	}
 	return []map[string]interface{}{
 		{
 			"enabled":          whitelistedOsUsers.Enabled,
@@ -2853,9 +2862,9 @@ func flattenWhitelistedOSUsers(whitelistedOsUsers client.WhitelistedOsUsers) []m
 }
 
 func flattenBlacklistedOSUsers(blacklistedOsUsers client.BlacklistedOsUsers) []map[string]interface{} {
-	//if !blacklistedOsUsers.Enabled {
-	//	return []map[string]interface{}{}
-	//}
+	if !blacklistedOsUsers.Enabled {
+		return []map[string]interface{}{}
+	}
 	return []map[string]interface{}{
 		{
 			"enabled":          blacklistedOsUsers.Enabled,
@@ -2866,9 +2875,9 @@ func flattenBlacklistedOSUsers(blacklistedOsUsers client.BlacklistedOsUsers) []m
 }
 
 func flattenAuditing(auditing client.Auditing) []map[string]interface{} {
-	//if !auditing.Enabled {
-	//	return []map[string]interface{}{}
-	//}
+	if !auditing.Enabled {
+		return []map[string]interface{}{}
+	}
 	return []map[string]interface{}{
 		{
 			"enabled":                       auditing.Enabled,
@@ -2884,9 +2893,9 @@ func flattenAuditing(auditing client.Auditing) []map[string]interface{} {
 }
 
 func flattenLimitContainerPrivileges(limitContainerPrivileges client.LimitContainerPrivileges) []map[string]interface{} {
-	//if !limitContainerPrivileges.Enabled {
-	//	return []map[string]interface{}{}
-	//}
+	if !limitContainerPrivileges.Enabled {
+		return []map[string]interface{}{}
+	}
 	return []map[string]interface{}{
 		{
 			"enabled":                  limitContainerPrivileges.Enabled,
@@ -2905,9 +2914,9 @@ func flattenLimitContainerPrivileges(limitContainerPrivileges client.LimitContai
 }
 
 func flattenRestrictedVolumes(restrictedVolumes client.RestrictedVolumes) []map[string]interface{} {
-	//if !restrictedVolumes.Enabled {
-	//	return []map[string]interface{}{}
-	//}
+	if !restrictedVolumes.Enabled {
+		return []map[string]interface{}{}
+	}
 	return []map[string]interface{}{
 		{
 			"enabled": restrictedVolumes.Enabled,
@@ -2917,9 +2926,9 @@ func flattenRestrictedVolumes(restrictedVolumes client.RestrictedVolumes) []map[
 }
 
 func flattenDriftPrevention(driftPrevention client.DriftPrevention) []map[string]interface{} {
-	//if !driftPrevention.Enabled {
-	//	return []map[string]interface{}{}
-	//}
+	if !driftPrevention.Enabled {
+		return []map[string]interface{}{}
+	}
 	return []map[string]interface{}{
 		{
 			"enabled":                  driftPrevention.Enabled,
@@ -2931,9 +2940,9 @@ func flattenDriftPrevention(driftPrevention client.DriftPrevention) []map[string
 }
 
 func flattenExecutableBlacklist(executableBlacklist client.ExecutableBlacklist) []map[string]interface{} {
-	//if !executableBlacklist.Enabled {
-	//	return []map[string]interface{}{}
-	//}
+	if !executableBlacklist.Enabled {
+		return []map[string]interface{}{}
+	}
 	return []map[string]interface{}{
 		{
 			"enabled":     executableBlacklist.Enabled,
@@ -2943,9 +2952,9 @@ func flattenExecutableBlacklist(executableBlacklist client.ExecutableBlacklist) 
 }
 
 func flattenAllowedRegistries(allowedRegistries client.AllowedRegistries) []map[string]interface{} {
-	//if !allowedRegistries.Enabled {
-	//	return []map[string]interface{}{}
-	//}
+	if !allowedRegistries.Enabled {
+		return []map[string]interface{}{}
+	}
 	return []map[string]interface{}{
 		{
 			"enabled":            allowedRegistries.Enabled,
@@ -2955,9 +2964,9 @@ func flattenAllowedRegistries(allowedRegistries client.AllowedRegistries) []map[
 }
 
 func flattenAllowedExecutables(allowedExecutables client.AllowedExecutables) []map[string]interface{} {
-	//if !allowedExecutables.Enabled {
-	//	return []map[string]interface{}{}
-	//}
+	if !allowedExecutables.Enabled {
+		return []map[string]interface{}{}
+	}
 	return []map[string]interface{}{
 		{
 			"enabled":                allowedExecutables.Enabled,
