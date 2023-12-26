@@ -173,14 +173,6 @@ func dataContainerRuntimePolicy() *schema.Resource {
 				},
 				Computed: true,
 			},
-			"allowed_executables": {
-				Type:        schema.TypeList,
-				Description: "List of executables that are allowed for the user.",
-				Elem: &schema.Schema{
-					Type: schema.TypeString,
-				},
-				Computed: true,
-			},
 			"blocked_executables": {
 				Type:        schema.TypeList,
 				Description: "List of executables that are prevented from running in containers.",
@@ -242,84 +234,89 @@ func dataContainerRuntimePolicy() *schema.Resource {
 			"file_integrity_monitoring": {
 				Type:        schema.TypeList,
 				Description: "Configuration for file integrity monitoring.",
+				Optional:    true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
-						"monitor_create": {
+						"enabled": {
 							Type:        schema.TypeBool,
-							Description: "If true, create operations will be monitored.",
-							Computed:    true,
+							Description: "If true, file integrity monitoring is enabled.",
+							Optional:    true,
 						},
-						"monitor_read": {
-							Type:        schema.TypeBool,
-							Description: "If true, read operations will be monitored.",
-							Computed:    true,
-						},
-						"monitor_modify": {
-							Type:        schema.TypeBool,
-							Description: "If true, modification operations will be monitored.",
-							Computed:    true,
-						},
-						"monitor_delete": {
-							Type:        schema.TypeBool,
-							Description: "If true, deletion operations will be monitored.",
-							Computed:    true,
-						},
-						"monitor_attributes": {
-							Type:        schema.TypeBool,
-							Description: "If true, add attributes operations will be monitored.",
-							Computed:    true,
-						},
-						"monitored_paths": {
+						"monitored_files": {
 							Type:        schema.TypeList,
 							Description: "List of paths to be monitored.",
 							Elem: &schema.Schema{
 								Type: schema.TypeString,
 							},
-							Computed: true,
+							Optional: true,
 						},
-						"excluded_paths": {
+						"exceptional_monitored_files": {
 							Type:        schema.TypeList,
-							Description: "List of paths to be excluded from being monitored.",
+							Description: "List of paths to be excluded from monitoring.",
 							Elem: &schema.Schema{
 								Type: schema.TypeString,
 							},
-							Computed: true,
+							Optional: true,
 						},
-						"monitored_processes": {
+						"monitored_files_read": {
+							Type:        schema.TypeBool,
+							Description: "Whether to monitor file read operations.",
+							Optional:    true,
+						},
+						"monitored_files_modify": {
+							Type:        schema.TypeBool,
+							Description: "Whether to monitor file modify operations.",
+							Optional:    true,
+						},
+						"monitored_files_attributes": {
+							Type:        schema.TypeBool,
+							Description: "Whether to monitor file attribute operations.",
+							Optional:    true,
+						},
+						"monitored_files_create": {
+							Type:        schema.TypeBool,
+							Description: "Whether to monitor file create operations.",
+							Optional:    true,
+						},
+						"monitored_files_delete": {
+							Type:        schema.TypeBool,
+							Description: "Whether to monitor file delete operations.",
+							Optional:    true,
+						},
+						"monitored_files_processes": {
 							Type:        schema.TypeList,
-							Description: "List of processes to be monitored.",
+							Description: "List of processes associated with monitored files.",
 							Elem: &schema.Schema{
 								Type: schema.TypeString,
 							},
-							Computed: true,
+							Optional: true,
 						},
-						"excluded_processes": {
+						"exceptional_monitored_files_processes": {
 							Type:        schema.TypeList,
-							Description: "List of processes to be excluded from being monitored.",
+							Description: "List of processes to be excluded from monitoring.",
 							Elem: &schema.Schema{
 								Type: schema.TypeString,
 							},
-							Computed: true,
+							Optional: true,
 						},
-						"monitored_users": {
+						"monitored_files_users": {
 							Type:        schema.TypeList,
-							Description: "List of users to be monitored.",
+							Description: "List of users associated with monitored files.",
 							Elem: &schema.Schema{
 								Type: schema.TypeString,
 							},
-							Computed: true,
+							Optional: true,
 						},
-						"excluded_users": {
+						"exceptional_monitored_files_users": {
 							Type:        schema.TypeList,
-							Description: "List of users to be excluded from being monitored.",
+							Description: "List of users to be excluded from monitoring.",
 							Elem: &schema.Schema{
 								Type: schema.TypeString,
 							},
-							Computed: true,
+							Optional: true,
 						},
 					},
 				},
-				Computed: true,
 			},
 			"audit_all_processes_activity": {
 				Type:        schema.TypeBool,
@@ -442,14 +439,6 @@ func dataContainerRuntimePolicy() *schema.Resource {
 				RequiredWith: []string{"readonly_files_and_directories"},
 				Computed:     true,
 			},
-			"allowed_registries": {
-				Type:        schema.TypeList,
-				Description: "List of registries that allowed for running containers.",
-				Elem: &schema.Schema{
-					Type: schema.TypeString,
-				},
-				Computed: true,
-			},
 			"monitor_system_time_changes": {
 				Type:        schema.TypeBool,
 				Description: "If true, system time changes will be monitored.",
@@ -463,6 +452,402 @@ func dataContainerRuntimePolicy() *schema.Resource {
 				},
 				Computed: true,
 			},
+			//JSON
+			"container_exec": {
+				Type:        schema.TypeList,
+				MaxItems:    1,
+				Description: "",
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"enabled": {
+							Type:        schema.TypeBool,
+							Description: "",
+							Optional:    true,
+						},
+						"block_container_exec": {
+							Type:        schema.TypeBool,
+							Description: "",
+							Optional:    true,
+						},
+						"container_exec_proc_white_list": {
+							Type:        schema.TypeList,
+							Description: "",
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+							Optional: true,
+						},
+						"reverse_shell_ip_white_list": {
+							Type:        schema.TypeList,
+							Description: "",
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+							Optional: true,
+						},
+					},
+				},
+				Optional: true,
+			}, // list
+			"allowed_executables": {
+				Type:        schema.TypeList,
+				Description: "Allowed executables configuration.",
+				Optional:    true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"enabled": {
+							Type:        schema.TypeBool,
+							Description: "Whether allowed executables configuration is enabled.",
+							Optional:    true,
+						},
+						"allow_executables": {
+							Type:        schema.TypeList,
+							Description: "List of allowed executables.",
+							Optional:    true,
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+						},
+						"separate_executables": {
+							Type:        schema.TypeBool,
+							Description: "Whether to treat executables separately.",
+							Optional:    true,
+						},
+						"allow_root_executables": {
+							Type:        schema.TypeList,
+							Description: "List of allowed root executables.",
+							Optional:    true,
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+						},
+					},
+				},
+			}, // list
+			"file_block": {
+				Type:        schema.TypeList,
+				MaxItems:    1,
+				Description: "",
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"enabled": {
+							Type:        schema.TypeBool,
+							Description: "",
+							Optional:    true,
+						},
+						"filename_block_list": {
+							Type:        schema.TypeList,
+							Description: "",
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+							Optional: true,
+						},
+						"exceptional_block_files": {
+							Type:        schema.TypeList,
+							Description: "",
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+							Optional: true,
+						},
+						"block_files_users": {
+							Type:        schema.TypeList,
+							Description: "",
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+							Optional: true,
+						},
+						"block_files_processes": {
+							Type:        schema.TypeList,
+							Description: "",
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+							Optional: true,
+						},
+						"exceptional_block_files_users": {
+							Type:        schema.TypeList,
+							Description: "",
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+							Optional: true,
+						},
+						"exceptional_block_files_processes": {
+							Type:        schema.TypeList,
+							Description: "",
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+							Optional: true,
+						},
+					},
+				},
+				Optional: true,
+			}, // list
+			"auditing": {
+				Type:        schema.TypeList,
+				MaxItems:    1,
+				Description: "",
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"enabled": {
+							Type:        schema.TypeBool,
+							Description: "",
+							Optional:    true,
+							Default:     true,
+						},
+						"audit_all_processes": {
+							Type:        schema.TypeBool,
+							Description: "",
+							Optional:    true,
+							Default:     false,
+						},
+						"audit_process_cmdline": {
+							Type:        schema.TypeBool,
+							Description: "",
+							Optional:    true,
+							Default:     false,
+						},
+						"audit_all_network": {
+							Type:        schema.TypeBool,
+							Description: "",
+							Optional:    true,
+							Default:     false,
+						},
+						"audit_os_user_activity": {
+							Type:        schema.TypeBool,
+							Description: "",
+							Optional:    true,
+							Default:     false,
+						},
+						"audit_success_login": {
+							Type:        schema.TypeBool,
+							Description: "",
+							Optional:    true,
+							Default:     false,
+						},
+						"audit_failed_login": {
+							Type:        schema.TypeBool,
+							Description: "",
+							Optional:    true,
+							Default:     false,
+						},
+						"audit_user_account_management": {
+							Type:        schema.TypeBool,
+							Description: "",
+							Optional:    true,
+							Default:     false,
+						},
+					},
+				},
+				Optional: true,
+			}, // list
+			"limit_container_privileges": {
+				Type:        schema.TypeList,
+				Description: "Container privileges configuration.",
+				Optional:    true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"enabled": {
+							Type:        schema.TypeBool,
+							Description: "Whether container privilege limitations are enabled.",
+							Optional:    true,
+						},
+						"privileged": {
+							Type:        schema.TypeBool,
+							Description: "Whether the container is run in privileged mode.",
+							Optional:    true,
+						},
+						"netmode": {
+							Type:        schema.TypeBool,
+							Description: "Whether to limit network-related capabilities.",
+							Optional:    true,
+						},
+						"pidmode": {
+							Type:        schema.TypeBool,
+							Description: "Whether to limit process-related capabilities.",
+							Optional:    true,
+						},
+						"utsmode": {
+							Type:        schema.TypeBool,
+							Description: "Whether to limit UTS-related capabilities.",
+							Optional:    true,
+						},
+						"usermode": {
+							Type:        schema.TypeBool,
+							Description: "Whether to limit user-related capabilities.",
+							Optional:    true,
+						},
+						"ipcmode": {
+							Type:        schema.TypeBool,
+							Description: "Whether to limit IPC-related capabilities.",
+							Optional:    true,
+						},
+						"prevent_root_user": {
+							Type:        schema.TypeBool,
+							Description: "Whether to prevent the use of the root user.",
+							Optional:    true,
+						},
+						"prevent_low_port_binding": {
+							Type:        schema.TypeBool,
+							Description: "Whether to prevent low port binding.",
+							Optional:    true,
+						},
+						"block_add_capabilities": {
+							Type:        schema.TypeBool,
+							Description: "Whether to block adding capabilities.",
+							Optional:    true,
+						},
+						"use_host_user": {
+							Type:        schema.TypeBool,
+							Description: "Whether to use the host user.",
+							Optional:    true,
+						},
+					},
+				},
+			}, // list
+			"port_block": {
+				Type:        schema.TypeList,
+				MaxItems:    1,
+				Description: "",
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"enabled": {
+							Type:        schema.TypeBool,
+							Description: "",
+							Optional:    true,
+						},
+						"block_inbound_ports": {
+							Type:        schema.TypeList,
+							Description: "",
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+							Optional: true,
+						},
+						"block_outbound_ports": {
+							Type:        schema.TypeList,
+							Description: "",
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+							Optional: true,
+						},
+					},
+				},
+				Optional: true,
+			}, // list
+			"readonly_files": {
+				Type:        schema.TypeList,
+				MaxItems:    1,
+				Description: "",
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"enabled": {
+							Type:        schema.TypeBool,
+							Description: "",
+							Optional:    true,
+						},
+						"readonly_files": {
+							Type:        schema.TypeList,
+							Description: "",
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+							Optional: true,
+						},
+						"exceptional_readonly_files": {
+							Type:        schema.TypeList,
+							Description: "",
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+							Optional: true,
+						},
+						"readonly_files_processes": {
+							Type:        schema.TypeList,
+							Description: "",
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+							Optional: true,
+						},
+						"exceptional_readonly_files_processes": {
+							Type:        schema.TypeList,
+							Description: "",
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+							Optional: true,
+						},
+						"readonly_files_users": {
+							Type:        schema.TypeList,
+							Description: "",
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+							Optional: true,
+						},
+						"exceptional_readonly_files_users": {
+							Type:        schema.TypeList,
+							Description: "",
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+							Optional: true,
+						},
+					},
+				},
+				Optional: true,
+			}, //list
+			"allowed_registries": {
+				Type:        schema.TypeList,
+				Description: "Allowed registries configuration.",
+				Optional:    true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"enabled": {
+							Type:        schema.TypeBool,
+							Description: "Whether allowed registries are enabled.",
+							Optional:    true,
+						},
+						"allowed_registries": {
+							Type:        schema.TypeList,
+							Description: "List of allowed registries.",
+							Optional:    true,
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+						},
+					},
+				},
+			}, // list
+			"restricted_volumes": {
+				Type:        schema.TypeList,
+				Description: "Restricted volumes configuration.",
+				Optional:    true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"enabled": {
+							Type:        schema.TypeBool,
+							Description: "Whether restricted volumes are enabled.",
+							Optional:    true,
+						},
+						"volumes": {
+							Type:        schema.TypeList,
+							Description: "List of restricted volumes.",
+							Optional:    true,
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+						},
+					},
+				},
+			}, // list
+
 		},
 	}
 }
@@ -486,18 +871,18 @@ func dataContainerRuntimePolicyRead(ctx context.Context, d *schema.ResourceData,
 		d.Set("container_exec_allowed_processes", crp.ContainerExec.ContainerExecProcWhiteList)
 		d.Set("block_cryptocurrency_mining", crp.EnableCryptoMiningDns)
 		d.Set("block_fileless_exec", crp.BlockFilelessExec)
-		d.Set("block_non_compliant_images", crp.BlockDisallowedImages)
+		//d.Set("block_non_compliant_images", crp.BlockDisallowedImages)
 		d.Set("block_non_compliant_workloads", crp.BlockNonCompliantWorkloads)
 		d.Set("block_non_k8s_containers", crp.BlockNonK8sContainers)
 		d.Set("block_reverse_shell", crp.ReverseShell.BlockReverseShell)
 		d.Set("reverse_shell_allowed_processes", crp.ReverseShell.ReverseShellProcWhiteList)
 		d.Set("reverse_shell_allowed_ips", crp.ReverseShell.ReverseShellIpWhiteList)
-		d.Set("block_unregistered_images", crp.OnlyRegisteredImages)
+		//d.Set("block_unregistered_images", crp.OnlyRegisteredImages)
 		d.Set("blocked_capabilities", crp.LinuxCapabilities.RemoveLinuxCapabilities)
-		d.Set("enable_ip_reputation_security", crp.EnableIPReputation)
-		d.Set("enable_drift_prevention", crp.DriftPrevention.Enabled && crp.DriftPrevention.ExecLockdown)
+		//d.Set("enable_ip_reputation_security", crp.EnableIPReputation)
+		//d.Set("enable_drift_prevention", crp.DriftPrevention.Enabled && crp.DriftPrevention.ExecLockdown)
 		d.Set("exec_lockdown_white_list", crp.DriftPrevention.ExecLockdownWhiteList)
-		d.Set("allowed_executables", crp.AllowedExecutables.AllowExecutables)
+		//d.Set("allowed_executables", crp.AllowedExecutables.AllowExecutables)
 		d.Set("blocked_executables", crp.ExecutableBlacklist.Executables)
 		d.Set("blocked_files", crp.FileBlock.FilenameBlockList)
 		d.Set("file_integrity_monitoring", flattenFileIntegrityMonitoring(crp.FileIntegrityMonitoring))
@@ -523,9 +908,19 @@ func dataContainerRuntimePolicyRead(ctx context.Context, d *schema.ResourceData,
 		d.Set("readonly_files_and_directories", crp.ReadonlyFiles.ReadonlyFiles)
 		d.Set("malware_scan_options", flattenMalwareScanOptions(crp.MalwareScanOptions))
 		d.Set("exceptional_readonly_files_and_directories", crp.ReadonlyFiles.ExceptionalReadonlyFiles)
-		d.Set("allowed_registries", crp.AllowedRegistries.AllowedRegistries)
 		d.Set("monitor_system_time_changes", crp.SystemIntegrityProtection.MonitorAuditLogIntegrity)
 		d.Set("blocked_volumes", crp.RestrictedVolumes.Volumes)
+		//JSON
+		d.Set("container_exec", flattenContainerExec(crp.ContainerExec))
+		d.Set("allowed_executables", flattenAllowedExecutables(crp.AllowedExecutables))
+		d.Set("file_block", flattenFileBlock(crp.FileBlock))
+		d.Set("auditing", flattenAuditing(crp.Auditing))
+		d.Set("limit_container_privileges", flattenLimitContainerPrivileges(crp.LimitContainerPrivileges))
+		d.Set("port_block", flattenPortBlock(crp.PortBlock))
+		d.Set("readonly_files", flattenReadonlyFiles(crp.ReadonlyFiles))
+		d.Set("allowed_registries", flattenAllowedRegistries(crp.AllowedRegistries))
+		d.Set("restricted_volumes", flattenRestrictedVolumes(crp.RestrictedVolumes))
+
 		d.SetId(name)
 	} else {
 		return diag.FromErr(err)

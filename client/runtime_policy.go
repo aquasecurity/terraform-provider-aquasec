@@ -94,10 +94,10 @@ type RuntimePolicy struct {
 }
 
 type AllowedExecutables struct {
-	AllowExecutables     []string `json:"allow_executables"`
-	AllowRootExecutables []string `json:"allow_root_executables"`
+	AllowExecutables     []string `json:"allow_executables,omitempty"`
+	AllowRootExecutables []string `json:"allow_root_executables,omitempty"`
 	Enabled              bool     `json:"enabled"`
-	SeparateExecutables  bool     `json:"separate_executables"`
+	SeparateExecutables  bool     `json:"separate_executables,omitempty"`
 }
 
 type AllowedRegistries struct {
@@ -134,16 +134,16 @@ type BypassScope struct {
 
 type LimitContainerPrivileges struct {
 	Enabled               bool `json:"enabled"`
-	Privileged            bool `json:"privileged"`
-	Netmode               bool `json:"netmode"`
-	Pidmode               bool `json:"pidmode"`
-	Utsmode               bool `json:"utsmode"`
-	Usermode              bool `json:"usermode"`
-	Ipcmode               bool `json:"ipcmode"`
-	PreventRootUser       bool `json:"prevent_root_user"`
-	PreventLowPortBinding bool `json:"prevent_low_port_binding"`
-	BlockAddCapabilities  bool `json:"block_add_capabilities"`
-	UseHostUser           bool `json:"use_host_user"`
+	Privileged            bool `json:"privileged,omitempty"`
+	Netmode               bool `json:"netmode,omitempty"`
+	Pidmode               bool `json:"pidmode,omitempty"`
+	Utsmode               bool `json:"utsmode,omitempty"`
+	Usermode              bool `json:"usermode,omitempty"`
+	Ipcmode               bool `json:"ipcmode,omitempty"`
+	PreventRootUser       bool `json:"prevent_root_user,omitempty"`
+	PreventLowPortBinding bool `json:"prevent_low_port_binding,omitempty"`
+	BlockAddCapabilities  bool `json:"block_add_capabilities,omitempty"`
+	UseHostUser           bool `json:"use_host_user,omitempty"`
 }
 
 type PreventOverrideDefaultConfig struct {

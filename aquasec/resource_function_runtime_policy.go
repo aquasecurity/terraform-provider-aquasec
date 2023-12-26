@@ -148,6 +148,7 @@ func resourceFunctionRuntimePolicy() *schema.Resource {
 				Type:        schema.TypeString,
 				Description: "",
 				Optional:    true,
+				Default:     "function",
 			}, // string
 			"runtime_mode": {
 				Type:        schema.TypeInt,
@@ -158,11 +159,13 @@ func resourceFunctionRuntimePolicy() *schema.Resource {
 				Type:        schema.TypeString,
 				Description: "",
 				Optional:    true,
+				Computed:    true,
 			}, // string
 			"version": {
 				Type:        schema.TypeString,
 				Description: "",
 				Optional:    true,
+				Default:     "1.0",
 			}, // string
 			"updated": {
 				Type:        schema.TypeString,
@@ -229,6 +232,7 @@ func resourceFunctionRuntimePolicy() *schema.Resource {
 				Type:        schema.TypeString,
 				Description: "",
 				Optional:    true,
+				Default:     "runtime.policy",
 			}, // string
 			"allowed_registries": {
 				Type:        schema.TypeList,
@@ -1122,6 +1126,7 @@ func resourceFunctionRuntimePolicy() *schema.Resource {
 				Type:        schema.TypeString,
 				Description: "",
 				Optional:    true,
+				Default:     "Write",
 			}, // string
 			"exclude_application_scopes": {
 				Type:        schema.TypeList,
@@ -1867,7 +1872,7 @@ func expandFunctionRuntimePolicy(d *schema.ResourceData) *client.RuntimePolicy {
 
 	lastupdate, ok := d.GetOk("lastupdate")
 	if ok {
-		crp.Lastupdate = lastupdate.(int)
+		crp.Lastupdate = lastupdate.(int64)
 	}
 
 	version, ok := d.GetOk("version")
