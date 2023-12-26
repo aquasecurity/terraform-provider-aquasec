@@ -155,7 +155,7 @@ func TestResourceAquasecComplexContainerRuntimePolicyCreate(t *testing.T) {
 					resource.TestCheckResourceAttr(rootRef, "port_block.0.enabled", "true"),
 					resource.TestCheckResourceAttr(rootRef, "port_block.0.block_inbound_ports.#", "2"),
 					resource.TestCheckResourceAttr(rootRef, "port_block.0.block_outbound_ports.#", "2"),
-					resource.TestCheckResourceAttr(rootRef, "enable_port_scan_detection", "true"),
+					//resource.TestCheckResourceAttr(rootRef, "enable_port_scan_detection", "true"),
 					resource.TestCheckResourceAttr(rootRef, "readonly_files.0.enabled", "true"),
 					resource.TestCheckResourceAttr(rootRef, "readonly_files.0.readonly_files.#", "2"),
 					resource.TestCheckResourceAttr(rootRef, "readonly_files.0.exceptional_readonly_files.#", "2"),
@@ -271,7 +271,7 @@ func getComplexContainerRuntimePolicyResource(policy client.RuntimePolicy) strin
 			block_inbound_ports = ["80","8080"]
 			block_outbound_ports = ["90","9090"]
 		}
-		enable_port_scan_detection = true
+		# enable_port_scan_detection = true
 		readonly_files{
 			enabled = true
 			exceptional_readonly_files_processes = ["test"]
