@@ -124,6 +124,61 @@ func dataFunctionRuntimePolicy() *schema.Resource {
 				Description: "Serverless application name",
 				Computed:    true,
 			},
+			//JSON
+			"drift_prevention": {
+				Type:        schema.TypeList,
+				Description: "Drift prevention configuration.",
+				Optional:    true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"enabled": {
+							Type:        schema.TypeBool,
+							Description: "Whether drift prevention is enabled.",
+							Optional:    true,
+						},
+						"exec_lockdown": {
+							Type:        schema.TypeBool,
+							Description: "Whether to lockdown execution drift.",
+							Optional:    true,
+						},
+						"image_lockdown": {
+							Type:        schema.TypeBool,
+							Description: "Whether to lockdown image drift.",
+							Optional:    true,
+						},
+						"exec_lockdown_white_list": {
+							Type:        schema.TypeList,
+							Description: "List of items in the execution lockdown white list.",
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+							Optional: true,
+						},
+					},
+				},
+			}, // list
+			"executable_blacklist": {
+				Type:        schema.TypeList,
+				Description: "Executable blacklist configuration.",
+				Optional:    true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"enabled": {
+							Type:        schema.TypeBool,
+							Description: "Whether the executable blacklist is enabled.",
+							Optional:    true,
+						},
+						"executables": {
+							Type:        schema.TypeList,
+							Description: "List of blacklisted executables.",
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+							Optional: true,
+						},
+					},
+				},
+			}, // list
 		},
 	}
 }
@@ -149,6 +204,9 @@ func dataFunctionRuntimePolicyRead(ctx context.Context, d *schema.ResourceData, 
 		d.Set("honeypot_secret_key", crp.Tripwire.UserPassword)
 		d.Set("honeypot_apply_on", crp.Tripwire.ApplyOn)
 		d.Set("honeypot_serverless_app_name", crp.Tripwire.ServerlessApp)
+		//JSON
+		d.Set("drift_prevention", flattenDriftPrevention(crp.DriftPrevention))
+		d.Set("executable_blacklist", flattenExecutableBlacklist(crp.ExecutableBlacklist))
 
 		d.SetId(name)
 	} else {
