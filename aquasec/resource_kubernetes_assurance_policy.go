@@ -126,7 +126,7 @@ func resourceKubernetesAssurancePolicy() *schema.Resource {
 				Type:        schema.TypeBool,
 				Description: "Indicates if cicd failures will fail the image.",
 				Optional:    true,
-				Default:     true,
+				Default:     false,
 			},
 			"block_failed": {
 				Type:        schema.TypeBool,
@@ -689,47 +689,47 @@ func resourceKubernetesAssurancePolicy() *schema.Resource {
 				Type:        schema.TypeList,
 				Description: "List of Kubernetes controls.",
 				Optional:    true,
-				MaxItems:    1,
+				Computed:    true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"script_id": {
 							Type:        schema.TypeInt,
-							Description: "",
+							Description: "Script ID.",
 							Optional:    true,
 						},
 						"name": {
 							Type:        schema.TypeString,
-							Description: "",
+							Description: "Name of the control.",
 							Optional:    true,
 						},
 						"description": {
 							Type:        schema.TypeString,
-							Description: "",
+							Description: "Description of the control.",
 							Optional:    true,
 						},
 						"enabled": {
 							Type:        schema.TypeBool,
-							Description: "",
+							Description: "Is the control enabled?",
 							Optional:    true,
 						},
 						"severity": {
 							Type:        schema.TypeString,
-							Description: "",
+							Description: "Severity of the control.",
 							Optional:    true,
 						},
 						"kind": {
 							Type:        schema.TypeString,
-							Description: "",
+							Description: "Kind of the control.",
 							Optional:    true,
 						},
 						"ootb": {
 							Type:        schema.TypeBool,
-							Description: "",
+							Description: "Out-of-the-box status of the control.",
 							Optional:    true,
 						},
 						"avd_id": {
 							Type:        schema.TypeString,
-							Description: "",
+							Description: "AVD ID.",
 							Optional:    true,
 						},
 					},
@@ -851,13 +851,82 @@ func resourceKubernetesAssurancePolicyUpdate(d *schema.ResourceData, m interface
 	name := d.Get("name").(string)
 	assurance_type := "kubernetes"
 
-	if d.HasChanges("description", "registry", "cvss_severity_enabled", "cvss_severity", "cvss_severity_exclude_no_fix", "custom_severity_enabled", "maximum_score_enabled", "maximum_score", "control_exclude_no_fix", "custom_checks_enabled",
-		"scap_enabled", "cves_black_list_enabled", "packages_black_list_enabled", "packages_white_list_enabled", "only_none_root_users", "trusted_base_images_enabled", "scan_sensitive_data", "audit_on_failure", "block_failed",
-		"disallow_malware", "monitored_malware_paths", "exceptional_monitored_malware_paths", "blacklisted_licenses_enabled", "blacklisted_licenses", "whitelisted_licenses_enabled", "whitelisted_licenses", "custom_checks", "scap_files", "scope",
-		"registries", "labels", "images", "cves_black_list", "packages_black_list", "packages_white_list", "allowed_images", "trusted_base_images", "read_only", "force_microenforcer", "docker_cis_enabled", "kube_cis_enabled", "enforce_excessive_permissions",
-		"function_integrity_enabled", "dta_enabled", "cves_white_list", "kubernetes_controls_names", "cves_white_list_enabled", "blacklist_permissions_enabled", "blacklist_permissions", "enabled", "enforce", "enforce_after_days", "ignore_recently_published_vln", "ignore_recently_published_vln_period",
-		"ignore_risk_resources_enabled", "ignored_risk_resources", "application_scopes", "auto_scan_enabled", "auto_scan_configured", "auto_scan_time", "required_labels_enabled", "required_labels", "forbidden_labels_enabled", "forbidden_labels", "domain_name",
-		"domain", "description", "dta_severity", "scan_nfs_mounts", "malware_action", "partial_results_image_fail", "maximum_score_exclude_no_fix") {
+	if d.HasChanges(
+		"description",
+		"registry",
+		"cvss_severity_enabled",
+		"cvss_severity",
+		"cvss_severity_exclude_no_fix",
+		"custom_severity_enabled",
+		"maximum_score_enabled",
+		"maximum_score",
+		"control_exclude_no_fix",
+		"custom_checks_enabled",
+		"scap_enabled",
+		"cves_black_list_enabled",
+		"packages_black_list_enabled",
+		"packages_white_list_enabled",
+		"only_none_root_users",
+		"trusted_base_images_enabled",
+		"scan_sensitive_data",
+		"audit_on_failure",
+		"block_failed",
+		"disallow_malware",
+		"monitored_malware_paths",
+		"exceptional_monitored_malware_paths",
+		"blacklisted_licenses_enabled",
+		"blacklisted_licenses",
+		"whitelisted_licenses_enabled",
+		"whitelisted_licenses",
+		"custom_checks",
+		"scap_files",
+		"scope",
+		"registries",
+		"labels",
+		"images",
+		"cves_black_list",
+		"packages_black_list",
+		"packages_white_list",
+		"allowed_images",
+		"trusted_base_images",
+		"read_only",
+		"force_microenforcer",
+		"docker_cis_enabled",
+		"kube_cis_enabled",
+		"enforce_excessive_permissions",
+		"function_integrity_enabled",
+		"dta_enabled",
+		"cves_white_list",
+		"kubernetes_controls_names",
+		"cves_white_list_enabled",
+		"blacklist_permissions_enabled",
+		"blacklist_permissions",
+		"enabled",
+		"enforce",
+		"enforce_after_days",
+		"ignore_recently_published_vln",
+		"ignore_recently_published_vln_period",
+		"ignore_risk_resources_enabled",
+		"ignored_risk_resources",
+		"application_scopes",
+		"auto_scan_enabled",
+		"auto_scan_configured",
+		"auto_scan_time",
+		"required_labels_enabled",
+		"required_labels",
+		"forbidden_labels_enabled",
+		"forbidden_labels",
+		"domain_name",
+		"domain",
+		"description",
+		"dta_severity",
+		"scan_nfs_mounts",
+		"malware_action",
+		"partial_results_image_fail",
+		"maximum_score_exclude_no_fix",
+		//JSON
+		"fail_cicd",
+	) {
 		iap := expandAssurancePolicy(d, assurance_type)
 		err := ac.UpdateAssurancePolicy(iap, assurance_type)
 		if err == nil {
@@ -894,6 +963,7 @@ func resourceKubernetesAssurancePolicyRead(d *schema.ResourceData, m interface{}
 	d.Set("author", iap.Author)
 	d.Set("application_scopes", iap.ApplicationScopes)
 	d.Set("registry", iap.Registry)
+	d.Set("fail_cicd", iap.FailCicd)
 	d.Set("cvss_severity_enabled", iap.CvssSeverityEnabled)
 	d.Set("cvss_severity", iap.CvssSeverity)
 	d.Set("cvss_severity_exclude_no_fix", iap.CvssSeverityExcludeNoFix)

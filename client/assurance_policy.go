@@ -16,7 +16,7 @@ type AssurancePolicy struct {
 	Name                             string              `json:"name"`
 	Author                           string              `json:"author"`
 	Registry                         string              `json:"registry,omitempty"`
-	Lastupdate                       string              `json:"lastupdate"`
+	Lastupdate                       string              `json:"lastupdate,omitempty"`
 	CvssSeverityEnabled              bool                `json:"cvss_severity_enabled"`
 	CvssSeverity                     string              `json:"cvss_severity"`
 	CvssSeverityExcludeNoFix         bool                `json:"cvss_severity_exclude_no_fix"`
@@ -33,7 +33,7 @@ type AssurancePolicy struct {
 	TrustedBaseImagesEnabled         bool                `json:"trusted_base_images_enabled"`
 	ScanSensitiveData                bool                `json:"scan_sensitive_data"`
 	AuditOnFailure                   bool                `json:"audit_on_failure"`
-	FailCicd                         bool                `json:"fail_cicd"`
+	FailCicd                         bool                `json:"fail_cicd,omitempty"`
 	BlockFailed                      bool                `json:"block_failed"`
 	DisallowMalware                  bool                `json:"disallow_malware"`
 	MonitoredMalwarePaths            []interface{}       `json:"monitored_malware_paths"`
@@ -100,7 +100,7 @@ type AssurancePolicy struct {
 	KubernetesControlsNames     []string                `json:"kubernetes_controls_names"`
 	ScanWindowsRegistry         bool                    `json:"scan_windows_registry"`
 	ScanProcessMemory           bool                    `json:"scan_process_memory"`
-	PolicySettings              PolicySettings          `json:"policy_settings"`
+	PolicySettings              PolicySettings          `json:"policy_settings,omitempty"`
 	ExcludeApplicationScopes    []string                `json:"exclude_application_scopes"`
 	LinuxCisEnabled             bool                    `json:"linux_cis_enabled"`
 	OpenshiftHardeningEnabled   bool                    `json:"openshift_hardening_enabled"`

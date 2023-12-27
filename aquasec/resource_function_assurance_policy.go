@@ -681,7 +681,6 @@ func resourceFunctionAssurancePolicy() *schema.Resource {
 				Type:        schema.TypeList,
 				Description: "List of Kubernetes controls.",
 				Optional:    true,
-				MaxItems:    1,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"script_id": {
@@ -729,7 +728,7 @@ func resourceFunctionAssurancePolicy() *schema.Resource {
 			},
 			"kubernetes_controls_names": {
 				Type:     schema.TypeList,
-				Required: true,
+				Optional: true,
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
 				},

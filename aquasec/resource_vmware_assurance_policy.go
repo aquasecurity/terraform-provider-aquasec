@@ -677,10 +677,9 @@ func resourceVMwareAssurancePolicy() *schema.Resource {
 				Optional:    true,
 			}, //bool
 			"kubernetes_controls": {
-				Type:        schema.TypeList,
+				Type:        schema.TypeSet,
 				Description: "List of Kubernetes controls.",
 				Optional:    true,
-				MaxItems:    1,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"script_id": {

@@ -773,6 +773,7 @@ func resourceHostAssurancePolicy() *schema.Resource {
 				Type:        schema.TypeList,
 				Description: "",
 				Optional:    true,
+				Computed:    true,
 				Elem: &schema.Schema{
 					Type: schema.TypeInt,
 				},

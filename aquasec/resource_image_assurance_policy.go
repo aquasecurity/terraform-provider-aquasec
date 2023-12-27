@@ -1163,41 +1163,45 @@ func flattenTrustedBaseImages(TrustedBaseImages []client.BaseImagesTrusted) []ma
 	return tbi
 }
 
-func flattenPolicySettings(PolicySettings client.PolicySettings) []map[string]interface{} {
-	//if len(monitoring.ExcludeDirectories) == 0 {
-	//	return []map[string]interface{}{}
-	//}
+func flattenPolicySettings(policySettings client.PolicySettings) []map[string]interface{} {
+	if len(policySettings.WarningMessage) == 0 {
+		return []map[string]interface{}{}
+	}
 	return []map[string]interface{}{
 		{
-			"enforce":          PolicySettings.Enforce,
-			"warn":             PolicySettings.Warn,
-			"warning_message":  PolicySettings.WarningMessage,
-			"is_audit_checked": PolicySettings.IsAuditChecked,
+			"enforce":          policySettings.Enforce,
+			"warn":             policySettings.Warn,
+			"warning_message":  policySettings.WarningMessage,
+			"is_audit_checked": policySettings.IsAuditChecked,
 		},
 	}
 }
 
-func flattenKubernetesControls(kubernetesControls client.KubernetesControlsArray) map[string]interface{} {
-	if len(kubernetesControls) == 0 {
-		return map[string]interface{}{}
+func flattenKubernetesControls(kubernetesControls client.KubernetesControlsArray) []interface{} {
+	var flattenedControls []interface{}
+
+	for _, control := range kubernetesControls {
+		flattenedControl := map[string]interface{}{
+			"script_id":   control.ScriptID,
+			"name":        control.Name,
+			"description": control.Description,
+			"enabled":     control.Enabled,
+			"severity":    control.Severity,
+			"kind":        control.Kind,
+			"ootb":        control.OOTB,
+			"avd_id":      control.AvdID,
+		}
+		flattenedControls = append(flattenedControls, flattenedControl)
 	}
 
-	kubernetesControl := kubernetesControls[0]
+	return flattenedControls
+}
 
-	return map[string]interface{}{
-		"kubernetes_controls": []map[string]interface{}{
-			{
-				"script_id":   kubernetesControl.ScriptID,
-				"name":        kubernetesControl.Name,
-				"description": kubernetesControl.Description,
-				"enabled":     kubernetesControl.Enabled,
-				"severity":    kubernetesControl.Severity,
-				"kind":        kubernetesControl.Kind,
-				"ootb":        kubernetesControl.OOTB,
-				"avd_id":      kubernetesControl.AvdID,
-			},
-		},
+func setVulnerabilityScore(vulnerabilityScoreRange []int) []int {
+	if len(vulnerabilityScoreRange) == 0 {
+		return []int{0, 10}
 	}
+	return vulnerabilityScoreRange
 }
 
 func expandAssurancePolicy(d *schema.ResourceData, a_type string) *client.AssurancePolicy {
@@ -1793,6 +1797,12 @@ func expandAssurancePolicy(d *schema.ResourceData, a_type string) *client.Assura
 	openshift_hardening_enabled, ok := d.GetOk("openshift_hardening_enabled")
 	if ok {
 		iap.OpenshiftHardeningEnabled = openshift_hardening_enabled.(bool)
+	}
+
+	vulnerability_score_range, ok := d.GetOk("vulnerability_score_range")
+	if ok {
+		intArr := convertIntArr(vulnerability_score_range.([]interface{}))
+		iap.VulnerabilityScoreRange = intArr
 	}
 
 	return &iap
