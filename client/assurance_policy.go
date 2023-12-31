@@ -261,7 +261,6 @@ func (cli *Client) CreateAssurancePolicy(assurancepolicy *AssurancePolicy, at st
 	if err != nil {
 		return err
 	}
-	log.Println(string(payload))
 	resp, _, errs := request.Clone().Set("Authorization", "Bearer "+cli.token).Post(cli.url + apiPath).Send(string(payload)).End()
 	if errs != nil {
 		return errors.Wrap(getMergedError(errs), "failed creating  Assurance Policy.")
