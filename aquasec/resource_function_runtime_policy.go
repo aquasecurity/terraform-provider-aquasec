@@ -238,6 +238,7 @@ func resourceFunctionRuntimePolicy() *schema.Resource {
 				Type:        schema.TypeList,
 				Description: "Allowed registries configuration.",
 				Optional:    true,
+				Computed:    true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"enabled": {
@@ -260,6 +261,7 @@ func resourceFunctionRuntimePolicy() *schema.Resource {
 				Type:        schema.TypeList,
 				Description: "Allowed executables configuration.",
 				Optional:    true,
+				Computed:    true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"enabled": {
@@ -295,6 +297,7 @@ func resourceFunctionRuntimePolicy() *schema.Resource {
 				Type:        schema.TypeList,
 				Description: "Container privileges configuration.",
 				Optional:    true,
+				Computed:    true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"enabled": {
@@ -411,6 +414,7 @@ func resourceFunctionRuntimePolicy() *schema.Resource {
 				Type:        schema.TypeList,
 				Description: "Restricted volumes configuration.",
 				Optional:    true,
+				Computed:    true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"enabled": {
@@ -433,6 +437,7 @@ func resourceFunctionRuntimePolicy() *schema.Resource {
 				Type:        schema.TypeList,
 				Description: "Drift prevention configuration.",
 				Optional:    true,
+				Computed:    true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"enabled": {
@@ -465,6 +470,7 @@ func resourceFunctionRuntimePolicy() *schema.Resource {
 				Type:        schema.TypeList,
 				Description: "Executable blacklist configuration.",
 				Optional:    true,
+				Computed:    true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"enabled": {
@@ -497,6 +503,7 @@ func resourceFunctionRuntimePolicy() *schema.Resource {
 				Type:        schema.TypeList,
 				MaxItems:    1,
 				Description: "",
+				Computed:    true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"enabled": {
@@ -547,6 +554,7 @@ func resourceFunctionRuntimePolicy() *schema.Resource {
 				Type:        schema.TypeList,
 				MaxItems:    1,
 				Description: "",
+				Computed:    true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"enabled": {
@@ -578,6 +586,7 @@ func resourceFunctionRuntimePolicy() *schema.Resource {
 				Type:        schema.TypeList,
 				MaxItems:    1,
 				Description: "",
+				Computed:    true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"enabled": {
@@ -609,6 +618,7 @@ func resourceFunctionRuntimePolicy() *schema.Resource {
 				Type:        schema.TypeList,
 				MaxItems:    1,
 				Description: "",
+				Computed:    true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"enabled": {
@@ -672,6 +682,7 @@ func resourceFunctionRuntimePolicy() *schema.Resource {
 				Type:        schema.TypeList,
 				MaxItems:    1,
 				Description: "",
+				Computed:    true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"enabled": {
@@ -735,6 +746,7 @@ func resourceFunctionRuntimePolicy() *schema.Resource {
 				Type:        schema.TypeList,
 				MaxItems:    1,
 				Description: "",
+				Computed:    true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"enabled": {
@@ -758,6 +770,7 @@ func resourceFunctionRuntimePolicy() *schema.Resource {
 				Type:        schema.TypeList,
 				MaxItems:    1,
 				Description: "",
+				Computed:    true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"enabled": {
@@ -789,6 +802,7 @@ func resourceFunctionRuntimePolicy() *schema.Resource {
 				Type:        schema.TypeList,
 				MaxItems:    1,
 				Description: "",
+				Computed:    true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"enabled": {
@@ -827,6 +841,7 @@ func resourceFunctionRuntimePolicy() *schema.Resource {
 				Type:        schema.TypeList,
 				MaxItems:    1,
 				Description: "",
+				Computed:    true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"enabled": {
@@ -1027,6 +1042,7 @@ func resourceFunctionRuntimePolicy() *schema.Resource {
 				Type:        schema.TypeList,
 				MaxItems:    1,
 				Description: "",
+				Computed:    true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"enabled": {
@@ -1179,6 +1195,7 @@ func resourceFunctionRuntimePolicy() *schema.Resource {
 				Type:        schema.TypeList,
 				MaxItems:    1,
 				Description: "",
+				Computed:    true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"enabled": {
@@ -1242,6 +1259,7 @@ func resourceFunctionRuntimePolicy() *schema.Resource {
 				Type:        schema.TypeList,
 				MaxItems:    1,
 				Description: "",
+				Computed:    true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"enabled": {
@@ -1272,6 +1290,7 @@ func resourceFunctionRuntimePolicy() *schema.Resource {
 				Type:        schema.TypeList,
 				MaxItems:    1,
 				Description: "",
+				Computed:    true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"enabled": {
@@ -1308,6 +1327,7 @@ func resourceFunctionRuntimePolicy() *schema.Resource {
 				Type:        schema.TypeList,
 				MaxItems:    1,
 				Description: "",
+				Computed:    true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"enabled": {
@@ -1399,6 +1419,7 @@ func resourceFunctionRuntimePolicy() *schema.Resource {
 				Type:        schema.TypeList,
 				MaxItems:    1,
 				Description: "",
+				Computed:    true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"enabled": {
@@ -1454,7 +1475,7 @@ func resourceFunctionRuntimePolicyRead(ctx context.Context, d *schema.ResourceDa
 
 	d.Set("name", crp.Name)
 	d.Set("description", crp.Description)
-	d.Set("author", crp.Author)
+	//d.Set("author", crp.Author)
 	d.Set("application_scopes", crp.ApplicationScopes)
 	d.Set("scope_variables", flattenScopeVariables(crp.Scope.Variables))
 	d.Set("scope_expression", crp.Scope.Expression)
@@ -1521,7 +1542,7 @@ func resourceFunctionRuntimePolicyRead(ctx context.Context, d *schema.ResourceDa
 	//d.Set("updated", (crp.Updated) // todo
 	//d.Set("lastupdate", crp.Lastupdate)
 	d.Set("version", crp.Version)
-	d.Set("created", crp.Created)
+	//d.Set("created", crp.Created)
 	d.Set("runtime_mode", crp.RuntimeMode)
 	d.Set("runtime_type", crp.RuntimeType)
 	d.SetId(crp.Name)
@@ -1533,7 +1554,7 @@ func resourceFunctionRuntimePolicyUpdate(ctx context.Context, d *schema.Resource
 	c := m.(*client.Client)
 	name := d.Get("name").(string)
 	if d.HasChanges("description",
-		"author",
+		//"author",
 		"application_scopes",
 		"scope_variables",
 		"scope_expression",
@@ -1577,7 +1598,7 @@ func resourceFunctionRuntimePolicyUpdate(ctx context.Context, d *schema.Resource
 		"updated",
 		"lastupdate",
 		"version",
-		"created",
+		//"created",
 		"runtime_type",
 		"runtime_mode",
 		"enforce_scheduler_added_on",
@@ -1872,7 +1893,7 @@ func expandFunctionRuntimePolicy(d *schema.ResourceData) *client.RuntimePolicy {
 
 	lastupdate, ok := d.GetOk("lastupdate")
 	if ok {
-		crp.Lastupdate = lastupdate.(int64)
+		crp.Lastupdate = lastupdate.(int)
 	}
 
 	version, ok := d.GetOk("version")

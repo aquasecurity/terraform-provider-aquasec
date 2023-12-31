@@ -121,6 +121,7 @@ func resourceHostRuntimePolicy() *schema.Resource {
 				Type:        schema.TypeList,
 				Description: "Configuration for file integrity monitoring.",
 				Optional:    true,
+				Computed:    true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"enabled": {
@@ -281,152 +282,151 @@ func resourceHostRuntimePolicy() *schema.Resource {
 				Description: "If true, system log will be monitored.",
 				Optional:    true,
 			},
-			"windows_registry_monitoring": {
-				Type:        schema.TypeList,
-				MaxItems:    1,
-				Description: "Configuration for windows registry monitoring.",
-				Elem: &schema.Resource{
-					Schema: map[string]*schema.Schema{
-						"monitor_create": {
-							Type:        schema.TypeBool,
-							Description: "If true, create operations will be monitored.",
-							Optional:    true,
-						},
-						"monitor_read": {
-							Type:        schema.TypeBool,
-							Description: "If true, read operations will be monitored.",
-							Optional:    true,
-						},
-						"monitor_modify": {
-							Type:        schema.TypeBool,
-							Description: "If true, modification operations will be monitored.",
-							Optional:    true,
-						},
-						"monitor_delete": {
-							Type:        schema.TypeBool,
-							Description: "If true, deletion operations will be monitored.",
-							Optional:    true,
-						},
-						"monitor_attributes": {
-							Type:        schema.TypeBool,
-							Description: "If true, add attributes operations will be monitored.",
-							Optional:    true,
-						},
-						"monitored_paths": {
-							Type:        schema.TypeList,
-							Description: "List of paths to be monitored.",
-							Elem: &schema.Schema{
-								Type: schema.TypeString,
-							},
-							Optional: true,
-						},
-						"excluded_paths": {
-							Type:        schema.TypeList,
-							Description: "List of paths to be excluded from being monitored.",
-							Elem: &schema.Schema{
-								Type: schema.TypeString,
-							},
-							Optional: true,
-						},
-						"monitored_processes": {
-							Type:        schema.TypeList,
-							Description: "List of registry processes to be monitored.",
-							Elem: &schema.Schema{
-								Type: schema.TypeString,
-							},
-							Optional: true,
-						},
-						"excluded_processes": {
-							Type:        schema.TypeList,
-							Description: "List of registry processes to be excluded from being monitored.",
-							Elem: &schema.Schema{
-								Type: schema.TypeString,
-							},
-							Optional: true,
-						},
-						"monitored_users": {
-							Type:        schema.TypeList,
-							Description: "List of registry users to be monitored.",
-							Elem: &schema.Schema{
-								Type: schema.TypeString,
-							},
-							Optional: true,
-						},
-						"excluded_users": {
-							Type:        schema.TypeList,
-							Description: "List of registry users to be excluded from being monitored.",
-							Elem: &schema.Schema{
-								Type: schema.TypeString,
-							},
-							Optional: true,
-						},
-					},
-				},
-				Optional: true,
-			},
-			"windows_registry_protection": {
-				Type:        schema.TypeList,
-				MaxItems:    1,
-				Description: "Configuration for windows registry protection.",
-				Elem: &schema.Resource{
-					Schema: map[string]*schema.Schema{
-						"protected_paths": {
-							Type:        schema.TypeList,
-							Description: "List of registry paths to be protected.",
-							Elem: &schema.Schema{
-								Type: schema.TypeString,
-							},
-							Optional: true,
-						},
-						"excluded_paths": {
-							Type:        schema.TypeList,
-							Description: "List of registry paths to be excluded from being protected.",
-							Elem: &schema.Schema{
-								Type: schema.TypeString,
-							},
-							Optional:     true,
-							RequiredWith: []string{"windows_registry_protection.0.protected_paths"},
-						},
-						"protected_processes": {
-							Type:        schema.TypeList,
-							Description: "List of registry processes to be protected.",
-							Elem: &schema.Schema{
-								Type: schema.TypeString,
-							},
-							Optional:     true,
-							RequiredWith: []string{"windows_registry_protection.0.protected_paths"},
-						},
-						"excluded_processes": {
-							Type:        schema.TypeList,
-							Description: "List of registry processes to be excluded from being protected.",
-							Elem: &schema.Schema{
-								Type: schema.TypeString,
-							},
-							Optional:     true,
-							RequiredWith: []string{"windows_registry_protection.0.protected_paths"},
-						},
-						"protected_users": {
-							Type:        schema.TypeList,
-							Description: "List of registry users to be protected.",
-							Elem: &schema.Schema{
-								Type: schema.TypeString,
-							},
-							Optional:     true,
-							RequiredWith: []string{"windows_registry_protection.0.protected_paths"},
-						},
-						"excluded_users": {
-							Type:        schema.TypeList,
-							Description: "List of registry paths to be users from being protected.",
-							Elem: &schema.Schema{
-								Type: schema.TypeString,
-							},
-							Optional:     true,
-							RequiredWith: []string{"windows_registry_protection.0.protected_paths"},
-						},
-					},
-				},
-				Optional: true,
-			},
+			//"windows_registry_monitoring": {
+			//	Type:        schema.TypeList,
+			//	MaxItems:    1,
+			//	Description: "Configuration for windows registry monitoring.",
+			//	Elem: &schema.Resource{
+			//		Schema: map[string]*schema.Schema{
+			//			"monitor_create": {
+			//				Type:        schema.TypeBool,
+			//				Description: "If true, create operations will be monitored.",
+			//				Optional:    true,
+			//			},
+			//			"monitor_read": {
+			//				Type:        schema.TypeBool,
+			//				Description: "If true, read operations will be monitored.",
+			//				Optional:    true,
+			//			},
+			//			"monitor_modify": {
+			//				Type:        schema.TypeBool,
+			//				Description: "If true, modification operations will be monitored.",
+			//				Optional:    true,
+			//			},
+			//			"monitor_delete": {
+			//				Type:        schema.TypeBool,
+			//				Description: "If true, deletion operations will be monitored.",
+			//				Optional:    true,
+			//			},
+			//			"monitor_attributes": {
+			//				Type:        schema.TypeBool,
+			//				Description: "If true, add attributes operations will be monitored.",
+			//				Optional:    true,
+			//			},
+			//			"monitored_paths": {
+			//				Type:        schema.TypeList,
+			//				Description: "List of paths to be monitored.",
+			//				Elem: &schema.Schema{
+			//					Type: schema.TypeString,
+			//				},
+			//				Optional: true,
+			//			},
+			//			"excluded_paths": {
+			//				Type:        schema.TypeList,
+			//				Description: "List of paths to be excluded from being monitored.",
+			//				Elem: &schema.Schema{
+			//					Type: schema.TypeString,
+			//				},
+			//				Optional: true,
+			//			},
+			//			"monitored_processes": {
+			//				Type:        schema.TypeList,
+			//				Description: "List of registry processes to be monitored.",
+			//				Elem: &schema.Schema{
+			//					Type: schema.TypeString,
+			//				},
+			//				Optional: true,
+			//			},
+			//			"excluded_processes": {
+			//				Type:        schema.TypeList,
+			//				Description: "List of registry processes to be excluded from being monitored.",
+			//				Elem: &schema.Schema{
+			//					Type: schema.TypeString,
+			//				},
+			//				Optional: true,
+			//			},
+			//			"monitored_users": {
+			//				Type:        schema.TypeList,
+			//				Description: "List of registry users to be monitored.",
+			//				Elem: &schema.Schema{
+			//					Type: schema.TypeString,
+			//				},
+			//				Optional: true,
+			//			},
+			//			"excluded_users": {
+			//				Type:        schema.TypeList,
+			//				Description: "List of registry users to be excluded from being monitored.",
+			//				Elem: &schema.Schema{
+			//					Type: schema.TypeString,
+			//				},
+			//				Optional: true,
+			//			},
+			//		},
+			//	},
+			//},
+			//"windows_registry_protection": {
+			//	Type:        schema.TypeList,
+			//	MaxItems:    1,
+			//	Description: "Configuration for windows registry protection.",
+			//	Elem: &schema.Resource{
+			//		Schema: map[string]*schema.Schema{
+			//			"protected_paths": {
+			//				Type:        schema.TypeList,
+			//				Description: "List of registry paths to be protected.",
+			//				Elem: &schema.Schema{
+			//					Type: schema.TypeString,
+			//				},
+			//				Optional: true,
+			//			},
+			//			"excluded_paths": {
+			//				Type:        schema.TypeList,
+			//				Description: "List of registry paths to be excluded from being protected.",
+			//				Elem: &schema.Schema{
+			//					Type: schema.TypeString,
+			//				},
+			//				Optional:     true,
+			//				RequiredWith: []string{"windows_registry_protection.0.protected_paths"},
+			//			},
+			//			"protected_processes": {
+			//				Type:        schema.TypeList,
+			//				Description: "List of registry processes to be protected.",
+			//				Elem: &schema.Schema{
+			//					Type: schema.TypeString,
+			//				},
+			//				Optional:     true,
+			//				RequiredWith: []string{"windows_registry_protection.0.protected_paths"},
+			//			},
+			//			"excluded_processes": {
+			//				Type:        schema.TypeList,
+			//				Description: "List of registry processes to be excluded from being protected.",
+			//				Elem: &schema.Schema{
+			//					Type: schema.TypeString,
+			//				},
+			//				Optional:     true,
+			//				RequiredWith: []string{"windows_registry_protection.0.protected_paths"},
+			//			},
+			//			"protected_users": {
+			//				Type:        schema.TypeList,
+			//				Description: "List of registry users to be protected.",
+			//				Elem: &schema.Schema{
+			//					Type: schema.TypeString,
+			//				},
+			//				Optional:     true,
+			//				RequiredWith: []string{"windows_registry_protection.0.protected_paths"},
+			//			},
+			//			"excluded_users": {
+			//				Type:        schema.TypeList,
+			//				Description: "List of registry paths to be users from being protected.",
+			//				Elem: &schema.Schema{
+			//					Type: schema.TypeString,
+			//				},
+			//				Optional:     true,
+			//				RequiredWith: []string{"windows_registry_protection.0.protected_paths"},
+			//			},
+			//		},
+			//	},
+			//	Optional: true,
+			//},
 			"malware_scan_options": {
 				Type:        schema.TypeList,
 				MaxItems:    1,
@@ -476,6 +476,7 @@ func resourceHostRuntimePolicy() *schema.Resource {
 					},
 				},
 				Optional: true,
+				Computed: true,
 			},
 			//JSON
 			"failed_kubernetes_checks": {
@@ -487,6 +488,7 @@ func resourceHostRuntimePolicy() *schema.Resource {
 						"enabled": {
 							Type:        schema.TypeBool,
 							Description: "",
+							Default:     false,
 							Optional:    true,
 						},
 						"failed_checks": {
@@ -500,6 +502,7 @@ func resourceHostRuntimePolicy() *schema.Resource {
 					},
 				},
 				Optional: true,
+				Computed: true,
 			}, // list
 			"enable_port_scan_protection": {
 				Type:        schema.TypeBool,
@@ -556,6 +559,7 @@ func resourceHostRuntimePolicy() *schema.Resource {
 				Type:        schema.TypeList,
 				MaxItems:    1,
 				Description: "",
+				Computed:    true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"enabled": {
@@ -592,6 +596,7 @@ func resourceHostRuntimePolicy() *schema.Resource {
 				Type:        schema.TypeList,
 				MaxItems:    1,
 				Description: "",
+				Computed:    true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"enabled": {
@@ -628,6 +633,7 @@ func resourceHostRuntimePolicy() *schema.Resource {
 				Type:        schema.TypeList,
 				MaxItems:    1,
 				Description: "",
+				Computed:    true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"enabled": {
@@ -658,6 +664,7 @@ func resourceHostRuntimePolicy() *schema.Resource {
 				Type:        schema.TypeList,
 				MaxItems:    1,
 				Description: "",
+				Computed:    true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"enabled": {
@@ -721,6 +728,7 @@ func resourceHostRuntimePolicy() *schema.Resource {
 				Type:        schema.TypeList,
 				MaxItems:    1,
 				Description: "",
+				Computed:    true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"enabled": {
@@ -809,6 +817,7 @@ func resourceHostRuntimePolicy() *schema.Resource {
 				Type:        schema.TypeList,
 				MaxItems:    1,
 				Description: "",
+				Computed:    true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"enabled": {
@@ -872,6 +881,7 @@ func resourceHostRuntimePolicy() *schema.Resource {
 				Type:        schema.TypeList,
 				MaxItems:    1,
 				Description: "",
+				Computed:    true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"enabled": {
@@ -936,11 +946,13 @@ func resourceHostRuntimePolicy() *schema.Resource {
 					},
 				},
 				Optional: true,
+				Computed: true,
 			}, // list
 			"linux_capabilities": {
 				Type:        schema.TypeList,
 				MaxItems:    1,
 				Description: "",
+				Computed:    true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"enabled": {
@@ -964,6 +976,7 @@ func resourceHostRuntimePolicy() *schema.Resource {
 				Type:        schema.TypeList,
 				MaxItems:    1,
 				Description: "",
+				Computed:    true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"enabled": {
@@ -1085,11 +1098,13 @@ func resourceHostRuntimePolicy() *schema.Resource {
 					},
 				},
 				Optional: true,
+				Computed: true,
 			}, // list
 			"whitelisted_os_users": {
 				Type:        schema.TypeList,
 				MaxItems:    1,
 				Description: "",
+				Computed:    true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"enabled": {
@@ -1124,6 +1139,7 @@ func resourceHostRuntimePolicy() *schema.Resource {
 				Type:        schema.TypeList,
 				MaxItems:    1,
 				Description: "",
+				Computed:    true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"enabled": {
@@ -1155,6 +1171,8 @@ func resourceHostRuntimePolicy() *schema.Resource {
 				Type:        schema.TypeList,
 				MaxItems:    1,
 				Description: "",
+				Optional:    true,
+				Computed:    true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"enabled": {
@@ -1207,7 +1225,6 @@ func resourceHostRuntimePolicy() *schema.Resource {
 						},
 					},
 				},
-				Optional: true,
 			}, // list
 			"block_non_compliant_workloads": {
 				Type:        schema.TypeBool,
@@ -1261,6 +1278,7 @@ func resourceHostRuntimePolicy() *schema.Resource {
 				Type:        schema.TypeList,
 				Description: "Container privileges configuration.",
 				Optional:    true,
+				Computed:    true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"enabled": {
@@ -1377,6 +1395,7 @@ func resourceHostRuntimePolicy() *schema.Resource {
 				Type:        schema.TypeList,
 				Description: "Restricted volumes configuration.",
 				Optional:    true,
+				Computed:    true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"enabled": {
@@ -1399,6 +1418,7 @@ func resourceHostRuntimePolicy() *schema.Resource {
 				Type:        schema.TypeList,
 				Description: "Drift prevention configuration.",
 				Optional:    true,
+				Computed:    true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"enabled": {
@@ -1431,6 +1451,7 @@ func resourceHostRuntimePolicy() *schema.Resource {
 				Type:        schema.TypeList,
 				Description: "Executable blacklist configuration.",
 				Optional:    true,
+				Computed:    true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"enabled": {
@@ -1453,6 +1474,7 @@ func resourceHostRuntimePolicy() *schema.Resource {
 				Type:        schema.TypeList,
 				Description: "Allowed registries configuration.",
 				Optional:    true,
+				Computed:    true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"enabled": {
@@ -1475,6 +1497,7 @@ func resourceHostRuntimePolicy() *schema.Resource {
 				Type:        schema.TypeList,
 				Description: "Allowed executables configuration.",
 				Optional:    true,
+				Computed:    true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"enabled": {
@@ -1659,7 +1682,7 @@ func resourceHostRuntimePolicyRead(ctx context.Context, d *schema.ResourceData, 
 	d.Set("enabled", crp.Enabled)
 	d.Set("enforce", crp.Enforce)
 	d.Set("enforce_after_days", crp.EnforceAfterDays)
-	d.Set("author", crp.Author)
+	//d.Set("author", crp.Author)
 	//d.Set("block_cryptocurrency_mining", crp.EnableCryptoMiningDns)
 	d.Set("audit_brute_force_login", crp.AuditBruteForceLogin)
 	//d.Set("enable_ip_reputation_security", crp.EnableIPReputation)
@@ -1676,8 +1699,8 @@ func resourceHostRuntimePolicyRead(ctx context.Context, d *schema.ResourceData, 
 	d.Set("malware_scan_options", flattenMalwareScanOptions(crp.MalwareScanOptions))
 	d.Set("monitor_system_time_changes", crp.SystemIntegrityProtection.AuditSystemtimeChange)
 	d.Set("monitor_windows_services", crp.SystemIntegrityProtection.WindowsServicesMonitoring)
-	d.Set("windows_registry_monitoring", flattenWindowsRegistryMonitoring(crp.RegistryAccessMonitoring))
-	d.Set("windows_registry_protection", flattenWindowsRegistryProtection(crp.ReadonlyRegistry))
+	//d.Set("windows_registry_monitoring", flattenWindowsRegistryMonitoring(crp.RegistryAccessMonitoring))
+	//d.Set("windows_registry_protection", flattenWindowsRegistryProtection(crp.ReadonlyRegistry))
 	//JSON
 	d.Set("failed_kubernetes_checks", flattenFailedKubernetesChecks(crp.FailedKubernetesChecks))
 	d.Set("enable_port_scan_protection", crp.EnablePortScanProtection)
@@ -1731,7 +1754,7 @@ func resourceHostRuntimePolicyRead(ctx context.Context, d *schema.ResourceData, 
 	//d.Set("updated", (crp.Updated) // todo
 	//d.Set("lastupdate", crp.Lastupdate)
 	d.Set("version", crp.Version)
-	d.Set("created", crp.Created)
+	//d.Set("created", crp.Created)
 	d.Set("runtime_mode", crp.RuntimeMode)
 	d.Set("runtime_type", crp.RuntimeType)
 	d.SetId(crp.Name)
@@ -1750,7 +1773,7 @@ func resourceHostRuntimePolicyUpdate(ctx context.Context, d *schema.ResourceData
 		"enabled",
 		"enforce",
 		"enforce_after_days",
-		"author",
+		//"author",
 		"block_cryptocurrency_mining",
 		"audit_brute_force_login",
 		//"enable_ip_reputation_security",
@@ -1771,8 +1794,8 @@ func resourceHostRuntimePolicyUpdate(ctx context.Context, d *schema.ResourceData
 		"monitor_system_time_changes",
 		"monitor_windows_services",
 		"monitor_system_log_integrity",
-		"windows_registry_monitoring",
-		"windows_registry_protection",
+		//"windows_registry_monitoring",
+		//"windows_registry_protection",
 		//JSON
 		"enable_port_scan_protection",
 		"enable_crypto_mining_dns",
@@ -2047,41 +2070,42 @@ func expandHostRuntimePolicy(d *schema.ResourceData) *client.RuntimePolicy {
 	}
 
 	crp.RegistryAccessMonitoring = client.RegistryAccessMonitoring{}
-	windowsMonitoringMap, ok := d.GetOk("windows_registry_monitoring")
-	if ok {
-		v := windowsMonitoringMap.([]interface{})[0].(map[string]interface{})
 
-		crp.RegistryAccessMonitoring = client.RegistryAccessMonitoring{
-			Enabled:                               true,
-			MonitoredRegistryPaths:                convertStringArr(v["monitored_paths"].([]interface{})),
-			ExceptionalMonitoredRegistryPaths:     convertStringArr(v["excluded_paths"].([]interface{})),
-			MonitoredRegistryProcesses:            convertStringArr(v["monitored_processes"].([]interface{})),
-			ExceptionalMonitoredRegistryProcesses: convertStringArr(v["excluded_processes"].([]interface{})),
-			MonitoredRegistryUsers:                convertStringArr(v["monitored_users"].([]interface{})),
-			ExceptionalMonitoredRegistryUsers:     convertStringArr(v["excluded_users"].([]interface{})),
-			MonitoredRegistryCreate:               v["monitor_create"].(bool),
-			MonitoredRegistryRead:                 v["monitor_read"].(bool),
-			MonitoredRegistryModify:               v["monitor_modify"].(bool),
-			MonitoredRegistryDelete:               v["monitor_delete"].(bool),
-			MonitoredRegistryAttributes:           v["monitor_attributes"].(bool),
-		}
-	}
+	//windowsMonitoringMap, ok := d.GetOk("windows_registry_monitoring")
+	//if ok {
+	//	v := windowsMonitoringMap.([]interface{})[0].(map[string]interface{})
+	//
+	//	crp.RegistryAccessMonitoring = client.RegistryAccessMonitoring{
+	//		Enabled:                               true,
+	//		MonitoredRegistryPaths:                convertStringArr(v["monitored_paths"].([]interface{})),
+	//		ExceptionalMonitoredRegistryPaths:     convertStringArr(v["excluded_paths"].([]interface{})),
+	//		MonitoredRegistryProcesses:            convertStringArr(v["monitored_processes"].([]interface{})),
+	//		ExceptionalMonitoredRegistryProcesses: convertStringArr(v["excluded_processes"].([]interface{})),
+	//		MonitoredRegistryUsers:                convertStringArr(v["monitored_users"].([]interface{})),
+	//		ExceptionalMonitoredRegistryUsers:     convertStringArr(v["excluded_users"].([]interface{})),
+	//		MonitoredRegistryCreate:               v["monitor_create"].(bool),
+	//		MonitoredRegistryRead:                 v["monitor_read"].(bool),
+	//		MonitoredRegistryModify:               v["monitor_modify"].(bool),
+	//		MonitoredRegistryDelete:               v["monitor_delete"].(bool),
+	//		MonitoredRegistryAttributes:           v["monitor_attributes"].(bool),
+	//	}
+	//}
 
 	crp.ReadonlyRegistry = client.ReadonlyRegistry{}
-	windowsRegistryProtectionMap, ok := d.GetOk("windows_registry_protection")
-	if ok {
-		v := windowsRegistryProtectionMap.([]interface{})[0].(map[string]interface{})
-
-		crp.ReadonlyRegistry = client.ReadonlyRegistry{
-			Enabled:                              true,
-			ReadonlyRegistryPaths:                convertStringArr(v["protected_paths"].([]interface{})),
-			ExceptionalReadonlyRegistryPaths:     convertStringArr(v["excluded_paths"].([]interface{})),
-			ReadonlyRegistryProcesses:            convertStringArr(v["protected_processes"].([]interface{})),
-			ExceptionalReadonlyRegistryProcesses: convertStringArr(v["excluded_processes"].([]interface{})),
-			ReadonlyRegistryUsers:                convertStringArr(v["protected_users"].([]interface{})),
-			ExceptionalReadonlyRegistryUsers:     convertStringArr(v["excluded_users"].([]interface{})),
-		}
-	}
+	//windowsRegistryProtectionMap, ok := d.GetOk("windows_registry_protection")
+	//if ok {
+	//	v := windowsRegistryProtectionMap.([]interface{})[0].(map[string]interface{})
+	//
+	//	crp.ReadonlyRegistry = client.ReadonlyRegistry{
+	//		Enabled:                              true,
+	//		ReadonlyRegistryPaths:                convertStringArr(v["protected_paths"].([]interface{})),
+	//		ExceptionalReadonlyRegistryPaths:     convertStringArr(v["excluded_paths"].([]interface{})),
+	//		ReadonlyRegistryProcesses:            convertStringArr(v["protected_processes"].([]interface{})),
+	//		ExceptionalReadonlyRegistryProcesses: convertStringArr(v["excluded_processes"].([]interface{})),
+	//		ReadonlyRegistryUsers:                convertStringArr(v["protected_users"].([]interface{})),
+	//		ExceptionalReadonlyRegistryUsers:     convertStringArr(v["excluded_users"].([]interface{})),
+	//	}
+	//}
 
 	crp.MalwareScanOptions = client.MalwareScanOptions{}
 	malwareScanOptionsMap, ok := d.GetOk("malware_scan_options")
@@ -2240,7 +2264,7 @@ func expandHostRuntimePolicy(d *schema.ResourceData) *client.RuntimePolicy {
 
 	lastupdate, ok := d.GetOk("lastupdate")
 	if ok {
-		crp.Lastupdate = lastupdate.(int64)
+		crp.Lastupdate = lastupdate.(int)
 	}
 
 	version, ok := d.GetOk("version")
@@ -2590,9 +2614,9 @@ func expandHostRuntimePolicy(d *schema.ResourceData) *client.RuntimePolicy {
 }
 
 func flattenFileIntegrityMonitoring(monitoring client.FileIntegrityMonitoring) []map[string]interface{} {
-	if len(monitoring.MonitoredFiles) == 0 {
-		return []map[string]interface{}{}
-	}
+	//if len(monitoring.MonitoredFiles) == 0 {
+	//	return []map[string]interface{}{}
+	//}
 	return []map[string]interface{}{
 		{
 			"enabled":                               monitoring.Enabled,
@@ -2612,9 +2636,9 @@ func flattenFileIntegrityMonitoring(monitoring client.FileIntegrityMonitoring) [
 }
 
 func flattenWindowsRegistryProtection(monitoring client.ReadonlyRegistry) []map[string]interface{} {
-	if len(monitoring.ReadonlyRegistryPaths) == 0 {
-		return []map[string]interface{}{}
-	}
+	//if len(monitoring.ReadonlyRegistryPaths) == 0 {
+	//	return []map[string]interface{}{}
+	//}
 	return []map[string]interface{}{
 		{
 			"protected_paths":     monitoring.ReadonlyRegistryPaths,
@@ -2628,9 +2652,9 @@ func flattenWindowsRegistryProtection(monitoring client.ReadonlyRegistry) []map[
 }
 
 func flattenWindowsRegistryMonitoring(monitoring client.RegistryAccessMonitoring) []map[string]interface{} {
-	if len(monitoring.MonitoredRegistryPaths) == 0 {
-		return []map[string]interface{}{}
-	}
+	//if len(monitoring.MonitoredRegistryPaths) == 0 {
+	//	return []map[string]interface{}{}
+	//}
 	return []map[string]interface{}{
 		{
 			"monitor_create":      monitoring.MonitoredRegistryCreate,
@@ -2649,9 +2673,9 @@ func flattenWindowsRegistryMonitoring(monitoring client.RegistryAccessMonitoring
 }
 
 func flattenMalwareScanOptions(monitoring client.MalwareScanOptions) []map[string]interface{} {
-	if len(monitoring.ExcludeDirectories) == 0 {
-		return []map[string]interface{}{}
-	}
+	//if len(monitoring.ExcludeDirectories) == 0 {
+	//	return []map[string]interface{}{}
+	//}
 	return []map[string]interface{}{
 		{
 			"enabled":             monitoring.Enabled,
@@ -2666,9 +2690,9 @@ func flattenMalwareScanOptions(monitoring client.MalwareScanOptions) []map[strin
 // JSON
 
 func flattenFailedKubernetesChecks(checks client.FailedKubernetesChecks) []map[string]interface{} {
-	if len(checks.FailedChecks) == 0 {
-		return []map[string]interface{}{}
-	}
+	//if len(checks.FailedChecks) == 0 {
+	//	return []map[string]interface{}{}
+	//}
 	return []map[string]interface{}{
 		{
 			"enabled":       checks.Enabled,
@@ -2678,9 +2702,9 @@ func flattenFailedKubernetesChecks(checks client.FailedKubernetesChecks) []map[s
 }
 
 func flattenReverseShell(shell client.ReverseShell) []map[string]interface{} {
-	if !shell.Enabled {
-		return []map[string]interface{}{}
-	}
+	//if !shell.Enabled {
+	//	return []map[string]interface{}{}
+	//}
 	return []map[string]interface{}{
 		{
 			"enabled":                       shell.Enabled,
@@ -2692,9 +2716,9 @@ func flattenReverseShell(shell client.ReverseShell) []map[string]interface{} {
 }
 
 func flattenContainerExec(exec client.ContainerExec) []map[string]interface{} {
-	if !exec.Enabled {
-		return []map[string]interface{}{}
-	}
+	//if !exec.Enabled {
+	//	return []map[string]interface{}{}
+	//}
 	return []map[string]interface{}{
 		{
 			"enabled":                        exec.Enabled,
@@ -2705,9 +2729,9 @@ func flattenContainerExec(exec client.ContainerExec) []map[string]interface{} {
 }
 
 func flattenSystemIntegrityProtection(protection client.SystemIntegrityProtection) []map[string]interface{} {
-	if !protection.Enabled {
-		return []map[string]interface{}{}
-	}
+	//if !protection.Enabled {
+	//	return []map[string]interface{}{}
+	//}
 	return []map[string]interface{}{
 		{
 			"enabled":                     protection.Enabled,
@@ -2719,9 +2743,9 @@ func flattenSystemIntegrityProtection(protection client.SystemIntegrityProtectio
 }
 
 func flattenReadonlyRegistry(registry client.ReadonlyRegistry) []map[string]interface{} {
-	if !registry.Enabled {
-		return []map[string]interface{}{}
-	}
+	//if !registry.Enabled {
+	//	return []map[string]interface{}{}
+	//}
 	return []map[string]interface{}{
 		{
 			"enabled":                                 registry.Enabled,
@@ -2736,9 +2760,9 @@ func flattenReadonlyRegistry(registry client.ReadonlyRegistry) []map[string]inte
 }
 
 func flattenRegistryAccessMonitoring(monitoring client.RegistryAccessMonitoring) []map[string]interface{} {
-	if !monitoring.Enabled {
-		return []map[string]interface{}{}
-	}
+	//if !monitoring.Enabled {
+	//	return []map[string]interface{}{}
+	//}
 	return []map[string]interface{}{
 		{
 			"enabled":                                  monitoring.Enabled,
@@ -2758,9 +2782,9 @@ func flattenRegistryAccessMonitoring(monitoring client.RegistryAccessMonitoring)
 }
 
 func flattenReadonlyFiles(files client.ReadonlyFiles) []map[string]interface{} {
-	if !files.Enabled {
-		return []map[string]interface{}{}
-	}
+	//if !files.Enabled {
+	//	return []map[string]interface{}{}
+	//}
 	return []map[string]interface{}{
 		{
 			"enabled":                              files.Enabled,
@@ -2775,9 +2799,9 @@ func flattenReadonlyFiles(files client.ReadonlyFiles) []map[string]interface{} {
 }
 
 func flattenTripwire(tripwire client.Tripwire) []map[string]interface{} {
-	if !tripwire.Enabled {
-		return []map[string]interface{}{}
-	}
+	//if !tripwire.Enabled {
+	//	return []map[string]interface{}{}
+	//}
 	return []map[string]interface{}{
 		{
 			"enabled":        tripwire.Enabled,
@@ -2790,9 +2814,9 @@ func flattenTripwire(tripwire client.Tripwire) []map[string]interface{} {
 }
 
 func flattenPortBlock(portBlock client.PortBlock) []map[string]interface{} {
-	if !portBlock.Enabled {
-		return []map[string]interface{}{}
-	}
+	//if !portBlock.Enabled {
+	//	return []map[string]interface{}{}
+	//}
 	return []map[string]interface{}{
 		{
 			"enabled":              portBlock.Enabled,
@@ -2803,9 +2827,9 @@ func flattenPortBlock(portBlock client.PortBlock) []map[string]interface{} {
 }
 
 func flattenLinuxCapabilities(linuxCapabilities client.LinuxCapabilities) []map[string]interface{} {
-	if !linuxCapabilities.Enabled {
-		return []map[string]interface{}{}
-	}
+	//if !linuxCapabilities.Enabled {
+	//	return []map[string]interface{}{}
+	//}
 	return []map[string]interface{}{
 		{
 			"enabled":                   linuxCapabilities.Enabled,
@@ -2815,9 +2839,9 @@ func flattenLinuxCapabilities(linuxCapabilities client.LinuxCapabilities) []map[
 }
 
 func flattenPackageBlock(packageBlock client.PackageBlock) []map[string]interface{} {
-	if !packageBlock.Enabled {
-		return []map[string]interface{}{}
-	}
+	//if !packageBlock.Enabled {
+	//	return []map[string]interface{}{}
+	//}
 	return []map[string]interface{}{
 		{
 			"enabled":                              packageBlock.Enabled,
@@ -2832,9 +2856,9 @@ func flattenPackageBlock(packageBlock client.PackageBlock) []map[string]interfac
 }
 
 func flattenFileBlock(fileBlock client.FileBlock) []map[string]interface{} {
-	if !fileBlock.Enabled {
-		return []map[string]interface{}{}
-	}
+	//if !fileBlock.Enabled {
+	//	return []map[string]interface{}{}
+	//}
 	return []map[string]interface{}{
 		{
 			"enabled":                           fileBlock.Enabled,
@@ -2849,9 +2873,9 @@ func flattenFileBlock(fileBlock client.FileBlock) []map[string]interface{} {
 }
 
 func flattenWhitelistedOSUsers(whitelistedOsUsers client.WhitelistedOsUsers) []map[string]interface{} {
-	if !whitelistedOsUsers.Enabled {
-		return []map[string]interface{}{}
-	}
+	//if !whitelistedOsUsers.Enabled {
+	//	return []map[string]interface{}{}
+	//}
 	return []map[string]interface{}{
 		{
 			"enabled":          whitelistedOsUsers.Enabled,
@@ -2862,9 +2886,9 @@ func flattenWhitelistedOSUsers(whitelistedOsUsers client.WhitelistedOsUsers) []m
 }
 
 func flattenBlacklistedOSUsers(blacklistedOsUsers client.BlacklistedOsUsers) []map[string]interface{} {
-	if !blacklistedOsUsers.Enabled {
-		return []map[string]interface{}{}
-	}
+	//if !blacklistedOsUsers.Enabled {
+	//	return []map[string]interface{}{}
+	//}
 	return []map[string]interface{}{
 		{
 			"enabled":          blacklistedOsUsers.Enabled,
@@ -2875,9 +2899,9 @@ func flattenBlacklistedOSUsers(blacklistedOsUsers client.BlacklistedOsUsers) []m
 }
 
 func flattenAuditing(auditing client.Auditing) []map[string]interface{} {
-	if !auditing.Enabled {
-		return []map[string]interface{}{}
-	}
+	//if !auditing.Enabled {
+	//	return []map[string]interface{}{}
+	//}
 	return []map[string]interface{}{
 		{
 			"enabled":                       auditing.Enabled,
@@ -2893,9 +2917,9 @@ func flattenAuditing(auditing client.Auditing) []map[string]interface{} {
 }
 
 func flattenLimitContainerPrivileges(limitContainerPrivileges client.LimitContainerPrivileges) []map[string]interface{} {
-	if !limitContainerPrivileges.Enabled {
-		return []map[string]interface{}{}
-	}
+	//if !limitContainerPrivileges.Enabled {
+	//	return []map[string]interface{}{}
+	//}
 	return []map[string]interface{}{
 		{
 			"enabled":                  limitContainerPrivileges.Enabled,
@@ -2914,9 +2938,9 @@ func flattenLimitContainerPrivileges(limitContainerPrivileges client.LimitContai
 }
 
 func flattenRestrictedVolumes(restrictedVolumes client.RestrictedVolumes) []map[string]interface{} {
-	if !restrictedVolumes.Enabled {
-		return []map[string]interface{}{}
-	}
+	//if !restrictedVolumes.Enabled {
+	//	return []map[string]interface{}{}
+	//}
 	return []map[string]interface{}{
 		{
 			"enabled": restrictedVolumes.Enabled,
@@ -2926,9 +2950,9 @@ func flattenRestrictedVolumes(restrictedVolumes client.RestrictedVolumes) []map[
 }
 
 func flattenDriftPrevention(driftPrevention client.DriftPrevention) []map[string]interface{} {
-	if !driftPrevention.Enabled {
-		return []map[string]interface{}{}
-	}
+	//if !driftPrevention.Enabled {
+	//	return []map[string]interface{}{}
+	//}
 	return []map[string]interface{}{
 		{
 			"enabled":                  driftPrevention.Enabled,
@@ -2940,9 +2964,9 @@ func flattenDriftPrevention(driftPrevention client.DriftPrevention) []map[string
 }
 
 func flattenExecutableBlacklist(executableBlacklist client.ExecutableBlacklist) []map[string]interface{} {
-	if !executableBlacklist.Enabled {
-		return []map[string]interface{}{}
-	}
+	//if !executableBlacklist.Enabled {
+	//	return []map[string]interface{}{}
+	//}
 	return []map[string]interface{}{
 		{
 			"enabled":     executableBlacklist.Enabled,
@@ -2952,9 +2976,9 @@ func flattenExecutableBlacklist(executableBlacklist client.ExecutableBlacklist) 
 }
 
 func flattenAllowedRegistries(allowedRegistries client.AllowedRegistries) []map[string]interface{} {
-	if !allowedRegistries.Enabled {
-		return []map[string]interface{}{}
-	}
+	//if !allowedRegistries.Enabled {
+	//	return []map[string]interface{}{}
+	//}
 	return []map[string]interface{}{
 		{
 			"enabled":            allowedRegistries.Enabled,
@@ -2964,9 +2988,9 @@ func flattenAllowedRegistries(allowedRegistries client.AllowedRegistries) []map[
 }
 
 func flattenAllowedExecutables(allowedExecutables client.AllowedExecutables) []map[string]interface{} {
-	if !allowedExecutables.Enabled {
-		return []map[string]interface{}{}
-	}
+	//if !allowedExecutables.Enabled {
+	//	return []map[string]interface{}{}
+	//}
 	return []map[string]interface{}{
 		{
 			"enabled":                allowedExecutables.Enabled,

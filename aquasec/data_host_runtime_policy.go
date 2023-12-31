@@ -471,6 +471,7 @@ func dataHostRuntimePolicy() *schema.Resource {
 			},
 			"malware_scan_options": {
 				Type:        schema.TypeList,
+				MaxItems:    1,
 				Description: "Configuration for Real-Time Malware Protection.",
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
@@ -480,7 +481,7 @@ func dataHostRuntimePolicy() *schema.Resource {
 							Elem: &schema.Schema{
 								Type: schema.TypeString,
 							},
-							Computed: true,
+							Optional: true,
 						},
 						"action": {
 							Type:        schema.TypeString,
@@ -488,7 +489,23 @@ func dataHostRuntimePolicy() *schema.Resource {
 							Elem: &schema.Schema{
 								Type: schema.TypeString,
 							},
-							Computed: true,
+							Optional: true,
+						},
+						"include_directories": {
+							Type:        schema.TypeList,
+							Description: "List of registry paths to be excluded from being protected.",
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+							Optional: true,
+						},
+						"exclude_directories": {
+							Type:        schema.TypeList,
+							Description: "List of registry paths to be excluded from being protected.",
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+							Optional: true,
 						},
 						"exclude_processes": {
 							Type:        schema.TypeList,
@@ -496,19 +513,11 @@ func dataHostRuntimePolicy() *schema.Resource {
 							Elem: &schema.Schema{
 								Type: schema.TypeString,
 							},
-							Computed: true,
-						},
-						"include_directories": {
-							Type:        schema.TypeList,
-							Description: "List of directories to be protected.",
-							Elem: &schema.Schema{
-								Type: schema.TypeString,
-							},
-							Computed: true,
+							Optional: true,
 						},
 					},
 				},
-				Computed: true,
+				Optional: true,
 			},
 			"auditing": {
 				Type:        schema.TypeList,

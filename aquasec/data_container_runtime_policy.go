@@ -191,6 +191,7 @@ func dataContainerRuntimePolicy() *schema.Resource {
 			},
 			"malware_scan_options": {
 				Type:        schema.TypeList,
+				MaxItems:    1,
 				Description: "Configuration for Real-Time Malware Protection.",
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
@@ -200,7 +201,7 @@ func dataContainerRuntimePolicy() *schema.Resource {
 							Elem: &schema.Schema{
 								Type: schema.TypeString,
 							},
-							Computed: true,
+							Optional: true,
 						},
 						"action": {
 							Type:        schema.TypeString,
@@ -208,7 +209,15 @@ func dataContainerRuntimePolicy() *schema.Resource {
 							Elem: &schema.Schema{
 								Type: schema.TypeString,
 							},
-							Computed: true,
+							Optional: true,
+						},
+						"include_directories": {
+							Type:        schema.TypeList,
+							Description: "List of registry paths to be excluded from being protected.",
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+							Optional: true,
 						},
 						"exclude_directories": {
 							Type:        schema.TypeList,
@@ -216,7 +225,7 @@ func dataContainerRuntimePolicy() *schema.Resource {
 							Elem: &schema.Schema{
 								Type: schema.TypeString,
 							},
-							Computed: true,
+							Optional: true,
 						},
 						"exclude_processes": {
 							Type:        schema.TypeList,
@@ -224,12 +233,11 @@ func dataContainerRuntimePolicy() *schema.Resource {
 							Elem: &schema.Schema{
 								Type: schema.TypeString,
 							},
-							Computed: true,
+							Optional: true,
 						},
 					},
 				},
 				Optional: true,
-				Computed: true,
 			},
 			"file_integrity_monitoring": {
 				Type:        schema.TypeList,

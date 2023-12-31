@@ -254,11 +254,13 @@ func resourceContainerRuntimePolicy() *schema.Resource {
 					},
 				},
 				Optional: true,
+				Computed: true,
 			},
 			"file_integrity_monitoring": {
 				Type:        schema.TypeList,
 				Description: "Configuration for file integrity monitoring.",
 				Optional:    true,
+				Computed:    true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"enabled": {
@@ -504,6 +506,7 @@ func resourceContainerRuntimePolicy() *schema.Resource {
 					},
 				},
 				Optional: true,
+				Computed: true,
 			}, // list
 			"enable_port_scan_protection": {
 				Type:        schema.TypeBool,
@@ -566,6 +569,7 @@ func resourceContainerRuntimePolicy() *schema.Resource {
 					},
 				},
 				Optional: true,
+				Computed: true,
 			}, // list
 			"container_exec": {
 				Type:        schema.TypeList,
@@ -602,6 +606,7 @@ func resourceContainerRuntimePolicy() *schema.Resource {
 					},
 				},
 				Optional: true,
+				Computed: true,
 			}, // list
 			"system_integrity_protection": {
 				Type:        schema.TypeList,
@@ -632,6 +637,7 @@ func resourceContainerRuntimePolicy() *schema.Resource {
 					},
 				},
 				Optional: true,
+				Computed: true,
 			}, // list
 			"readonly_registry": {
 				Type:        schema.TypeList,
@@ -695,6 +701,7 @@ func resourceContainerRuntimePolicy() *schema.Resource {
 					},
 				},
 				Optional: true,
+				Computed: true,
 			}, // list
 			"registry_access_monitoring": {
 				Type:        schema.TypeList,
@@ -783,6 +790,7 @@ func resourceContainerRuntimePolicy() *schema.Resource {
 					},
 				},
 				Optional: true,
+				Computed: true,
 			}, //list
 			"readonly_files": {
 				Type:        schema.TypeList,
@@ -846,6 +854,7 @@ func resourceContainerRuntimePolicy() *schema.Resource {
 					},
 				},
 				Optional: true,
+				Computed: true,
 			}, //list
 			"tripwire": {
 				Type:        schema.TypeList,
@@ -884,6 +893,7 @@ func resourceContainerRuntimePolicy() *schema.Resource {
 					},
 				},
 				Optional: true,
+				Computed: true,
 			}, // list
 			"port_block": {
 				Type:        schema.TypeList,
@@ -915,6 +925,7 @@ func resourceContainerRuntimePolicy() *schema.Resource {
 					},
 				},
 				Optional: true,
+				Computed: true,
 			}, // list
 			"linux_capabilities": {
 				Type:        schema.TypeList,
@@ -938,6 +949,7 @@ func resourceContainerRuntimePolicy() *schema.Resource {
 					},
 				},
 				Optional: true,
+				Computed: true,
 			}, // list
 			"package_block": {
 				Type:        schema.TypeList,
@@ -1001,6 +1013,7 @@ func resourceContainerRuntimePolicy() *schema.Resource {
 					},
 				},
 				Optional: true,
+				Computed: true,
 			}, // list
 			"file_block": {
 				Type:        schema.TypeList,
@@ -1064,6 +1077,7 @@ func resourceContainerRuntimePolicy() *schema.Resource {
 					},
 				},
 				Optional: true,
+				Computed: true,
 			}, // list
 			"whitelisted_os_users": {
 				Type:        schema.TypeList,
@@ -1095,6 +1109,7 @@ func resourceContainerRuntimePolicy() *schema.Resource {
 					},
 				},
 				Optional: true,
+				Computed: true,
 			}, // list
 			"blacklisted_os_users": {
 				Type:        schema.TypeList,
@@ -1126,6 +1141,7 @@ func resourceContainerRuntimePolicy() *schema.Resource {
 					},
 				},
 				Optional: true,
+				Computed: true,
 			}, // list
 			"auditing": {
 				Type:        schema.TypeList,
@@ -1176,6 +1192,7 @@ func resourceContainerRuntimePolicy() *schema.Resource {
 					},
 				},
 				Optional: true,
+				Computed: true,
 			}, // list
 			"block_disallowed_images": {
 				Type:        schema.TypeBool,
@@ -1224,6 +1241,7 @@ func resourceContainerRuntimePolicy() *schema.Resource {
 				Type:        schema.TypeList,
 				Description: "Container privileges configuration.",
 				Optional:    true,
+				Computed:    true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"enabled": {
@@ -1340,6 +1358,7 @@ func resourceContainerRuntimePolicy() *schema.Resource {
 				Type:        schema.TypeList,
 				Description: "Restricted volumes configuration.",
 				Optional:    true,
+				Computed:    true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"enabled": {
@@ -1389,11 +1408,13 @@ func resourceContainerRuntimePolicy() *schema.Resource {
 						},
 					},
 				},
+				Computed: true,
 			}, // list
 			"executable_blacklist": {
 				Type:        schema.TypeList,
 				Description: "Executable blacklist configuration.",
 				Optional:    true,
+				Computed:    true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"enabled": {
@@ -1416,6 +1437,7 @@ func resourceContainerRuntimePolicy() *schema.Resource {
 				Type:        schema.TypeList,
 				Description: "Allowed registries configuration.",
 				Optional:    true,
+				Computed:    true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"enabled": {
@@ -1438,6 +1460,7 @@ func resourceContainerRuntimePolicy() *schema.Resource {
 				Type:        schema.TypeList,
 				Description: "Allowed executables configuration.",
 				Optional:    true,
+				Computed:    true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"enabled": {
@@ -1462,7 +1485,6 @@ func resourceContainerRuntimePolicy() *schema.Resource {
 							Type:        schema.TypeList,
 							Description: "List of allowed root executables.",
 							Optional:    true,
-							Default:     nil,
 							Elem: &schema.Schema{
 								Type: schema.TypeString,
 							},
@@ -1620,7 +1642,7 @@ func resourceContainerRuntimePolicyRead(ctx context.Context, d *schema.ResourceD
 	d.Set("enabled", crp.Enabled)
 	d.Set("enforce", crp.Enforce)
 	d.Set("enforce_after_days", crp.EnforceAfterDays)
-	d.Set("author", crp.Author)
+	//d.Set("author", crp.Author)
 	//controls
 	d.Set("block_container_exec", crp.ContainerExec.BlockContainerExec)
 	//d.Set("container_exec_allowed_processes", crp.ContainerExec.ContainerExecProcWhiteList)
@@ -1719,7 +1741,7 @@ func resourceContainerRuntimePolicyRead(ctx context.Context, d *schema.ResourceD
 	//d.Set("updated", (crp.Updated) // todo
 	//d.Set("lastupdate", crp.Lastupdate)
 	d.Set("version", crp.Version)
-	d.Set("created", crp.Created)
+	//d.Set("created", crp.Created)
 	d.Set("runtime_mode", crp.RuntimeMode)
 	d.Set("runtime_type", crp.RuntimeType)
 
@@ -1737,7 +1759,7 @@ func resourceContainerRuntimePolicyUpdate(ctx context.Context, d *schema.Resourc
 		"enabled",
 		"enforce",
 		"enforce_after_days",
-		"author",
+		//"author",
 		"block_container_exec",
 		"container_exec_allowed_processes",
 		//"block_cryptocurrency_mining",
@@ -1812,7 +1834,7 @@ func resourceContainerRuntimePolicyUpdate(ctx context.Context, d *schema.Resourc
 		"updated",
 		"lastupdate",
 		"version",
-		"created",
+		//"created",
 		"runtime_type",
 		"runtime_mode",
 		//"enforce_scheduler_added_on",
@@ -2311,7 +2333,7 @@ func expandContainerRuntimePolicy(d *schema.ResourceData) *client.RuntimePolicy 
 
 	lastupdate, ok := d.GetOk("lastupdate")
 	if ok {
-		crp.Lastupdate = lastupdate.(int64)
+		crp.Lastupdate = lastupdate.(int)
 	}
 
 	version, ok := d.GetOk("version")
