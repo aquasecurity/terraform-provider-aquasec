@@ -27,6 +27,7 @@ func resourceKubernetesAssurancePolicy() *schema.Resource {
 			"id": {
 				Type:     schema.TypeString,
 				Computed: true,
+				Optional: true,
 			},
 			"name": {
 				Type:     schema.TypeString,
@@ -749,31 +750,36 @@ func resourceKubernetesAssurancePolicy() *schema.Resource {
 				Type:        schema.TypeList,
 				MaxItems:    1,
 				Description: "",
+				Optional:    true,
+				Computed:    true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"enforce": {
 							Type:        schema.TypeBool,
 							Description: "",
 							Optional:    true,
+							Default:     false,
 						},
 						"warn": {
 							Type:        schema.TypeBool,
 							Description: "",
 							Optional:    true,
+							Default:     false,
 						},
 						"warning_message": {
 							Type:        schema.TypeString,
 							Description: "",
 							Optional:    true,
+							Default:     "",
 						},
 						"is_audit_checked": {
 							Type:        schema.TypeBool,
 							Description: "",
 							Optional:    true,
+							Default:     false,
 						},
 					},
 				},
-				Optional: true,
 			}, // list
 			"exclude_application_scopes": {
 				Type:        schema.TypeList,
@@ -926,6 +932,20 @@ func resourceKubernetesAssurancePolicyUpdate(d *schema.ResourceData, m interface
 		"maximum_score_exclude_no_fix",
 		//JSON
 		"fail_cicd",
+		"custom_severity",
+		"vulnerability_exploitability",
+		"disallow_exploit_types",
+		"ignore_base_image_vln",
+		"ignored_sensitive_resources",
+		"permission",
+		"scan_malware_in_archives",
+		"kubernetes_controls",
+		"scan_windows_registry",
+		"scan_process_memory",
+		"policy_settings",
+		"exclude_application_scopes",
+		"linux_cis_enabled",
+		"openshift_hardening_enabled",
 	) {
 		iap := expandAssurancePolicy(d, assurance_type)
 		err := ac.UpdateAssurancePolicy(iap, assurance_type)

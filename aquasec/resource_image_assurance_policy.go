@@ -534,20 +534,21 @@ func resourceImageAssurancePolicy() *schema.Resource {
 						"iteration_type": {
 							Type:     schema.TypeString,
 							Optional: true,
+							Default:  "once",
 						},
 						"time": {
 							Type:     schema.TypeString,
 							Optional: true,
+							Default:  "",
 						},
 						"iteration": {
 							Type:     schema.TypeInt,
 							Optional: true,
-							Computed: true,
+							Default:  1,
 						},
 						"week_days": {
 							Type:     schema.TypeList,
 							Optional: true,
-							Computed: true,
 							Elem: &schema.Schema{
 								Type: schema.TypeString,
 							},
@@ -748,31 +749,36 @@ func resourceImageAssurancePolicy() *schema.Resource {
 				Type:        schema.TypeList,
 				MaxItems:    1,
 				Description: "",
+				Optional:    true,
+				Computed:    true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"enforce": {
 							Type:        schema.TypeBool,
 							Description: "",
 							Optional:    true,
+							Default:     false,
 						},
 						"warn": {
 							Type:        schema.TypeBool,
 							Description: "",
 							Optional:    true,
+							Default:     false,
 						},
 						"warning_message": {
 							Type:        schema.TypeString,
 							Description: "",
 							Optional:    true,
+							Default:     "",
 						},
 						"is_audit_checked": {
 							Type:        schema.TypeBool,
 							Description: "",
 							Optional:    true,
+							Default:     false,
 						},
 					},
 				},
-				Optional: true,
 			}, // list
 			"exclude_application_scopes": {
 				Type:     schema.TypeList,
@@ -1164,9 +1170,6 @@ func flattenTrustedBaseImages(TrustedBaseImages []client.BaseImagesTrusted) []ma
 }
 
 func flattenPolicySettings(policySettings client.PolicySettings) []map[string]interface{} {
-	if len(policySettings.WarningMessage) == 0 {
-		return []map[string]interface{}{}
-	}
 	return []map[string]interface{}{
 		{
 			"enforce":          policySettings.Enforce,

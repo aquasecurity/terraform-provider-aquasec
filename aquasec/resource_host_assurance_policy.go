@@ -707,31 +707,36 @@ func resourceHostAssurancePolicy() *schema.Resource {
 				Type:        schema.TypeList,
 				MaxItems:    1,
 				Description: "",
+				Optional:    true,
+				Computed:    true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"enforce": {
 							Type:        schema.TypeBool,
 							Description: "",
 							Optional:    true,
+							Default:     false,
 						},
 						"warn": {
 							Type:        schema.TypeBool,
 							Description: "",
 							Optional:    true,
+							Default:     false,
 						},
 						"warning_message": {
 							Type:        schema.TypeString,
 							Description: "",
 							Optional:    true,
+							Default:     "",
 						},
 						"is_audit_checked": {
 							Type:        schema.TypeBool,
 							Description: "",
 							Optional:    true,
+							Default:     false,
 						},
 					},
 				},
-				Optional: true,
 			}, // list
 			"exclude_application_scopes": {
 				Type:        schema.TypeList,

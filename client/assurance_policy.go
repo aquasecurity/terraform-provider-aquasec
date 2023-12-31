@@ -74,7 +74,7 @@ type AssurancePolicy struct {
 	ApplicationScopes                []string            `json:"application_scopes"`
 	AutoScanEnabled                  bool                `json:"auto_scan_enabled"`
 	AutoScanConfigured               bool                `json:"auto_scan_configured"`
-	AutoScanTime                     ScanTimeAuto        `json:"auto_scan_time,omitempty"`
+	AutoScanTime                     ScanTimeAuto        `json:"auto_scan_time"`
 	RequiredLabelsEnabled            bool                `json:"required_labels_enabled"`
 	RequiredLabels                   []Labels            `json:"required_labels"`
 	ForbiddenLabelsEnabled           bool                `json:"forbidden_labels_enabled"`
@@ -261,6 +261,7 @@ func (cli *Client) CreateAssurancePolicy(assurancepolicy *AssurancePolicy, at st
 	if err != nil {
 		return err
 	}
+	log.Println(string(payload))
 	resp, _, errs := request.Clone().Set("Authorization", "Bearer "+cli.token).Post(cli.url + apiPath).Send(string(payload)).End()
 	if errs != nil {
 		return errors.Wrap(getMergedError(errs), "failed creating  Assurance Policy.")
