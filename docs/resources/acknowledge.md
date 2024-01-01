@@ -87,3 +87,5 @@ Read-Only:
 - `expiration_configured_at` (String) The current dat and time when the expiration was set
 - `expiration_configured_by` (String) The user who set the expiration of the issue.
 - `permission` (String) The permissions of the user who acknowledged the issue.
+
+

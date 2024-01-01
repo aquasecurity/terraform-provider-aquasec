@@ -22,8 +22,11 @@ description: |-
 
 ### Optional
 
+- `aggregated_vulnerability` (Map of String) Aggregated vulnerability information.
 - `allowed_images` (List of String) List of explicitly allowed images.
+- `assurance_type` (String) What type of assurance policy is described.
 - `audit_on_failure` (Boolean) Indicates if auditing for failures.
+- `author` (String) Name of user account that created the policy.
 - `auto_scan_configured` (Boolean)
 - `auto_scan_enabled` (Boolean)
 - `auto_scan_time` (Block Set) (see [below for nested schema](#nestedblock--auto_scan_time))
@@ -35,6 +38,7 @@ description: |-
 - `control_exclude_no_fix` (Boolean)
 - `custom_checks` (Block List) List of Custom user scripts for checks. (see [below for nested schema](#nestedblock--custom_checks))
 - `custom_checks_enabled` (Boolean) Indicates if scanning should include custom checks.
+- `custom_severity` (String)
 - `custom_severity_enabled` (Boolean)
 - `cves_black_list` (List of String) List of cves blacklisted items.
 - `cves_black_list_enabled` (Boolean) Indicates if cves blacklist is relevant.
@@ -44,6 +48,7 @@ description: |-
 - `cvss_severity_enabled` (Boolean) Indicates if the cvss severity is scanned.
 - `cvss_severity_exclude_no_fix` (Boolean) Indicates that policy should ignore cvss cases that do not have a known fix.
 - `description` (String)
+- `disallow_exploit_types` (List of String)
 - `disallow_malware` (Boolean) Indicates if malware should block the image.
 - `docker_cis_enabled` (Boolean)
 - `domain` (String) Name of the container image.
@@ -55,48 +60,63 @@ description: |-
 - `enforce_after_days` (Number)
 - `enforce_excessive_permissions` (Boolean)
 - `exceptional_monitored_malware_paths` (List of String)
+- `exclude_application_scopes` (List of String)
 - `fail_cicd` (Boolean) Indicates if cicd failures will fail the image.
 - `forbidden_labels` (Block Set) (see [below for nested schema](#nestedblock--forbidden_labels))
 - `forbidden_labels_enabled` (Boolean)
 - `force_microenforcer` (Boolean)
 - `function_integrity_enabled` (Boolean)
+- `ignore_base_image_vln` (Boolean)
 - `ignore_recently_published_vln` (Boolean)
+- `ignore_recently_published_vln_period` (Number)
 - `ignore_risk_resources_enabled` (Boolean) Indicates if risk resources are ignored.
 - `ignored_risk_resources` (List of String) List of ignored risk resources.
+- `ignored_sensitive_resources` (List of String)
 - `images` (List of String) List of images.
 - `kube_cis_enabled` (Boolean)
+- `kubernetes_controls` (List of String)
+- `kubernetes_controls_avd_ids` (List of String)
+- `kubernetes_controls_names` (List of String)
 - `labels` (List of String) List of labels.
+- `lastupdate` (String)
+- `linux_cis_enabled` (Boolean)
 - `malware_action` (String)
 - `maximum_score` (Number) Value of allowed maximum score.
 - `maximum_score_enabled` (Boolean) Indicates if exceeding the maximum score is scanned.
 - `maximum_score_exclude_no_fix` (Boolean) Indicates that policy should ignore cases that do not have a known fix.
 - `monitored_malware_paths` (List of String)
 - `only_none_root_users` (Boolean) Indicates if raise a warning for images that should only be run as root.
+- `openshift_hardening_enabled` (Boolean)
 - `packages_black_list` (Block Set) List of backlisted images. (see [below for nested schema](#nestedblock--packages_black_list))
 - `packages_black_list_enabled` (Boolean) Indicates if packages blacklist is relevant.
 - `packages_white_list` (Block Set) List of whitelisted images. (see [below for nested schema](#nestedblock--packages_white_list))
 - `packages_white_list_enabled` (Boolean) Indicates if packages whitelist is relevant.
 - `partial_results_image_fail` (Boolean)
+- `permission` (String)
+- `policy_settings` (Block List, Max: 1) (see [below for nested schema](#nestedblock--policy_settings))
 - `read_only` (Boolean)
 - `registries` (List of String) List of registries.
 - `registry` (String)
 - `required_labels` (Block Set) (see [below for nested schema](#nestedblock--required_labels))
 - `required_labels_enabled` (Boolean)
+- `scan_malware_in_archives` (Boolean)
 - `scan_nfs_mounts` (Boolean)
+- `scan_process_memory` (Boolean)
 - `scan_sensitive_data` (Boolean) Indicates if scan should include sensitive data in the image.
+- `scan_windows_registry` (Boolean)
 - `scap_enabled` (Boolean) Indicates if scanning should include scap.
 - `scap_files` (List of String) List of SCAP user scripts for checks.
 - `scope` (Block Set) (see [below for nested schema](#nestedblock--scope))
 - `trusted_base_images` (Block Set) List of trusted images. (see [below for nested schema](#nestedblock--trusted_base_images))
 - `trusted_base_images_enabled` (Boolean) Indicates if list of trusted base images is relevant.
+- `vulnerability_exploitability` (Boolean)
+- `vulnerability_score_range` (List of Number)
 - `whitelisted_licenses` (List of String) List of whitelisted licenses.
 - `whitelisted_licenses_enabled` (Boolean) Indicates if license blacklist is relevant.
 
 ### Read-Only
 
-- `author` (String) Name of user account that created the policy.
 - `id` (String) The ID of this resource.
-- `ignore_recently_published_vln_period` (Number)
 
 <a id="nestedblock--auto_scan_time"></a>
 ### Nested Schema for `auto_scan_time`
@@ -167,6 +187,17 @@ Optional:
 - `version_range` (String)
 
 
+<a id="nestedblock--policy_settings"></a>
+### Nested Schema for `policy_settings`
+
+Optional:
+
+- `enforce` (Boolean)
+- `is_audit_checked` (Boolean)
+- `warn` (Boolean)
+- `warning_message` (String)
+
+
 <a id="nestedblock--required_labels"></a>
 ### Nested Schema for `required_labels`
 
@@ -202,3 +233,5 @@ Optional:
 
 - `imagename` (String)
 - `registry` (String)
+
+

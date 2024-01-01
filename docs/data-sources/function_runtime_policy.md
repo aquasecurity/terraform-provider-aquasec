@@ -29,6 +29,11 @@ output "function_runtime_policy_details" {
 
 - `name` (String) Name of the function runtime policy
 
+### Optional
+
+- `drift_prevention` (Block List) Drift prevention configuration. (see [below for nested schema](#nestedblock--drift_prevention))
+- `executable_blacklist` (Block List) Executable blacklist configuration. (see [below for nested schema](#nestedblock--executable_blacklist))
+
 ### Read-Only
 
 - `application_scopes` (List of String) Indicates the application scope of the service.
@@ -48,6 +53,26 @@ output "function_runtime_policy_details" {
 - `scope_expression` (String) Logical expression of how to compute the dependency of the scope variables.
 - `scope_variables` (List of Object) List of scope attributes. (see [below for nested schema](#nestedatt--scope_variables))
 
+<a id="nestedblock--drift_prevention"></a>
+### Nested Schema for `drift_prevention`
+
+Optional:
+
+- `enabled` (Boolean) Whether drift prevention is enabled.
+- `exec_lockdown` (Boolean) Whether to lockdown execution drift.
+- `exec_lockdown_white_list` (List of String) List of items in the execution lockdown white list.
+- `image_lockdown` (Boolean) Whether to lockdown image drift.
+
+
+<a id="nestedblock--executable_blacklist"></a>
+### Nested Schema for `executable_blacklist`
+
+Optional:
+
+- `enabled` (Boolean) Whether the executable blacklist is enabled.
+- `executables` (List of String) List of blacklisted executables.
+
+
 <a id="nestedatt--scope_variables"></a>
 ### Nested Schema for `scope_variables`
 
@@ -56,3 +81,5 @@ Read-Only:
 - `attribute` (String)
 - `name` (String)
 - `value` (String)
+
+

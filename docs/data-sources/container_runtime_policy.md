@@ -29,10 +29,22 @@ output "container_runtime_policy_details" {
 
 - `name` (String) Name of the container runtime policy
 
+### Optional
+
+- `allowed_executables` (Block List) Allowed executables configuration. (see [below for nested schema](#nestedblock--allowed_executables))
+- `allowed_registries` (Block List) Allowed registries configuration. (see [below for nested schema](#nestedblock--allowed_registries))
+- `auditing` (Block List, Max: 1) (see [below for nested schema](#nestedblock--auditing))
+- `container_exec` (Block List, Max: 1) (see [below for nested schema](#nestedblock--container_exec))
+- `file_block` (Block List, Max: 1) (see [below for nested schema](#nestedblock--file_block))
+- `file_integrity_monitoring` (Block List) Configuration for file integrity monitoring. (see [below for nested schema](#nestedblock--file_integrity_monitoring))
+- `limit_container_privileges` (Block List) Container privileges configuration. (see [below for nested schema](#nestedblock--limit_container_privileges))
+- `malware_scan_options` (Block List, Max: 1) Configuration for Real-Time Malware Protection. (see [below for nested schema](#nestedblock--malware_scan_options))
+- `port_block` (Block List, Max: 1) (see [below for nested schema](#nestedblock--port_block))
+- `readonly_files` (Block List, Max: 1) (see [below for nested schema](#nestedblock--readonly_files))
+- `restricted_volumes` (Block List) Restricted volumes configuration. (see [below for nested schema](#nestedblock--restricted_volumes))
+
 ### Read-Only
 
-- `allowed_executables` (List of String) List of executables that are allowed for the user.
-- `allowed_registries` (List of String) List of registries that allowed for running containers.
 - `application_scopes` (List of String) Indicates the application scope of the service.
 - `audit_all_network_activity` (Boolean) If true, all network activity will be audited.
 - `audit_all_processes_activity` (Boolean) If true, all process activity will be audited.
@@ -73,11 +85,9 @@ output "container_runtime_policy_details" {
 - `enforce_after_days` (Number) Indicates the number of days after which the runtime policy will be changed to enforce mode.
 - `exceptional_readonly_files_and_directories` (List of String) List of files and directories to be excluded from the read-only list.
 - `exec_lockdown_white_list` (List of String) Specify processes that will be allowed
-- `file_integrity_monitoring` (List of Object) Configuration for file integrity monitoring. (see [below for nested schema](#nestedatt--file_integrity_monitoring))
 - `fork_guard_process_limit` (Number) Process limit for the fork guard.
 - `id` (String) The ID of this resource.
 - `limit_new_privileges` (Boolean) If true, prevents the container from obtaining new privileges at runtime. (only enabled in enforce mode)
-- `malware_scan_options` (Block List) Configuration for Real-Time Malware Protection. (see [below for nested schema](#nestedblock--malware_scan_options))
 - `monitor_system_time_changes` (Boolean) If true, system time changes will be monitored.
 - `readonly_files_and_directories` (List of String) List of files and directories to be restricted as read-only
 - `reverse_shell_allowed_ips` (List of String) List of IPs/ CIDRs that will be allowed
@@ -85,33 +95,146 @@ output "container_runtime_policy_details" {
 - `scope_expression` (String) Logical expression of how to compute the dependency of the scope variables.
 - `scope_variables` (List of Object) List of scope attributes. (see [below for nested schema](#nestedatt--scope_variables))
 
-<a id="nestedatt--file_integrity_monitoring"></a>
+<a id="nestedblock--allowed_executables"></a>
+### Nested Schema for `allowed_executables`
+
+Optional:
+
+- `allow_executables` (List of String) List of allowed executables.
+- `allow_root_executables` (List of String) List of allowed root executables.
+- `enabled` (Boolean) Whether allowed executables configuration is enabled.
+- `separate_executables` (Boolean) Whether to treat executables separately.
+
+
+<a id="nestedblock--allowed_registries"></a>
+### Nested Schema for `allowed_registries`
+
+Optional:
+
+- `allowed_registries` (List of String) List of allowed registries.
+- `enabled` (Boolean) Whether allowed registries are enabled.
+
+
+<a id="nestedblock--auditing"></a>
+### Nested Schema for `auditing`
+
+Optional:
+
+- `audit_all_network` (Boolean)
+- `audit_all_processes` (Boolean)
+- `audit_failed_login` (Boolean)
+- `audit_os_user_activity` (Boolean)
+- `audit_process_cmdline` (Boolean)
+- `audit_success_login` (Boolean)
+- `audit_user_account_management` (Boolean)
+- `enabled` (Boolean)
+
+
+<a id="nestedblock--container_exec"></a>
+### Nested Schema for `container_exec`
+
+Optional:
+
+- `block_container_exec` (Boolean)
+- `container_exec_proc_white_list` (List of String)
+- `enabled` (Boolean)
+- `reverse_shell_ip_white_list` (List of String)
+
+
+<a id="nestedblock--file_block"></a>
+### Nested Schema for `file_block`
+
+Optional:
+
+- `block_files_processes` (List of String)
+- `block_files_users` (List of String)
+- `enabled` (Boolean)
+- `exceptional_block_files` (List of String)
+- `exceptional_block_files_processes` (List of String)
+- `exceptional_block_files_users` (List of String)
+- `filename_block_list` (List of String)
+
+
+<a id="nestedblock--file_integrity_monitoring"></a>
 ### Nested Schema for `file_integrity_monitoring`
 
-Read-Only:
+Optional:
 
-- `excluded_paths` (List of String)
-- `excluded_processes` (List of String)
-- `excluded_users` (List of String)
-- `monitor_attributes` (Boolean)
-- `monitor_create` (Boolean)
-- `monitor_delete` (Boolean)
-- `monitor_modify` (Boolean)
-- `monitor_read` (Boolean)
-- `monitored_paths` (List of String)
-- `monitored_processes` (List of String)
-- `monitored_users` (List of String)
+- `enabled` (Boolean) If true, file integrity monitoring is enabled.
+- `exceptional_monitored_files` (List of String) List of paths to be excluded from monitoring.
+- `exceptional_monitored_files_processes` (List of String) List of processes to be excluded from monitoring.
+- `exceptional_monitored_files_users` (List of String) List of users to be excluded from monitoring.
+- `monitored_files` (List of String) List of paths to be monitored.
+- `monitored_files_attributes` (Boolean) Whether to monitor file attribute operations.
+- `monitored_files_create` (Boolean) Whether to monitor file create operations.
+- `monitored_files_delete` (Boolean) Whether to monitor file delete operations.
+- `monitored_files_modify` (Boolean) Whether to monitor file modify operations.
+- `monitored_files_processes` (List of String) List of processes associated with monitored files.
+- `monitored_files_read` (Boolean) Whether to monitor file read operations.
+- `monitored_files_users` (List of String) List of users associated with monitored files.
+
+
+<a id="nestedblock--limit_container_privileges"></a>
+### Nested Schema for `limit_container_privileges`
+
+Optional:
+
+- `block_add_capabilities` (Boolean) Whether to block adding capabilities.
+- `enabled` (Boolean) Whether container privilege limitations are enabled.
+- `ipcmode` (Boolean) Whether to limit IPC-related capabilities.
+- `netmode` (Boolean) Whether to limit network-related capabilities.
+- `pidmode` (Boolean) Whether to limit process-related capabilities.
+- `prevent_low_port_binding` (Boolean) Whether to prevent low port binding.
+- `prevent_root_user` (Boolean) Whether to prevent the use of the root user.
+- `privileged` (Boolean) Whether the container is run in privileged mode.
+- `use_host_user` (Boolean) Whether to use the host user.
+- `usermode` (Boolean) Whether to limit user-related capabilities.
+- `utsmode` (Boolean) Whether to limit UTS-related capabilities.
 
 
 <a id="nestedblock--malware_scan_options"></a>
 ### Nested Schema for `malware_scan_options`
 
-Read-Only:
+Optional:
 
 - `action` (String) Set Action, Defaults to 'Alert' when empty
 - `enabled` (Boolean) Defines if enabled or not
 - `exclude_directories` (List of String) List of registry paths to be excluded from being protected.
 - `exclude_processes` (List of String) List of registry processes to be excluded from being protected.
+- `include_directories` (List of String) List of registry paths to be excluded from being protected.
+
+
+<a id="nestedblock--port_block"></a>
+### Nested Schema for `port_block`
+
+Optional:
+
+- `block_inbound_ports` (List of String)
+- `block_outbound_ports` (List of String)
+- `enabled` (Boolean)
+
+
+<a id="nestedblock--readonly_files"></a>
+### Nested Schema for `readonly_files`
+
+Optional:
+
+- `enabled` (Boolean)
+- `exceptional_readonly_files` (List of String)
+- `exceptional_readonly_files_processes` (List of String)
+- `exceptional_readonly_files_users` (List of String)
+- `readonly_files` (List of String)
+- `readonly_files_processes` (List of String)
+- `readonly_files_users` (List of String)
+
+
+<a id="nestedblock--restricted_volumes"></a>
+### Nested Schema for `restricted_volumes`
+
+Optional:
+
+- `enabled` (Boolean) Whether restricted volumes are enabled.
+- `volumes` (List of String) List of restricted volumes.
 
 
 <a id="nestedatt--scope_variables"></a>
@@ -122,3 +245,5 @@ Read-Only:
 - `attribute` (String)
 - `name` (String)
 - `value` (String)
+
+
