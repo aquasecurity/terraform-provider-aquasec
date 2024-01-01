@@ -13,15 +13,9 @@ func convertStringArr(ifaceArr []interface{}) []string {
 	return convertAndMapStringArr(ifaceArr, func(s string) string { return s })
 }
 
-func convertAndMapStringArr(ifaceArr []interface{}, f func(string) string) []string {
-	var arr []string
-	for _, v := range ifaceArr {
-		if v == nil {
-			continue
-		}
-		arr = append(arr, f(v.(string)))
-	}
-	return arr
+func convertStringArrNull(ifaceArr []interface{}) []string {
+	return convertAndMapStringArrNull(ifaceArr, func(s string) string { return s })
+
 }
 
 func convertIntArr(ifaceArr []interface{}) []int {
@@ -34,6 +28,43 @@ func convertAndMapIntArr(ifaceArr []interface{}, mapper func(int) int) []int {
 		intArr[i] = mapper(val.(int))
 	}
 	return intArr
+}
+
+func convertAndMapStringArrNull(ifaceArr []interface{}, f func(string) string) []string {
+	var arr = make([]string, 0)
+	for _, v := range ifaceArr {
+		if v == nil {
+			continue
+		}
+		arr = append(arr, f(v.(string)))
+	}
+	return arr
+}
+
+func convertStringArrTest(ifaceArr []interface{}) []string {
+	var result []string
+	for _, iface := range ifaceArr {
+		if s, ok := iface.(string); ok {
+			result = append(result, s)
+		} else {
+			// Handle the case where iface is not a string.
+			// You may choose to log an error or take other appropriate action.
+			// For now, let's add an empty string to the result.
+			result = append(result, "")
+		}
+	}
+	return result
+}
+
+func convertAndMapStringArr(ifaceArr []interface{}, f func(string) string) []string {
+	var arr []string
+	for _, v := range ifaceArr {
+		if v == nil {
+			continue
+		}
+		arr = append(arr, f(v.(string)))
+	}
+	return arr
 }
 
 func convertToGroupsStruct(i []interface{}) []client.Group {

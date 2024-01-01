@@ -131,3 +131,5 @@ resource "aquasec_permissions_sets" "my_terraform_perm_set" {
 - `author` (String) The name of the user who created the Permission Set.
 - `id` (String) The ID of this resource.
 - `updated_at` (String) The date of the last modification of the Role.
+
+

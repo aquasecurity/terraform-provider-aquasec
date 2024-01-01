@@ -29,6 +29,13 @@ output "host_runtime_policy_details" {
 
 - `name` (String) Name of the host runtime policy
 
+### Optional
+
+- `auditing` (Block List, Max: 1) (see [below for nested schema](#nestedblock--auditing))
+- `file_integrity_monitoring` (Block List) Configuration for file integrity monitoring. (see [below for nested schema](#nestedblock--file_integrity_monitoring))
+- `malware_scan_options` (Block List, Max: 1) Configuration for Real-Time Malware Protection. (see [below for nested schema](#nestedblock--malware_scan_options))
+- `package_block` (Block List, Max: 1) (see [below for nested schema](#nestedblock--package_block))
+
 ### Read-Only
 
 - `application_scopes` (List of String) Indicates the application scope of the service.
@@ -42,13 +49,11 @@ output "host_runtime_policy_details" {
 - `block_cryptocurrency_mining` (Boolean) Detect and prevent communication to DNS/IP addresses known to be used for Cryptocurrency Mining
 - `blocked_files` (List of String) List of files that are prevented from being read, modified and executed in the containers.
 - `description` (String) The description of the host runtime policy
-- `enable_ip_reputation_security` (Boolean) If true, detect and prevent communication from containers to IP addresses known to have a bad reputation.
+- `enable_ip_reputation` (Boolean) If true, detect and prevent communication from containers to IP addresses known to have a bad reputation.
 - `enabled` (Boolean) Indicates if the runtime policy is enabled or not.
 - `enforce` (Boolean) Indicates that policy should effect container execution (not just for audit).
 - `enforce_after_days` (Number) Indicates the number of days after which the runtime policy will be changed to enforce mode.
-- `file_integrity_monitoring` (List of Object) Configuration for file integrity monitoring. (see [below for nested schema](#nestedatt--file_integrity_monitoring))
 - `id` (String) The ID of this resource.
-- `malware_scan_options` (List of Object) Configuration for Real-Time Malware Protection. (see [below for nested schema](#nestedatt--malware_scan_options))
 - `monitor_system_log_integrity` (Boolean) If true, system log will be monitored.
 - `monitor_system_time_changes` (Boolean) If true, system time changes will be monitored.
 - `monitor_windows_services` (Boolean) If true, windows service operations will be monitored.
@@ -56,40 +61,70 @@ output "host_runtime_policy_details" {
 - `os_groups_blocked` (List of String) List of OS (Linux or Windows) groups that are not allowed to authenticate to the host, and block authentication requests from all others. Groups can be either Linux groups or Windows AD groups.
 - `os_users_allowed` (List of String) List of OS (Linux or Windows) users that are allowed to authenticate to the host, and block authentication requests from all others.
 - `os_users_blocked` (List of String) List of OS (Linux or Windows) users that are not allowed to authenticate to the host, and block authentication requests from all others.
-- `package_block` (List of String) List of packages that are not allowed read, write or execute all files that under the packages.
 - `port_scanning_detection` (Boolean) If true, port scanning behaviors will be audited.
 - `scope_expression` (String) Logical expression of how to compute the dependency of the scope variables.
 - `scope_variables` (List of Object) List of scope attributes. (see [below for nested schema](#nestedatt--scope_variables))
 - `windows_registry_monitoring` (List of Object) Configuration for windows registry monitoring. (see [below for nested schema](#nestedatt--windows_registry_monitoring))
 - `windows_registry_protection` (List of Object) Configuration for windows registry protection. (see [below for nested schema](#nestedatt--windows_registry_protection))
 
-<a id="nestedatt--file_integrity_monitoring"></a>
+<a id="nestedblock--auditing"></a>
+### Nested Schema for `auditing`
+
+Optional:
+
+- `audit_all_network` (Boolean)
+- `audit_all_processes` (Boolean)
+- `audit_failed_login` (Boolean)
+- `audit_os_user_activity` (Boolean)
+- `audit_process_cmdline` (Boolean)
+- `audit_success_login` (Boolean)
+- `audit_user_account_management` (Boolean)
+- `enabled` (Boolean)
+
+
+<a id="nestedblock--file_integrity_monitoring"></a>
 ### Nested Schema for `file_integrity_monitoring`
 
-Read-Only:
+Optional:
 
-- `excluded_paths` (List of String)
-- `excluded_processes` (List of String)
-- `excluded_users` (List of String)
-- `monitor_attributes` (Boolean)
-- `monitor_create` (Boolean)
-- `monitor_delete` (Boolean)
-- `monitor_modify` (Boolean)
-- `monitor_read` (Boolean)
-- `monitored_paths` (List of String)
-- `monitored_processes` (List of String)
-- `monitored_users` (List of String)
+- `enabled` (Boolean) If true, file integrity monitoring is enabled.
+- `exceptional_monitored_files` (List of String) List of paths to be excluded from monitoring.
+- `exceptional_monitored_files_processes` (List of String) List of processes to be excluded from monitoring.
+- `exceptional_monitored_files_users` (List of String) List of users to be excluded from monitoring.
+- `monitored_files` (List of String) List of paths to be monitored.
+- `monitored_files_attributes` (Boolean) Whether to monitor file attribute operations.
+- `monitored_files_create` (Boolean) Whether to monitor file create operations.
+- `monitored_files_delete` (Boolean) Whether to monitor file delete operations.
+- `monitored_files_modify` (Boolean) Whether to monitor file modify operations.
+- `monitored_files_processes` (List of String) List of processes associated with monitored files.
+- `monitored_files_read` (Boolean) Whether to monitor file read operations.
+- `monitored_files_users` (List of String) List of users associated with monitored files.
 
 
-<a id="nestedatt--malware_scan_options"></a>
+<a id="nestedblock--malware_scan_options"></a>
 ### Nested Schema for `malware_scan_options`
 
-Read-Only:
+Optional:
 
-- `action` (String)
+- `action` (String) Set Action, Defaults to 'Alert' when empty
+- `enabled` (Boolean) Defines if enabled or not
+- `exclude_directories` (List of String) List of registry paths to be excluded from being protected.
+- `exclude_processes` (List of String) List of registry processes to be excluded from being protected.
+- `include_directories` (List of String) List of registry paths to be excluded from being protected.
+
+
+<a id="nestedblock--package_block"></a>
+### Nested Schema for `package_block`
+
+Optional:
+
+- `block_packages_processes` (List of String)
+- `block_packages_users` (List of String)
 - `enabled` (Boolean)
-- `exclude_processes` (List of String)
-- `include_directories` (List of String)
+- `exceptional_block_packages_files` (List of String)
+- `exceptional_block_packages_processes` (List of String)
+- `exceptional_block_packages_users` (List of String)
+- `packages_black_list` (List of String)
 
 
 <a id="nestedatt--scope_variables"></a>
@@ -131,3 +166,5 @@ Read-Only:
 - `protected_paths` (List of String)
 - `protected_processes` (List of String)
 - `protected_users` (List of String)
+
+

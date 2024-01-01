@@ -33,3 +33,5 @@ resource "aquasec_group" "group" {
 - `created` (String) The creation date of the group.
 - `group_id` (Number) The ID of the created group.
 - `id` (String) The ID of this resource.
+
+

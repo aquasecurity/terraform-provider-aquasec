@@ -52,3 +52,5 @@ Read-Only:
 - `port_range` (String) Range of ports affected by firewall.
 - `resource` (String) Information of the resource.
 - `resource_type` (String) Type of the resource.
+
+
