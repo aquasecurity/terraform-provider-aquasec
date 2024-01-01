@@ -7,12 +7,12 @@ import (
 	"strings"
 )
 
-func resourceImageAssurancePolicy() *schema.Resource {
+func resourceVMwareAssurancePolicy() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceImageAssurancePolicyCreate,
-		Read:   resourceImageAssurancePolicyRead,
-		Update: resourceImageAssurancePolicyUpdate,
-		Delete: resourceImageAssurancePolicyDelete,
+		Create: resourceVMwareAssurancePolicyCreate,
+		Read:   resourceVMwareAssurancePolicyRead,
+		Update: resourceVMwareAssurancePolicyUpdate,
+		Delete: resourceVMwareAssurancePolicyDelete,
 		Importer: &schema.ResourceImporter{
 			StateContext: schema.ImportStatePassthroughContext,
 		},
@@ -534,21 +534,20 @@ func resourceImageAssurancePolicy() *schema.Resource {
 						"iteration_type": {
 							Type:     schema.TypeString,
 							Optional: true,
-							Default:  "once",
 						},
 						"time": {
 							Type:     schema.TypeString,
 							Optional: true,
-							Default:  "",
 						},
 						"iteration": {
 							Type:     schema.TypeInt,
 							Optional: true,
-							Default:  1,
+							Computed: true,
 						},
 						"week_days": {
 							Type:     schema.TypeList,
 							Optional: true,
+							Computed: true,
 							Elem: &schema.Schema{
 								Type: schema.TypeString,
 							},
@@ -654,8 +653,7 @@ func resourceImageAssurancePolicy() *schema.Resource {
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
 				},
-			}, // list
-			"ignore_base_image_vln": {
+			}, "ignore_base_image_vln": {
 				Type:        schema.TypeBool,
 				Description: "",
 				Optional:    true,
@@ -679,10 +677,9 @@ func resourceImageAssurancePolicy() *schema.Resource {
 				Optional:    true,
 			}, //bool
 			"kubernetes_controls": {
-				Type:        schema.TypeList,
+				Type:        schema.TypeSet,
 				Description: "List of Kubernetes controls.",
 				Optional:    true,
-				MaxItems:    1,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"script_id": {
@@ -825,10 +822,10 @@ func resourceImageAssurancePolicy() *schema.Resource {
 	}
 }
 
-func resourceImageAssurancePolicyCreate(d *schema.ResourceData, m interface{}) error {
+func resourceVMwareAssurancePolicyCreate(d *schema.ResourceData, m interface{}) error {
 	ac := m.(*client.Client)
 	name := d.Get("name").(string)
-	assurance_type := "image"
+	assurance_type := "cf_application"
 
 	iap := expandAssurancePolicy(d, assurance_type)
 	err := ac.CreateAssurancePolicy(iap, assurance_type)
@@ -837,14 +834,13 @@ func resourceImageAssurancePolicyCreate(d *schema.ResourceData, m interface{}) e
 		return err
 	}
 	d.SetId(name)
-	return resourceImageAssurancePolicyRead(d, m)
+	return resourceVMwareAssurancePolicyRead(d, m)
 
 }
 
-func resourceImageAssurancePolicyUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceVMwareAssurancePolicyUpdate(d *schema.ResourceData, m interface{}) error {
 	ac := m.(*client.Client)
-	name := d.Get("name").(string)
-	assurance_type := "image"
+	assurance_type := "cf_application"
 
 	if d.HasChanges("description",
 		"registry",
@@ -918,7 +914,7 @@ func resourceImageAssurancePolicyUpdate(d *schema.ResourceData, m interface{}) e
 		"malware_action",
 		"partial_results_image_fail",
 		"maximum_score_exclude_no_fix",
-		//JSOT
+		//JSON
 		//"author",
 		"lastupdate",
 		"custom_severity",
@@ -936,13 +932,14 @@ func resourceImageAssurancePolicyUpdate(d *schema.ResourceData, m interface{}) e
 		"exclude_application_scopes",
 		"linux_cis_enabled",
 		"openshift_hardening_enabled",
+		"kubernetes_controls_avd_ids",
 	) {
 		iap := expandAssurancePolicy(d, assurance_type)
 		err := ac.UpdateAssurancePolicy(iap, assurance_type)
 		if err == nil {
-			err1 := resourceImageAssurancePolicyRead(d, m)
+			err1 := resourceVMwareAssurancePolicyRead(d, m)
 			if err1 == nil {
-				d.SetId(name)
+				d.SetId(iap.Name)
 			} else {
 				return err1
 			}
@@ -953,9 +950,9 @@ func resourceImageAssurancePolicyUpdate(d *schema.ResourceData, m interface{}) e
 	return nil
 }
 
-func resourceImageAssurancePolicyRead(d *schema.ResourceData, m interface{}) error {
+func resourceVMwareAssurancePolicyRead(d *schema.ResourceData, m interface{}) error {
 	ac := m.(*client.Client)
-	assurance_type := "image"
+	assurance_type := "cf_application"
 
 	iap, err := ac.GetAssurancePolicy(d.Id(), assurance_type)
 
@@ -1059,14 +1056,15 @@ func resourceImageAssurancePolicyRead(d *schema.ResourceData, m interface{}) err
 	d.Set("exclude_application_scopes", iap.ExcludeApplicationScopes)
 	d.Set("linux_cis_enabled", iap.LinuxCisEnabled)
 	d.Set("openshift_hardening_enabled", iap.OpenshiftHardeningEnabled)
+	d.Set("kubernetes_controls_avd_ids", iap.KubernetesControlsAvdIds)
 
 	return nil
 }
 
-func resourceImageAssurancePolicyDelete(d *schema.ResourceData, m interface{}) error {
+func resourceVMwareAssurancePolicyDelete(d *schema.ResourceData, m interface{}) error {
 	ac := m.(*client.Client)
 	name := d.Get("name").(string)
-	assurance_type := "image"
+	assurance_type := "cf_application"
 	err := ac.DeleteAssurancePolicy(name, assurance_type)
 
 	if err == nil {
@@ -1075,738 +1073,4 @@ func resourceImageAssurancePolicyDelete(d *schema.ResourceData, m interface{}) e
 		return err
 	}
 	return nil
-}
-
-func flatteniapscope(scope1 client.Scopes) []map[string]interface{} {
-	return []map[string]interface{}{
-		{
-			"expression": scope1.Expression,
-			"variables":  flattenscopevariables(scope1.Variables),
-		},
-	}
-}
-
-func flattenscopevariables(variable []client.VariableI) []interface{} {
-	check := make([]interface{}, len(variable))
-	for i := range variable {
-		check[i] = map[string]interface{}{
-			"attribute": variable[i].Attribute,
-			"value":     variable[i].Value,
-			"name":      variable[i].Name,
-		}
-	}
-
-	return check
-}
-
-func flattenAutoScanTime(scantime client.ScanTimeAuto) []map[string]interface{} {
-	return []map[string]interface{}{
-		{
-			"iteration_type": scantime.IterationType,
-			"time":           scantime.Time,
-			"iteration":      scantime.Iteration,
-			"week_days":      scantime.WeekDays,
-		},
-	}
-}
-
-func flattenCustomChecks(checks []client.Checks) []map[string]interface{} {
-	check := make([]map[string]interface{}, len(checks))
-	for i := range checks {
-		check[i] = map[string]interface{}{
-			"script_id":     checks[i].ScriptID,
-			"name":          checks[i].Name,
-			"path":          checks[i].Path,
-			"last_modified": checks[i].LastModified,
-			"description":   checks[i].Description,
-			"engine":        checks[i].Engine,
-			"snippet":       checks[i].Snippet,
-			"read_only":     checks[i].ReadOnly,
-			"severity":      checks[i].Severity,
-			"author":        checks[i].Author,
-		}
-	}
-	return check
-}
-
-func flattenLabels(labels []client.Labels) []map[string]interface{} {
-	label := make([]map[string]interface{}, len(labels))
-	for i := range labels {
-		label[i] = map[string]interface{}{
-			"key":   labels[i].Key,
-			"value": labels[i].Value,
-		}
-	}
-	return label
-}
-
-func flattenPackages(packages []client.ListPackages) []map[string]interface{} {
-	package1 := make([]map[string]interface{}, len(packages))
-	for i := range packages {
-		package1[i] = map[string]interface{}{
-			"format":        packages[i].Format,
-			"name":          packages[i].Name,
-			"epoch":         packages[i].Epoch,
-			"version":       packages[i].Version,
-			"version_range": packages[i].VersionRange,
-			"release":       packages[i].Release,
-			"arch":          packages[i].Arch,
-			"license":       packages[i].License,
-			"display":       packages[i].Display,
-		}
-	}
-	return package1
-}
-
-func flattenTrustedBaseImages(TrustedBaseImages []client.BaseImagesTrusted) []map[string]interface{} {
-	tbi := make([]map[string]interface{}, len(TrustedBaseImages))
-	for i, v := range TrustedBaseImages {
-		tbi[i] = map[string]interface{}{
-			"registry":  v.Registry,
-			"imagename": v.Imagename,
-		}
-	}
-	return tbi
-}
-
-func flattenPolicySettings(policySettings client.PolicySettings) []map[string]interface{} {
-	return []map[string]interface{}{
-		{
-			"enforce":          policySettings.Enforce,
-			"warn":             policySettings.Warn,
-			"warning_message":  policySettings.WarningMessage,
-			"is_audit_checked": policySettings.IsAuditChecked,
-		},
-	}
-}
-
-func flattenKubernetesControls(kubernetesControls client.KubernetesControlsArray) []interface{} {
-	var flattenedControls []interface{}
-
-	for _, control := range kubernetesControls {
-		flattenedControl := map[string]interface{}{
-			"script_id":   control.ScriptID,
-			"name":        control.Name,
-			"description": control.Description,
-			"enabled":     control.Enabled,
-			"severity":    control.Severity,
-			"kind":        control.Kind,
-			"ootb":        control.OOTB,
-			"avd_id":      control.AvdID,
-		}
-		flattenedControls = append(flattenedControls, flattenedControl)
-	}
-
-	return flattenedControls
-}
-
-func setVulnerabilityScore(vulnerabilityScoreRange []int) []int {
-	if len(vulnerabilityScoreRange) == 0 {
-		return []int{0, 10}
-	}
-	return vulnerabilityScoreRange
-}
-
-func expandAssurancePolicy(d *schema.ResourceData, a_type string) *client.AssurancePolicy {
-	app_scopes := d.Get("application_scopes").([]interface{})
-	assurance_type := d.Get("assurance_type").(string)
-	if assurance_type == "" {
-		assurance_type = a_type
-	}
-	iap := client.AssurancePolicy{
-		AssuranceType:     a_type,
-		Name:              d.Get("name").(string),
-		ApplicationScopes: convertStringArr(app_scopes),
-	}
-
-	description, ok := d.GetOk("description")
-	if ok {
-		iap.Description = description.(string)
-	}
-
-	author, ok := d.GetOk("author")
-	if ok {
-		iap.Author = author.(string)
-	}
-
-	registry, ok := d.GetOk("registry")
-	if ok {
-		iap.Registry = registry.(string)
-	}
-
-	auditonfailure, ok := d.GetOk("audit_on_failure")
-	if ok {
-		iap.AuditOnFailure = auditonfailure.(bool)
-	}
-
-	failcicd, ok := d.GetOk("fail_cicd")
-	if ok {
-		iap.FailCicd = failcicd.(bool)
-	}
-
-	blockfailed, ok := d.GetOk("block_failed")
-	if ok {
-		iap.BlockFailed = blockfailed.(bool)
-	}
-
-	cvssseverityenabled, ok := d.GetOk("cvss_severity_enabled")
-	if ok {
-		iap.CvssSeverityEnabled = cvssseverityenabled.(bool)
-	}
-
-	cvssseverity, ok := d.GetOk("cvss_severity")
-	if ok {
-		iap.CvssSeverity = cvssseverity.(string)
-	}
-
-	cvssseverityexcludenofix, ok := d.GetOk("cvss_severity_exclude_no_fix")
-	if ok {
-		iap.CvssSeverityExcludeNoFix = cvssseverityexcludenofix.(bool)
-	}
-
-	custom_severity_enabled, ok := d.GetOk("custom_severity_enabled")
-	if ok {
-		iap.CustomSeverityEnabled = custom_severity_enabled.(bool)
-	}
-
-	maximum_score_enabled, ok := d.GetOk("maximum_score_enabled")
-	if ok {
-		iap.MaximumScoreEnabled = maximum_score_enabled.(bool)
-	}
-
-	maximum_score, ok := d.GetOk("maximum_score")
-	if ok {
-		iap.MaximumScore = maximum_score.(float64)
-	}
-
-	control_exclude_no_fix, ok := d.GetOk("control_exclude_no_fix")
-	if ok {
-		iap.ControlExcludeNoFix = control_exclude_no_fix.(bool)
-	}
-
-	custom_checks_enabled, ok := d.GetOk("custom_checks_enabled")
-	if ok {
-		iap.CustomChecksEnabled = custom_checks_enabled.(bool)
-	}
-
-	scap_enabled, ok := d.GetOk("scap_enabled")
-	if ok {
-		iap.ScapEnabled = scap_enabled.(bool)
-	}
-
-	cves_black_list_enabled, ok := d.GetOk("cves_black_list_enabled")
-	if ok {
-		iap.CvesBlackListEnabled = cves_black_list_enabled.(bool)
-	}
-
-	packages_black_list_enabled, ok := d.GetOk("packages_black_list_enabled")
-	if ok {
-		iap.PackagesBlackListEnabled = packages_black_list_enabled.(bool)
-	}
-
-	packages_white_list_enabled, ok := d.GetOk("packages_white_list_enabled")
-	if ok {
-		iap.PackagesWhiteListEnabled = packages_white_list_enabled.(bool)
-	}
-
-	only_none_root_users, ok := d.GetOk("only_none_root_users")
-	if ok {
-		iap.OnlyNoneRootUsers = only_none_root_users.(bool)
-	}
-
-	trusted_base_images_enabled, ok := d.GetOk("trusted_base_images_enabled")
-	if ok {
-		iap.TrustedBaseImagesEnabled = trusted_base_images_enabled.(bool)
-	}
-
-	scan_sensitive_data, ok := d.GetOk("scan_sensitive_data")
-	if ok {
-		iap.ScanSensitiveData = scan_sensitive_data.(bool)
-	}
-
-	disallow_malware, ok := d.GetOk("disallow_malware")
-	if ok {
-		iap.DisallowMalware = disallow_malware.(bool)
-	}
-
-	monitored_malware_paths, ok := d.GetOk("monitored_malware_paths")
-	if ok {
-		iap.MonitoredMalwarePaths = monitored_malware_paths.([]interface{})
-	}
-
-	exceptional_monitored_malware_paths, ok := d.GetOk("exceptional_monitored_malware_paths")
-	if ok {
-		iap.ExceptionalMonitoredMalwarePaths = exceptional_monitored_malware_paths.([]interface{})
-	}
-
-	blacklisted_licenses_enabled, ok := d.GetOk("blacklisted_licenses_enabled")
-	if ok {
-		iap.BlacklistedLicensesEnabled = blacklisted_licenses_enabled.(bool)
-	}
-
-	blacklisted_licenses, ok := d.GetOk("blacklisted_licenses")
-	if ok {
-		strArr := convertStringArr(blacklisted_licenses.([]interface{}))
-		iap.BlacklistedLicenses = strArr
-	}
-
-	whitelisted_licenses_enabled, ok := d.GetOk("whitelisted_licenses_enabled")
-	if ok {
-		iap.WhitelistedLicensesEnabled = whitelisted_licenses_enabled.(bool)
-	}
-
-	whitelisted_licenses, ok := d.GetOk("whitelisted_licenses")
-	if ok {
-		strArr := convertStringArr(whitelisted_licenses.([]interface{}))
-		iap.WhitelistedLicenses = strArr
-	}
-
-	custom_checks, ok := d.GetOk("custom_checks")
-	if ok {
-		customcheckslist := custom_checks.([]interface{})
-		custcheckskArr := make([]client.Checks, len(customcheckslist))
-		for i, Data := range customcheckslist {
-			customChecks := Data.(map[string]interface{})
-			Check := client.Checks{
-				ScriptID:     customChecks["script_id"].(string),
-				Name:         customChecks["name"].(string),
-				Path:         customChecks["path"].(string),
-				LastModified: customChecks["last_modified"].(int),
-				Description:  customChecks["description"].(string),
-				Engine:       customChecks["engine"].(string),
-				Snippet:      customChecks["snippet"].(string),
-				ReadOnly:     customChecks["read_only"].(bool),
-				Severity:     customChecks["severity"].(string),
-				Author:       customChecks["author"].(string),
-			}
-			custcheckskArr[i] = Check
-		}
-		iap.CustomChecks = custcheckskArr
-	}
-
-	scap_files, ok := d.GetOk("scap_files")
-	if ok {
-		iap.ScapFiles = scap_files.([]interface{})
-	}
-
-	scope, ok := d.GetOk("scope")
-	if ok && scope.(*schema.Set).Len() > 0 {
-		for _, scopeMap := range scope.(*schema.Set).List() {
-			scopeentries, ok := scopeMap.(map[string]interface{})
-			if !ok {
-				continue
-			}
-			VariablesList := scopeentries["variables"].([]interface{})
-			variablearray := make([]client.VariableI, len(VariablesList))
-			for i, Data := range VariablesList {
-				varLists := Data.(map[string]interface{})
-				VarData := client.VariableI{
-					Attribute: varLists["attribute"].(string),
-					Name:      varLists["name"].(string),
-					Value:     varLists["value"].(string),
-				}
-				variablearray[i] = VarData
-			}
-
-			Sc := client.Scopes{
-				Expression: scopeentries["expression"].(string),
-				Variables:  variablearray,
-			}
-			iap.Scope = Sc
-		}
-	}
-
-	registries, ok := d.GetOk("registries")
-	if ok {
-		iap.Registries = registries.([]interface{})
-	}
-
-	labels, ok := d.GetOk("labels")
-	if ok {
-		iap.Labels = labels.([]interface{})
-	}
-
-	images, ok := d.GetOk("images")
-	if ok {
-		iap.Images = images.([]interface{})
-	}
-
-	cves_black_list, ok := d.GetOk("cves_black_list")
-	if ok {
-		strArr := convertStringArr(cves_black_list.([]interface{}))
-		iap.CvesBlackList = strArr
-	}
-
-	packages_black_list, ok := d.GetOk("packages_black_list")
-	if ok {
-		pkgsblacklist := packages_black_list.(*schema.Set).List()
-		pkgsblacklistarray := make([]client.ListPackages, len(pkgsblacklist))
-		for i, Data := range pkgsblacklist {
-			blackLists := Data.(map[string]interface{})
-			BlackList := client.ListPackages{
-				Format:       blackLists["format"].(string),
-				Name:         blackLists["name"].(string),
-				Epoch:        blackLists["epoch"].(string),
-				Version:      blackLists["version"].(string),
-				VersionRange: blackLists["version_range"].(string),
-				Release:      blackLists["release"].(string),
-				Arch:         blackLists["arch"].(string),
-				License:      blackLists["license"].(string),
-				Display:      blackLists["display"].(string),
-			}
-			pkgsblacklistarray[i] = BlackList
-		}
-		iap.PackagesBlackList = pkgsblacklistarray
-	}
-
-	packages_white_list, ok := d.GetOk("packages_white_list")
-	if ok {
-		pkgswhitelist := packages_white_list.(*schema.Set).List()
-		pkgswhitelistarray := make([]client.ListPackages, len(pkgswhitelist))
-		for i, Data := range pkgswhitelist {
-			WhiteLists := Data.(map[string]interface{})
-			WhiteList := client.ListPackages{
-				Format:       WhiteLists["format"].(string),
-				Name:         WhiteLists["name"].(string),
-				Epoch:        WhiteLists["epoch"].(string),
-				Version:      WhiteLists["version"].(string),
-				VersionRange: WhiteLists["version_range"].(string),
-				Release:      WhiteLists["release"].(string),
-				Arch:         WhiteLists["arch"].(string),
-				License:      WhiteLists["license"].(string),
-				Display:      WhiteLists["display"].(string),
-			}
-			pkgswhitelistarray[i] = WhiteList
-		}
-		iap.PackagesWhiteList = pkgswhitelistarray
-	}
-
-	allowed_images, ok := d.GetOk("allowed_images")
-	if ok {
-		iap.AllowedImages = allowed_images.([]interface{})
-	}
-
-	trusted_base_images, ok := d.GetOk("trusted_base_images")
-	if ok {
-		trustedbaseimages := trusted_base_images.(*schema.Set).List()
-		baseimagesarray := make([]client.BaseImagesTrusted, len(trustedbaseimages))
-		for i, Data := range trustedbaseimages {
-			baseimages := Data.(map[string]interface{})
-			BImage := client.BaseImagesTrusted{
-				Registry:  baseimages["registry"].(string),
-				Imagename: baseimages["imagename"].(string),
-			}
-			baseimagesarray[i] = BImage
-		}
-		iap.TrustedBaseImages = baseimagesarray
-	}
-
-	read_only, ok := d.GetOk("read_only")
-	if ok {
-		iap.ReadOnly = read_only.(bool)
-	}
-
-	force_microenforcer, ok := d.GetOk("force_microenforcer")
-	if ok {
-		iap.ForceMicroenforcer = force_microenforcer.(bool)
-	}
-
-	docker_cis_enabled, ok := d.GetOk("docker_cis_enabled")
-	if ok {
-		iap.DockerCisEnabled = docker_cis_enabled.(bool)
-	}
-
-	kube_cis_enabled, ok := d.GetOk("kube_cis_enabled")
-	if ok {
-		iap.KubeCisEnabled = kube_cis_enabled.(bool)
-	}
-
-	enforce_excessive_permissions, ok := d.GetOk("enforce_excessive_permissions")
-	if ok {
-		iap.EnforceExcessivePermissions = enforce_excessive_permissions.(bool)
-	}
-
-	function_integrity_enabled, ok := d.GetOk("function_integrity_enabled")
-	if ok {
-		iap.FunctionIntegrityEnabled = function_integrity_enabled.(bool)
-	}
-
-	dta_enabled, ok := d.GetOk("dta_enabled")
-	if ok {
-		iap.DtaEnabled = dta_enabled.(bool)
-	}
-
-	cves_white_list, ok := d.GetOk("cves_white_list")
-	if ok {
-		strArr := convertStringArr(cves_white_list.([]interface{}))
-		iap.CvesWhiteList = strArr
-	}
-
-	cves_white_list_enabled, ok := d.GetOk("cves_white_list_enabled")
-	if ok {
-		iap.CvesWhiteListEnabled = cves_white_list_enabled.(bool)
-	}
-
-	kubernetes_controls_names, ok := d.GetOk("kubernetes_controls_names")
-	if ok {
-		strArr := convertStringArr(kubernetes_controls_names.([]interface{}))
-		iap.KubenetesControlsNames = strArr
-	}
-	blacklist_permissions_enabled, ok := d.GetOk("blacklist_permissions_enabled")
-	if ok {
-		iap.BlacklistPermissionsEnabled = blacklist_permissions_enabled.(bool)
-	}
-
-	blacklist_permissions, ok := d.GetOk("blacklist_permissions")
-	if ok {
-		iap.BlacklistPermissions = blacklist_permissions.([]interface{})
-	}
-
-	enabled, ok := d.GetOk("enabled")
-	if ok {
-		iap.Enabled = enabled.(bool)
-	}
-
-	enforce, ok := d.GetOk("enforce")
-	if ok {
-		iap.Enforce = enforce.(bool)
-	}
-
-	enforce_after_days, ok := d.GetOk("enforce_after_days")
-	if ok {
-		iap.EnforceAfterDays = enforce_after_days.(int)
-	}
-
-	ignore_recently_published_vln, ok := d.GetOk("ignore_recently_published_vln")
-	if ok {
-		iap.IgnoreRecentlyPublishedVln = ignore_recently_published_vln.(bool)
-	}
-
-	ignore_recently_published_vln_period, ok := d.GetOk("ignore_recently_published_vln_period")
-	if ok {
-		iap.IgnoreRecentlyPublishedVlnPeriod = ignore_recently_published_vln_period.(int)
-	}
-
-	ignore_risk_resources_enabled, ok := d.GetOk("ignore_risk_resources_enabled")
-	if ok {
-		iap.IgnoreRiskResourcesEnabled = ignore_risk_resources_enabled.(bool)
-	}
-
-	ignored_risk_resources, ok := d.GetOk("ignored_risk_resources")
-	if ok {
-		strArr := convertStringArr(ignored_risk_resources.([]interface{}))
-		iap.IgnoredRiskResources = strArr
-	}
-
-	auto_scan_enabled, ok := d.GetOk("auto_scan_enabled")
-	if ok {
-		iap.AutoScanEnabled = auto_scan_enabled.(bool)
-	}
-
-	auto_scan_configured, ok := d.GetOk("auto_scan_configured")
-	if ok {
-		iap.AutoScanConfigured = auto_scan_configured.(bool)
-	}
-
-	auto_scan_time, ok := d.GetOk("auto_scan_time")
-	if ok && auto_scan_time.(*schema.Set).Len() > 0 {
-		for _, astMap := range auto_scan_time.(*schema.Set).List() {
-			astentries, ok := astMap.(map[string]interface{})
-			if !ok {
-				continue
-			}
-			ScanTime := client.ScanTimeAuto{
-				IterationType: astentries["iteration_type"].(string),
-				Time:          astentries["time"].(string),
-				Iteration:     astentries["iteration"].(int),
-				WeekDays:      astentries["week_days"].([]interface{}),
-			}
-			iap.AutoScanTime = ScanTime
-		}
-	}
-
-	required_labels_enabled, ok := d.GetOk("required_labels_enabled")
-	if ok {
-		iap.RequiredLabelsEnabled = required_labels_enabled.(bool)
-	}
-
-	required_labels, ok := d.GetOk("required_labels")
-	if ok {
-		requiredlabels := required_labels.(*schema.Set).List()
-		labelsarray := make([]client.Labels, len(requiredlabels))
-		for i, Data := range requiredlabels {
-			labels := Data.(map[string]interface{})
-			RequiredLabel := client.Labels{
-				Key:   labels["key"].(string),
-				Value: labels["value"].(string),
-			}
-			labelsarray[i] = RequiredLabel
-		}
-		iap.RequiredLabels = labelsarray
-	}
-
-	forbidden_labels_enabled, ok := d.GetOk("forbidden_labels_enabled")
-	if ok {
-		iap.ForbiddenLabelsEnabled = forbidden_labels_enabled.(bool)
-	}
-
-	forbidden_labels, ok := d.GetOk("forbidden_labels")
-	if ok {
-		forbiddenlabels := forbidden_labels.(*schema.Set).List()
-		labelsarray := make([]client.Labels, len(forbiddenlabels))
-		for i, Data := range forbiddenlabels {
-			labels := Data.(map[string]interface{})
-			ForbiddenLabel := client.Labels{
-				Key:   labels["key"].(string),
-				Value: labels["value"].(string),
-			}
-			labelsarray[i] = ForbiddenLabel
-		}
-		iap.ForbiddenLabels = labelsarray
-	}
-
-	domain_name, ok := d.GetOk("domain_name")
-	if ok {
-		iap.DomainName = domain_name.(string)
-	}
-
-	domain, ok := d.GetOk("domain")
-	if ok {
-		iap.Domain = domain.(string)
-	}
-
-	dta_severity, ok := d.GetOk("dta_severity")
-	if ok {
-		iap.DtaSeverity = dta_severity.(string)
-	}
-
-	scan_nfs_mounts, ok := d.GetOk("scan_nfs_mounts")
-	if ok {
-		iap.ScanNfsMounts = scan_nfs_mounts.(bool)
-	}
-
-	malware_action, ok := d.GetOk("malware_action")
-	if ok {
-		iap.MalwareAction = malware_action.(string)
-	}
-
-	partial_results_image_fail, ok := d.GetOk("partial_results_image_fail")
-	if ok {
-		iap.PartialResultsImageFail = partial_results_image_fail.(bool)
-	}
-
-	maximum_score_exclude_no_fix, ok := d.GetOk("maximum_score_exclude_no_fix")
-	if ok {
-		iap.MaximumScoreExcludeNoFix = maximum_score_exclude_no_fix.(bool)
-	}
-
-	//JSON
-
-	lastupdate, ok := d.GetOk("lastupdate")
-	if ok {
-		iap.Lastupdate = lastupdate.(string)
-	}
-
-	custom_severity, ok := d.GetOk("custom_severity")
-	if ok {
-		iap.CustomSeverity = custom_severity.(string)
-	}
-
-	vulnerability_exploitability, ok := d.GetOk("vulnerability_exploitability")
-	if ok {
-		iap.VulnerabilityExploitability = vulnerability_exploitability.(bool)
-	}
-
-	disallow_exploit_types, ok := d.GetOk("disallow_exploit_types")
-	if ok {
-		strArr := convertStringArr(disallow_exploit_types.([]interface{}))
-		iap.DisallowExploitTypes = strArr
-	}
-
-	ignore_base_image_vln, ok := d.GetOk("ignore_base_image_vln")
-	if ok {
-		iap.IgnoreBaseImageVln = ignore_base_image_vln.(bool)
-	}
-
-	ignored_sensitive_resources, ok := d.GetOk("ignored_sensitive_resources")
-	if ok {
-		strArr := convertStringArr(ignored_sensitive_resources.([]interface{}))
-		iap.IgnoredSensitiveResources = strArr
-	}
-
-	permission, ok := d.GetOk("permission")
-	if ok {
-		iap.Permission = permission.(string)
-	}
-
-	scan_malware_in_archives, ok := d.GetOk("scan_malware_in_archives")
-	if ok {
-		iap.ScanMalwareInArchives = scan_malware_in_archives.(bool)
-	}
-
-	iap.KubernetesControls = make(client.KubernetesControlsArray, 0)
-	kubernetesControlsList, ok := d.GetOk("kubernetes_controls")
-	if ok {
-		controlsList := kubernetesControlsList.([]interface{})
-		if len(controlsList) > 0 {
-			v := controlsList[0].(map[string]interface{})
-			iap.KubernetesControls = append(iap.KubernetesControls, client.KubernetesControls{
-				ScriptID:    int(v["script_id"].(int)),
-				Name:        v["name"].(string),
-				Description: v["description"].(string),
-				Enabled:     v["enabled"].(bool),
-				Severity:    v["severity"].(string),
-				Kind:        v["kind"].(string),
-				OOTB:        v["ootb"].(bool),
-				AvdID:       v["avd_id"].(string),
-			})
-		}
-	}
-
-	scan_windows_registry, ok := d.GetOk("scan_windows_registry")
-	if ok {
-		iap.ScanWindowsRegistry = scan_windows_registry.(bool)
-	}
-
-	scan_process_memory, ok := d.GetOk("scan_process_memory")
-	if ok {
-		iap.ScanProcessMemory = scan_process_memory.(bool)
-	}
-
-	iap.PolicySettings = client.PolicySettings{}
-	policy_settings, ok := d.GetOk("policy_settings")
-	if ok {
-		v := policy_settings.([]interface{})[0].(map[string]interface{})
-
-		iap.PolicySettings = client.PolicySettings{
-			Enforce:        v["enforce"].(bool),
-			Warn:           v["warn"].(bool),
-			WarningMessage: v["warning_message"].(string),
-			IsAuditChecked: v["is_audit_checked"].(bool),
-		}
-	}
-
-	exclude_application_scopes, ok := d.GetOk("exclude_application_scopes")
-	if ok {
-		strArr := convertStringArr(exclude_application_scopes.([]interface{}))
-		iap.ExcludeApplicationScopes = strArr
-	}
-
-	linux_cis_enabled, ok := d.GetOk("linux_cis_enabled")
-	if ok {
-		iap.LinuxCisEnabled = linux_cis_enabled.(bool)
-	}
-
-	openshift_hardening_enabled, ok := d.GetOk("openshift_hardening_enabled")
-	if ok {
-		iap.OpenshiftHardeningEnabled = openshift_hardening_enabled.(bool)
-	}
-
-	vulnerability_score_range, ok := d.GetOk("vulnerability_score_range")
-	if ok {
-		intArr := convertIntArr(vulnerability_score_range.([]interface{}))
-		iap.VulnerabilityScoreRange = intArr
-	}
-
-	return &iap
 }

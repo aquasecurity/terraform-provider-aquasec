@@ -17,17 +17,17 @@ func resourceKubernetesAssurancePolicy() *schema.Resource {
 			StateContext: schema.ImportStatePassthroughContext,
 		},
 		Schema: map[string]*schema.Schema{
-			/*
-				"assurance_type": {
-					Type:        schema.TypeString,
-					Description: "What type of assurance policy is described.",
-					Optional:    true,
-					Computed:    true,
-				},
-			*/
+
+			"assurance_type": {
+				Type:        schema.TypeString,
+				Description: "What type of assurance policy is described.",
+				Optional:    true,
+				Computed:    true,
+			},
 			"id": {
 				Type:     schema.TypeString,
 				Computed: true,
+				Optional: true,
 			},
 			"name": {
 				Type:     schema.TypeString,
@@ -38,6 +38,7 @@ func resourceKubernetesAssurancePolicy() *schema.Resource {
 				Type:        schema.TypeString,
 				Description: "Name of user account that created the policy.",
 				Computed:    true,
+				Optional:    true,
 			},
 			"registry": {
 				Type:     schema.TypeString,
@@ -121,6 +122,12 @@ func resourceKubernetesAssurancePolicy() *schema.Resource {
 				Description: "Indicates if auditing for failures.",
 				Optional:    true,
 				Default:     true,
+			},
+			"fail_cicd": {
+				Type:        schema.TypeBool,
+				Description: "Indicates if cicd failures will fail the image.",
+				Optional:    true,
+				Default:     false,
 			},
 			"block_failed": {
 				Type:        schema.TypeBool,
@@ -495,6 +502,7 @@ func resourceKubernetesAssurancePolicy() *schema.Resource {
 			"ignore_recently_published_vln_period": {
 				Type:     schema.TypeInt,
 				Computed: true,
+				Optional: true,
 			},
 			"ignore_risk_resources_enabled": {
 				Type:        schema.TypeBool,
@@ -628,6 +636,202 @@ func resourceKubernetesAssurancePolicy() *schema.Resource {
 				Description: "Indicates that policy should ignore cases that do not have a known fix.",
 				Optional:    true,
 			},
+			//JSON
+			"lastupdate": {
+				Type:        schema.TypeString,
+				Description: "",
+				Optional:    true,
+				Computed:    true,
+			}, // String
+			"custom_severity": {
+				Type:        schema.TypeString,
+				Description: "",
+				Optional:    true,
+				Computed:    true,
+			}, // string
+			"vulnerability_exploitability": {
+				Type:        schema.TypeBool,
+				Description: "",
+				Optional:    true,
+			}, //bool
+			"disallow_exploit_types": {
+				Type:        schema.TypeList,
+				Description: "",
+				Optional:    true,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+			}, // list
+			"ignore_base_image_vln": {
+				Type:        schema.TypeBool,
+				Description: "",
+				Optional:    true,
+			}, //bool
+			"ignored_sensitive_resources": {
+				Type:        schema.TypeList,
+				Description: "",
+				Optional:    true,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+			}, // list
+			"permission": {
+				Type:        schema.TypeString,
+				Description: "",
+				Optional:    true,
+				Computed:    true,
+			}, // string
+			"scan_malware_in_archives": {
+				Type:        schema.TypeBool,
+				Description: "",
+				Optional:    true,
+			}, //bool
+			"kubernetes_controls": {
+				Type:        schema.TypeList,
+				Description: "List of Kubernetes controls.",
+				Optional:    true,
+				Computed:    true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"script_id": {
+							Type:        schema.TypeInt,
+							Description: "Script ID.",
+							Optional:    true,
+						},
+						"name": {
+							Type:        schema.TypeString,
+							Description: "Name of the control.",
+							Optional:    true,
+						},
+						"description": {
+							Type:        schema.TypeString,
+							Description: "Description of the control.",
+							Optional:    true,
+						},
+						"enabled": {
+							Type:        schema.TypeBool,
+							Description: "Is the control enabled?",
+							Optional:    true,
+						},
+						"severity": {
+							Type:        schema.TypeString,
+							Description: "Severity of the control.",
+							Optional:    true,
+						},
+						"kind": {
+							Type:        schema.TypeString,
+							Description: "Kind of the control.",
+							Optional:    true,
+						},
+						"ootb": {
+							Type:        schema.TypeBool,
+							Description: "Out-of-the-box status of the control.",
+							Optional:    true,
+						},
+						"avd_id": {
+							Type:        schema.TypeString,
+							Description: "AVD ID.",
+							Optional:    true,
+						},
+					},
+				},
+			},
+			"scan_windows_registry": {
+				Type:        schema.TypeBool,
+				Description: "",
+				Optional:    true,
+			}, //bool
+			"scan_process_memory": {
+				Type:        schema.TypeBool,
+				Description: "",
+				Optional:    true,
+			}, //bool
+			"policy_settings": {
+				Type:        schema.TypeList,
+				MaxItems:    1,
+				Description: "",
+				Optional:    true,
+				Computed:    true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"enforce": {
+							Type:        schema.TypeBool,
+							Description: "",
+							Optional:    true,
+							Default:     false,
+						},
+						"warn": {
+							Type:        schema.TypeBool,
+							Description: "",
+							Optional:    true,
+							Default:     false,
+						},
+						"warning_message": {
+							Type:        schema.TypeString,
+							Description: "",
+							Optional:    true,
+							Default:     "",
+						},
+						"is_audit_checked": {
+							Type:        schema.TypeBool,
+							Description: "",
+							Optional:    true,
+							Default:     false,
+						},
+					},
+				},
+			}, // list
+			"exclude_application_scopes": {
+				Type:        schema.TypeList,
+				Description: "",
+				Optional:    true,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+			}, // list
+			"linux_cis_enabled": {
+				Type:        schema.TypeBool,
+				Description: "",
+				Optional:    true,
+			}, //bool
+			"openshift_hardening_enabled": {
+				Type:        schema.TypeBool,
+				Description: "",
+				Optional:    true,
+			}, //bool
+			"vulnerability_score_range": {
+				Type:        schema.TypeList,
+				Description: "",
+				Optional:    true,
+				Elem: &schema.Schema{
+					Type: schema.TypeInt,
+				},
+			}, // list
+			"kubernetes_controls_avd_ids": {
+				Type:        schema.TypeList,
+				Description: "",
+				Optional:    true,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+			}, // list
+			"aggregated_vulnerability": {
+				Type:        schema.TypeMap,
+				Description: "Aggregated vulnerability information.",
+				Optional:    true,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+			},
+
+			//"aggregated_vulnerability": {
+			//	Type:        schema.TypeString,
+			//	Optional:    true,
+			//	Description: "List of aggregated vulnerabilities",
+			//	//Elem: &schema.Schema{
+			//	//	Type: schema.TypeString,
+			//	//},
+			//}, // list
 		},
 	}
 }
@@ -653,13 +857,96 @@ func resourceKubernetesAssurancePolicyUpdate(d *schema.ResourceData, m interface
 	name := d.Get("name").(string)
 	assurance_type := "kubernetes"
 
-	if d.HasChanges("description", "registry", "cvss_severity_enabled", "cvss_severity", "cvss_severity_exclude_no_fix", "custom_severity_enabled", "maximum_score_enabled", "maximum_score", "control_exclude_no_fix", "custom_checks_enabled",
-		"scap_enabled", "cves_black_list_enabled", "packages_black_list_enabled", "packages_white_list_enabled", "only_none_root_users", "trusted_base_images_enabled", "scan_sensitive_data", "audit_on_failure", "block_failed",
-		"disallow_malware", "monitored_malware_paths", "exceptional_monitored_malware_paths", "blacklisted_licenses_enabled", "blacklisted_licenses", "whitelisted_licenses_enabled", "whitelisted_licenses", "custom_checks", "scap_files", "scope",
-		"registries", "labels", "images", "cves_black_list", "packages_black_list", "packages_white_list", "allowed_images", "trusted_base_images", "read_only", "force_microenforcer", "docker_cis_enabled", "kube_cis_enabled", "enforce_excessive_permissions",
-		"function_integrity_enabled", "dta_enabled", "cves_white_list", "kubernetes_controls_names", "cves_white_list_enabled", "blacklist_permissions_enabled", "blacklist_permissions", "enabled", "enforce", "enforce_after_days", "ignore_recently_published_vln", "ignore_recently_published_vln_period",
-		"ignore_risk_resources_enabled", "ignored_risk_resources", "application_scopes", "auto_scan_enabled", "auto_scan_configured", "auto_scan_time", "required_labels_enabled", "required_labels", "forbidden_labels_enabled", "forbidden_labels", "domain_name",
-		"domain", "description", "dta_severity", "scan_nfs_mounts", "malware_action", "partial_results_image_fail", "maximum_score_exclude_no_fix") {
+	if d.HasChanges(
+		"description",
+		"registry",
+		"cvss_severity_enabled",
+		"cvss_severity",
+		"cvss_severity_exclude_no_fix",
+		"custom_severity_enabled",
+		"maximum_score_enabled",
+		"maximum_score",
+		"control_exclude_no_fix",
+		"custom_checks_enabled",
+		"scap_enabled",
+		"cves_black_list_enabled",
+		"packages_black_list_enabled",
+		"packages_white_list_enabled",
+		"only_none_root_users",
+		"trusted_base_images_enabled",
+		"scan_sensitive_data",
+		"audit_on_failure",
+		"block_failed",
+		"disallow_malware",
+		"monitored_malware_paths",
+		"exceptional_monitored_malware_paths",
+		"blacklisted_licenses_enabled",
+		"blacklisted_licenses",
+		"whitelisted_licenses_enabled",
+		"whitelisted_licenses",
+		"custom_checks",
+		"scap_files",
+		"scope",
+		"registries",
+		"labels",
+		"images",
+		"cves_black_list",
+		"packages_black_list",
+		"packages_white_list",
+		"allowed_images",
+		"trusted_base_images",
+		"read_only",
+		"force_microenforcer",
+		"docker_cis_enabled",
+		"kube_cis_enabled",
+		"enforce_excessive_permissions",
+		"function_integrity_enabled",
+		"dta_enabled",
+		"cves_white_list",
+		"kubernetes_controls_names",
+		"cves_white_list_enabled",
+		"blacklist_permissions_enabled",
+		"blacklist_permissions",
+		"enabled",
+		"enforce",
+		"enforce_after_days",
+		"ignore_recently_published_vln",
+		"ignore_recently_published_vln_period",
+		"ignore_risk_resources_enabled",
+		"ignored_risk_resources",
+		"application_scopes",
+		"auto_scan_enabled",
+		"auto_scan_configured",
+		"auto_scan_time",
+		"required_labels_enabled",
+		"required_labels",
+		"forbidden_labels_enabled",
+		"forbidden_labels",
+		"domain_name",
+		"domain",
+		"description",
+		"dta_severity",
+		"scan_nfs_mounts",
+		"malware_action",
+		"partial_results_image_fail",
+		"maximum_score_exclude_no_fix",
+		//JSON
+		"fail_cicd",
+		"custom_severity",
+		"vulnerability_exploitability",
+		"disallow_exploit_types",
+		"ignore_base_image_vln",
+		"ignored_sensitive_resources",
+		"permission",
+		"scan_malware_in_archives",
+		"kubernetes_controls",
+		"scan_windows_registry",
+		"scan_process_memory",
+		"policy_settings",
+		"exclude_application_scopes",
+		"linux_cis_enabled",
+		"openshift_hardening_enabled",
+	) {
 		iap := expandAssurancePolicy(d, assurance_type)
 		err := ac.UpdateAssurancePolicy(iap, assurance_type)
 		if err == nil {
@@ -696,6 +983,7 @@ func resourceKubernetesAssurancePolicyRead(d *schema.ResourceData, m interface{}
 	d.Set("author", iap.Author)
 	d.Set("application_scopes", iap.ApplicationScopes)
 	d.Set("registry", iap.Registry)
+	d.Set("fail_cicd", iap.FailCicd)
 	d.Set("cvss_severity_enabled", iap.CvssSeverityEnabled)
 	d.Set("cvss_severity", iap.CvssSeverity)
 	d.Set("cvss_severity_exclude_no_fix", iap.CvssSeverityExcludeNoFix)
@@ -765,6 +1053,22 @@ func resourceKubernetesAssurancePolicyRead(d *schema.ResourceData, m interface{}
 	d.Set("malware_action", iap.MalwareAction)
 	d.Set("partial_results_image_fail", iap.PartialResultsImageFail)
 	d.Set("maximum_score_exclude_no_fix", iap.MaximumScoreExcludeNoFix)
+	//JSON
+	//d.Set("lastupdate", iap.Lastupdate)
+	d.Set("custom_severity", iap.CustomSeverity)
+	d.Set("vulnerability_exploitability", iap.VulnerabilityExploitability)
+	d.Set("disallow_exploit_types", iap.DisallowExploitTypes)
+	d.Set("ignore_base_image_vln", iap.IgnoreBaseImageVln)
+	d.Set("ignored_sensitive_resources", iap.IgnoredSensitiveResources)
+	d.Set("permission", iap.Permission)
+	d.Set("scan_malware_in_archives", iap.ScanMalwareInArchives)
+	d.Set("kubernetes_controls", flattenKubernetesControls(iap.KubernetesControls))
+	d.Set("scan_windows_registry", iap.ScanWindowsRegistry)
+	d.Set("scan_process_memory", iap.ScanProcessMemory)
+	d.Set("policy_settings", flattenPolicySettings(iap.PolicySettings))
+	d.Set("exclude_application_scopes", iap.ExcludeApplicationScopes)
+	d.Set("linux_cis_enabled", iap.LinuxCisEnabled)
+	d.Set("openshift_hardening_enabled", iap.OpenshiftHardeningEnabled)
 
 	return nil
 }

@@ -24,6 +24,18 @@ func convertAndMapStringArr(ifaceArr []interface{}, f func(string) string) []str
 	return arr
 }
 
+func convertIntArr(ifaceArr []interface{}) []int {
+	return convertAndMapIntArr(ifaceArr, func(i int) int { return i })
+}
+
+func convertAndMapIntArr(ifaceArr []interface{}, mapper func(int) int) []int {
+	intArr := make([]int, len(ifaceArr))
+	for i, val := range ifaceArr {
+		intArr[i] = mapper(val.(int))
+	}
+	return intArr
+}
+
 func convertToGroupsStruct(i []interface{}) []client.Group {
 	var m []client.Group
 	b, _ := json.Marshal(i)
