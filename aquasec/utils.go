@@ -13,6 +13,34 @@ func convertStringArr(ifaceArr []interface{}) []string {
 	return convertAndMapStringArr(ifaceArr, func(s string) string { return s })
 }
 
+func convertStringArrNull(ifaceArr []interface{}) []string {
+	return convertAndMapStringArrNull(ifaceArr, func(s string) string { return s })
+
+}
+
+func convertIntArr(ifaceArr []interface{}) []int {
+	return convertAndMapIntArr(ifaceArr, func(i int) int { return i })
+}
+
+func convertAndMapIntArr(ifaceArr []interface{}, mapper func(int) int) []int {
+	intArr := make([]int, len(ifaceArr))
+	for i, val := range ifaceArr {
+		intArr[i] = mapper(val.(int))
+	}
+	return intArr
+}
+
+func convertAndMapStringArrNull(ifaceArr []interface{}, f func(string) string) []string {
+	var arr = make([]string, 0)
+	for _, v := range ifaceArr {
+		if v == nil {
+			continue
+		}
+		arr = append(arr, f(v.(string)))
+	}
+	return arr
+}
+
 func convertStringArrTest(ifaceArr []interface{}) []string {
 	var result []string
 	for _, iface := range ifaceArr {
