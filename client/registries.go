@@ -41,6 +41,7 @@ type Registry struct {
 	ScannerNameRemoved         []string  `json:"scanner_name_removed,omitempty"`
 	ExistingScanners           []string  `json:"existsing_scanners,omitempty"`
 	Options                    []Options `json:"options"`
+	DefaultPrefix              string    `json:"default_prefix"`
 	//Architecture               string        `json:"architecture"`
 	//ICRAccountId               string        `json:"icr_account_id"`
 	//ACRConnectionType          string        `json:"acr_connection_type"`
