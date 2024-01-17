@@ -9,10 +9,11 @@ import (
 
 func resourceFunctionAssurancePolicy() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceFunctionAssurancePolicyCreate,
-		Read:   resourceFunctionAssurancePolicyRead,
-		Update: resourceFunctionAssurancePolicyUpdate,
-		Delete: resourceFunctionAssurancePolicyDelete,
+		Description: "Aqua ensures function security for AWS Lambda, Microsoft Azure, and Google Cloud. This includes:\nScanning functions for vulnerabilities and sensitive data. AWS and Azure functions are also checked for excessive permissions.\nEvaluating function risks based on scan results, according to Function Assurance Policies.\nChecking function compliance with these policies.\nFor AWS and Azure, implementing security actions, such as blocking execution of risky functions or failing the CI/CD pipeline.\nProviding comprehensive audits of all security risks, viewable in Aqua Server or a SIEM system.",
+		Create:      resourceFunctionAssurancePolicyCreate,
+		Read:        resourceFunctionAssurancePolicyRead,
+		Update:      resourceFunctionAssurancePolicyUpdate,
+		Delete:      resourceFunctionAssurancePolicyDelete,
 		Importer: &schema.ResourceImporter{
 			StateContext: schema.ImportStatePassthroughContext,
 		},

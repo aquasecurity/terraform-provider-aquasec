@@ -9,10 +9,11 @@ import (
 
 func resourceKubernetesAssurancePolicy() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceKubernetesAssurancePolicyCreate,
-		Read:   resourceKubernetesAssurancePolicyRead,
-		Update: resourceKubernetesAssurancePolicyUpdate,
-		Delete: resourceKubernetesAssurancePolicyDelete,
+		Description: "Kubernetes Assurance is responsible for checking the security of workload configurations at the pod level, with respect to your organization's security requirements.",
+		Create:      resourceKubernetesAssurancePolicyCreate,
+		Read:        resourceKubernetesAssurancePolicyRead,
+		Update:      resourceKubernetesAssurancePolicyUpdate,
+		Delete:      resourceKubernetesAssurancePolicyDelete,
 		Importer: &schema.ResourceImporter{
 			StateContext: schema.ImportStatePassthroughContext,
 		},

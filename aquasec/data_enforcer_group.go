@@ -9,7 +9,8 @@ import (
 
 func dataSourceEnforcerGroup() *schema.Resource {
 	return &schema.Resource{
-		Read: dataEnforcerGroupRead,
+		Description: "The data source `aquasec_enforcer_groups` provides an Enforcer group template that generates a configuration file, which is subsequently used to generate one or more Enforcers using a Docker command.",
+		Read:        dataEnforcerGroupRead,
 		Schema: map[string]*schema.Schema{
 			"group_id": {
 				Type:        schema.TypeString,

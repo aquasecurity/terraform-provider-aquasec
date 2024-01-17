@@ -9,10 +9,11 @@ import (
 
 func resourceImageAssurancePolicy() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceImageAssurancePolicyCreate,
-		Read:   resourceImageAssurancePolicyRead,
-		Update: resourceImageAssurancePolicyUpdate,
-		Delete: resourceImageAssurancePolicyDelete,
+		Description: "Aqua Image Assurance covers the first part of the container lifecycle: image development. The Image Assurance subsystem detects, assesses, and reports security issues in your images.",
+		Create:      resourceImageAssurancePolicyCreate,
+		Read:        resourceImageAssurancePolicyRead,
+		Update:      resourceImageAssurancePolicyUpdate,
+		Delete:      resourceImageAssurancePolicyDelete,
 		Importer: &schema.ResourceImporter{
 			StateContext: schema.ImportStatePassthroughContext,
 		},

@@ -9,10 +9,11 @@ import (
 
 func resourceHostAssurancePolicy() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceHostAssurancePolicyCreate,
-		Read:   resourceHostAssurancePolicyRead,
-		Update: resourceHostAssurancePolicyUpdate,
-		Delete: resourceHostAssurancePolicyDelete,
+		Description: "Host Assurance is a subsystem of Aqua. It is responsible for:\n Scans host VMs and Kubernetes nodes' file system for security issues, vulnerabilities in OS and programming language packages, open-source licenses, and compliance with CIS benchmarks.\nEvaluates scan findings according to defined Host Assurance Policies.\nDetermines host compliance based on these policies.\nGenerates an audit event for host assurance failure.  ",
+		Create:      resourceHostAssurancePolicyCreate,
+		Read:        resourceHostAssurancePolicyRead,
+		Update:      resourceHostAssurancePolicyUpdate,
+		Delete:      resourceHostAssurancePolicyDelete,
 		Importer: &schema.ResourceImporter{
 			StateContext: schema.ImportStatePassthroughContext,
 		},
@@ -751,6 +752,11 @@ func resourceHostAssurancePolicy() *schema.Resource {
 				Description: "",
 				Optional:    true,
 			}, //bool
+			"windows_cis_enabled": {
+				Type:        schema.TypeBool,
+				Description: "Checks the host according to the Windows CIS benchmark (relevant for hosts running Windows).",
+				Optional:    true,
+			}, //bool
 			"openshift_hardening_enabled": {
 				Type:        schema.TypeBool,
 				Description: "",
@@ -896,6 +902,7 @@ func resourceHostAssurancePolicyUpdate(d *schema.ResourceData, m interface{}) er
 		"policy_settings",
 		"exclude_application_scopes",
 		"linux_cis_enabled",
+		"windows_cis_enabled",
 		"openshift_hardening_enabled",
 		"kubernetes_controls_avd_ids",
 		"vulnerability_score_range",
@@ -1021,6 +1028,7 @@ func resourceHostAssurancePolicyRead(d *schema.ResourceData, m interface{}) erro
 	d.Set("policy_settings", flattenPolicySettings(iap.PolicySettings))
 	d.Set("exclude_application_scopes", iap.ExcludeApplicationScopes)
 	d.Set("linux_cis_enabled", iap.LinuxCisEnabled)
+	d.Set("windows_cis_enabled", iap.WindowsCisEnabled)
 	d.Set("openshift_hardening_enabled", iap.OpenshiftHardeningEnabled)
 	d.Set("kubernetes_controls_avd_ids", iap.KubernetesControlsAvdIds)
 	d.Set("vulnerability_score_range", iap.VulnerabilityScoreRange)
