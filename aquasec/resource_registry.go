@@ -434,10 +434,12 @@ func resourceRegistryUpdate(d *schema.ResourceData, m interface{}) error {
 	if d.HasChanges("name", "registry_scan_timeout", "username", "description", "pull_image_tag_pattern", "password", "url", "type", "auto_pull", "auto_pull_rescan", "auto_pull_max", "advanced_settings_cleanup", "auto_pull_time", "auto_pull_interval", "auto_cleanup", "image_creation_date_condition", "scanner_name", "prefixes", "pull_image_count", "pull_image_age", "options", "webhook", "always_pull_patterns", "pull_repo_patterns_excluded") {
 
 		prefixes := d.Get("prefixes").([]interface{})
+		var defaultPrefix string
 		// Add default_prefix to prefixes
 		r, _ := c.GetRegistry(d.Id())
 		if r.DefaultPrefix != "" {
 			prefixes = append(prefixes, r.DefaultPrefix)
+			defaultPrefix = r.DefaultPrefix
 		}
 		always_pull_patterns := d.Get("always_pull_patterns").([]interface{})
 		pull_repo_patterns_excluded := d.Get("pull_repo_patterns_excluded").([]interface{})
@@ -474,6 +476,7 @@ func resourceRegistryUpdate(d *schema.ResourceData, m interface{}) error {
 			ScannerNameRemoved:         convertStringArr(scanner_name_removed),
 			ExistingScanners:           convertStringArr(existsing_scanners),
 			Prefixes:                   convertStringArr(prefixes),
+			DefaultPrefix:              defaultPrefix,
 			AlwaysPullPatterns:         convertStringArr(always_pull_patterns),
 			PullRepoPatternsExcluded:   convertStringArr(pull_repo_patterns_excluded),
 			PullImageTagPattern:        convertStringArr(pull_image_tag_pattern),
