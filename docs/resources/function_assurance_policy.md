@@ -3,12 +3,22 @@
 page_title: "aquasec_function_assurance_policy Resource - terraform-provider-aquasec"
 subcategory: ""
 description: |-
-  
+  Aqua ensures function security for AWS Lambda, Microsoft Azure, and Google Cloud. This includes:
+  Scanning functions for vulnerabilities and sensitive data. AWS and Azure functions are also checked for excessive permissions.
+  Evaluating function risks based on scan results, according to Function Assurance Policies.
+  Checking function compliance with these policies.
+  For AWS and Azure, implementing security actions, such as blocking execution of risky functions or failing the CI/CD pipeline.
+  Providing comprehensive audits of all security risks, viewable in Aqua Server or a SIEM system.
 ---
 
 # aquasec_function_assurance_policy (Resource)
 
-
+Aqua ensures function security for AWS Lambda, Microsoft Azure, and Google Cloud. This includes:
+Scanning functions for vulnerabilities and sensitive data. AWS and Azure functions are also checked for excessive permissions.
+Evaluating function risks based on scan results, according to Function Assurance Policies.
+Checking function compliance with these policies.
+For AWS and Azure, implementing security actions, such as blocking execution of risky functions or failing the CI/CD pipeline.
+Providing comprehensive audits of all security risks, viewable in Aqua Server or a SIEM system.
 
 
 
@@ -33,24 +43,24 @@ description: |-
 - `blacklist_permissions` (List of String) List of function's forbidden permissions.
 - `blacklist_permissions_enabled` (Boolean) Indicates if blacklist permissions is relevant.
 - `blacklisted_licenses` (List of String) List of blacklisted licenses.
-- `blacklisted_licenses_enabled` (Boolean) Lndicates if license blacklist is relevant.
+- `blacklisted_licenses_enabled` (Boolean) Indicates if license blacklist is relevant.
 - `block_failed` (Boolean) Indicates if failed images are blocked.
 - `control_exclude_no_fix` (Boolean)
 - `custom_checks` (Block List) List of Custom user scripts for checks. (see [below for nested schema](#nestedblock--custom_checks))
 - `custom_checks_enabled` (Boolean) Indicates if scanning should include custom checks.
 - `custom_severity` (String)
 - `custom_severity_enabled` (Boolean)
-- `cves_black_list` (List of String) List of cves blacklisted items.
-- `cves_black_list_enabled` (Boolean) Indicates if cves blacklist is relevant.
+- `cves_black_list` (List of String) List of CVEs blacklisted items.
+- `cves_black_list_enabled` (Boolean) Indicates if CVEs blacklist is relevant.
 - `cves_white_list` (List of String) List of cves whitelisted licenses
-- `cves_white_list_enabled` (Boolean) Indicates if cves whitelist is relevant.
+- `cves_white_list_enabled` (Boolean) Indicates if CVEs whitelist is relevant.
 - `cvss_severity` (String) Identifier of the cvss severity.
 - `cvss_severity_enabled` (Boolean) Indicates if the cvss severity is scanned.
 - `cvss_severity_exclude_no_fix` (Boolean) Indicates that policy should ignore cvss cases that do not have a known fix.
 - `description` (String)
 - `disallow_exploit_types` (List of String)
 - `disallow_malware` (Boolean) Indicates if malware should block the image.
-- `docker_cis_enabled` (Boolean)
+- `docker_cis_enabled` (Boolean) Checks the host according to the Docker CIS benchmark, if Docker is found on the host.
 - `domain` (String) Name of the container image.
 - `domain_name` (String)
 - `dta_enabled` (Boolean)
@@ -73,7 +83,7 @@ description: |-
 - `ignored_risk_resources` (List of String) List of ignored risk resources.
 - `ignored_sensitive_resources` (List of String)
 - `images` (List of String) List of images.
-- `kube_cis_enabled` (Boolean)
+- `kube_cis_enabled` (Boolean) Performs a Kubernetes CIS benchmark check for the host.
 - `kubernetes_controls` (Block List) List of Kubernetes controls. (see [below for nested schema](#nestedblock--kubernetes_controls))
 - `kubernetes_controls_avd_ids` (List of String)
 - `kubernetes_controls_names` (List of String)
@@ -87,7 +97,7 @@ description: |-
 - `monitored_malware_paths` (List of String)
 - `only_none_root_users` (Boolean) Indicates if raise a warning for images that should only be run as root.
 - `openshift_hardening_enabled` (Boolean)
-- `packages_black_list` (Block Set) List of backlisted images. (see [below for nested schema](#nestedblock--packages_black_list))
+- `packages_black_list` (Block Set) List of blacklist images. (see [below for nested schema](#nestedblock--packages_black_list))
 - `packages_black_list_enabled` (Boolean) Indicates if packages blacklist is relevant.
 - `packages_white_list` (Block Set) List of whitelisted images. (see [below for nested schema](#nestedblock--packages_white_list))
 - `packages_white_list_enabled` (Boolean) Indicates if packages whitelist is relevant.

@@ -31,22 +31,22 @@ description: |-
 - `blacklist_permissions` (List of String) List of function's forbidden permissions.
 - `blacklist_permissions_enabled` (Boolean) Indicates if blacklist permissions is relevant.
 - `blacklisted_licenses` (List of String) List of blacklisted licenses.
-- `blacklisted_licenses_enabled` (Boolean) Lndicates if license blacklist is relevant.
+- `blacklisted_licenses_enabled` (Boolean) Indicates if license blacklist is relevant.
 - `block_failed` (Boolean) Indicates if failed images are blocked.
 - `control_exclude_no_fix` (Boolean)
 - `custom_checks` (List of Object) List of Custom user scripts for checks. (see [below for nested schema](#nestedatt--custom_checks))
 - `custom_checks_enabled` (Boolean) Indicates if scanning should include custom checks.
 - `custom_severity_enabled` (Boolean)
-- `cves_black_list` (List of String) List of cves blacklisted items.
-- `cves_black_list_enabled` (Boolean) Indicates if cves blacklist is relevant.
-- `cves_white_list` (List of String) List of cves whitelisted licenses
-- `cves_white_list_enabled` (Boolean) Indicates if cves whitelist is relevant.
-- `cvss_severity` (String) Identifier of the cvss severity.
-- `cvss_severity_enabled` (Boolean) Indicates if the cvss severity is scanned.
-- `cvss_severity_exclude_no_fix` (Boolean) Indicates that policy should ignore cvss cases that do not have a known fix.
+- `cves_black_list` (List of String) List of CVEs blacklisted items.
+- `cves_black_list_enabled` (Boolean) Indicates if CVEs blacklist is relevant.
+- `cves_white_list` (List of String) List of CVEs whitelisted licenses
+- `cves_white_list_enabled` (Boolean) Indicates if CVEs whitelist is relevant.
+- `cvss_severity` (String) Identifier of the CVSS severity.
+- `cvss_severity_enabled` (Boolean) Indicates if the CVSS severity is scanned.
+- `cvss_severity_exclude_no_fix` (Boolean) Indicates that policy should ignore CVSS cases that do not have a known fix.
 - `description` (String)
 - `disallow_malware` (Boolean) Indicates if malware should block the image.
-- `docker_cis_enabled` (Boolean)
+- `docker_cis_enabled` (Boolean) Checks the host according to the Docker CIS benchmark, if Docker is found on the host.
 - `domain` (String) Name of the container image.
 - `domain_name` (String)
 - `dta_enabled` (Boolean)
@@ -55,8 +55,8 @@ description: |-
 - `enforce` (Boolean)
 - `enforce_after_days` (Number)
 - `enforce_excessive_permissions` (Boolean)
-- `exceptional_monitored_malware_paths` (List of String)
-- `fail_cicd` (Boolean) Indicates if cicd failures will fail the image.
+- `exceptional_monitored_malware_paths` (List of String) Directories to be excluded from monitoring.
+- `fail_cicd` (Boolean) Indicates if CI/CD failures will fail the image.
 - `forbidden_labels` (Set of Object) (see [below for nested schema](#nestedatt--forbidden_labels))
 - `forbidden_labels_enabled` (Boolean)
 - `force_microenforcer` (Boolean)
@@ -67,16 +67,16 @@ description: |-
 - `ignore_risk_resources_enabled` (Boolean) Indicates if risk resources are ignored.
 - `ignored_risk_resources` (List of String) List of ignored risk resources.
 - `images` (List of String) List of images.
-- `kube_cis_enabled` (Boolean)
+- `kube_cis_enabled` (Boolean) Performs a Kubernetes CIS benchmark check for the host.
 - `kubernetes_controls_names` (List of String) List of kubernetes control names
 - `labels` (List of String) List of labels.
 - `malware_action` (String)
 - `maximum_score` (Number) Value of allowed maximum score.
 - `maximum_score_enabled` (Boolean) Indicates if exceeding the maximum score is scanned.
 - `maximum_score_exclude_no_fix` (Boolean) Indicates that policy should ignore cases that do not have a known fix.
-- `monitored_malware_paths` (List of String)
+- `monitored_malware_paths` (List of String) Directories to be monitored.
 - `only_none_root_users` (Boolean) Indicates if raise a warning for images that should only be run as root.
-- `packages_black_list` (Set of Object) List of backlisted images. (see [below for nested schema](#nestedatt--packages_black_list))
+- `packages_black_list` (Set of Object) List of blacklist images. (see [below for nested schema](#nestedatt--packages_black_list))
 - `packages_black_list_enabled` (Boolean) Indicates if packages blacklist is relevant.
 - `packages_white_list` (Set of Object) List of whitelisted images. (see [below for nested schema](#nestedatt--packages_white_list))
 - `packages_white_list_enabled` (Boolean) Indicates if packages whitelist is relevant.
@@ -88,7 +88,7 @@ description: |-
 - `required_labels_enabled` (Boolean)
 - `scan_nfs_mounts` (Boolean)
 - `scan_sensitive_data` (Boolean) Indicates if scan should include sensitive data in the image.
-- `scap_enabled` (Boolean) Indicates if scanning should include scap.
+- `scap_enabled` (Boolean) Indicates if scanning should include SCAP.
 - `scap_files` (List of String) List of SCAP user scripts for checks.
 - `scope` (Set of Object) (see [below for nested schema](#nestedatt--scope))
 - `trusted_base_images` (Set of Object) List of trusted images. (see [below for nested schema](#nestedatt--trusted_base_images))

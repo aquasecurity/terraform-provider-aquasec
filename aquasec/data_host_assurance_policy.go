@@ -78,7 +78,7 @@ func dataHostAssurancePolicy() *schema.Resource {
 			},
 			"cves_black_list_enabled": {
 				Type:        schema.TypeBool,
-				Description: "Indicates if cves blacklist is relevant.",
+				Description: "Indicates if CVEs blacklist is relevant.",
 				Computed:    true,
 			},
 			"packages_black_list_enabled": {
@@ -142,7 +142,7 @@ func dataHostAssurancePolicy() *schema.Resource {
 			},
 			"blacklisted_licenses_enabled": {
 				Type:        schema.TypeBool,
-				Description: "Lndicates if license blacklist is relevant.",
+				Description: "Indicates if license blacklist is relevant.",
 				Computed:    true,
 			},
 			"blacklisted_licenses": {
@@ -282,7 +282,7 @@ func dataHostAssurancePolicy() *schema.Resource {
 			},
 			"cves_black_list": {
 				Type:        schema.TypeList,
-				Description: "List of cves blacklisted items.",
+				Description: "List of CVEs blacklisted items.",
 				Computed:    true,
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
@@ -290,7 +290,7 @@ func dataHostAssurancePolicy() *schema.Resource {
 			},
 			"packages_black_list": {
 				Type:        schema.TypeSet,
-				Description: "List of backlisted images.",
+				Description: "List of blacklist images.",
 				Computed:    true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
@@ -412,12 +412,14 @@ func dataHostAssurancePolicy() *schema.Resource {
 				Computed: true,
 			},
 			"docker_cis_enabled": {
-				Type:     schema.TypeBool,
-				Computed: true,
+				Type:        schema.TypeBool,
+				Description: "Checks the host according to the Docker CIS benchmark, if Docker is found on the host.",
+				Computed:    true,
 			},
 			"kube_cis_enabled": {
-				Type:     schema.TypeBool,
-				Computed: true,
+				Type:        schema.TypeBool,
+				Description: "Performs a Kubernetes CIS benchmark check for the host.",
+				Computed:    true,
 			},
 			"enforce_excessive_permissions": {
 				Type:     schema.TypeBool,
@@ -433,7 +435,7 @@ func dataHostAssurancePolicy() *schema.Resource {
 			},
 			"cves_white_list_enabled": {
 				Type:        schema.TypeBool,
-				Description: "Indicates if cves whitelist is relevant.",
+				Description: "Indicates if CVEs whitelist is relevant.",
 				Computed:    true,
 			},
 			"cves_white_list": {

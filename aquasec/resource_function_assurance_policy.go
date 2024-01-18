@@ -91,7 +91,7 @@ func resourceFunctionAssurancePolicy() *schema.Resource {
 			},
 			"cves_black_list_enabled": {
 				Type:        schema.TypeBool,
-				Description: "Indicates if cves blacklist is relevant.",
+				Description: "Indicates if CVEs blacklist is relevant.",
 				Optional:    true,
 			},
 			"packages_black_list_enabled": {
@@ -158,7 +158,7 @@ func resourceFunctionAssurancePolicy() *schema.Resource {
 			},
 			"blacklisted_licenses_enabled": {
 				Type:        schema.TypeBool,
-				Description: "Lndicates if license blacklist is relevant.",
+				Description: "Indicates if license blacklist is relevant.",
 				Optional:    true,
 			},
 			"blacklisted_licenses": {
@@ -302,7 +302,7 @@ func resourceFunctionAssurancePolicy() *schema.Resource {
 			},
 			"cves_black_list": {
 				Type:        schema.TypeList,
-				Description: "List of cves blacklisted items.",
+				Description: "List of CVEs blacklisted items.",
 				Optional:    true,
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
@@ -310,7 +310,7 @@ func resourceFunctionAssurancePolicy() *schema.Resource {
 			},
 			"packages_black_list": {
 				Type:        schema.TypeSet,
-				Description: "List of backlisted images.",
+				Description: "List of blacklist images.",
 				Optional:    true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
@@ -432,12 +432,14 @@ func resourceFunctionAssurancePolicy() *schema.Resource {
 				Optional: true,
 			},
 			"docker_cis_enabled": {
-				Type:     schema.TypeBool,
-				Optional: true,
+				Type:        schema.TypeBool,
+				Description: "Checks the host according to the Docker CIS benchmark, if Docker is found on the host.",
+				Optional:    true,
 			},
 			"kube_cis_enabled": {
-				Type:     schema.TypeBool,
-				Optional: true,
+				Type:        schema.TypeBool,
+				Description: "Performs a Kubernetes CIS benchmark check for the host.",
+				Optional:    true,
 			},
 			"enforce_excessive_permissions": {
 				Type:     schema.TypeBool,
@@ -453,7 +455,7 @@ func resourceFunctionAssurancePolicy() *schema.Resource {
 			},
 			"cves_white_list_enabled": {
 				Type:        schema.TypeBool,
-				Description: "Indicates if cves whitelist is relevant.",
+				Description: "Indicates if CVEs whitelist is relevant.",
 				Optional:    true,
 			},
 			"cves_white_list": {
