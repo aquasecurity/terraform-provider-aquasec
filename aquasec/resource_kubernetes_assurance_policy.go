@@ -9,10 +9,11 @@ import (
 
 func resourceKubernetesAssurancePolicy() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceKubernetesAssurancePolicyCreate,
-		Read:   resourceKubernetesAssurancePolicyRead,
-		Update: resourceKubernetesAssurancePolicyUpdate,
-		Delete: resourceKubernetesAssurancePolicyDelete,
+		Description: "Kubernetes Assurance is responsible for checking the security of workload configurations at the pod level, with respect to your organization's security requirements.",
+		Create:      resourceKubernetesAssurancePolicyCreate,
+		Read:        resourceKubernetesAssurancePolicyRead,
+		Update:      resourceKubernetesAssurancePolicyUpdate,
+		Delete:      resourceKubernetesAssurancePolicyDelete,
 		Importer: &schema.ResourceImporter{
 			StateContext: schema.ImportStatePassthroughContext,
 		},
@@ -89,7 +90,7 @@ func resourceKubernetesAssurancePolicy() *schema.Resource {
 			},
 			"cves_black_list_enabled": {
 				Type:        schema.TypeBool,
-				Description: "Indicates if cves blacklist is relevant.",
+				Description: "Indicates if CVEs blacklist is relevant.",
 				Optional:    true,
 			},
 			"packages_black_list_enabled": {
@@ -156,7 +157,7 @@ func resourceKubernetesAssurancePolicy() *schema.Resource {
 			},
 			"blacklisted_licenses_enabled": {
 				Type:        schema.TypeBool,
-				Description: "Lndicates if license blacklist is relevant.",
+				Description: "Indicates if license blacklist is relevant.",
 				Optional:    true,
 			},
 			"blacklisted_licenses": {
@@ -300,7 +301,7 @@ func resourceKubernetesAssurancePolicy() *schema.Resource {
 			},
 			"cves_black_list": {
 				Type:        schema.TypeList,
-				Description: "List of cves blacklisted items.",
+				Description: "List of CVEs blacklisted items.",
 				Optional:    true,
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
@@ -308,7 +309,7 @@ func resourceKubernetesAssurancePolicy() *schema.Resource {
 			},
 			"packages_black_list": {
 				Type:        schema.TypeSet,
-				Description: "List of backlisted images.",
+				Description: "List of blacklisted images.",
 				Optional:    true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
@@ -430,12 +431,14 @@ func resourceKubernetesAssurancePolicy() *schema.Resource {
 				Optional: true,
 			},
 			"docker_cis_enabled": {
-				Type:     schema.TypeBool,
-				Optional: true,
+				Type:        schema.TypeBool,
+				Description: "Checks the host according to the Docker CIS benchmark, if Docker is found on the host.",
+				Optional:    true,
 			},
 			"kube_cis_enabled": {
-				Type:     schema.TypeBool,
-				Optional: true,
+				Type:        schema.TypeBool,
+				Description: "Performs a Kubernetes CIS benchmark check for the host.",
+				Optional:    true,
 			},
 			"enforce_excessive_permissions": {
 				Type:     schema.TypeBool,
@@ -451,7 +454,7 @@ func resourceKubernetesAssurancePolicy() *schema.Resource {
 			},
 			"cves_white_list_enabled": {
 				Type:        schema.TypeBool,
-				Description: "Indicates if cves whitelist is relevant.",
+				Description: "Indicates if CVEs whitelist is relevant.",
 				Optional:    true,
 			},
 			"cves_white_list": {

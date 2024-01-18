@@ -35,17 +35,17 @@ func dataKubernetesAssurancePolicy() *schema.Resource {
 			},
 			"cvss_severity_enabled": {
 				Type:        schema.TypeBool,
-				Description: "Indicates if the cvss severity is scanned.",
+				Description: "Indicates if the CVSS severity is scanned.",
 				Computed:    true,
 			},
 			"cvss_severity": {
 				Type:        schema.TypeString,
-				Description: "Identifier of the cvss severity.",
+				Description: "Identifier of the CVSS severity.",
 				Computed:    true,
 			},
 			"cvss_severity_exclude_no_fix": {
 				Type:        schema.TypeBool,
-				Description: "Indicates that policy should ignore cvss cases that do not have a known fix.",
+				Description: "Indicates that policy should ignore CVSS cases that do not have a known fix.",
 				Computed:    true,
 			},
 			"custom_severity_enabled": {
@@ -73,12 +73,12 @@ func dataKubernetesAssurancePolicy() *schema.Resource {
 			},
 			"scap_enabled": {
 				Type:        schema.TypeBool,
-				Description: "Indicates if scanning should include scap.",
+				Description: "Indicates if scanning should include SCAP.",
 				Computed:    true,
 			},
 			"cves_black_list_enabled": {
 				Type:        schema.TypeBool,
-				Description: "Indicates if cves blacklist is relevant.",
+				Description: "Indicates if CVEs blacklist is relevant.",
 				Computed:    true,
 			},
 			"kubernetes_controls_names": {
@@ -121,7 +121,7 @@ func dataKubernetesAssurancePolicy() *schema.Resource {
 			},
 			"fail_cicd": {
 				Type:        schema.TypeBool,
-				Description: "Indicates if cicd failures will fail the image.",
+				Description: "Indicates if CI/CD failures will fail the image.",
 				Computed:    true,
 			},
 			"block_failed": {
@@ -135,22 +135,24 @@ func dataKubernetesAssurancePolicy() *schema.Resource {
 				Computed:    true,
 			},
 			"monitored_malware_paths": {
-				Type:     schema.TypeList,
-				Computed: true,
+				Type:        schema.TypeList,
+				Description: "Directories to be monitored.",
+				Computed:    true,
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
 				},
 			},
 			"exceptional_monitored_malware_paths": {
-				Type:     schema.TypeList,
-				Computed: true,
+				Type:        schema.TypeList,
+				Description: "Directories to be excluded from monitoring.",
+				Computed:    true,
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
 				},
 			},
 			"blacklisted_licenses_enabled": {
 				Type:        schema.TypeBool,
-				Description: "Lndicates if license blacklist is relevant.",
+				Description: "Indicates if license blacklist is relevant.",
 				Computed:    true,
 			},
 			"blacklisted_licenses": {
@@ -290,7 +292,7 @@ func dataKubernetesAssurancePolicy() *schema.Resource {
 			},
 			"cves_black_list": {
 				Type:        schema.TypeList,
-				Description: "List of cves blacklisted items.",
+				Description: "List of CVEs blacklisted items.",
 				Computed:    true,
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
@@ -298,7 +300,7 @@ func dataKubernetesAssurancePolicy() *schema.Resource {
 			},
 			"packages_black_list": {
 				Type:        schema.TypeSet,
-				Description: "List of backlisted images.",
+				Description: "List of blacklisted images.",
 				Computed:    true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
@@ -420,12 +422,14 @@ func dataKubernetesAssurancePolicy() *schema.Resource {
 				Computed: true,
 			},
 			"docker_cis_enabled": {
-				Type:     schema.TypeBool,
-				Computed: true,
+				Type:        schema.TypeBool,
+				Description: "Checks the host according to the Docker CIS benchmark, if Docker is found on the host.",
+				Computed:    true,
 			},
 			"kube_cis_enabled": {
-				Type:     schema.TypeBool,
-				Computed: true,
+				Type:        schema.TypeBool,
+				Description: "Performs a Kubernetes CIS benchmark check for the host.",
+				Computed:    true,
 			},
 			"enforce_excessive_permissions": {
 				Type:     schema.TypeBool,
@@ -441,12 +445,12 @@ func dataKubernetesAssurancePolicy() *schema.Resource {
 			},
 			"cves_white_list_enabled": {
 				Type:        schema.TypeBool,
-				Description: "Indicates if cves whitelist is relevant.",
+				Description: "Indicates if CVEs whitelist is relevant.",
 				Computed:    true,
 			},
 			"cves_white_list": {
 				Type:        schema.TypeList,
-				Description: "List of cves whitelisted licenses",
+				Description: "List of CVEs whitelisted licenses",
 				Computed:    true,
 				Elem: &schema.Schema{
 					Type: schema.TypeString,

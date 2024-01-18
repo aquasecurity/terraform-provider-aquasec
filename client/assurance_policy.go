@@ -12,7 +12,7 @@ import (
 
 type AssurancePolicy struct {
 	AssuranceType                    string              `json:"assurance_type"`
-	Id                               int                 `json:"id,omitempty"`
+	Id                               int                 `json:"id"`
 	Name                             string              `json:"name"`
 	Author                           string              `json:"author"`
 	Registry                         string              `json:"registry,omitempty"`
@@ -103,6 +103,7 @@ type AssurancePolicy struct {
 	PolicySettings              PolicySettings          `json:"policy_settings,omitempty"`
 	ExcludeApplicationScopes    []string                `json:"exclude_application_scopes"`
 	LinuxCisEnabled             bool                    `json:"linux_cis_enabled"`
+	WindowsCisEnabled           bool                    `json:"windows_cis_enabled"`
 	OpenshiftHardeningEnabled   bool                    `json:"openshift_hardening_enabled"`
 	KubernetesControlsAvdIds    []string                `json:"kubernetes_controls_avd_ids"`
 	VulnerabilityScoreRange     []int                   `json:"vulnerability_score_range"`
@@ -184,19 +185,19 @@ type KubernetesControls struct {
 type KubernetesControlsArray []KubernetesControls
 
 // GetAssurancePolicy - returns single  Assurance Policy
-func (cli *Client) GetAssurancePolicy(name string, at string) (*AssurancePolicy, error) {
+func (cli *Client) GetAssurancePolicy(name string, assuranceType string) (*AssurancePolicy, error) {
 	var err error
 	var response AssurancePolicy
 	var atype string
-	if strings.EqualFold(at, "host") {
+	if strings.EqualFold(assuranceType, "host") {
 		atype = "host"
-	} else if strings.EqualFold(at, "image") {
+	} else if strings.EqualFold(assuranceType, "image") {
 		atype = "image"
-	} else if strings.EqualFold(at, "function") {
+	} else if strings.EqualFold(assuranceType, "function") {
 		atype = "function"
-	} else if strings.EqualFold(at, "kubernetes") {
+	} else if strings.EqualFold(assuranceType, "kubernetes") {
 		atype = "kubernetes"
-	} else if strings.EqualFold(at, "cf_application") {
+	} else if strings.EqualFold(assuranceType, "cf_application") {
 		atype = "cf_application"
 	}
 
@@ -237,18 +238,18 @@ func (cli *Client) GetAssurancePolicy(name string, at string) (*AssurancePolicy,
 }
 
 // CreateAssurancePolicy - creates single Aqua  Assurance Policy
-func (cli *Client) CreateAssurancePolicy(assurancepolicy *AssurancePolicy, at string) error {
-	payload, err := json.Marshal(assurancepolicy)
+func (cli *Client) CreateAssurancePolicy(assurancePolicy *AssurancePolicy, assuranceType string) error {
+	payload, err := json.Marshal(assurancePolicy)
 	var atype string
-	if strings.EqualFold(at, "host") {
+	if strings.EqualFold(assuranceType, "host") {
 		atype = "host"
-	} else if strings.EqualFold(at, "image") {
+	} else if strings.EqualFold(assuranceType, "image") {
 		atype = "image"
-	} else if strings.EqualFold(at, "function") {
+	} else if strings.EqualFold(assuranceType, "function") {
 		atype = "function"
-	} else if strings.EqualFold(at, "kubernetes") {
+	} else if strings.EqualFold(assuranceType, "kubernetes") {
 		atype = "kubernetes"
-	} else if strings.EqualFold(at, "cf_application") {
+	} else if strings.EqualFold(assuranceType, "cf_application") {
 		atype = "cf_application"
 	}
 
@@ -283,24 +284,24 @@ func (cli *Client) CreateAssurancePolicy(assurancepolicy *AssurancePolicy, at st
 }
 
 // UpdateAssurancePolicy updates an existing  Assurance Policy
-func (cli *Client) UpdateAssurancePolicy(assurancepolicy *AssurancePolicy, at string) error {
-	payload, err := json.Marshal(assurancepolicy)
+func (cli *Client) UpdateAssurancePolicy(assurancePolicy *AssurancePolicy, assuranceType string) error {
+	payload, err := json.Marshal(assurancePolicy)
 	if err != nil {
 		return err
 	}
 	var atype string
-	if strings.EqualFold(at, "host") {
+	if strings.EqualFold(assuranceType, "host") {
 		atype = "host"
-	} else if strings.EqualFold(at, "image") {
+	} else if strings.EqualFold(assuranceType, "image") {
 		atype = "image"
-	} else if strings.EqualFold(at, "function") {
+	} else if strings.EqualFold(assuranceType, "function") {
 		atype = "function"
-	} else if strings.EqualFold(at, "kubernetes") {
+	} else if strings.EqualFold(assuranceType, "kubernetes") {
 		atype = "kubernetes"
-	} else if strings.EqualFold(at, "cf_application") {
+	} else if strings.EqualFold(assuranceType, "cf_application") {
 		atype = "cf_application"
 	}
-	apiPath := "/api/v2/assurance_policy/" + atype + "/" + assurancepolicy.Name
+	apiPath := "/api/v2/assurance_policy/" + atype + "/" + assurancePolicy.Name
 	request := cli.gorequest
 	err = cli.limiter.Wait(context.Background())
 	if err != nil {
@@ -328,18 +329,18 @@ func (cli *Client) UpdateAssurancePolicy(assurancepolicy *AssurancePolicy, at st
 }
 
 // DeleteAssurancePolicy removes a  Assurance Policy
-func (cli *Client) DeleteAssurancePolicy(name string, at string) error {
+func (cli *Client) DeleteAssurancePolicy(name string, assuranceType string) error {
 	request := cli.gorequest
 	var atype string
-	if strings.EqualFold(at, "host") {
+	if strings.EqualFold(assuranceType, "host") {
 		atype = "host"
-	} else if strings.EqualFold(at, "image") {
+	} else if strings.EqualFold(assuranceType, "image") {
 		atype = "image"
-	} else if strings.EqualFold(at, "function") {
+	} else if strings.EqualFold(assuranceType, "function") {
 		atype = "function"
-	} else if strings.EqualFold(at, "kubernetes") {
+	} else if strings.EqualFold(assuranceType, "kubernetes") {
 		atype = "kubernetes"
-	} else if strings.EqualFold(at, "cf_application") {
+	} else if strings.EqualFold(assuranceType, "cf_application") {
 		atype = "cf_application"
 	}
 	apiPath := "/api/v2/assurance_policy/" + atype + "/" + name

@@ -3,12 +3,12 @@
 page_title: "aquasec_enforcer_groups Data Source - terraform-provider-aquasec"
 subcategory: ""
 description: |-
-  
+  The data source aquasec_enforcer_groups provides an Enforcer group template that generates a configuration file, which is subsequently used to generate one or more Enforcers using a Docker command.
 ---
 
 # aquasec_enforcer_groups (Data Source)
 
-
+The data source `aquasec_enforcer_groups` provides an Enforcer group template that generates a configuration file, which is subsequently used to generate one or more Enforcers using a Docker command.
 
 ## Example Usage
 
