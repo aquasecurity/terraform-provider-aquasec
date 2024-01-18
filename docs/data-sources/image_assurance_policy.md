@@ -75,7 +75,7 @@ description: |-
 - `maximum_score_exclude_no_fix` (Boolean) Indicates that policy should ignore cases that do not have a known fix.
 - `monitored_malware_paths` (List of String)
 - `only_none_root_users` (Boolean) Indicates if raise a warning for images that should only be run as root.
-- `packages_black_list` (Set of Object) List of blacklist images. (see [below for nested schema](#nestedatt--packages_black_list))
+- `packages_black_list` (Set of Object) List of blacklisted images. (see [below for nested schema](#nestedatt--packages_black_list))
 - `packages_black_list_enabled` (Boolean) Indicates if packages blacklist is relevant.
 - `packages_white_list` (Set of Object) List of whitelisted images. (see [below for nested schema](#nestedatt--packages_white_list))
 - `packages_white_list_enabled` (Boolean) Indicates if packages whitelist is relevant.

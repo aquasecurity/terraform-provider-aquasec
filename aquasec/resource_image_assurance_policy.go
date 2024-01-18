@@ -310,7 +310,7 @@ func resourceImageAssurancePolicy() *schema.Resource {
 			},
 			"packages_black_list": {
 				Type:        schema.TypeSet,
-				Description: "List of blacklist images.",
+				Description: "List of blacklisted images.",
 				Optional:    true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
@@ -1798,6 +1798,11 @@ func expandAssurancePolicy(d *schema.ResourceData, a_type string) *client.Assura
 	linux_cis_enabled, ok := d.GetOk("linux_cis_enabled")
 	if ok {
 		iap.LinuxCisEnabled = linux_cis_enabled.(bool)
+	}
+
+	windows_cis_enabled, ok := d.GetOk("windows_cis_enabled")
+	if ok {
+		iap.WindowsCisEnabled = windows_cis_enabled.(bool)
 	}
 
 	openshift_hardening_enabled, ok := d.GetOk("openshift_hardening_enabled")

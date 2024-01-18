@@ -87,7 +87,7 @@ description: |-
 - `monitored_malware_paths` (List of String)
 - `only_none_root_users` (Boolean) Indicates if raise a warning for images that should only be run as root.
 - `openshift_hardening_enabled` (Boolean)
-- `packages_black_list` (Block Set) List of blacklist images. (see [below for nested schema](#nestedblock--packages_black_list))
+- `packages_black_list` (Block Set) List of blacklisted images. (see [below for nested schema](#nestedblock--packages_black_list))
 - `packages_black_list_enabled` (Boolean) Indicates if packages blacklist is relevant.
 - `packages_white_list` (Block Set) List of whitelisted images. (see [below for nested schema](#nestedblock--packages_white_list))
 - `packages_white_list_enabled` (Boolean) Indicates if packages whitelist is relevant.

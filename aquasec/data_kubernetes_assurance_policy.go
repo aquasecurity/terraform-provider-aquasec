@@ -300,7 +300,7 @@ func dataKubernetesAssurancePolicy() *schema.Resource {
 			},
 			"packages_black_list": {
 				Type:        schema.TypeSet,
-				Description: "List of blacklist images.",
+				Description: "List of blacklisted images.",
 				Computed:    true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
