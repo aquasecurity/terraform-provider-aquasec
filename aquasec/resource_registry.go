@@ -325,6 +325,21 @@ func resourceRegistryRead(d *schema.ResourceData, m interface{}) error {
 		return err
 	}
 
+	// Check if default_prefix, and remove it for tf diff
+	prefixes := r.Prefixes
+	if r.DefaultPrefix != "" {
+		// Find the index of r.DefaultPrefix
+		var indexToRemove int
+		for i, prefix := range prefixes {
+			if prefix == r.DefaultPrefix {
+				indexToRemove = i
+				break
+			}
+		}
+		// Remove the element by slicing the slice
+		prefixes = append(prefixes[:indexToRemove], prefixes[indexToRemove+1:]...)
+	}
+
 	if err = d.Set("auto_pull", r.AutoPull); err != nil {
 		return err
 	}
@@ -373,7 +388,7 @@ func resourceRegistryRead(d *schema.ResourceData, m interface{}) error {
 	if err = d.Set("username", r.Username); err != nil {
 		return err
 	}
-	if err = d.Set("prefixes", r.Prefixes); err != nil {
+	if err = d.Set("prefixes", prefixes); err != nil {
 		return err
 	}
 	if err = d.Set("advanced_settings_cleanup", r.AdvancedSettingsCleanup); err != nil {
@@ -419,6 +434,13 @@ func resourceRegistryUpdate(d *schema.ResourceData, m interface{}) error {
 	if d.HasChanges("name", "registry_scan_timeout", "username", "description", "pull_image_tag_pattern", "password", "url", "type", "auto_pull", "auto_pull_rescan", "auto_pull_max", "advanced_settings_cleanup", "auto_pull_time", "auto_pull_interval", "auto_cleanup", "image_creation_date_condition", "scanner_name", "prefixes", "pull_image_count", "pull_image_age", "options", "webhook", "always_pull_patterns", "pull_repo_patterns_excluded") {
 
 		prefixes := d.Get("prefixes").([]interface{})
+		var defaultPrefix string
+		// Add default_prefix to prefixes
+		r, _ := c.GetRegistry(d.Id())
+		if r.DefaultPrefix != "" {
+			prefixes = append(prefixes, r.DefaultPrefix)
+			defaultPrefix = r.DefaultPrefix
+		}
 		always_pull_patterns := d.Get("always_pull_patterns").([]interface{})
 		pull_repo_patterns_excluded := d.Get("pull_repo_patterns_excluded").([]interface{})
 		pull_image_tag_pattern := d.Get("pull_image_tag_pattern").([]interface{})
@@ -454,6 +476,7 @@ func resourceRegistryUpdate(d *schema.ResourceData, m interface{}) error {
 			ScannerNameRemoved:         convertStringArr(scanner_name_removed),
 			ExistingScanners:           convertStringArr(existsing_scanners),
 			Prefixes:                   convertStringArr(prefixes),
+			DefaultPrefix:              defaultPrefix,
 			AlwaysPullPatterns:         convertStringArr(always_pull_patterns),
 			PullRepoPatternsExcluded:   convertStringArr(pull_repo_patterns_excluded),
 			PullImageTagPattern:        convertStringArr(pull_image_tag_pattern),
