@@ -24,25 +24,12 @@ resource "aquasec_container_runtime_policy" "container_runtime_policy" {
   ]
   block_cryptocurrency_mining = true
   block_fileless_exec = true
-  block_non_compliant_images    = true
   block_non_compliant_workloads = true
   block_non_k8s_containers = true
-  block_reverse_shell = true
-  reverse_shell_allowed_processes = [
-    "proc1",
-    "proc2"
-  ]
-  reverse_shell_allowed_ips = [
-    "ip1",
-    "ip2"
-  ]
-  block_unregistered_images     = true
   blocked_capabilities = [
     "AUDIT_CONTROL",
     "AUDIT_WRITE"
   ]
-  enable_ip_reputation_security = true
-  enable_drift_prevention       = true
   allowed_executables = [
     "exe",
     "bin",
@@ -99,15 +86,6 @@ resource "aquasec_container_runtime_policy" "container_runtime_policy" {
   blocked_outbound_ports = [
     "90",
     "9090"
-  ]
-  enable_port_scan_detection = true
-  readonly_files_and_directories = [
-    "readonly",
-    "/dir/"
-  ]
-  exceptional_readonly_files_and_directories = [
-    "readonly2",
-    "/dir2/"
   ]
   allowed_registries = [
     "registry1",
