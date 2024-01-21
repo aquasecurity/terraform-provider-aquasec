@@ -33,7 +33,6 @@ resource "aquasec_host_runtime_policy" "host_runtime_policy" {
   enforce = false
   block_cryptocurrency_mining = true
   audit_brute_force_login = true
-  enable_ip_reputation_security = true
   blocked_files = [
     "blocked",
   ]
@@ -70,31 +69,9 @@ resource "aquasec_host_runtime_policy" "host_runtime_policy" {
   package_block = [
     "package1"
   ]
-  port_scanning_detection = true
   monitor_system_time_changes = true
   monitor_windows_services    = true
   monitor_system_log_integrity = true
-  windows_registry_monitoring {
-    monitor_create      = true
-    monitor_read        = true
-    monitor_modify      = true
-    monitor_delete      = true
-    monitor_attributes  = true
-    monitored_paths     = ["paths"]
-    excluded_paths      = ["expaths"]
-    monitored_processes = ["process"]
-    excluded_processes  = ["exprocess"]
-    monitored_users     = ["user"]
-    excluded_users      = ["expuser"]
-  }
-  windows_registry_protection {
-    protected_paths     = ["paths"]
-    excluded_paths      = ["expaths"]
-    protected_processes = ["process"]
-    excluded_processes  = ["exprocess"]
-    protected_users     = ["user"]
-    excluded_users      = ["expuser"]
-  }
 }
 ```
 
