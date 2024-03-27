@@ -44,7 +44,7 @@ Aqua Image Assurance covers the first part of the container lifecycle: image dev
 - `cves_black_list_enabled` (Boolean) Indicates if CVEs blacklist is relevant.
 - `cves_white_list` (List of String) List of cves whitelisted licenses
 - `cves_white_list_enabled` (Boolean) Indicates if cves whitelist is relevant.
-- `cvss_severity` (String) Identifier of the cvss severity.
+- `cvss_severity` (String) Identifier of the cvss severity. Only applied if `cvss_severity_enabled` is set to `true`. Valid options: `critical`, `high`, `medium`, `low`.
 - `cvss_severity_enabled` (Boolean) Indicates if the cvss severity is scanned.
 - `cvss_severity_exclude_no_fix` (Boolean) Indicates that policy should ignore cvss cases that do not have a known fix.
 - `description` (String)

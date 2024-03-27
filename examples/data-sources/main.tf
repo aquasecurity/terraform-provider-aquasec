@@ -2,7 +2,7 @@ terraform {
   required_providers {
     aquasec = {
       //      version = "0.8.27"
-      source  = "aquasecurity/aquasec"
+      source = "aquasecurity/aquasec"
     }
   }
 }
@@ -37,17 +37,17 @@ output "service" {
 }
 
 data "aquasec_enforcer_groups" "testegdata" {
-	group_id = "default"
+  group_id = "default"
 }
 
-output "enforcergroups"{
+output "enforcergroups" {
   value = data.aquasec_enforcer_groups.testegdata
 }
 
 data "aquasec_image" "test" {
-  registry = "Docker Hub"
+  registry   = "Docker Hub"
   repository = "elasticsearch"
-  tag = "7.10.1"
+  tag        = "7.10.1"
 }
 
 output "image" {
@@ -87,7 +87,7 @@ output "gateways" {
 }
 
 data "aquasec_image_assurance_policy" "default-iap" {
-    name = "DTA"
+  name = "DTA"
 }
 
 output "image-assurance" {
@@ -106,7 +106,7 @@ output "permissions_sets_names" {
 
 
 data "aquasec_host_assurance_policy" "default-hap" {
-    name = "Default"
+  name = "Default"
 }
 
 output "host-assurance" {
@@ -114,7 +114,7 @@ output "host-assurance" {
 }
 
 data "aquasec_function_assurance_policy" "default-fap" {
-    name = "Default"
+  name = "Default"
 }
 
 output "function-assurance" {
@@ -122,7 +122,7 @@ output "function-assurance" {
 }
 
 data "aquasec_application_scope" "default" {
-    name = "Global"
+  name = "Global"
 }
 
 output "scopes" {
