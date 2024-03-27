@@ -2,7 +2,7 @@ terraform {
   required_providers {
     aquasec = {
       //      version = "0.8.27"
-      source  = "aquasecurity/aquasec"
+      source = "aquasecurity/aquasec"
     }
   }
 }
@@ -26,9 +26,9 @@ resource "aquasec_user" "name" {
 }
 
 resource "aquasec_integration_registry" "demoregistry" {
-  name = "terraform-ecr"
-  url = "us-east-1"
-  type = "AWS"
+  name     = "terraform-ecr"
+  url      = "us-east-1"
+  type     = "AWS"
   username = "APIKEY"
   password = "SECRETKEY"
   prefixes = [
@@ -37,43 +37,43 @@ resource "aquasec_integration_registry" "demoregistry" {
   auto_pull = true
 }
 resource "aquasec_firewall_policy" "test-policy" {
-  name = "test-firewall-policy"
+  name        = "test-firewall-policy"
   description = "this is a test firewall policy"
 
-  block_icmp_ping = true
+  block_icmp_ping        = true
   block_metadata_service = false
 
   inbound_networks {
-    allow = true
-    port_range = "8080-9999"
+    allow         = true
+    port_range    = "8080-9999"
     resource_type = "anywhere"
   }
 
   outbound_networks {
-    allow = false
-    port_range = "6060-7070"
+    allow         = false
+    port_range    = "6060-7070"
     resource_type = "anywhere"
   }
 }
 
 resource "aquasec_service" "test-svc" {
-  name = "test-svc"
+  name        = "test-svc"
   description = "test svc description"
   policies = [
     "default",
   ]
 
   priority = 95
-  target = "container"
+  target   = "container"
 
   scope_expression = "v1 || v2"
   scope_variables {
     attribute = "kubernetes.cluster"
-    value = "default"
+    value     = "default"
   }
   scope_variables {
-      attribute = "kubernetes.cluster"
-      value = "kube-system"
+    attribute = "kubernetes.cluster"
+    value     = "kube-system"
   }
 
   application_scopes = [
@@ -82,34 +82,34 @@ resource "aquasec_service" "test-svc" {
   enforce = true
 }
 resource "aquasec_enforcer_groups" "new" {
-  group_id = "terraform"
-  description = "Created1"
+  group_id     = "terraform"
+  description  = "Created1"
   logical_name = "terraform-eg"
-  enforce = true
+  enforce      = true
   gateways = [
     "local-cluster"
   ]
   type = "agent"
   orchestrator {
-    type = "kubernetes"
+    type            = "kubernetes"
     service_account = "aquasa"
-    namespace = "aqua"
-    master = false
+    namespace       = "aqua"
+    master          = false
   }
 }
 resource "aquasec_image" "test" {
-  registry = "Docker Hub"
+  registry   = "Docker Hub"
   repository = "elasticsearch"
-  tag = "7.10.1"
+  tag        = "7.10.1"
 }
 
 resource "aquasec_notification_slack" "new" {
-  name = "Slack"
-  enabled = true
-  type = "slack"
-  channel = "#general"
+  name        = "Slack"
+  enabled     = true
+  type        = "slack"
+  channel     = "#general"
   webhook_url = "https://hooks.slack.com/services/T01PHXXXXXX/XXXXXXABJSC/EnwXXXXXXeoVS3BhR9SkBDAo"
-  user_name = "Aquasec"
+  user_name   = "Aquasec"
 }
 
 resource "aquasec_container_runtime_policy" "test" {
@@ -146,7 +146,7 @@ resource "aquasec_container_runtime_policy" "test" {
 
   malware_scan_options {
     enabled = true
-    action = "alert"
+    action  = "alert"
     #exclude_directories = [ "/var/run/" ]
   }
   blocked_packages = [
@@ -182,17 +182,17 @@ resource "aquasec_container_runtime_policy" "test" {
   block_privileged_containers = true
   block_root_user             = true
   block_low_port_binding      = true
-  limit_new_privileges = true
+  limit_new_privileges        = true
   blocked_capabilities = [
     "ALL"
   ]
 }
 
 resource "aquasec_function_runtime_policy" "test" {
-  name                          = "test-function-terraform"
-  description                   = "This is a test description."
-  enforce                       = true
-  block_malicious_executables   = true
+  name                        = "test-function-terraform"
+  description                 = "This is a test description."
+  enforce                     = true
+  block_malicious_executables = true
 
   blocked_executables = [
     "bin",
@@ -266,89 +266,89 @@ resource "aquasec_host_runtime_policy" "test" {
 }
 
 resource "aquasec_image_assurance_policy" "newiap" {
-    name = "testprovider"
-    assurance_type = "image"
-    description = "Created using Terraform"
-    application_scopes = [
-        "Global"
-    ]
-    audit_on_failure = true
-    fail_cicd = true
-    block_failed = true
-    whitelisted_licenses_enabled = true
-    whitelisted_licenses = [
-        "AGPL-3.0",
-        "Apache-2.0",
-        "BSD-2-Clause"
-    ]
+  name           = "testprovider"
+  assurance_type = "image"
+  description    = "Created using Terraform"
+  application_scopes = [
+    "Global"
+  ]
+  audit_on_failure             = true
+  fail_cicd                    = true
+  block_failed                 = true
+  whitelisted_licenses_enabled = true
+  whitelisted_licenses = [
+    "AGPL-3.0",
+    "Apache-2.0",
+    "BSD-2-Clause"
+  ]
 }
 
 resource "aquasec_permissions_sets" "my_terraform_perm_set" {
-		name = "my_terraform_perm_set"
-		description     = "created from terraform"
-		author    = "system"
-		ui_access = true
-		is_super = false
-		actions = [
-          "dashboard.read",
-          "risks.vulnerabilities.read",
-          "risks.vulnerabilities.write",
-          "risks.host_images.read",
-          "risks.benchmark.read",
-          "risk_explorer.read",          
-          "images.read", 
-          "image_profiles.read",
-          "image_assurance.read",
-          "image_assurance.write",          
-          "runtime_policies.read", 
-          "runtime_policies.write", 
-          "functions.read", 
-          "gateways.read",
-          "secrets.read",
-          "audits.read",
-          "containers.read",
-          "enforcers.read",         
-          "infrastructure.read",
-          "consoles.read",
-          "settings.read",
-          "network_policies.read",
-          "acl_policies.read",
-          "acl_policies.write",
-          "services.read",
-          "integrations.read",
-          "registries_integrations.read",
-          "web_hook.read",
-          "incidents.read"    
-		]
+  name        = "my_terraform_perm_set"
+  description = "created from terraform"
+  author      = "system"
+  ui_access   = true
+  is_super    = false
+  actions = [
+    "dashboard.read",
+    "risks.vulnerabilities.read",
+    "risks.vulnerabilities.write",
+    "risks.host_images.read",
+    "risks.benchmark.read",
+    "risk_explorer.read",
+    "images.read",
+    "image_profiles.read",
+    "image_assurance.read",
+    "image_assurance.write",
+    "runtime_policies.read",
+    "runtime_policies.write",
+    "functions.read",
+    "gateways.read",
+    "secrets.read",
+    "audits.read",
+    "containers.read",
+    "enforcers.read",
+    "infrastructure.read",
+    "consoles.read",
+    "settings.read",
+    "network_policies.read",
+    "acl_policies.read",
+    "acl_policies.write",
+    "services.read",
+    "integrations.read",
+    "registries_integrations.read",
+    "web_hook.read",
+    "incidents.read"
+  ]
 }
 resource "aquasec_host_assurance_policy" "newhap" {
-    name = "testprovider"
-    description = "Created using Terraform"
-    application_scopes = [
-        "Global"
-    ]
-    audit_on_failure = true
-    fail_cicd = true
-    block_failed = true
-    whitelisted_licenses_enabled = true
-    whitelisted_licenses = [
-        "AGPL-3.0",
-        "Apache-2.0",
-        "BSD-2-Clause"
-    ]
+  name        = "testprovider"
+  description = "Created using Terraform"
+  application_scopes = [
+    "Global"
+  ]
+  audit_on_failure             = true
+  fail_cicd                    = true
+  block_failed                 = true
+  whitelisted_licenses_enabled = true
+  whitelisted_licenses = [
+    "AGPL-3.0",
+    "Apache-2.0",
+    "BSD-2-Clause"
+  ]
 }
 
 resource "aquasec_function_assurance_policy" "newfap" {
-    name = "testprovider"
-    description = "Created using Terraform"
-    application_scopes = [
-        "Global"
-    ]
-    audit_on_failure = true
-    fail_cicd = true
-    block_failed = true
-    maximum_score         = "1.0"
-    maximum_score_enabled = true
+  name        = "testprovider"
+  description = "Created using Terraform"
+  application_scopes = [
+    "Global"
+  ]
+  audit_on_failure      = true
+  fail_cicd             = true
+  block_failed          = true
+  maximum_score         = "1.0"
+  maximum_score_enabled = true
 }
 
 resource "aquasec_application_scope" "terraformiap" {
