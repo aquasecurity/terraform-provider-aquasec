@@ -80,6 +80,10 @@ func NewClient(url, user, password string, verifyTLS bool, caCertByte []byte) *C
 		c.clientType = Saas
 		c.tokenUrl = consts.SaasAsia2TokenUrl
 		break
+	case consts.SaaSAu2Url:
+		c.clientType = Saas
+		c.tokenUrl = consts.SaasAu2TokenUrl
+		break
 	case consts.SaasDevUrl:
 		c.clientType = SaasDev
 		c.tokenUrl = consts.SaasDevTokenUrl
@@ -149,6 +153,9 @@ func (cli *Client) GetUSEAuthToken() (string, string, error) {
 		break
 	case consts.SaasAsia2Url:
 		provUrl = consts.SaasAsia2ProvUrl
+		break
+	case consts.SaaSAu2Url:
+		provUrl = consts.SaasAu2ProvUrl
 		break
 	case consts.SaasDevUrl:
 		provUrl = consts.SaasDevProvUrl
