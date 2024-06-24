@@ -32,7 +32,7 @@ The provider lets you declaratively define the configuration for your Aqua Enter
 ## Requirements
 
 -	[Terraform](https://www.terraform.io/downloads.html) v0.12.x or higher
--	[Go](https://golang.org/doc/install) v1.16.x (to build the provider plugin)
+-	[Go](https://golang.org/doc/install) v1.18.x (to build the provider plugin)
 - [Aqua Enterprise Platform](https://www.aquasec.com/aqua-cloud-native-security-platform/)
 
 ## Using the Aquasec provider
