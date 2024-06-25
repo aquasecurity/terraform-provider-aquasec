@@ -226,6 +226,8 @@ func isSaasEnv() bool {
 		return true
 	case consts.SaasAsia2Url:
 		return true
+	case consts.SaaSAu2Url:
+		return true
 	default:
 		return false
 	}
