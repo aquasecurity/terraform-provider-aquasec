@@ -5,7 +5,7 @@ const (
 	SaasEu1Url            = "https://eu-1.cloud.aquasec.com"
 	SaasAsia1Url          = "https://asia-1.cloud.aquasec.com"
 	SaasAsia2Url          = "https://asia-2.cloud.aquasec.com"
-	SaaSAu2Url            = "https://ap-2.cloud.aquasec.com/"
+	SaaSAu2Url            = "https://ap-2.cloud.aquasec.com"
 	SaasDevUrl            = "https://cloud-dev.aquasec.com"
 	SaasDevTokenUrl       = "https://stage.api.cloudsploit.com"
 	SaasDevProvUrl        = "https://prov-dev.cloud.aquasec.com"
