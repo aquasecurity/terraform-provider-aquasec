@@ -50,6 +50,11 @@ func testAccCheckApplicationScope(name string, description string) string {
 						attribute = "image.repo"
 						value = "test123"
 					}
+					variables {
+						attribute = "image.label"
+						name = "test.label"
+						value = "test.value.123"
+					}
 				}
 			}
 			workloads {

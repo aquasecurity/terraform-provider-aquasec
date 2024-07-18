@@ -63,6 +63,10 @@ func dataApplicationScope() *schema.Resource {
 																Type:     schema.TypeString,
 																Optional: true,
 															},
+															"name": {
+																Type:     schema.TypeString,
+																Optional: true,
+															},
 														},
 													},
 												},
