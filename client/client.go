@@ -121,7 +121,7 @@ func (cli *Client) GetAuthToken() (string, string, error) {
 
 // GetAuthToken - Connect to Aqua and return a JWT bearerToken (string)
 func (cli *Client) GetCspAuthToken() (string, error) {
-	resp, body, errs := cli.gorequest.Post(cli.url + "/api/v1/login").
+	resp, body, errs := cli.gorequest.Clone().Post(cli.url + "/api/v1/login").
 		Send(`{"id":"` + cli.user + `", "password":"` + cli.password + `"}`).End()
 	if errs != nil {
 		return "", getMergedError(errs)
