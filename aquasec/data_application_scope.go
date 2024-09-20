@@ -97,6 +97,10 @@ func dataApplicationScope() *schema.Resource {
 																Type:     schema.TypeString,
 																Optional: true,
 															},
+															"name": {
+																Type:     schema.TypeString,
+																Optional: true,
+															},
 														},
 													},
 												},
@@ -124,6 +128,10 @@ func dataApplicationScope() *schema.Resource {
 																Computed: true,
 															},
 															"value": {
+																Type:     schema.TypeString,
+																Optional: true,
+															},
+															"name": {
 																Type:     schema.TypeString,
 																Optional: true,
 															},
@@ -157,6 +165,11 @@ func dataApplicationScope() *schema.Resource {
 													Computed: true,
 												},
 												"value": {
+													Type:     schema.TypeString,
+													Optional: true,
+													Computed: true,
+												},
+												"name": {
 													Type:     schema.TypeString,
 													Optional: true,
 													Computed: true,
@@ -196,6 +209,10 @@ func dataApplicationScope() *schema.Resource {
 																Type:     schema.TypeString,
 																Optional: true,
 															},
+															"name": {
+																Type:     schema.TypeString,
+																Optional: true,
+															},
 														},
 													},
 												},
@@ -226,6 +243,10 @@ func dataApplicationScope() *schema.Resource {
 																Type:     schema.TypeString,
 																Optional: true,
 															},
+															"name": {
+																Type:     schema.TypeString,
+																Optional: true,
+															},
 														},
 													},
 												},
@@ -253,6 +274,10 @@ func dataApplicationScope() *schema.Resource {
 																Computed: true,
 															},
 															"value": {
+																Type:     schema.TypeString,
+																Optional: true,
+															},
+															"name": {
 																Type:     schema.TypeString,
 																Optional: true,
 															},
@@ -294,6 +319,10 @@ func dataApplicationScope() *schema.Resource {
 																Type:     schema.TypeString,
 																Optional: true,
 															},
+															"name": {
+																Type:     schema.TypeString,
+																Optional: true,
+															},
 														},
 													},
 												},
@@ -321,6 +350,10 @@ func dataApplicationScope() *schema.Resource {
 																Computed: true,
 															},
 															"value": {
+																Type:     schema.TypeString,
+																Optional: true,
+															},
+															"name": {
 																Type:     schema.TypeString,
 																Optional: true,
 															},
