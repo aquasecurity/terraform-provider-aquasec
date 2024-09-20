@@ -41,7 +41,7 @@ func testAccCheckApplicationScope(name string, description string) string {
 		categories {
 			artifacts {
 				image {
-					expression = "v1 && v2"
+					expression = "v1 && v2 && v3"
 					variables {
 						attribute = "aqua.registry"
 						value = "test"
