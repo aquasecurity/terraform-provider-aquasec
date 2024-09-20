@@ -593,6 +593,7 @@ func createCommonStruct(m map[string]interface{}) client.CommonStruct {
 		Vars = append(Vars, client.Variables{
 			Attribute: v["attribute"].(string),
 			Value:     v["value"].(string),
+			Name:      v["name"].(string),
 		})
 	}
 	commonStruct.Expression = Expresion
