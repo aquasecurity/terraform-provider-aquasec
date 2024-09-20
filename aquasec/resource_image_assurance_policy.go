@@ -2,9 +2,10 @@ package aquasec
 
 import (
 	"fmt"
+	"strings"
+
 	"github.com/aquasecurity/terraform-provider-aquasec/client"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-	"strings"
 )
 
 func resourceImageAssurancePolicy() *schema.Resource {
@@ -1752,17 +1753,19 @@ func expandAssurancePolicy(d *schema.ResourceData, a_type string) *client.Assura
 	if ok {
 		controlsList := kubernetesControlsList.([]interface{})
 		if len(controlsList) > 0 {
-			v := controlsList[0].(map[string]interface{})
-			iap.KubernetesControls = append(iap.KubernetesControls, client.KubernetesControls{
-				ScriptID:    int(v["script_id"].(int)),
-				Name:        v["name"].(string),
-				Description: v["description"].(string),
-				Enabled:     v["enabled"].(bool),
-				Severity:    v["severity"].(string),
-				Kind:        v["kind"].(string),
-				OOTB:        v["ootb"].(bool),
-				AvdID:       v["avd_id"].(string),
-			})
+			for _, control := range controlsList {
+				v := control.(map[string]interface{})
+				iap.KubernetesControls = append(iap.KubernetesControls, client.KubernetesControls{
+					ScriptID:    int(v["script_id"].(int)),
+					Name:        v["name"].(string),
+					Description: v["description"].(string),
+					Enabled:     v["enabled"].(bool),
+					Severity:    v["severity"].(string),
+					Kind:        v["kind"].(string),
+					OOTB:        v["ootb"].(bool),
+					AvdID:       v["avd_id"].(string),
+				})
+			}
 		}
 	}
 
