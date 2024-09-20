@@ -718,7 +718,7 @@ func flattenAppScopeVariables(variables []client.Variables) []interface{} {
 		check[i] = map[string]interface{}{
 			"attribute": variables[i].Attribute,
 			"value":     variables[i].Value,
-			"name":      variables[i].Name
+			"name":      variables[i].Name,
 		}
 	}
 
