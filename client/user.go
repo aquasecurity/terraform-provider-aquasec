@@ -83,7 +83,7 @@ func (cli *Client) GetUser(name string) (*FullUser, error) {
 	apiPath := fmt.Sprintf("/api/v1/users/%s", name)
 	if cli.clientType == Saas || cli.clientType == SaasDev {
 		baseUrl = cli.tokenUrl
-		apiPath = fmt.Sprintf("/v2/users/%s/?expand=csproles,group", name)
+		apiPath = fmt.Sprintf("/v2/users/%s?expand=csproles,group", name)
 	}
 
 	request := cli.gorequest
