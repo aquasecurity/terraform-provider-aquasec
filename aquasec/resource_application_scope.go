@@ -74,6 +74,10 @@ func resourceApplicationScope() *schema.Resource {
 																Type:     schema.TypeString,
 																Optional: true,
 															},
+															"name": {
+																Type:     schema.TypeString,
+																Optional: true,
+															},
 														},
 													},
 												},
@@ -100,6 +104,10 @@ func resourceApplicationScope() *schema.Resource {
 																Optional: true,
 															},
 															"value": {
+																Type:     schema.TypeString,
+																Optional: true,
+															},
+															"name": {
 																Type:     schema.TypeString,
 																Optional: true,
 															},
@@ -131,6 +139,10 @@ func resourceApplicationScope() *schema.Resource {
 																Type:     schema.TypeString,
 																Optional: true,
 															},
+															"name": {
+																Type:     schema.TypeString,
+																Optional: true,
+															},
 														},
 													},
 												},
@@ -159,6 +171,10 @@ func resourceApplicationScope() *schema.Resource {
 													Computed: true,
 												},
 												"value": {
+													Type:     schema.TypeString,
+													Computed: true,
+												},
+												"name": {
 													Type:     schema.TypeString,
 													Computed: true,
 												},
@@ -196,6 +212,10 @@ func resourceApplicationScope() *schema.Resource {
 																Type:     schema.TypeString,
 																Optional: true,
 															},
+															"name": {
+																Type:     schema.TypeString,
+																Optional: true,
+															},
 														},
 													},
 												},
@@ -224,6 +244,10 @@ func resourceApplicationScope() *schema.Resource {
 																Type:     schema.TypeString,
 																Optional: true,
 															},
+															"name": {
+																Type:     schema.TypeString,
+																Optional: true,
+															},
 														},
 													},
 												},
@@ -249,6 +273,10 @@ func resourceApplicationScope() *schema.Resource {
 																Optional: true,
 															},
 															"value": {
+																Type:     schema.TypeString,
+																Optional: true,
+															},
+															"name": {
 																Type:     schema.TypeString,
 																Optional: true,
 															},
@@ -289,6 +317,10 @@ func resourceApplicationScope() *schema.Resource {
 																Type:     schema.TypeString,
 																Optional: true,
 															},
+															"name": {
+																Type:     schema.TypeString,
+																Optional: true,
+															},
 														},
 													},
 												},
@@ -314,6 +346,10 @@ func resourceApplicationScope() *schema.Resource {
 																Optional: true,
 															},
 															"value": {
+																Type:     schema.TypeString,
+																Optional: true,
+															},
+															"name": {
 																Type:     schema.TypeString,
 																Optional: true,
 															},
@@ -557,6 +593,7 @@ func createCommonStruct(m map[string]interface{}) client.CommonStruct {
 		Vars = append(Vars, client.Variables{
 			Attribute: v["attribute"].(string),
 			Value:     v["value"].(string),
+			Name:      v["name"].(string),
 		})
 	}
 	commonStruct.Expression = Expresion
@@ -686,6 +723,7 @@ func flattenAppScopeVariables(variables []client.Variables) []interface{} {
 		check[i] = map[string]interface{}{
 			"attribute": variables[i].Attribute,
 			"value":     variables[i].Value,
+			"name":      variables[i].Name,
 		}
 	}
 

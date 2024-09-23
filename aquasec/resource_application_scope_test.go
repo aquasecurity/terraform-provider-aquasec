@@ -41,7 +41,7 @@ func testAccCheckApplicationScope(name string, description string) string {
 		categories {
 			artifacts {
 				image {
-					expression = "v1 && v2"
+					expression = "v1 && v2 && v3"
 					variables {
 						attribute = "aqua.registry"
 						value = "test"
@@ -49,6 +49,11 @@ func testAccCheckApplicationScope(name string, description string) string {
 					variables {
 						attribute = "image.repo"
 						value = "test123"
+					}
+					variables {
+						attribute = "image.label"
+						name = "test.label"
+						value = "test.value.123"
 					}
 				}
 			}

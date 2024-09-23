@@ -50,6 +50,7 @@ type CommonStruct struct {
 type Variables struct {
 	Attribute string `json:"attribute"`
 	Value     string `json:"value"`
+	Name 	  string `json:"name"`
 }
 
 // Get Application Scope
