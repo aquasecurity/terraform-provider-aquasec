@@ -1231,6 +1231,10 @@ func resourceContainerRuntimePolicy() *schema.Resource {
 										Description: "Variable value.",
 										Required:    true,
 									},
+									"name": {
+										Type:     schema.TypeString,
+										Optional: true,
+									},
 								},
 							},
 						},
