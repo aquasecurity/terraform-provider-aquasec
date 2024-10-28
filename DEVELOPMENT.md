@@ -55,7 +55,7 @@ In order to test the provider installed locally, the provider block will have to
 terraform {
   required_providers {
     aquasec = {
-      version = "0.8.30"
+      version = "0.8.31"
       source  = "terraform-provider-aquasec/aquasec/aquasec"
     }
   }
