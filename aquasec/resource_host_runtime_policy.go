@@ -3007,6 +3007,7 @@ func flattenVariables(variables []interface{}) []client.Variable {
 		val := v.(map[string]interface{})
 		result = append(result, client.Variable{
 			Attribute: val["attribute"].(string),
+                        Name:      val["name"].(string),
 			Value:     val["value"].(string),
 		})
 	}
