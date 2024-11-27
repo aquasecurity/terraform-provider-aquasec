@@ -5,12 +5,13 @@ import (
 	"crypto/x509"
 	"encoding/json"
 	"fmt"
+	"log"
+	neturl "net/url"
+
 	"github.com/aquasecurity/terraform-provider-aquasec/consts"
 	"github.com/parnurzeal/gorequest"
 	"golang.org/x/net/http/httpproxy"
 	"golang.org/x/time/rate"
-	"log"
-	neturl "net/url"
 )
 
 // Client - API client
@@ -29,6 +30,7 @@ type Client struct {
 const Csp string = "csp"
 const Saas = "saas"
 const SaasDev = "saasDev"
+const UserAgent = "terraform-provider-aquasec"
 
 // NewClient - initialize and return the Client
 func NewClient(url, user, password string, verifyTLS bool, caCertByte []byte) *Client {
@@ -47,11 +49,13 @@ func NewClient(url, user, password string, verifyTLS bool, caCertByte []byte) *C
 		}
 	}
 
+	request := gorequest.New().TLSClientConfig(tlsConfig)
+
 	c := &Client{
 		url:       url,
 		user:      user,
 		password:  password,
-		gorequest: gorequest.New().TLSClientConfig(tlsConfig),
+		gorequest: request,
 		// we are setting rate limit for 10 connection per second
 		limiter: rate.NewLimiter(10, 3),
 	}
@@ -121,7 +125,7 @@ func (cli *Client) GetAuthToken() (string, string, error) {
 
 // GetAuthToken - Connect to Aqua and return a JWT bearerToken (string)
 func (cli *Client) GetCspAuthToken() (string, error) {
-	resp, body, errs := cli.gorequest.Post(cli.url + "/api/v1/login").
+	resp, body, errs := cli.makeRequest().Post(cli.url + "/api/v1/login").
 		Send(`{"id":"` + cli.user + `", "password":"` + cli.password + `"}`).End()
 	if errs != nil {
 		return "", getMergedError(errs)
@@ -164,7 +168,7 @@ func (cli *Client) GetUSEAuthToken() (string, string, error) {
 		return "", "", fmt.Errorf(fmt.Sprintf("%v URL is not allowed USE url", cli.url))
 	}
 
-	resp, body, errs := cli.gorequest.Post(cli.tokenUrl + "/v2/signin").
+	resp, body, errs := cli.makeRequest().Post(cli.tokenUrl + "/v2/signin").
 		Send(`{"email":"` + cli.user + `", "password":"` + cli.password + `"}`).End()
 	if errs != nil {
 		return "", "", getMergedError(errs)
@@ -197,4 +201,8 @@ func (cli *Client) GetUSEAuthToken() (string, string, error) {
 	}
 
 	return "", "", fmt.Errorf("request failed. status: %s, response: %s", resp.Status, body)
+}
+
+func (cli *Client) makeRequest() *gorequest.SuperAgent {
+	return cli.gorequest.Clone().Set("User-Agent", UserAgent)
 }
