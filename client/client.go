@@ -30,7 +30,10 @@ type Client struct {
 const Csp string = "csp"
 const Saas = "saas"
 const SaasDev = "saasDev"
-const UserAgent = "terraform-provider-aquasec"
+
+const UserAgentBase = "terraform-provider-aquasec"
+
+var version = "dev" // This will be overridden by goreleaser during build
 
 // NewClient - initialize and return the Client
 func NewClient(url, user, password string, verifyTLS bool, caCertByte []byte) *Client {
@@ -204,5 +207,6 @@ func (cli *Client) GetUSEAuthToken() (string, string, error) {
 }
 
 func (cli *Client) makeRequest() *gorequest.SuperAgent {
-	return cli.gorequest.Clone().Set("User-Agent", UserAgent)
+	userAgent := fmt.Sprintf("%s/%s", UserAgentBase, version)
+	return cli.gorequest.Clone().Set("User-Agent", userAgent)
 }
