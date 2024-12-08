@@ -33,7 +33,7 @@ const SaasDev = "saasDev"
 
 const UserAgentBase = "terraform-provider-aquasec"
 
-var version = "dev" // This will be overridden by goreleaser during build
+var version string
 
 // NewClient - initialize and return the Client
 func NewClient(url, user, password string, verifyTLS bool, caCertByte []byte) *Client {
