@@ -109,6 +109,83 @@ func resourceService() *schema.Resource {
 				Description: "The service's policies; an array of container firewall policy names.",
 				Required:    true,
 			},
+			"local_policies": {
+				Type:        schema.TypeList,
+				Description: "A list of local policies for the service, including inbound and outbound network rules.",
+				Optional:    true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"name": {
+							Type:        schema.TypeString,
+							Description: "The name of the local policy.",
+							Required:    true,
+						},
+						"type": {
+							Type:        schema.TypeString,
+							Description: "The type of the local policy, e.g., access.control.",
+							Required:    true,
+						},
+						"description": {
+							Type:        schema.TypeString,
+							Description: "A description of the local policy.",
+							Optional:    true,
+						},
+						"inbound_networks": {
+							Type:        schema.TypeList,
+							Description: "Inbound network rules for the local policy.",
+							Optional:    true,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+									"port_range": {
+										Type:        schema.TypeString,
+										Description: "The port range for the inbound network rule.",
+										Required:    true,
+									},
+									"resource_type": {
+										Type:        schema.TypeString,
+										Description: "The resource type for the inbound network rule (e.g., anywhere).",
+										Required:    true,
+									},
+									"allow": {
+										Type:        schema.TypeBool,
+										Description: "Whether the inbound network rule is allowed.",
+										Required:    true,
+									},
+								},
+							},
+						},
+						"outbound_networks": {
+							Type:        schema.TypeList,
+							Description: "Outbound network rules for the local policy.",
+							Optional:    true,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+									"port_range": {
+										Type:        schema.TypeString,
+										Description: "The port range for the outbound network rule.",
+										Required:    true,
+									},
+									"resource_type": {
+										Type:        schema.TypeString,
+										Description: "The resource type for the outbound network rule (e.g., anywhere).",
+										Required:    true,
+									},
+									"allow": {
+										Type:        schema.TypeBool,
+										Description: "Whether the outbound network rule is allowed.",
+										Required:    true,
+									},
+								},
+							},
+						},
+						"block_metadata_service": {
+							Type:        schema.TypeBool,
+							Description: "Whether to block access to the metadata service.",
+							Optional:    true,
+						},
+					},
+				},
+			},
 			"evaluated": {
 				Type:        schema.TypeBool,
 				Description: "Whether the service has been evaluated for security vulnerabilities.",
@@ -231,16 +308,41 @@ func resourceServiceRead(ctx context.Context, d *schema.ResourceData, m interfac
 	d.Set("unregistered_count", service.UnregisteredCount)
 	d.Set("is_registered", service.IsRegistered)
 	d.Set("application_scopes", service.ApplicationScopes)
+	localPolicies := make([]map[string]interface{}, 0)
+	for _, policy := range service.LocalPolicies {
+		localPolicies = append(localPolicies, map[string]interface{}{
+			"name":                   policy.Name,
+			"type":                   policy.Type,
+			"description":            policy.Description,
+			"inbound_networks":       convertNetworkRulesToNetworks(policy.InboundNetworks),
+			"outbound_networks":      convertNetworkRulesToNetworks(policy.OutboundNetworks),
+			"block_metadata_service": policy.BlockMetadataService,
+		})
+	}
+	d.Set("local_policies", localPolicies)
+
 	d.SetId(service.Name)
 
 	return nil
+}
+
+func convertNetworkRulesToNetworks(networkRules []client.NetworkRule) []map[string]interface{} {
+	networkMaps := make([]map[string]interface{}, 0)
+	for _, networkRule := range networkRules {
+		networkMaps = append(networkMaps, map[string]interface{}{
+			"allow":         networkRule.Allow,
+			"port_range":    networkRule.PortRange,
+			"resource_type": networkRule.ResourceType,
+		})
+	}
+	return networkMaps
 }
 
 func resourceServiceUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	c := m.(*client.Client)
 	name := d.Get("name").(string)
 
-	if d.HasChanges("description", "monitoring", "policies", "enforce", "application_scopes", "target", "priority", "scope_expression", "scope_variables") {
+	if d.HasChanges("description", "monitoring", "policies", "enforce", "application_scopes", "target", "priority", "scope_expression", "scope_variables", "local_policies") {
 		service := expandService(d)
 		err := c.UpdateService(service)
 		if err == nil {
@@ -409,8 +511,38 @@ func expandService(d *schema.ResourceData) *client.Service {
 	if ok {
 		service.ApplicationScopes = convertStringArr(applicationScope.([]interface{}))
 	}
+	localPolicies, ok := d.GetOk("local_policies")
+	if ok {
+		localPoliciesList := make([]client.LocalPolicy, 0)
+		for _, v := range localPolicies.([]interface{}) {
+			policy := v.(map[string]interface{})
+
+			localPoliciesList = append(localPoliciesList, client.LocalPolicy{
+				Name:                 policy["name"].(string),
+				Type:                 policy["type"].(string),
+				Description:          policy["description"].(string),
+				InboundNetworks:      expandNetworks(policy["inbound_networks"].([]interface{})),
+				OutboundNetworks:     expandNetworks(policy["outbound_networks"].([]interface{})),
+				BlockMetadataService: policy["block_metadata_service"].(bool),
+			})
+		}
+		service.LocalPolicies = localPoliciesList
+	}
 
 	return &service
+}
+
+func expandNetworks(networks []interface{}) []client.NetworkRule {
+	networkRules := make([]client.NetworkRule, 0)
+	for _, n := range networks {
+		rule := n.(map[string]interface{})
+		networkRules = append(networkRules, client.NetworkRule{
+			PortRange:    rule["port_range"].(string),
+			ResourceType: rule["resource_type"].(string),
+			Allow:        rule["allow"].(bool),
+		})
+	}
+	return networkRules
 }
 
 func flattenScopeVariables(variables []client.Variable) []map[string]interface{} {

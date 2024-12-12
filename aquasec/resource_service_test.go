@@ -29,6 +29,20 @@ var basicService = client.Service{
 			},
 		},
 	},
+	LocalPolicies: []client.LocalPolicy{
+		{
+			Name:        "allow-ssh",
+			Type:        "access.control",
+			Description: "Allow SSH access",
+			InboundNetworks: []client.NetworkRule{
+				{
+					PortRange:    "22",
+					ResourceType: "anywhere",
+					Allow:        true,
+				},
+			},
+		},
+	},
 }
 
 var complexService = client.Service{
@@ -59,6 +73,20 @@ var complexService = client.Service{
 				{
 					Attribute: "os.type",
 					Value:     "Busybox",
+				},
+			},
+		},
+	},
+	LocalPolicies: []client.LocalPolicy{
+		{
+			Name:        "allow-ssh",
+			Type:        "access.control",
+			Description: "Allow SSH access",
+			InboundNetworks: []client.NetworkRule{
+				{
+					PortRange:    "22",
+					ResourceType: "anywhere",
+					Allow:        true,
 				},
 			},
 		},
@@ -94,6 +122,14 @@ func TestResourceAquasecServiceBasicCreate(t *testing.T) {
 					resource.TestCheckResourceAttrSet(rootRef, "containers_count"),
 					resource.TestCheckResourceAttrSet(rootRef, "lastupdate"),
 					resource.TestCheckResourceAttrSet(rootRef, "evaluated"),
+					resource.TestCheckResourceAttr(rootRef, "local_policies.#", fmt.Sprintf("%d", len(basicService.LocalPolicies))),
+					resource.TestCheckResourceAttr(rootRef, "local_policies.0.name", basicService.LocalPolicies[0].Name),
+					resource.TestCheckResourceAttr(rootRef, "local_policies.0.type", basicService.LocalPolicies[0].Type),
+					resource.TestCheckResourceAttr(rootRef, "local_policies.0.description", basicService.LocalPolicies[0].Description),
+					resource.TestCheckResourceAttr(rootRef, "local_policies.0.inbound_networks.#", fmt.Sprintf("%d", len(basicService.LocalPolicies[0].InboundNetworks))),
+					resource.TestCheckResourceAttr(rootRef, "local_policies.0.inbound_networks.0.port_range", basicService.LocalPolicies[0].InboundNetworks[0].PortRange),
+					resource.TestCheckResourceAttr(rootRef, "local_policies.0.inbound_networks.0.resource_type", basicService.LocalPolicies[0].InboundNetworks[0].ResourceType),
+					resource.TestCheckResourceAttr(rootRef, "local_policies.0.inbound_networks.0.allow", fmt.Sprintf("%v", basicService.LocalPolicies[0].InboundNetworks[0].Allow)),
 					resource.TestCheckResourceAttrSet(rootRef, "is_registered"),
 				),
 			},
@@ -137,6 +173,14 @@ func TestResourceAquasecServiceComplexCreate(t *testing.T) {
 					resource.TestCheckResourceAttr(rootRef, "scope_variables.2.attribute", complexService.MembershipRules.Scope.Variables[2].Attribute),
 					resource.TestCheckResourceAttr(rootRef, "scope_variables.2.value", complexService.MembershipRules.Scope.Variables[2].Value),
 					resource.TestCheckResourceAttr(rootRef, "author", os.Getenv("AQUA_USER")),
+					resource.TestCheckResourceAttr(rootRef, "local_policies.#", fmt.Sprintf("%d", len(complexService.LocalPolicies))),
+					resource.TestCheckResourceAttr(rootRef, "local_policies.0.name", complexService.LocalPolicies[0].Name),
+					resource.TestCheckResourceAttr(rootRef, "local_policies.0.type", complexService.LocalPolicies[0].Type),
+					resource.TestCheckResourceAttr(rootRef, "local_policies.0.description", complexService.LocalPolicies[0].Description),
+					resource.TestCheckResourceAttr(rootRef, "local_policies.0.inbound_networks.#", fmt.Sprintf("%d", len(complexService.LocalPolicies[0].InboundNetworks))),
+					resource.TestCheckResourceAttr(rootRef, "local_policies.0.inbound_networks.0.port_range", complexService.LocalPolicies[0].InboundNetworks[0].PortRange),
+					resource.TestCheckResourceAttr(rootRef, "local_policies.0.inbound_networks.0.resource_type", complexService.LocalPolicies[0].InboundNetworks[0].ResourceType),
+					resource.TestCheckResourceAttr(rootRef, "local_policies.0.inbound_networks.0.allow", fmt.Sprintf("%v", complexService.LocalPolicies[0].InboundNetworks[0].Allow)),
 					resource.TestCheckResourceAttrSet(rootRef, "containers_count"),
 					resource.TestCheckResourceAttrSet(rootRef, "lastupdate"),
 					resource.TestCheckResourceAttrSet(rootRef, "evaluated"),
@@ -159,6 +203,18 @@ func TestResourceAquasecServiceUpdate(t *testing.T) {
 		Value:     "default",
 	})
 	updatedService.MembershipRules.Priority = 80
+	updatedService.LocalPolicies = append(updatedService.LocalPolicies, client.LocalPolicy{
+		Name:        "new-local-policy",
+		Type:        "access.control",
+		Description: "new local policy",
+		InboundNetworks: []client.NetworkRule{
+			{
+				PortRange:    "8080",
+				ResourceType: "anywhere",
+				Allow:        true,
+			},
+		},
+	})
 	resource.Test(t, resource.TestCase{
 		PreCheck: func() {
 			testAccPreCheck(t)
@@ -186,6 +242,14 @@ func TestResourceAquasecServiceUpdate(t *testing.T) {
 					resource.TestCheckResourceAttrSet(rootRef, "containers_count"),
 					resource.TestCheckResourceAttrSet(rootRef, "lastupdate"),
 					resource.TestCheckResourceAttrSet(rootRef, "evaluated"),
+					resource.TestCheckResourceAttr(rootRef, "local_policies.#", fmt.Sprintf("%d", len(updatedService.LocalPolicies))),
+					resource.TestCheckResourceAttr(rootRef, "local_policies.1.name", updatedService.LocalPolicies[1].Name),
+					resource.TestCheckResourceAttr(rootRef, "local_policies.1.type", updatedService.LocalPolicies[1].Type),
+					resource.TestCheckResourceAttr(rootRef, "local_policies.1.description", updatedService.LocalPolicies[1].Description),
+					resource.TestCheckResourceAttr(rootRef, "local_policies.1.inbound_networks.#", fmt.Sprintf("%d", len(updatedService.LocalPolicies[1].InboundNetworks))),
+					resource.TestCheckResourceAttr(rootRef, "local_policies.1.inbound_networks.0.port_range", updatedService.LocalPolicies[1].InboundNetworks[0].PortRange),
+					resource.TestCheckResourceAttr(rootRef, "local_policies.1.inbound_networks.0.resource_type", updatedService.LocalPolicies[1].InboundNetworks[0].ResourceType),
+					resource.TestCheckResourceAttr(rootRef, "local_policies.1.inbound_networks.0.allow", fmt.Sprintf("%v", updatedService.LocalPolicies[1].InboundNetworks[0].Allow)),
 					resource.TestCheckResourceAttrSet(rootRef, "is_registered"),
 				),
 			},
@@ -212,6 +276,14 @@ func TestResourceAquasecServiceUpdate(t *testing.T) {
 					resource.TestCheckResourceAttrSet(rootRef, "containers_count"),
 					resource.TestCheckResourceAttrSet(rootRef, "lastupdate"),
 					resource.TestCheckResourceAttrSet(rootRef, "evaluated"),
+					resource.TestCheckResourceAttr(rootRef, "local_policies.#", fmt.Sprintf("%d", len(updatedService.LocalPolicies))),
+					resource.TestCheckResourceAttr(rootRef, "local_policies.1.name", updatedService.LocalPolicies[1].Name),
+					resource.TestCheckResourceAttr(rootRef, "local_policies.1.type", updatedService.LocalPolicies[1].Type),
+					resource.TestCheckResourceAttr(rootRef, "local_policies.1.description", updatedService.LocalPolicies[1].Description),
+					resource.TestCheckResourceAttr(rootRef, "local_policies.1.inbound_networks.#", fmt.Sprintf("%d", len(updatedService.LocalPolicies[1].InboundNetworks))),
+					resource.TestCheckResourceAttr(rootRef, "local_policies.1.inbound_networks.0.port_range", updatedService.LocalPolicies[1].InboundNetworks[0].PortRange),
+					resource.TestCheckResourceAttr(rootRef, "local_policies.1.inbound_networks.0.resource_type", updatedService.LocalPolicies[1].InboundNetworks[0].ResourceType),
+					resource.TestCheckResourceAttr(rootRef, "local_policies.1.inbound_networks.0.allow", fmt.Sprintf("%v", updatedService.LocalPolicies[1].InboundNetworks[0].Allow)),
 					resource.TestCheckResourceAttrSet(rootRef, "is_registered"),
 				),
 			},
@@ -234,20 +306,39 @@ func getBasicServiceResource() string {
 		policies = [
 			"%s"
 		]
+		# Add local policy definition here
+        local_policies {
+            name = "%s"  
+            type = "%s"
+            description = "%s"
+            inbound_networks {
+                port_range = "%s"
+                resource_type = "%s"
+                allow = "%t"
+            }
+        }
 		target = "%s"
 		scope_expression = "%s"
 		scope_variables {
 			attribute = "%s"
 			value = "%s"
 		}
-	}`, basicService.Name,
+	}`,
+		basicService.Name,
 		basicService.Description,
 		basicService.ApplicationScopes[0],
 		basicService.Policies[0],
+		basicService.LocalPolicies[0].Name,
+		basicService.LocalPolicies[0].Type,
+		basicService.LocalPolicies[0].Description,
+		basicService.LocalPolicies[0].InboundNetworks[0].PortRange,
+		basicService.LocalPolicies[0].InboundNetworks[0].ResourceType,
+		basicService.LocalPolicies[0].InboundNetworks[0].Allow,
 		basicService.MembershipRules.Target,
 		basicService.MembershipRules.Scope.Expression,
 		basicService.MembershipRules.Scope.Variables[0].Attribute,
-		basicService.MembershipRules.Scope.Variables[0].Value)
+		basicService.MembershipRules.Scope.Variables[0].Value,
+	)
 }
 
 func getComplexServiceResource() string {
@@ -269,7 +360,7 @@ func getComplexServiceResource() string {
 		]
 		priority = "%d"
 		target = "%s"
-		enforce = "%v"
+		enforce = "%t"
 		scope_expression = "%s"
 		scope_variables {
 			attribute = "%s"
@@ -283,6 +374,17 @@ func getComplexServiceResource() string {
 			attribute = "%s"
 			value = "%s"
 		}
+		# Local policy definition
+        local_policies {
+            name = "%s"
+            type = "%s"
+            description = "%s"
+            inbound_networks {
+                port_range = "%s"
+                resource_type = "%s"
+                allow = %t
+            }
+        }
 	}`,
 		complexService.Policies[1],
 		complexService.Name,
@@ -299,6 +401,12 @@ func getComplexServiceResource() string {
 		complexService.MembershipRules.Scope.Variables[1].Value,
 		complexService.MembershipRules.Scope.Variables[2].Attribute,
 		complexService.MembershipRules.Scope.Variables[2].Value,
+		basicService.LocalPolicies[0].Name,
+		basicService.LocalPolicies[0].Type,
+		basicService.LocalPolicies[0].Description,
+		basicService.LocalPolicies[0].InboundNetworks[0].PortRange,
+		basicService.LocalPolicies[0].InboundNetworks[0].ResourceType,
+		basicService.LocalPolicies[0].InboundNetworks[0].Allow,
 	)
 }
 
