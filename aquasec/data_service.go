@@ -95,7 +95,7 @@ func dataSourceService() *schema.Resource {
 					Type: schema.TypeString,
 				},
 				Description: "The service's policies; an array of container firewall policy names.",
-				Computed:    true,
+				Required:    true,
 			},
 			"local_policies": {
 				Type:        schema.TypeList,
