@@ -14,25 +14,25 @@ description: |-
 
 ```terraform
 resource "aquasec_host_runtime_policy" "host_runtime_policy" {
-  name = "host_runtime_policy"
+  name        = "host_runtime_policy"
   description = "host_runtime_policy"
   scope_variables {
     attribute = "kubernetes.cluster"
-    value = "default"
+    value     = "default"
   }
   scope_variables {
-      attribute = "kubernetes.label"
-      name = "app"
-      value = "aqua"
+    attribute = "kubernetes.label"
+    name      = "app"
+    value     = "aqua"
   }
 
   application_scopes = [
     "Global",
   ]
-  enabled = true
-  enforce = false
+  enabled                     = true
+  enforce                     = false
   block_cryptocurrency_mining = true
-  audit_brute_force_login = true
+  audit_brute_force_login     = true
   blocked_files = [
     "blocked",
   ]
@@ -49,11 +49,11 @@ resource "aquasec_host_runtime_policy" "host_runtime_policy" {
     monitored_users     = ["user"]
     excluded_users      = ["expuser"]
   }
-  audit_all_os_user_activity    = true
-  audit_full_command_arguments  = true
+  audit_all_os_user_activity         = true
+  audit_full_command_arguments       = true
   audit_host_successful_login_events = true
-  audit_host_failed_login_events = true
-  audit_user_account_management = true
+  audit_host_failed_login_events     = true
+  audit_user_account_management      = true
   os_users_allowed = [
     "user1",
   ]
@@ -69,8 +69,8 @@ resource "aquasec_host_runtime_policy" "host_runtime_policy" {
   package_block = [
     "package1"
   ]
-  monitor_system_time_changes = true
-  monitor_windows_services    = true
+  monitor_system_time_changes  = true
+  monitor_windows_services     = true
   monitor_system_log_integrity = true
 }
 ```

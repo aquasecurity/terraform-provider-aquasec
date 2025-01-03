@@ -1,7 +1,7 @@
 terraform {
   required_providers {
     aquasec = {
-      //      version = "0.8.31"
+      //version = "0.8.32"
       source = "aquasecurity/aquasec"
     }
   }
@@ -117,15 +117,15 @@ resource "aquasec_container_runtime_policy" "test" {
   description                   = "This is a container runtime policy"
   enforce                       = true
   enforce_after_days            = 9
-  block_non_compliant_images    = true
   block_non_compliant_workloads = true
   block_container_exec          = true
-  block_unregistered_images     = true
-  enable_drift_prevention       = true
-  allowed_executables = [
-    "test",
-    "exe",
-  ]
+  allowed_executables {
+    enabled = true
+    allow_executables = [
+      "pkg",
+      "txt"
+    ]
+  }
   blocked_executables = [
     "test1",
     "exe1",
@@ -142,7 +142,6 @@ resource "aquasec_container_runtime_policy" "test" {
   enable_fork_guard        = true
   fork_guard_process_limit = 12
 
-  enable_ip_reputation_security = true
 
   malware_scan_options {
     enabled = true
@@ -160,18 +159,9 @@ resource "aquasec_container_runtime_policy" "test" {
     "90",
     "9090"
   ]
-  enable_port_scan_detection = true
   blocked_volumes = [
     "blocked",
     "vol"
-  ]
-  readonly_files_and_directories = [
-    "readonly",
-    "/dir/"
-  ]
-  exceptional_readonly_files_and_directories = [
-    "readonly2",
-    "/dir2/"
   ]
   block_access_host_network   = true
   block_adding_capabilities   = true
@@ -189,15 +179,9 @@ resource "aquasec_container_runtime_policy" "test" {
 }
 
 resource "aquasec_function_runtime_policy" "test" {
-  name                        = "test-function-terraform"
-  description                 = "This is a test description."
-  enforce                     = true
-  block_malicious_executables = true
-
-  blocked_executables = [
-    "bin",
-    "exe",
-  ]
+  name        = "test-function-terraform"
+  description = "This is a test description."
+  enforce     = true
 }
 
 resource "aquasec_host_runtime_policy" "test" {
@@ -209,9 +193,7 @@ resource "aquasec_host_runtime_policy" "test" {
   blocked_files = [
     "blocked",
   ]
-  audit_all_os_user_activity    = true
-  audit_full_command_arguments  = true
-  enable_ip_reputation_security = true
+  audit_full_command_arguments = true
   os_users_allowed = [
     "user1",
   ]
@@ -227,41 +209,18 @@ resource "aquasec_host_runtime_policy" "test" {
   monitor_system_time_changes = true
   monitor_windows_services    = true
 
-  windows_registry_monitoring {
-    monitor_create      = true
-    monitor_read        = true
-    monitor_modify      = true
-    monitor_delete      = true
-    monitor_attributes  = true
-    monitored_paths     = ["paths"]
-    excluded_paths      = ["expaths"]
-    monitored_processes = ["process"]
-    excluded_processes  = ["exprocess"]
-    monitored_users     = ["user"]
-    excluded_users      = ["expuser"]
-  }
-
-  windows_registry_protection {
-    protected_paths     = ["paths"]
-    excluded_paths      = ["expaths"]
-    protected_processes = ["process"]
-    excluded_processes  = ["exprocess"]
-    protected_users     = ["user"]
-    excluded_users      = ["expuser"]
-  }
-
   file_integrity_monitoring {
-    monitor_create      = true
-    monitor_read        = true
-    monitor_modify      = true
-    monitor_delete      = true
-    monitor_attributes  = true
-    monitored_paths     = ["paths"]
-    excluded_paths      = ["expaths"]
-    monitored_processes = ["process"]
-    excluded_processes  = ["exprocess"]
-    monitored_users     = ["user"]
-    excluded_users      = ["expuser"]
+    monitored_files_create                = true
+    monitored_files_read                  = true
+    monitored_files_modify                = true
+    monitored_files_delete                = true
+    monitored_files_attributes            = true
+    monitored_files                       = ["paths"]
+    exceptional_monitored_files           = ["expaths"]
+    monitored_files_processes             = ["process"]
+    exceptional_monitored_files_processes = ["exprocess"]
+    monitored_files_users                 = ["user"]
+    exceptional_monitored_files_users     = ["expuser"]
   }
 }
 
