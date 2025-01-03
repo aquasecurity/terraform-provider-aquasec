@@ -20,6 +20,7 @@ type Service struct {
 	Evaluated         bool                 `json:"evaluated"`
 	Monitoring        bool                 `json:"monitoring"`
 	Policies          []string             `json:"policies"`
+	LocalPolicies     []LocalPolicy        `json:"local_policies,omitempty"`
 	Lastupdate        int                  `json:"lastupdate"`
 	Vulnerabilities   VulnerabilitiesTypes `json:"vulnerabilities"`
 	Enforce           bool                 `json:"enforce"`
@@ -30,6 +31,19 @@ type Service struct {
 	ApplicationScopes []string             `json:"application_scopes"`
 }
 
+type LocalPolicy struct {
+	Name                 string        `json:"name"`
+	Type                 string        `json:"type"`
+	Description          string        `json:"description,omitempty"`
+	InboundNetworks      []NetworkRule `json:"inbound_networks,omitempty"`
+	OutboundNetworks     []NetworkRule `json:"outbound_networks,omitempty"`
+	BlockMetadataService bool          `json:"block_metadata_service"`
+}
+type NetworkRule struct {
+	PortRange    string `json:"port_range"`
+	ResourceType string `json:"resource_type"`
+	Allow        bool   `json:"allow"`
+}
 type VulnerabilitiesTypes struct {
 	Total        int     `json:"total"`
 	High         int     `json:"high"`

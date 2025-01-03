@@ -18,6 +18,11 @@ description: |-
 ### Required
 
 - `name` (String) The name of the service. It is recommended not to use whitespace characters in the name.
+- `policies` (List of String) The service's policies; an array of container firewall policy names.
+
+### Optional
+
+- `local_policies` (Block List) A list of local policies for the service, including inbound and outbound network rules. (see [below for nested schema](#nestedblock--local_policies))
 
 ### Read-Only
 
@@ -32,7 +37,6 @@ description: |-
 - `lastupdate` (Number) Timestamp of the last update in Unix time format.
 - `monitoring` (Boolean) Indicates if monitoring is enabled or not
 - `not_evaluated_count` (Number) The number of container that are not evaluated.
-- `policies` (List of String) The service's policies; an array of container firewall policy names.
 - `priority` (Number) Rules priority, must be between 1-100.
 - `scope_expression` (String) Logical expression of how to compute the dependency of the scope variables.
 - `scope_variables` (List of Object) List of scope attributes. (see [below for nested schema](#nestedatt--scope_variables))
@@ -47,6 +51,42 @@ description: |-
 - `vulnerabilities_sensitive` (Number) Number of sensitive vulnerabilities.
 - `vulnerabilities_total` (Number) Total number of vulnerabilities.
 
+<a id="nestedblock--local_policies"></a>
+### Nested Schema for `local_policies`
+
+Required:
+
+- `name` (String) The name of the local policy.
+- `type` (String) The type of the local policy, e.g., access.control.
+
+Optional:
+
+- `block_metadata_service` (Boolean) Whether to block access to the metadata service.
+- `description` (String) A description of the local policy.
+- `inbound_networks` (Block List) Inbound network rules for the local policy. (see [below for nested schema](#nestedblock--local_policies--inbound_networks))
+- `outbound_networks` (Block List) Outbound network rules for the local policy. (see [below for nested schema](#nestedblock--local_policies--outbound_networks))
+
+<a id="nestedblock--local_policies--inbound_networks"></a>
+### Nested Schema for `local_policies.inbound_networks`
+
+Required:
+
+- `allow` (Boolean) Whether the inbound network rule is allowed.
+- `port_range` (String) The port range for the inbound network rule.
+- `resource_type` (String) The resource type for the inbound network rule (e.g., anywhere).
+
+
+<a id="nestedblock--local_policies--outbound_networks"></a>
+### Nested Schema for `local_policies.outbound_networks`
+
+Required:
+
+- `allow` (Boolean) Whether the outbound network rule is allowed.
+- `port_range` (String) The port range for the outbound network rule.
+- `resource_type` (String) The resource type for the outbound network rule (e.g., anywhere).
+
+
+
 <a id="nestedatt--scope_variables"></a>
 ### Nested Schema for `scope_variables`
 
@@ -55,5 +95,3 @@ Read-Only:
 - `attribute` (String)
 - `name` (String)
 - `value` (String)
-
-

@@ -95,7 +95,84 @@ func dataSourceService() *schema.Resource {
 					Type: schema.TypeString,
 				},
 				Description: "The service's policies; an array of container firewall policy names.",
-				Computed:    true,
+				Required:    true,
+			},
+			"local_policies": {
+				Type:        schema.TypeList,
+				Description: "A list of local policies for the service, including inbound and outbound network rules.",
+				Optional:    true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"name": {
+							Type:        schema.TypeString,
+							Description: "The name of the local policy.",
+							Required:    true,
+						},
+						"type": {
+							Type:        schema.TypeString,
+							Description: "The type of the local policy, e.g., access.control.",
+							Required:    true,
+						},
+						"description": {
+							Type:        schema.TypeString,
+							Description: "A description of the local policy.",
+							Optional:    true,
+						},
+						"inbound_networks": {
+							Type:        schema.TypeList,
+							Description: "Inbound network rules for the local policy.",
+							Optional:    true,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+									"port_range": {
+										Type:        schema.TypeString,
+										Description: "The port range for the inbound network rule.",
+										Required:    true,
+									},
+									"resource_type": {
+										Type:        schema.TypeString,
+										Description: "The resource type for the inbound network rule (e.g., anywhere).",
+										Required:    true,
+									},
+									"allow": {
+										Type:        schema.TypeBool,
+										Description: "Whether the inbound network rule is allowed.",
+										Required:    true,
+									},
+								},
+							},
+						},
+						"outbound_networks": {
+							Type:        schema.TypeList,
+							Description: "Outbound network rules for the local policy.",
+							Optional:    true,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+									"port_range": {
+										Type:        schema.TypeString,
+										Description: "The port range for the outbound network rule.",
+										Required:    true,
+									},
+									"resource_type": {
+										Type:        schema.TypeString,
+										Description: "The resource type for the outbound network rule (e.g., anywhere).",
+										Required:    true,
+									},
+									"allow": {
+										Type:        schema.TypeBool,
+										Description: "Whether the outbound network rule is allowed.",
+										Required:    true,
+									},
+								},
+							},
+						},
+						"block_metadata_service": {
+							Type:        schema.TypeBool,
+							Description: "Whether to block access to the metadata service.",
+							Optional:    true,
+						},
+					},
+				},
 			},
 			"evaluated": {
 				Type:        schema.TypeBool,
@@ -196,11 +273,54 @@ func dataServiceRead(ctx context.Context, d *schema.ResourceData, m interface{})
 		d.Set("unregistered_count", service.UnregisteredCount)
 		d.Set("is_registered", service.IsRegistered)
 		d.Set("application_scopes", service.ApplicationScopes)
-
+		if err := d.Set("local_policies", flattenLocalPolicies(service.LocalPolicies)); err != nil {
+			return diag.FromErr(err)
+		}
 		d.SetId(name)
 	} else {
 		return diag.FromErr(err)
 	}
 
 	return nil
+}
+func flattenLocalPolicies(policies []client.LocalPolicy) []map[string]interface{} {
+	if policies == nil {
+		return []map[string]interface{}{}
+	}
+
+	var result []map[string]interface{}
+	for _, policy := range policies {
+		p := map[string]interface{}{
+			"name":                   policy.Name,
+			"type":                   policy.Type,
+			"description":            policy.Description,
+			"block_metadata_service": policy.BlockMetadataService,
+		}
+
+		// Flatten inbound_networks
+		var inboundNetworks []map[string]interface{}
+		for _, inbound := range policy.InboundNetworks {
+			inboundNetworks = append(inboundNetworks, map[string]interface{}{
+				"port_range":    inbound.PortRange,
+				"resource_type": inbound.ResourceType,
+				"allow":         inbound.Allow,
+			})
+		}
+		p["inbound_networks"] = inboundNetworks
+
+		// Flatten outbound_networks
+		var outboundNetworks []map[string]interface{}
+		for _, outbound := range policy.OutboundNetworks {
+			outboundNetworks = append(outboundNetworks, map[string]interface{}{
+				"port_range":    outbound.PortRange,
+				"resource_type": outbound.ResourceType,
+				"allow":         outbound.Allow,
+			})
+		}
+		p["outbound_networks"] = outboundNetworks
+
+		result = append(result, p)
+	}
+
+	return result
 }
