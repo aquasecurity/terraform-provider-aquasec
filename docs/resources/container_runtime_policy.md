@@ -14,33 +14,33 @@ description: |-
 
 ```terraform
 resource "aquasec_container_runtime_policy" "container_runtime_policy" {
-  name = "container_runtime_policy"
-  description = "container_runtime_policy"
+  name             = "container_runtime_policy"
+  description      = "container_runtime_policy"
   scope_expression = "v1 || v2"
   scope_variables {
     attribute = "kubernetes.cluster"
-    value = "default"
+    value     = "default"
   }
   scope_variables {
-      attribute = "kubernetes.label"
-      name = "app"
-      value = "aqua"
+    attribute = "kubernetes.label"
+    name      = "app"
+    value     = "aqua"
   }
 
   application_scopes = [
     "Global",
   ]
-  enabled = true
-  enforce = false
-  block_container_exec          = true
+  enabled              = true
+  enforce              = false
+  block_container_exec = true
   container_exec_allowed_processes = [
     "proc1",
     "proc2"
   ]
-  block_cryptocurrency_mining = true
-  block_fileless_exec = true
+  block_cryptocurrency_mining   = true
+  block_fileless_exec           = true
   block_non_compliant_workloads = true
-  block_non_k8s_containers = true
+  block_non_k8s_containers      = true
   blocked_capabilities = [
     "AUDIT_CONTROL",
     "AUDIT_WRITE"
@@ -59,7 +59,7 @@ resource "aquasec_container_runtime_policy" "container_runtime_policy" {
   ]
   malware_scan_options {
     enabled = true
-    action = "alert"
+    action  = "alert"
     #exclude_directories = [ "/var/run/" ]
   }
   file_integrity_monitoring {
@@ -75,21 +75,21 @@ resource "aquasec_container_runtime_policy" "container_runtime_policy" {
     monitored_users     = ["user"]
     excluded_users      = ["expuser"]
   }
-  audit_all_processes_activity  = true
-  audit_full_command_arguments  = true
-  audit_all_network_activity    = true
-  enable_fork_guard             = true
-  fork_guard_process_limit      = 13
-  block_access_host_network     = true
-  block_adding_capabilities     = true
-  block_root_user               = true
-  block_privileged_containers   = true
-  block_use_ipc_namespace       = true
-  block_use_pid_namespace       = true
-  block_use_user_namespace      = true
-  block_use_uts_namespace       = true
-  block_low_port_binding        = true
-  limit_new_privileges          = true
+  audit_all_processes_activity = true
+  audit_full_command_arguments = true
+  audit_all_network_activity   = true
+  enable_fork_guard            = true
+  fork_guard_process_limit     = 13
+  block_access_host_network    = true
+  block_adding_capabilities    = true
+  block_root_user              = true
+  block_privileged_containers  = true
+  block_use_ipc_namespace      = true
+  block_use_pid_namespace      = true
+  block_use_user_namespace     = true
+  block_use_uts_namespace      = true
+  block_low_port_binding       = true
+  limit_new_privileges         = true
   blocked_packages = [
     "pkg",
     "pkg2"
@@ -509,6 +509,10 @@ Required:
 
 - `attribute` (String) Variable attribute.
 - `value` (String) Variable value.
+
+Optional:
+
+- `name` (String)
 
 
 
