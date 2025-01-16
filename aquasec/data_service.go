@@ -134,6 +134,11 @@ func dataSourceService() *schema.Resource {
 										Description: "The resource type for the inbound network rule (e.g., anywhere).",
 										Required:    true,
 									},
+									"resource": {
+										Type:        schema.TypeString,
+										Description: "Custom ip for the inbound network rule (e.g., 190.1.2.3/12).",
+										Optional:    true,
+									},
 									"allow": {
 										Type:        schema.TypeBool,
 										Description: "Whether the inbound network rule is allowed.",
@@ -157,6 +162,11 @@ func dataSourceService() *schema.Resource {
 										Type:        schema.TypeString,
 										Description: "The resource type for the outbound network rule (e.g., anywhere).",
 										Required:    true,
+									},
+									"resource": {
+										Type:        schema.TypeString,
+										Description: "Custom ip for the outbound network rule (e.g., 190.1.2.3/12).",
+										Optional:    true,
 									},
 									"allow": {
 										Type:        schema.TypeBool,
@@ -303,6 +313,7 @@ func flattenLocalPolicies(policies []client.LocalPolicy) []map[string]interface{
 			inboundNetworks = append(inboundNetworks, map[string]interface{}{
 				"port_range":    inbound.PortRange,
 				"resource_type": inbound.ResourceType,
+				"resource":      inbound.Resource,
 				"allow":         inbound.Allow,
 			})
 		}
@@ -314,6 +325,7 @@ func flattenLocalPolicies(policies []client.LocalPolicy) []map[string]interface{
 			outboundNetworks = append(outboundNetworks, map[string]interface{}{
 				"port_range":    outbound.PortRange,
 				"resource_type": outbound.ResourceType,
+				"resource":      outbound.Resource,
 				"allow":         outbound.Allow,
 			})
 		}

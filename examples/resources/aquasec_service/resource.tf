@@ -37,14 +37,16 @@ resource "aquasec_service" "example_service" {
     description = "Local policy 2 with stricter outbound control"
 
     inbound_networks {
-      port_range    = "443/443"  # Allow HTTPS traffic
-      resource_type = "anywhere" # Allow from any source
-      allow         = true       # Permit traffic
+      port_range    = "443/443"      # Allow HTTPS traffic
+      resource_type = "custom"      # Allow from specific source
+      resource      = "190.1.2.3/12" # Specific source
+      allow         = true           # Permit traffic
     }
 
     outbound_networks {
       port_range    = "8080/8080" # Allow specific application traffic
-      resource_type = "specific"  # Allow only to specific destinations
+      resource_type = "custom"      # Allow from specific source
+      resource      = "190.1.2.3/12" # Specific source
       allow         = false       # Block traffic to unspecified destinations
     }
 
