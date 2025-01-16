@@ -42,6 +42,7 @@ type LocalPolicy struct {
 type NetworkRule struct {
 	PortRange    string `json:"port_range"`
 	ResourceType string `json:"resource_type"`
+	Resource     string `json:"resource"`
 	Allow        bool   `json:"allow"`
 }
 type VulnerabilitiesTypes struct {

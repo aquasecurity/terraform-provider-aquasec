@@ -146,6 +146,11 @@ func resourceService() *schema.Resource {
 										Description: "The resource type for the inbound network rule (e.g., anywhere).",
 										Required:    true,
 									},
+									"resource": {
+										Type:        schema.TypeString,
+										Description: "Custom ip for the inbound network rule (e.g., 190.1.2.3/12).",
+										Optional:    true,
+									},
 									"allow": {
 										Type:        schema.TypeBool,
 										Description: "Whether the inbound network rule is allowed.",
@@ -169,6 +174,11 @@ func resourceService() *schema.Resource {
 										Type:        schema.TypeString,
 										Description: "The resource type for the outbound network rule (e.g., anywhere).",
 										Required:    true,
+									},
+									"resource": {
+										Type:        schema.TypeString,
+										Description: "Custom ip for the outbound network rule (e.g., 190.1.2.3/12).",
+										Optional:    true,
 									},
 									"allow": {
 										Type:        schema.TypeBool,
@@ -333,6 +343,7 @@ func convertNetworkRulesToNetworks(networkRules []client.NetworkRule) []map[stri
 			"allow":         networkRule.Allow,
 			"port_range":    networkRule.PortRange,
 			"resource_type": networkRule.ResourceType,
+			"resource":      networkRule.Resource,
 		})
 	}
 	return networkMaps
@@ -539,6 +550,7 @@ func expandNetworks(networks []interface{}) []client.NetworkRule {
 		networkRules = append(networkRules, client.NetworkRule{
 			PortRange:    rule["port_range"].(string),
 			ResourceType: rule["resource_type"].(string),
+			Resource:     rule["resource"].(string),
 			Allow:        rule["allow"].(bool),
 		})
 	}
