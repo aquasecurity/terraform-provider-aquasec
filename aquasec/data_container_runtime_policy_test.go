@@ -86,7 +86,6 @@ func TestDataAquasecComplexContainerRuntimePolicy(t *testing.T) {
 					//resource.TestCheckResourceAttr(rootRef, "block_unregistered_images", "true"),
 					//resource.TestCheckResourceAttr(rootRef, "blocked_capabilities.#", "2"),
 					//resource.TestCheckResourceAttr(rootRef, "enable_ip_reputation_security", "true"),
-					//resource.TestCheckResourceAttr(rootRef, "enable_drift_prevention", "true"),
 					resource.TestCheckResourceAttr(rootRef, "allowed_executables.0.allow_executables.#", "2"),
 					resource.TestCheckResourceAttr(rootRef, "allowed_executables.0.enabled", "true"),
 
@@ -145,6 +144,10 @@ func TestDataAquasecComplexContainerRuntimePolicy(t *testing.T) {
 					//resource.TestCheckResourceAttr(rootRef, "monitor_system_time_changes", "true"),
 					resource.TestCheckResourceAttr(rootRef, "restricted_volumes.0.enabled", "true"),
 					resource.TestCheckResourceAttr(rootRef, "restricted_volumes.0.volumes.#", "2"),
+					resource.TestCheckResourceAttr(rootRef, "drift_prevention.0.enabled", "true"),
+					resource.TestCheckResourceAttr(rootRef, "drift_prevention.0.exec_lockdown", "true"),
+					resource.TestCheckResourceAttr(rootRef, "drift_prevention.0.image_lockdown", "true"),
+					resource.TestCheckResourceAttr(rootRef, "drift_prevention.0.exec_lockdown_white_list.#", "2"),
 				),
 			},
 		},
@@ -201,7 +204,6 @@ func getComplexContainerRuntimePolicyData(policy client.RuntimePolicy) string {
 		# ]
 		#block_unregistered_images     = true
 		#enable_ip_reputation_security = true
-		# enable_drift_prevention       = true
 		allowed_executables {
 			enabled = true
 			allow_executables = ["exe","bin"]
@@ -271,6 +273,13 @@ func getComplexContainerRuntimePolicyData(policy client.RuntimePolicy) string {
 			enabled = true
 			volumes = ["blocked","vol"]
 	    }
+
+		drift_prevention {
+			enabled = true
+			exec_lockdown = true
+			image_lockdown = true
+			exec_lockdown_white_list = ["proc1", "proc2"]
+		}
 
 	}
 
