@@ -190,8 +190,7 @@ func (cli *Client) GetUSEAuthToken() (string, string, error) {
 
 		request.Set("Authorization", "Bearer "+cli.token)
 		events, body, errs := request.Clone().Get(provUrl + "/v1/envs").End()
-
-		if errs != nil {
+		if errs != nil || events == nil {
 			if events != nil {
 				log.Println(events.StatusCode)
 			}
