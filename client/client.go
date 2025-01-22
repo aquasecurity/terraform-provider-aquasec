@@ -184,11 +184,17 @@ func (cli *Client) GetUSEAuthToken() (string, string, error) {
 		cli.token = data["token"].(string)
 		//get the ese_url to make the API requests.
 		request := cli.gorequest
+		if request == nil {
+			return "", "", fmt.Errorf("request is uninitialized")
+		}
+
 		request.Set("Authorization", "Bearer "+cli.token)
 		events, body, errs := request.Clone().Get(provUrl + "/v1/envs").End()
 
 		if errs != nil {
-			log.Println(events.StatusCode)
+			if events != nil {
+				log.Println(events.StatusCode)
+			}
 			err := fmt.Errorf("error calling %s", provUrl)
 			return "", "", err
 		}
