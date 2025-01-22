@@ -52,14 +52,16 @@ resource "aquasec_service" "example_service" {
     description = "Local policy 2 with stricter outbound control"
 
     inbound_networks {
-      port_range    = "443/443"  # Allow HTTPS traffic
-      resource_type = "anywhere" # Allow from any source
-      allow         = true       # Permit traffic
+      port_range    = "443/443"      # Allow HTTPS traffic
+      resource_type = "custom"      # Allow from specific source
+      resource      = "190.1.2.3/12" # Specific source
+      allow         = true           # Permit traffic
     }
 
     outbound_networks {
       port_range    = "8080/8080" # Allow specific application traffic
-      resource_type = "specific"  # Allow only to specific destinations
+      resource_type = "custom"      # Allow from specific source
+      resource      = "190.1.2.3/12" # Specific source
       allow         = false       # Block traffic to unspecified destinations
     }
 
@@ -129,11 +131,12 @@ Required:
 
 - `allow` (Boolean) Whether the inbound network rule is allowed.
 - `port_range` (String) The port range for the inbound network rule.
-- `resource` (String) Custom ip for the inbound network rule (e.g., 190.1.2.3/12).
 - `resource_type` (String) The resource type for the inbound network rule (e.g., anywhere).
-    * "anywhere" (equivalent to Anywhere in the UI)
-    * "custom" (equivalent to Custom IP in the UI)
-    * "application" (equivalent to Service in the UI)
+
+Optional:
+
+- `resource` (String) Custom ip for the inbound network rule (e.g., 190.1.2.3/12).
+
 
 <a id="nestedblock--local_policies--outbound_networks"></a>
 ### Nested Schema for `local_policies.outbound_networks`
@@ -142,12 +145,13 @@ Required:
 
 - `allow` (Boolean) Whether the outbound network rule is allowed.
 - `port_range` (String) The port range for the outbound network rule.
-- `resource` (String) Custom ip for the outbound network rule (e.g., 190.1.2.3/12).
 - `resource_type` (String) The resource type for the outbound network rule (e.g., anywhere).
-    * "anywhere" (equivalent to Anywhere in the UI)
-    * "custom" (equivalent to Custom IP in the UI)
-    * "application" (equivalent to Service in the UI)
-    * "domain" (equivalent to Domain in the UI)
+
+Optional:
+
+- `resource` (String) Custom ip for the outbound network rule (e.g., 190.1.2.3/12).
+
+
 
 <a id="nestedblock--scope_variables"></a>
 ### Nested Schema for `scope_variables`

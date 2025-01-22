@@ -8,22 +8,21 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
-func resourceApplicationScope() *schema.Resource {
+func resourceApplicationScopeSaas() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceApplicationScopeCreate,
-		Read:   resourceApplicationScopeRead,
-		Update: resourceApplicationScopeUpdate,
-		Delete: resourceApplicationScopeDelete,
+		Create: resourceApplicationScopeSaasCreate,
+		Read:   resourceApplicationScopeSaasRead,
+		Update: resourceApplicationScopeSaasUpdate,
+		Delete: resourceApplicationScopeSaasDelete,
 		Importer: &schema.ResourceImporter{
 			StateContext: schema.ImportStatePassthroughContext,
 		},
 		Schema: map[string]*schema.Schema{
 			"name": {
-				Type:         schema.TypeString,
-				Description:  "Name of an application scope.",
-				Required:     true,
-				ForceNew:     true,
-				ValidateFunc: validateSaasResourceWarning("aquasec_application_scope", "aquasec_application_scope_saas"),
+				Type:        schema.TypeString,
+				Description: "Name of an application scope.",
+				Required:    true,
+				ForceNew:    true,
 			},
 			"description": {
 				Type:        schema.TypeString,
@@ -371,10 +370,10 @@ func resourceApplicationScope() *schema.Resource {
 	}
 }
 
-func resourceApplicationScopeCreate(d *schema.ResourceData, m interface{}) error {
+func resourceApplicationScopeSaasCreate(d *schema.ResourceData, m interface{}) error {
 	ac := m.(*client.Client)
 	name := d.Get("name").(string)
-	iap, err1 := expandApplicationScope(d)
+	iap, err1 := expandSaasApplicationScope(d)
 	if err1 != nil {
 		return fmt.Errorf("expanding applications is failed with error: %v", err1)
 	}
@@ -386,10 +385,10 @@ func resourceApplicationScopeCreate(d *schema.ResourceData, m interface{}) error
 		return fmt.Errorf("application scope resource create is failed with error:  %v", err)
 	}
 
-	return resourceApplicationScopeRead(d, m)
+	return resourceApplicationScopeSaasRead(d, m)
 }
 
-func expandApplicationScope(d *schema.ResourceData) (*client.ApplicationScope, error) {
+func expandSaasApplicationScope(d *schema.ResourceData) (*client.ApplicationScope, error) {
 
 	var err error
 	iap := client.ApplicationScope{
@@ -440,7 +439,7 @@ func expandApplicationScope(d *schema.ResourceData) (*client.ApplicationScope, e
 
 }
 
-func resourceApplicationScopeRead(d *schema.ResourceData, m interface{}) error {
+func resourceApplicationScopeSaasRead(d *schema.ResourceData, m interface{}) error {
 	ac := m.(*client.Client)
 
 	iap, err := ac.GetApplicationScope(d.Id())
@@ -480,14 +479,14 @@ func resourceApplicationScopeRead(d *schema.ResourceData, m interface{}) error {
 	return nil
 }
 
-func resourceApplicationScopeUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceApplicationScopeSaasUpdate(d *schema.ResourceData, m interface{}) error {
 	ac := m.(*client.Client)
 	name := d.Get("name").(string)
 
 	if d.HasChanges("description", "name", "author", "owner_email", "categories") {
 		var err error
 
-		iap, err1 := expandApplicationScope(d)
+		iap, err1 := expandSaasApplicationScope(d)
 		if err1 != nil {
 			return err1
 		}
@@ -495,126 +494,13 @@ func resourceApplicationScopeUpdate(d *schema.ResourceData, m interface{}) error
 		if err != nil {
 			return err
 		}
-		return resourceApplicationScopeRead(d, m)
+		return resourceApplicationScopeSaasRead(d, m)
 
 	}
 	return nil
 }
 
-func createCategory(a map[string]interface{}, w map[string]interface{}, i map[string]interface{}) client.Category {
-
-	//creating Artifacts
-	var image client.CommonStruct
-	var function client.CommonStruct
-	var cf client.CommonStruct
-
-	//creating Workloads
-	var wkubernetes client.CommonStruct
-	var wos client.CommonStruct
-	var wcf client.CommonStruct
-
-	//creating Infrastructure
-	var ikubernetes client.CommonStruct
-	var ios client.CommonStruct
-
-	if len(a) != 0 {
-		if len(a["image"].(*schema.Set).List()) != 0 {
-			image = createCommonStruct(a["image"].(*schema.Set).List()[0].(map[string]interface{}))
-		} else {
-			image = createEmptyCommonStruct()
-		}
-		if len(a["function"].(*schema.Set).List()) != 0 {
-			function = createCommonStruct(a["function"].(*schema.Set).List()[0].(map[string]interface{}))
-		} else {
-			function = createEmptyCommonStruct()
-		}
-		if len(a["cf"].(*schema.Set).List()) != 0 {
-			cf = createCommonStruct(a["cf"].(*schema.Set).List()[0].(map[string]interface{}))
-		} else {
-			cf = createEmptyCommonStruct()
-		}
-	}
-
-	if len(w) != 0 {
-		if len(w["kubernetes"].(*schema.Set).List()) != 0 {
-			wkubernetes = createCommonStruct(w["kubernetes"].(*schema.Set).List()[0].(map[string]interface{}))
-		} else {
-			wkubernetes = createEmptyCommonStruct()
-		}
-		if len(w["os"].(*schema.Set).List()) != 0 {
-			wos = createCommonStruct(w["os"].(*schema.Set).List()[0].(map[string]interface{}))
-		} else {
-			wos = createEmptyCommonStruct()
-		}
-		if len(w["cf"].(*schema.Set).List()) != 0 {
-			wcf = createCommonStruct(w["cf"].(*schema.Set).List()[0].(map[string]interface{}))
-		} else {
-			wcf = createEmptyCommonStruct()
-		}
-	}
-
-	if len(i) != 0 {
-		if len(i["kubernetes"].(*schema.Set).List()) != 0 {
-			ikubernetes = createCommonStruct(i["kubernetes"].(*schema.Set).List()[0].(map[string]interface{}))
-		} else {
-			ikubernetes = createEmptyCommonStruct()
-		}
-		if len(i["os"].(*schema.Set).List()) > 0 {
-			ios = createCommonStruct(i["os"].(*schema.Set).List()[0].(map[string]interface{}))
-		} else {
-			ios = createEmptyCommonStruct()
-		}
-	}
-
-	return client.Category{
-		Artifacts: client.Artifact{
-			Image:    image,
-			Function: function,
-			CF:       cf,
-		},
-		Workloads: client.Workload{
-			Kubernetes: wkubernetes,
-			OS:         wos,
-			WCF:        wcf,
-		},
-		Infrastructure: client.Infrastructure{
-			IKubernetes: ikubernetes,
-			IOS:         ios,
-		},
-	}
-
-}
-
-func createCommonStruct(m map[string]interface{}) client.CommonStruct {
-	var commonStruct client.CommonStruct
-
-	Expresion := m["expression"].(string)
-	Vars := []client.Variables{}
-	for _, variable := range m["variables"].([]interface{}) {
-		v := variable.(map[string]interface{})
-		Vars = append(Vars, client.Variables{
-			Attribute: v["attribute"].(string),
-			Value:     v["value"].(string),
-			Name:      v["name"].(string),
-		})
-	}
-	commonStruct.Expression = Expresion
-	commonStruct.Variables = Vars
-
-	return commonStruct
-}
-
-func createEmptyCommonStruct() client.CommonStruct {
-	var commonStruct1 client.CommonStruct
-	Expresion := ""
-	Vars := []client.Variables{}
-	commonStruct1.Expression = Expresion
-	commonStruct1.Variables = Vars
-
-	return commonStruct1
-}
-
-func resourceApplicationScopeDelete(d *schema.ResourceData, m interface{}) error {
+func resourceApplicationScopeSaasDelete(d *schema.ResourceData, m interface{}) error {
 	ac := m.(*client.Client)
 	name := d.Get("name").(string)
 	err := ac.DeleteApplicationScope(name)
@@ -625,109 +511,4 @@ func resourceApplicationScopeDelete(d *schema.ResourceData, m interface{}) error
 		return err
 	}
 	return nil
-}
-
-func flattenCategories(category1 client.Category) []map[string]interface{} {
-
-	return []map[string]interface{}{
-		{
-			"artifacts":      flattenArtifacts(category1.Artifacts),
-			"entity_scope":   flattenEntityScope(category1.EntityScope),
-			"infrastructure": flattenInfrastructure(category1.Infrastructure),
-			"workloads":      flattenWorkloads(category1.Workloads),
-		},
-	}
-}
-
-func flattenArtifacts(artifact1 client.Artifact) []map[string]interface{} {
-	artifactsMap := map[string]interface{}{}
-
-	if artifact1.Image.Expression != "" {
-		artifactsMap["image"] = flattenAppScopeCommon(artifact1.Image)
-	}
-
-	if artifact1.Function.Expression != "" {
-		artifactsMap["function"] = flattenAppScopeCommon(artifact1.Function)
-	}
-
-	if artifact1.CF.Expression != "" {
-		artifactsMap["cf"] = flattenAppScopeCommon(artifact1.CF)
-	}
-	if len(artifactsMap) == 0 {
-		return make([]map[string]interface{}, 0)
-	} else {
-		return []map[string]interface{}{artifactsMap}
-	}
-}
-
-func flattenWorkloads(workload1 client.Workload) []map[string]interface{} {
-	workloadMap := map[string]interface{}{}
-
-	if workload1.WCF.Expression != "" {
-		workloadMap["cf"] = flattenAppScopeCommon(workload1.WCF)
-	}
-
-	if workload1.Kubernetes.Expression != "" {
-		workloadMap["kubernetes"] = flattenAppScopeCommon(workload1.Kubernetes)
-	}
-
-	if workload1.OS.Expression != "" {
-		workloadMap["os"] = flattenAppScopeCommon(workload1.OS)
-	}
-
-	if len(workloadMap) == 0 {
-		return make([]map[string]interface{}, 0)
-	} else {
-		return []map[string]interface{}{workloadMap}
-	}
-}
-
-func flattenInfrastructure(infra1 client.Infrastructure) []map[string]interface{} {
-
-	infraMap := map[string]interface{}{}
-
-	if infra1.IKubernetes.Expression != "" {
-		infraMap["kubernetes"] = flattenAppScopeCommon(infra1.IKubernetes)
-	}
-
-	if infra1.IOS.Expression != "" {
-		infraMap["os"] = flattenAppScopeCommon(infra1.IOS)
-	}
-
-	if len(infraMap) == 0 {
-		return make([]map[string]interface{}, 0)
-	} else {
-		return []map[string]interface{}{infraMap}
-	}
-}
-
-func flattenAppScopeCommon(group client.CommonStruct) []map[string]interface{} {
-	return []map[string]interface{}{
-		{
-			"expression": group.Expression,
-			"variables":  flattenAppScopeVariables(group.Variables),
-		},
-	}
-}
-
-func flattenEntityScope(entityscope client.CommonStruct) []map[string]interface{} {
-	return []map[string]interface{}{
-		{
-			"expression": entityscope.Expression,
-			"variables":  flattenAppScopeVariables(entityscope.Variables),
-		},
-	}
-}
-
-func flattenAppScopeVariables(variables []client.Variables) []interface{} {
-	check := make([]interface{}, len(variables))
-	for i := range variables {
-		check[i] = map[string]interface{}{
-			"attribute": variables[i].Attribute,
-			"value":     variables[i].Value,
-			"name":      variables[i].Name,
-		}
-	}
-
-	return check
 }
