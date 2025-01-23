@@ -28,6 +28,7 @@ func resourcePermissionSet() *schema.Resource {
 				Description: "The name of the Permission Set, comprised of alphanumeric characters and '-', '_', ' ', ':', '.', '@', '!', '^'.",
 				Required:    true,
 				ForceNew:    true,
+				ValidateFunc: validateSaasResourceWarning("aquasec_permissions_sets", "aquasec_permission_set_saas"),
 			},
 			"description": {
 				Type:        schema.TypeString,
@@ -65,6 +66,7 @@ func resourcePermissionSet() *schema.Resource {
 		},
 	}
 }
+
 
 func resourcePermissionSetCreate(d *schema.ResourceData, m interface{}) error {
 	ac := m.(*client.Client)
