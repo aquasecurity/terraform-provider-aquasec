@@ -855,7 +855,174 @@ func dataContainerRuntimePolicy() *schema.Resource {
 					},
 				},
 			}, // list
-
+			"audit_brute_force_login": {
+				Type:        schema.TypeBool,
+				Description: "Detects brute force login attempts",
+				Computed:    true,
+			},
+			"failed_kubernetes_checks": {
+				Type:        schema.TypeList,
+				Description: "Failed Kubernetes checks configuration.",
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"enabled": {
+							Type:        schema.TypeBool,
+							Description: "",
+							Computed:    true,
+						},
+						"failed_checks": {
+							Type:        schema.TypeList,
+							Description: "",
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+							Computed: true,
+						},
+					},
+				},
+				Computed: true,
+			},
+			"enable_port_scan_protection": {
+				Type:        schema.TypeBool,
+				Description: "",
+				Computed:    true,
+			},
+			"enable_crypto_mining_dns": {
+				Type:        schema.TypeBool,
+				Description: "",
+				Computed:    true,
+			},
+			"enable_ip_reputation": {
+				Type:        schema.TypeBool,
+				Description: "",
+				Computed:    true,
+			},
+			"default_security_profile": {
+				Type:        schema.TypeString,
+				Description: "",
+				Computed:    true,
+			},
+			"registry": {
+				Type:        schema.TypeString,
+				Description: "",
+				Computed:    true,
+			},
+			"type": {
+				Type:        schema.TypeString,
+				Description: "",
+				Computed:    true,
+			},
+			"digest": {
+				Type:        schema.TypeString,
+				Description: "",
+				Computed:    true,
+			},
+			"vpatch_version": {
+				Type:        schema.TypeString,
+				Description: "",
+				Computed:    true,
+			},
+			"resource_name": {
+				Type:        schema.TypeString,
+				Description: "",
+				Computed:    true,
+			},
+			"resource_type": {
+				Type:        schema.TypeString,
+				Description: "",
+				Computed:    true,
+			},
+			"cve": {
+				Type:        schema.TypeString,
+				Description: "",
+				Computed:    true,
+			},
+			"repo_name": {
+				Type:        schema.TypeString,
+				Description: "",
+				Computed:    true,
+			},
+			"image_name": {
+				Type:        schema.TypeString,
+				Description: "",
+				Computed:    true,
+			},
+			"exclude_application_scopes": {
+				Type:        schema.TypeList,
+				Description: "List of excluded application scopes.",
+				Computed:    true,
+				Elem: &schema.Schema{
+					Type:        schema.TypeString,
+					Description: "Excluded application scope.",
+				},
+			},
+			"permission": {
+				Type:        schema.TypeString,
+				Description: "",
+				Computed:    true,
+			},
+			"is_audit_checked": {
+				Type:        schema.TypeBool,
+				Description: "",
+				Computed:    true,
+			},
+			"enforce_scheduler_added_on": {
+				Type:        schema.TypeInt,
+				Description: "",
+				Computed:    true,
+			},
+			"is_ootb_policy": {
+				Type:        schema.TypeBool,
+				Description: "",
+				Computed:    true,
+			},
+			"is_auto_generated": {
+				Type:        schema.TypeBool,
+				Description: "",
+				Computed:    true,
+			},
+			"runtime_mode": {
+				Type:        schema.TypeInt,
+				Description: "",
+				Computed:    true,
+			},
+			"runtime_type": {
+				Type:        schema.TypeString,
+				Description: "",
+				Computed:    true,
+			},
+			"drift_prevention": {
+				Type:        schema.TypeList,
+				Description: "Drift prevention configuration.",
+				Computed:    true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"enabled": {
+							Type:        schema.TypeBool,
+							Description: "Whether drift prevention is enabled.",
+							Computed:    true,
+						},
+						"exec_lockdown": {
+							Type:        schema.TypeBool,
+							Description: "Whether to lockdown execution drift.",
+							Computed:    true,
+						},
+						"image_lockdown": {
+							Type:        schema.TypeBool,
+							Description: "Whether to lockdown image drift.",
+							Computed:    true,
+						},
+						"exec_lockdown_white_list": {
+							Type:        schema.TypeList,
+							Description: "List of items in the execution lockdown white list.",
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+							Computed: true,
+						},
+					},
+				},
+			},
 		},
 	}
 }
@@ -928,6 +1095,30 @@ func dataContainerRuntimePolicyRead(ctx context.Context, d *schema.ResourceData,
 		d.Set("readonly_files", flattenReadonlyFiles(crp.ReadonlyFiles))
 		d.Set("allowed_registries", flattenAllowedRegistries(crp.AllowedRegistries))
 		d.Set("restricted_volumes", flattenRestrictedVolumes(crp.RestrictedVolumes))
+		d.Set("audit_brute_force_login", crp.AuditBruteForceLogin)
+		d.Set("failed_kubernetes_checks", flattenFailedKubernetesChecks(crp.FailedKubernetesChecks))
+		d.Set("enable_port_scan_protection", crp.EnablePortScanProtection)
+		d.Set("enable_crypto_mining_dns", crp.EnableCryptoMiningDns)
+		d.Set("enable_ip_reputation", crp.EnableIPReputation)
+		d.Set("default_security_profile", crp.DefaultSecurityProfile)
+		d.Set("registry", crp.Registry)
+		d.Set("type", crp.Type)
+		d.Set("digest", crp.Digest)
+		d.Set("vpatch_version", crp.VpatchVersion)
+		d.Set("resource_name", crp.ResourceName)
+		d.Set("resource_type", crp.ResourceType)
+		d.Set("cve", crp.Cve)
+		d.Set("repo_name", crp.RepoName)
+		d.Set("image_name", crp.ImageName)
+		d.Set("exclude_application_scopes", crp.ExcludeApplicationScopes)
+		d.Set("permission", crp.Permission)
+		d.Set("is_audit_checked", crp.IsAuditChecked)
+		d.Set("enforce_scheduler_added_on", crp.EnforceSchedulerAddedOn)
+		d.Set("is_ootb_policy", crp.IsOOTBPolicy)
+		d.Set("is_auto_generated", crp.IsAutoGenerated)
+		d.Set("runtime_mode", crp.RuntimeMode)
+		d.Set("runtime_type", crp.RuntimeType)
+		d.Set("drift_prevention", flattenDriftPrevention(crp.DriftPrevention))
 
 		d.SetId(name)
 	} else {

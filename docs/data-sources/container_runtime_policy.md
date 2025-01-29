@@ -48,6 +48,7 @@ output "container_runtime_policy_details" {
 - `application_scopes` (List of String) Indicates the application scope of the service.
 - `audit_all_network_activity` (Boolean) If true, all network activity will be audited.
 - `audit_all_processes_activity` (Boolean) If true, all process activity will be audited.
+- `audit_brute_force_login` (Boolean) Detects brute force login attempts
 - `audit_full_command_arguments` (Boolean) If true, full command arguments will be audited.
 - `author` (String) Username of the account that created the service.
 - `block_access_host_network` (Boolean) If true, prevent containers from running with access to host network.
@@ -75,25 +76,48 @@ output "container_runtime_policy_details" {
 - `blocked_packages` (List of String) Prevent containers from reading, writing, or executing all files in the list of packages.
 - `blocked_volumes` (List of String) List of volumes that are prevented from being mounted in the containers.
 - `container_exec_allowed_processes` (List of String) List of processes that will be allowed.
+- `cve` (String)
+- `default_security_profile` (String)
 - `description` (String) The description of the container runtime policy
+- `digest` (String)
+- `drift_prevention` (List of Object) Drift prevention configuration. (see [below for nested schema](#nestedatt--drift_prevention))
+- `enable_crypto_mining_dns` (Boolean)
 - `enable_drift_prevention` (Boolean) If true, executables that are not in the original image is prevented from running.
 - `enable_fork_guard` (Boolean) If true, fork bombs are prevented in the containers.
+- `enable_ip_reputation` (Boolean)
 - `enable_ip_reputation_security` (Boolean) If true, detect and prevent communication from containers to IP addresses known to have a bad reputation.
 - `enable_port_scan_detection` (Boolean) If true, detects port scanning behavior in the container.
+- `enable_port_scan_protection` (Boolean)
 - `enabled` (Boolean) Indicates if the runtime policy is enabled or not.
 - `enforce` (Boolean) Indicates that policy should effect container execution (not just for audit).
 - `enforce_after_days` (Number) Indicates the number of days after which the runtime policy will be changed to enforce mode.
+- `enforce_scheduler_added_on` (Number)
 - `exceptional_readonly_files_and_directories` (List of String) List of files and directories to be excluded from the read-only list.
+- `exclude_application_scopes` (List of String) List of excluded application scopes.
 - `exec_lockdown_white_list` (List of String) Specify processes that will be allowed
+- `failed_kubernetes_checks` (List of Object) Failed Kubernetes checks configuration. (see [below for nested schema](#nestedatt--failed_kubernetes_checks))
 - `fork_guard_process_limit` (Number) Process limit for the fork guard.
 - `id` (String) The ID of this resource.
+- `image_name` (String)
+- `is_audit_checked` (Boolean)
+- `is_auto_generated` (Boolean)
+- `is_ootb_policy` (Boolean)
 - `limit_new_privileges` (Boolean) If true, prevents the container from obtaining new privileges at runtime. (only enabled in enforce mode)
 - `monitor_system_time_changes` (Boolean) If true, system time changes will be monitored.
+- `permission` (String)
 - `readonly_files_and_directories` (List of String) List of files and directories to be restricted as read-only
+- `registry` (String)
+- `repo_name` (String)
+- `resource_name` (String)
+- `resource_type` (String)
 - `reverse_shell_allowed_ips` (List of String) List of IPs/ CIDRs that will be allowed
 - `reverse_shell_allowed_processes` (List of String) List of processes that will be allowed
+- `runtime_mode` (Number)
+- `runtime_type` (String)
 - `scope_expression` (String) Logical expression of how to compute the dependency of the scope variables.
 - `scope_variables` (List of Object) List of scope attributes. (see [below for nested schema](#nestedatt--scope_variables))
+- `type` (String)
+- `vpatch_version` (String)
 
 <a id="nestedblock--allowed_executables"></a>
 ### Nested Schema for `allowed_executables`
@@ -235,6 +259,26 @@ Optional:
 
 - `enabled` (Boolean) Whether restricted volumes are enabled.
 - `volumes` (List of String) List of restricted volumes.
+
+
+<a id="nestedatt--drift_prevention"></a>
+### Nested Schema for `drift_prevention`
+
+Read-Only:
+
+- `enabled` (Boolean)
+- `exec_lockdown` (Boolean)
+- `exec_lockdown_white_list` (List of String)
+- `image_lockdown` (Boolean)
+
+
+<a id="nestedatt--failed_kubernetes_checks"></a>
+### Nested Schema for `failed_kubernetes_checks`
+
+Read-Only:
+
+- `enabled` (Boolean)
+- `failed_checks` (List of String)
 
 
 <a id="nestedatt--scope_variables"></a>
