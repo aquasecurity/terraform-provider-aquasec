@@ -1,15 +1,19 @@
 resource "aquasec_container_runtime_policy" "container_runtime_policy" {
   name             = "container_runtime_policy"
   description      = "container_runtime_policy"
-  scope_expression = "v1 || v2"
-  scope_variables {
-    attribute = "kubernetes.cluster"
-    value     = "default"
-  }
-  scope_variables {
-    attribute = "kubernetes.label"
-    name      = "app"
-    value     = "aqua"
+  
+  scope {
+    expression = "v1 && v2"
+
+    variables {
+      attribute = "kubernetes.cluster"
+      value     = "default"
+    }
+    variables {
+      attribute = "kubernetes.label"
+      name      = "app"     
+      value     = "aqua"    
+    }
   }
 
   application_scopes = [
@@ -30,10 +34,14 @@ resource "aquasec_container_runtime_policy" "container_runtime_policy" {
     "AUDIT_CONTROL",
     "AUDIT_WRITE"
   ]
-  allowed_executables = [
-    "exe",
-    "bin",
-  ]
+allowed_executables {
+  enabled              = true
+  allow_executables    = ["exe", "bin"]
+  separate_executables = false
+
+  # optional
+  allow_root_executables = ["some-root-exe"]
+}
   blocked_executables = [
     "exe1",
     "exe2",
@@ -47,19 +55,22 @@ resource "aquasec_container_runtime_policy" "container_runtime_policy" {
     action  = "alert"
     #exclude_directories = [ "/var/run/" ]
   }
-  file_integrity_monitoring {
-    monitor_create      = true
-    monitor_read        = true
-    monitor_modify      = true
-    monitor_delete      = true
-    monitor_attributes  = true
-    monitored_paths     = ["paths"]
-    excluded_paths      = ["expaths"]
-    monitored_processes = ["process"]
-    excluded_processes  = ["exprocess"]
-    monitored_users     = ["user"]
-    excluded_users      = ["expuser"]
-  }
+  // supported in Classic mode only !!!!!!!!!!!!!!!!!
+  # file_integrity_monitoring {
+  #   enabled                             = true
+  #   monitored_files_create             = true
+  #   monitored_files_read               = true
+  #   monitored_files_modify             = true
+  #   monitored_files_delete             = true
+  #   monitored_files_attributes         = true
+  #   monitored_files                    = ["paths"]
+  #   exceptional_monitored_files        = ["expaths"]
+  #   monitored_files_processes          = ["process"]
+  #   exceptional_monitored_files_processes = ["exprocess"]
+  #   monitored_files_users             = ["user"]
+  #   exceptional_monitored_files_users = ["expuser"]
+  # }
+
   audit_all_processes_activity = true
   audit_full_command_arguments = true
   audit_all_network_activity   = true
@@ -87,10 +98,14 @@ resource "aquasec_container_runtime_policy" "container_runtime_policy" {
     "90",
     "9090"
   ]
-  allowed_registries = [
-    "registry1",
-    "registry2"
-  ]
+  allowed_registries {
+    enabled            = true
+    allowed_registries = [
+      "registry1",
+      "registry2"
+    ]
+  }
+
   monitor_system_time_changes = "true"
   blocked_volumes = [
     "blocked",
