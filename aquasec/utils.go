@@ -3,10 +3,12 @@ package aquasec
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/aquasecurity/terraform-provider-aquasec/client"
-	"github.com/aquasecurity/terraform-provider-aquasec/consts"
 	os "os"
 	"strings"
+
+	"github.com/aquasecurity/terraform-provider-aquasec/client"
+	"github.com/aquasecurity/terraform-provider-aquasec/consts"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func convertStringArr(ifaceArr []interface{}) []string {
@@ -238,5 +240,19 @@ func isResourceExist(response string) bool {
 		return false
 	} else {
 		return true
+	}
+}
+
+func validateSaasResourceWarning(legacyResource, newResource string) schema.SchemaValidateFunc {
+	return func(val interface{}, key string) ([]string, []error) {
+		if isSaasEnv() {
+			return []string{
+				fmt.Sprintf(
+					"You are using %s with an Aqua SaaS instance. Please migrate to %s, designed specifically for Aqua SaaS customers and supporting the entire SaaS platform beyond workload protection.",
+					legacyResource, newResource,
+				),
+			}, nil
+		}
+		return nil, nil
 	}
 }

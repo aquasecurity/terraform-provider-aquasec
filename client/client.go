@@ -17,6 +17,7 @@ import (
 // Client - API client
 type Client struct {
 	url        string
+	saasUrl    string
 	tokenUrl   string
 	user       string
 	password   string
@@ -74,26 +75,32 @@ func NewClient(url, user, password string, verifyTLS bool, caCertByte []byte) *C
 	case consts.SaasUrl:
 		c.clientType = Saas
 		c.tokenUrl = consts.SaasTokenUrl
+		c.saasUrl = consts.SaasUrl
 		break
 	case consts.SaasEu1Url:
 		c.clientType = Saas
 		c.tokenUrl = consts.SaasEu1TokenUrl
+		c.saasUrl = consts.SaasEu1Url
 		break
 	case consts.SaasAsia1Url:
 		c.clientType = Saas
 		c.tokenUrl = consts.SaasAsia1TokenUrl
+		c.saasUrl = consts.SaasAsia1Url
 		break
 	case consts.SaasAsia2Url:
 		c.clientType = Saas
 		c.tokenUrl = consts.SaasAsia2TokenUrl
+		c.saasUrl = consts.SaasAsia2Url
 		break
 	case consts.SaaSAu2Url:
 		c.clientType = Saas
 		c.tokenUrl = consts.SaasAu2TokenUrl
+		c.saasUrl = consts.SaaSAu2Url
 		break
 	case consts.SaasDevUrl:
 		c.clientType = SaasDev
 		c.tokenUrl = consts.SaasDevTokenUrl
+		c.saasUrl = consts.SaasDevUrl
 		break
 	default:
 		c.clientType = Csp

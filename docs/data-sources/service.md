@@ -73,8 +73,11 @@ Required:
 
 - `allow` (Boolean) Whether the inbound network rule is allowed.
 - `port_range` (String) The port range for the inbound network rule.
-- `resource` (String) Custom ip for the inbound network rule (e.g., 190.1.2.3/12).
 - `resource_type` (String) The resource type for the inbound network rule (e.g., anywhere).
+
+Optional:
+
+- `resource` (String) Custom ip for the inbound network rule (e.g., 190.1.2.3/12).
 
 
 <a id="nestedblock--local_policies--outbound_networks"></a>
@@ -84,8 +87,11 @@ Required:
 
 - `allow` (Boolean) Whether the outbound network rule is allowed.
 - `port_range` (String) The port range for the outbound network rule.
-- `resource` (String) Custom ip for the outbound network rule (e.g., 190.1.2.3/12).
 - `resource_type` (String) The resource type for the outbound network rule (e.g., anywhere).
+
+Optional:
+
+- `resource` (String) Custom ip for the outbound network rule (e.g., 190.1.2.3/12).
 
 
 
