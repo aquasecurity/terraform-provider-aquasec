@@ -1175,6 +1175,10 @@ func resourceFunctionRuntimePolicy() *schema.Resource {
 										Description: "Variable attribute.",
 										Required:    true,
 									},
+									"name": {
+										Type:     schema.TypeString,
+										Optional: true,
+									},
 									"value": {
 										Type:        schema.TypeString,
 										Description: "Variable value.",
