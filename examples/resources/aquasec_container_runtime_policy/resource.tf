@@ -15,10 +15,7 @@ resource "aquasec_container_runtime_policy" "container_runtime_policy" {
       value     = "aqua"    
     }
   }
-
-  application_scopes = [
-    "Global",
-  ]
+  
   enabled              = true
   enforce              = false
   block_container_exec = true
