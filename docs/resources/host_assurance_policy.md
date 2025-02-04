@@ -64,7 +64,6 @@ Generates an audit event for host assurance failure.
 - `dta_enabled` (Boolean)
 - `dta_severity` (String)
 - `enabled` (Boolean)
-- `enforce` (Boolean)
 - `enforce_after_days` (Number)
 - `enforce_excessive_permissions` (Boolean)
 - `exceptional_monitored_malware_paths` (List of String)
