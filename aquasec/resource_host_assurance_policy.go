@@ -480,10 +480,7 @@ func resourceHostAssurancePolicy() *schema.Resource {
 			"enabled": {
 				Type:     schema.TypeBool,
 				Optional: true,
-			},
-			"enforce": {
-				Type:     schema.TypeBool,
-				Optional: true,
+				Computed: true,
 			},
 			"enforce_after_days": {
 				Type:     schema.TypeInt,
@@ -992,7 +989,6 @@ func resourceHostAssurancePolicyRead(d *schema.ResourceData, m interface{}) erro
 	d.Set("cves_white_list", iap.CvesWhiteList)
 	d.Set("blacklist_permissions_enabled", iap.BlacklistPermissionsEnabled)
 	d.Set("blacklist_permissions", iap.BlacklistPermissions)
-	d.Set("enabled", iap.Enabled)
 	d.Set("enforce", iap.Enforce)
 	d.Set("enforce_after_days", iap.EnforceAfterDays)
 	d.Set("ignore_recently_published_vln", iap.IgnoreRecentlyPublishedVln)
