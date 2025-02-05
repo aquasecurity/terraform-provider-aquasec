@@ -1757,6 +1757,7 @@ func resourceContainerRuntimePolicyRead(ctx context.Context, d *schema.ResourceD
 func resourceContainerRuntimePolicyUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	c := m.(*client.Client)
 	if d.HasChanges("description",
+		"scope",
 		"application_scopes",
 		"scope_expression",
 		"scope_variables",
