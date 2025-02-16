@@ -992,8 +992,6 @@ func resourceHostAssurancePolicyRead(d *schema.ResourceData, m interface{}) erro
 	d.Set("cves_white_list", iap.CvesWhiteList)
 	d.Set("blacklist_permissions_enabled", iap.BlacklistPermissionsEnabled)
 	d.Set("blacklist_permissions", iap.BlacklistPermissions)
-	d.Set("enabled", iap.Enabled)
-	d.Set("enforce", iap.Enforce)
 	d.Set("enforce_after_days", iap.EnforceAfterDays)
 	d.Set("ignore_recently_published_vln", iap.IgnoreRecentlyPublishedVln)
 	d.Set("ignore_recently_published_vln_period", iap.IgnoreRecentlyPublishedVlnPeriod)
