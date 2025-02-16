@@ -46,6 +46,15 @@ func TestAquasecApplicationScope(t *testing.T) {
 					resource.TestCheckResourceAttr(resourceName, "categories.0.infrastructure.0.kubernetes.0.expression", "v1"),
 					resource.TestCheckResourceAttr(resourceName, "categories.0.infrastructure.0.kubernetes.0.variables.0.attribute", "kubernetes.cluster"),
 					resource.TestCheckResourceAttr(resourceName, "categories.0.infrastructure.0.kubernetes.0.variables.0.value", "lion"),
+					// Verify basic attributes
+                    resource.TestCheckResourceAttr(resourceName, "name", name),
+                    resource.TestCheckResourceAttr(resourceName, "description", description),
+                    // Verify existing artifacts
+                    resource.TestCheckResourceAttr(resourceName, "categories.0.artifacts.0.image.0.expression", "v1 && v2 && v3"),
+                    // Add codebuild verification
+                    resource.TestCheckResourceAttr(resourceName, "categories.0.artifacts.0.codebuild.0.expression", "v1"),
+                    resource.TestCheckResourceAttr(resourceName, "categories.0.artifacts.0.codebuild.0.variables.0.attribute", "aqua.topic"),
+                    resource.TestCheckResourceAttr(resourceName, "categories.0.artifacts.0.codebuild.0.variables.0.value", "topic1"),
 				),
 			},
 			{
@@ -80,6 +89,13 @@ func testAccCheckApplicationScope(name string, description string) string {
 						value = "test.value.123"
 					}
 				}
+				codebuild {
+                    expression = "v1"
+                    variables {
+                        attribute = "aqua.topic"
+                        value = "topic1"
+                    }
+                }
 			}
 			workloads {
 				kubernetes {
