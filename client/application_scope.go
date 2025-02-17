@@ -29,6 +29,7 @@ type Artifact struct {
 	Image    CommonStruct `json:"image"`
 	Function CommonStruct `json:"function"`
 	CF       CommonStruct `json:"cf"`
+	CodeBuild CommonStruct `json:"codebuild"`
 }
 
 type Workload struct {
