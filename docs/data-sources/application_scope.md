@@ -58,6 +58,7 @@ Optional:
 - `cf` (Block Set) (see [below for nested schema](#nestedblock--categories--artifacts--cf))
 - `function` (Block Set) (see [below for nested schema](#nestedblock--categories--artifacts--function))
 - `image` (Block Set) (see [below for nested schema](#nestedblock--categories--artifacts--image))
+- `codebuild` (Block Set) AWS CodeBuild configuration (see [below for nested schema](#nestedblock--categories--artifacts--codebuild))
 
 <a id="nestedblock--categories--artifacts--cf"></a>
 ### Nested Schema for `categories.artifacts.cf`
@@ -76,6 +77,22 @@ Optional:
 - `name` (String)
 - `value` (String)
 
+<a id="nestedblock--categories--artifacts--codebuild"></a>
+### Nested Schema for `categories.artifacts.codebuild`
+
+Optional:
+
+- `expression` (String) The expression used to match CodeBuild resources
+- `variables` (Block List) Variables used in the expression (see [below for nested schema](#nestedblock--categories--artifacts--codebuild--variables))
+
+<a id="nestedblock--categories--artifacts--codebuild--variables"></a>
+### Nested Schema for `categories.artifacts.codebuild.variables`
+
+Optional:
+
+- `attribute` (String) The attribute to match against
+- `name` (String) Name of the variable
+- `value` (String) Value to match
 
 
 <a id="nestedblock--categories--artifacts--function"></a>

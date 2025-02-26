@@ -100,6 +100,7 @@ Read-Only:
 Optional:
 
 - `cf` (Block Set) (see [below for nested schema](#nestedblock--categories--artifacts--cf))
+- `codebuild` (Block Set) AWS CodeBuild configuration (see [below for nested schema](#nestedblock--categories--artifacts--codebuild))
 - `function` (Block Set) Function name (see [below for nested schema](#nestedblock--categories--artifacts--function))
 - `image` (Block Set) Name of a registry as defined in Aqua (see [below for nested schema](#nestedblock--categories--artifacts--image))
 
@@ -110,6 +111,23 @@ Optional:
 
 - `expression` (String)
 - `variables` (Block List) (see [below for nested schema](#nestedblock--categories--artifacts--cf--variables))
+
+<a id="nestedblock--categories--artifacts--codebuild"></a>
+### Nested Schema for `categories.artifacts.codebuild`
+
+Optional:
+
+- `expression` (String)
+- `variables` (Block List) (see [below for nested schema](#nestedblock--categories--artifacts--codebuild--variables))
+
+<a id="nestedblock--categories--artifacts--codebuild--variables"></a>
+### Nested Schema for `categories.artifacts.codebuild.variables`
+
+Optional:
+
+- `attribute` (String)
+- `name` (String)
+- `value` (String)
 
 <a id="nestedblock--categories--artifacts--cf--variables"></a>
 ### Nested Schema for `categories.artifacts.cf.variables`
