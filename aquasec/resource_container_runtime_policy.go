@@ -251,6 +251,11 @@ func resourceContainerRuntimePolicy() *schema.Resource {
 							},
 							Optional: true,
 						},
+						"file_forensic_collection": {
+							Type:        schema.TypeBool,
+							Description: "Whether to enable file forensic collection.",
+							Optional:    true,
+						},
 					},
 				},
 				Optional: true,
