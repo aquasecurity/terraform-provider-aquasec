@@ -189,14 +189,6 @@ func resourceContainerRuntimePolicy() *schema.Resource {
 			//	Optional:     true,
 			//	RequiredWith: []string{"enable_drift_prevention"},
 			//},
-			"blocked_executables": {
-				Type:        schema.TypeList,
-				Description: "List of executables that are prevented from running in containers.",
-				Elem: &schema.Schema{
-					Type: schema.TypeString,
-				},
-				Optional: true,
-			},
 			"blocked_files": {
 				Type:        schema.TypeList,
 				Description: "List of files that are prevented from being read, modified and executed in the containers.",
@@ -417,11 +409,6 @@ func resourceContainerRuntimePolicy() *schema.Resource {
 			"block_low_port_binding": {
 				Type:        schema.TypeBool,
 				Description: "If true, prevent containers from running with the capability to bind in port lower than 1024.",
-				Optional:    true,
-			},
-			"limit_new_privileges": {
-				Type:        schema.TypeBool,
-				Description: "If true, prevents the container from obtaining new privileges at runtime. (only enabled in enforce mode)",
 				Optional:    true,
 			},
 			"blocked_packages": {
@@ -1669,7 +1656,6 @@ func resourceContainerRuntimePolicyRead(ctx context.Context, d *schema.ResourceD
 	//d.Set("enable_drift_prevention", crp.DriftPrevention.Enabled && crp.DriftPrevention.ExecLockdown)
 	//d.Set("exec_lockdown_white_list", crp.DriftPrevention.ExecLockdownWhiteList)
 	//d.Set("allowed_executables", crp.AllowedExecutables.AllowExecutables)
-	d.Set("blocked_executables", crp.ExecutableBlacklist.Executables)
 	//d.Set("blocked_files", crp.FileBlock.FilenameBlockList)
 	d.Set("file_integrity_monitoring", flattenFileIntegrityMonitoring(crp.FileIntegrityMonitoring))
 	//d.Set("audit_all_processes_activity", crp.Auditing.AuditAllProcesses)
@@ -1686,7 +1672,6 @@ func resourceContainerRuntimePolicyRead(ctx context.Context, d *schema.ResourceD
 	//d.Set("block_use_user_namespace", crp.LimitContainerPrivileges.Usermode)
 	//d.Set("block_use_uts_namespace", crp.LimitContainerPrivileges.Utsmode)
 	//d.Set("block_low_port_binding", crp.LimitContainerPrivileges.PreventLowPortBinding)
-	d.Set("limit_new_privileges", crp.NoNewPrivileges)
 	d.Set("blocked_packages", crp.PackageBlock.PackagesBlackList)
 	//d.Set("blocked_inbound_ports", crp.PortBlock.BlockInboundPorts)
 	//d.Set("blocked_outbound_ports", crp.PortBlock.BlockOutboundPorts)
@@ -1786,7 +1771,6 @@ func resourceContainerRuntimePolicyUpdate(ctx context.Context, d *schema.Resourc
 		//"enable_drift_prevention",
 		//"exec_lockdown_white_list",
 		//"allowed_executables",
-		"blocked_executables",
 		//"blocked_files",
 		"file_integrity_monitoring",
 		"audit_all_processes_activity",
@@ -1803,7 +1787,6 @@ func resourceContainerRuntimePolicyUpdate(ctx context.Context, d *schema.Resourc
 		//"block_use_user_namespace",
 		//"block_use_uts_namespace",
 		//"block_low_port_binding",
-		"limit_new_privileges",
 		"blocked_packages",
 		//"blocked_inbound_ports",
 		//"blocked_outbound_ports",
@@ -2039,15 +2022,6 @@ func expandContainerRuntimePolicy(d *schema.ResourceData) *client.RuntimePolicy 
 	//	}
 	//}
 
-	blockedExecutables, ok := d.GetOk("blocked_executables")
-	if ok {
-		strArr := convertStringArr(blockedExecutables.([]interface{}))
-		crp.ExecutableBlacklist.Enabled = len(strArr) != 0
-		crp.ExecutableBlacklist.Executables = strArr
-	} else {
-		crp.ExecutableBlacklist.Enabled = false
-	}
-
 	blockedFiles, ok := d.GetOk("blocked_files")
 	if ok {
 		strArr := convertStringArr(blockedFiles.([]interface{}))
@@ -2156,11 +2130,6 @@ func expandContainerRuntimePolicy(d *schema.ResourceData) *client.RuntimePolicy 
 	if ok {
 		crp.LimitContainerPrivileges.Enabled = true
 		crp.LimitContainerPrivileges.PreventLowPortBinding = lowPort.(bool)
-	}
-
-	limitNewPrivileges, ok := d.GetOk("limit_new_privileges")
-	if ok {
-		crp.NoNewPrivileges = limitNewPrivileges.(bool)
 	}
 
 	blockedPackages, ok := d.GetOk("blocked_packages")
