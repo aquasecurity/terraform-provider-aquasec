@@ -1,4 +1,4 @@
-resource "aquasec_container_runtime_policy" "full_container_runtime_policy" {
+resource "aquasec_container_runtime_policy" "container_runtime_policy" {
   name             = "full-container-runtime-policy-example"
   description      = "Comprehensive container runtime policy with all settings configured"
   runtime_type     = "container"
