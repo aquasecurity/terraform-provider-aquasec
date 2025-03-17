@@ -191,53 +191,46 @@ func dataContainerRuntimePolicy() *schema.Resource {
 			},
 			"malware_scan_options": {
 				Type:        schema.TypeList,
-				MaxItems:    1,
 				Description: "Configuration for Real-Time Malware Protection.",
+				Computed:    true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"enabled": {
 							Type:        schema.TypeBool,
 							Description: "Defines if enabled or not",
-							Elem: &schema.Schema{
-								Type: schema.TypeString,
-							},
-							Optional: true,
+							Computed:    true,
 						},
 						"action": {
 							Type:        schema.TypeString,
 							Description: "Set Action, Defaults to 'Alert' when empty",
-							Elem: &schema.Schema{
-								Type: schema.TypeString,
-							},
-							Optional: true,
+							Computed:    true,
 						},
 						"include_directories": {
 							Type:        schema.TypeList,
-							Description: "List of registry paths to be excluded from being protected.",
+							Description: "List of registry paths to be included for protection.",
 							Elem: &schema.Schema{
 								Type: schema.TypeString,
 							},
-							Optional: true,
+							Computed: true,
 						},
 						"exclude_directories": {
 							Type:        schema.TypeList,
-							Description: "List of registry paths to be excluded from being protected.",
+							Description: "List of registry paths to be excluded from protection.",
 							Elem: &schema.Schema{
 								Type: schema.TypeString,
 							},
-							Optional: true,
+							Computed: true,
 						},
 						"exclude_processes": {
 							Type:        schema.TypeList,
-							Description: "List of registry processes to be excluded from being protected.",
+							Description: "List of registry processes to be excluded from protection.",
 							Elem: &schema.Schema{
 								Type: schema.TypeString,
 							},
-							Optional: true,
+							Computed: true,
 						},
 					},
 				},
-				Optional: true,
 			},
 			"file_integrity_monitoring": {
 				Type:        schema.TypeList,
