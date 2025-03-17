@@ -134,34 +134,6 @@ func resourceContainerRuntimePolicy() *schema.Resource {
 				Description: "If true, running non-kubernetes containers is prevented.",
 				Optional:    true,
 			},
-			//"block_reverse_shell": {
-			//	Type:        schema.TypeBool,
-			//	Description: "If true, reverse shell is prevented.",
-			//	Optional:    true,
-			//},
-			//"reverse_shell_allowed_processes": {
-			//	Type:        schema.TypeList,
-			//	Description: "List of processes that will be allowed",
-			//	Elem: &schema.Schema{
-			//		Type: schema.TypeString,
-			//	},
-			//	RequiredWith: []string{"reverse_shell_allowed_processes"},
-			//	Optional:     true,
-			//},
-			//"reverse_shell_allowed_ips": {
-			//	Type:        schema.TypeList,
-			//	Description: "List of IPs/ CIDRs that will be allowed",
-			//	Elem: &schema.Schema{
-			//		Type: schema.TypeString,
-			//	},
-			//	RequiredWith: []string{"reverse_shell_allowed_processes"},
-			//	Optional:     true,
-			//},
-			//"block_unregistered_images": {
-			//	Type:        schema.TypeBool,
-			//	Description: "If true, running images in the container that are not registered in Aqua is prevented.",
-			//	Optional:    true,
-			//},
 			"blocked_capabilities": {
 				Type:        schema.TypeList,
 				Description: "If true, prevents containers from using specific Unix capabilities.",
@@ -170,25 +142,6 @@ func resourceContainerRuntimePolicy() *schema.Resource {
 				},
 				Optional: true,
 			},
-			//"enable_ip_reputation_security": {
-			//	Type:        schema.TypeBool,
-			//	Description: "If true, detect and prevent communication from containers to IP addresses known to have a bad reputation.",
-			//	Optional:    true,
-			//},
-			//"enable_drift_prevention": {
-			//	Type:        schema.TypeBool,
-			//	Description: "If true, executables that are not in the original image is prevented from running.",
-			//	Optional:    true,
-			//},
-			//"exec_lockdown_white_list": {
-			//	Type:        schema.TypeList,
-			//	Description: "Specify processes that will be allowed",
-			//	Elem: &schema.Schema{
-			//		Type: schema.TypeString,
-			//	},
-			//	Optional:     true,
-			//	RequiredWith: []string{"enable_drift_prevention"},
-			//},
 			"blocked_files": {
 				Type:        schema.TypeList,
 				Description: "List of files that are prevented from being read, modified and executed in the containers.",
@@ -435,28 +388,6 @@ func resourceContainerRuntimePolicy() *schema.Resource {
 				},
 				Optional: true,
 			},
-			//"enable_port_scan_detection": {
-			//	Type:        schema.TypeBool,
-			//	Description: "If true, detects port scanning behavior in the container.",
-			//	Optional:    true,
-			//},
-			//"readonly_files_and_directories": {
-			//	Type:        schema.TypeList,
-			//	Description: "List of files and directories to be restricted as read-only",
-			//	Elem: &schema.Schema{
-			//		Type: schema.TypeString,
-			//	},
-			//	Optional: true,
-			//},
-			//"exceptional_readonly_files_and_directories": {
-			//	Type:        schema.TypeList,
-			//	Description: "List of files and directories to be excluded from the read-only list.",
-			//	Elem: &schema.Schema{
-			//		Type: schema.TypeString,
-			//	},
-			//	RequiredWith: []string{"readonly_files_and_directories"},
-			//	Optional:     true,
-			//},
 			"monitor_system_time_changes": {
 				Type:        schema.TypeBool,
 				Description: "If true, system time changes will be monitored.",
@@ -1638,51 +1569,18 @@ func resourceContainerRuntimePolicyRead(ctx context.Context, d *schema.ResourceD
 	d.Set("enabled", crp.Enabled)
 	d.Set("enforce", crp.Enforce)
 	d.Set("enforce_after_days", crp.EnforceAfterDays)
-	//d.Set("author", crp.Author)
-	//controls
 	d.Set("block_container_exec", crp.ContainerExec.BlockContainerExec)
-	//d.Set("container_exec_allowed_processes", crp.ContainerExec.ContainerExecProcWhiteList)
-	//d.Set("block_cryptocurrency_mining", crp.EnableCryptoMiningDns)
 	d.Set("block_fileless_exec", crp.BlockFilelessExec)
-	//d.Set("block_non_compliant_images", crp.BlockDisallowedImages)
 	d.Set("block_non_compliant_workloads", crp.BlockNonCompliantWorkloads)
 	d.Set("block_non_k8s_containers", crp.BlockNonK8sContainers)
-	//d.Set("block_reverse_shell", crp.ReverseShell.BlockReverseShell)
-	//d.Set("reverse_shell_allowed_processes", crp.ReverseShell.ReverseShellProcWhiteList)
-	//d.Set("reverse_shell_allowed_ips", crp.ReverseShell.ReverseShellIpWhiteList)
-	//d.Set("block_unregistered_images", crp.OnlyRegisteredImages)
 	d.Set("blocked_capabilities", crp.LinuxCapabilities.RemoveLinuxCapabilities)
-	//d.Set("enable_ip_reputation_security", crp.EnableIPReputation)
-	//d.Set("enable_drift_prevention", crp.DriftPrevention.Enabled && crp.DriftPrevention.ExecLockdown)
-	//d.Set("exec_lockdown_white_list", crp.DriftPrevention.ExecLockdownWhiteList)
-	//d.Set("allowed_executables", crp.AllowedExecutables.AllowExecutables)
-	//d.Set("blocked_files", crp.FileBlock.FilenameBlockList)
 	d.Set("file_integrity_monitoring", flattenFileIntegrityMonitoring(crp.FileIntegrityMonitoring))
-	//d.Set("audit_all_processes_activity", crp.Auditing.AuditAllProcesses)
-	//d.Set("audit_full_command_arguments", crp.Auditing.AuditProcessCmdline)
-	//d.Set("audit_all_network_activity", crp.Auditing.AuditAllNetwork)
 	d.Set("enable_fork_guard", crp.EnableForkGuard)
 	d.Set("fork_guard_process_limit", crp.ForkGuardProcessLimit)
 	d.Set("block_access_host_network", crp.LimitContainerPrivileges.Netmode)
-	//d.Set("block_adding_capabilities", crp.LimitContainerPrivileges.BlockAddCapabilities)
-	//d.Set("block_root_user", crp.LimitContainerPrivileges.PreventRootUser)
-	//d.Set("block_privileged_containers", crp.LimitContainerPrivileges.Privileged)
-	//d.Set("block_use_ipc_namespace", crp.LimitContainerPrivileges.Ipcmode)
-	//d.Set("block_use_pid_namespace", crp.LimitContainerPrivileges.Pidmode)
-	//d.Set("block_use_user_namespace", crp.LimitContainerPrivileges.Usermode)
-	//d.Set("block_use_uts_namespace", crp.LimitContainerPrivileges.Utsmode)
-	//d.Set("block_low_port_binding", crp.LimitContainerPrivileges.PreventLowPortBinding)
 	d.Set("blocked_packages", crp.PackageBlock.PackagesBlackList)
-	//d.Set("blocked_inbound_ports", crp.PortBlock.BlockInboundPorts)
-	//d.Set("blocked_outbound_ports", crp.PortBlock.BlockOutboundPorts)
-	//d.Set("enable_port_scan_detection", crp.EnablePortScanProtection)
-	//d.Set("readonly_files_and_directories", crp.ReadonlyFiles.ReadonlyFiles)
-	//d.Set("exceptional_readonly_files_and_directories", crp.ReadonlyFiles.ExceptionalReadonlyFiles)
-	//d.Set("allowed_registries", crp.AllowedRegistries.AllowedRegistries)
 	d.Set("monitor_system_time_changes", crp.SystemIntegrityProtection.MonitorAuditLogIntegrity)
-	//d.Set("blocked_volumes", crp.RestrictedVolumes.Volumes)
 	d.Set("malware_scan_options", flattenMalwareScanOptions(crp.MalwareScanOptions))
-	//JSON
 	d.Set("failed_kubernetes_checks", flattenFailedKubernetesChecks(crp.FailedKubernetesChecks))
 	d.Set("enable_port_scan_protection", crp.EnablePortScanProtection)
 	d.Set("enable_crypto_mining_dns", crp.EnableCryptoMiningDns)
@@ -1732,10 +1630,7 @@ func resourceContainerRuntimePolicyRead(ctx context.Context, d *schema.ResourceD
 	d.Set("enforce_scheduler_added_on", crp.EnforceSchedulerAddedOn)
 	d.Set("is_ootb_policy", crp.IsOOTBPolicy)
 	d.Set("is_auto_generated", crp.IsAutoGenerated)
-	//d.Set("updated", (crp.Updated) // todo
-	//d.Set("lastupdate", crp.Lastupdate)
 	d.Set("version", crp.Version)
-	//d.Set("created", crp.Created)
 	d.Set("runtime_mode", crp.RuntimeMode)
 	d.Set("runtime_type", crp.RuntimeType)
 
@@ -1754,24 +1649,12 @@ func resourceContainerRuntimePolicyUpdate(ctx context.Context, d *schema.Resourc
 		"enabled",
 		"enforce",
 		"enforce_after_days",
-		//"author",
 		"block_container_exec",
 		"container_exec_allowed_processes",
-		//"block_cryptocurrency_mining",
 		"block_fileless_exec",
-		//"block_non_compliant_images",
 		"block_non_compliant_workloads",
 		"block_non_k8s_containers",
-		//"block_reverse_shell",
-		//"reverse_shell_allowed_processes",
-		//"reverse_shell_allowed_ips",
-		//"block_unregistered_images",
 		"blocked_capabilities",
-		//"enable_ip_reputation_security",
-		//"enable_drift_prevention",
-		//"exec_lockdown_white_list",
-		//"allowed_executables",
-		//"blocked_files",
 		"file_integrity_monitoring",
 		"audit_all_processes_activity",
 		"audit_full_command_arguments",
@@ -1779,25 +1662,10 @@ func resourceContainerRuntimePolicyUpdate(ctx context.Context, d *schema.Resourc
 		"enable_fork_guard",
 		"fork_guard_process_limit",
 		"block_access_host_network",
-		//"block_adding_capabilities",
-		//"block_root_user",
-		//"block_privileged_containers",
-		//"block_use_ipc_namespace",
-		//"block_use_pid_namespace",
-		//"block_use_user_namespace",
-		//"block_use_uts_namespace",
-		//"block_low_port_binding",
-		"blocked_packages",
-		//"blocked_inbound_ports",
-		//"blocked_outbound_ports",
-		//"enable_port_scan_detection",
-		//"readonly_files_and_directories",
 		"exceptional_readonly_files_and_directories",
-		//"allowed_registries",
 		"monitor_system_time_changes",
 		"malware_scan_options",
 		"blocked_volumes",
-		//JSON
 		"enable_port_scan_protection",
 		"enable_crypto_mining_dns",
 		"enable_ip_reputation",
@@ -1827,11 +1695,8 @@ func resourceContainerRuntimePolicyUpdate(ctx context.Context, d *schema.Resourc
 		"updated",
 		"lastupdate",
 		"version",
-		//"created",
 		"runtime_type",
 		"runtime_mode",
-		//"enforce_scheduler_added_on",
-		// JSON
 		"exclude_application_scopes",
 		"allowed_executables",
 		"allowed_registries",
@@ -1981,46 +1846,11 @@ func expandContainerRuntimePolicy(d *schema.ResourceData) *client.RuntimePolicy 
 		crp.BlockNonK8sContainers = blockNonK8sContainers.(bool)
 	}
 
-	//blockReverseShell, ok := d.GetOk("block_reverse_shell")
-	//if ok {
-	//	crp.ReverseShell.BlockReverseShell = blockReverseShell.(bool)
-	//	crp.ReverseShell.Enabled = blockReverseShell.(bool)
-	//	reverseShellAllowedProcesses, ok := d.GetOk("reverse_shell_allowed_processes")
-	//	if ok {
-	//		crp.ReverseShell.ReverseShellProcWhiteList = convertStringArr(reverseShellAllowedProcesses.([]interface{}))
-	//	}
-	//	reverseShellAllowedIps, ok := d.GetOk("reverse_shell_allowed_ips")
-	//	if ok {
-	//		crp.ReverseShell.ReverseShellIpWhiteList = convertStringArr(reverseShellAllowedIps.([]interface{}))
-	//	}
-	//
-	//}
-
-	//blockUnregisteredImage, ok := d.GetOk("block_unregistered_images")
-	//if ok {
-	//	crp.OnlyRegisteredImages = blockUnregisteredImage.(bool)
-	//}
-
 	blockedCap, ok := d.GetOk("blocked_capabilities")
 	if ok {
 		crp.LinuxCapabilities.Enabled = true
 		crp.LinuxCapabilities.RemoveLinuxCapabilities = convertStringArr(blockedCap.([]interface{}))
 	}
-
-	//enableIpReputation, ok := d.GetOk("enable_ip_reputation_security")
-	//if ok {
-	//	crp.EnableIPReputation = enableIpReputation.(bool)
-	//}
-
-	//enableDriftPrevention, ok := d.GetOk("enable_drift_prevention")
-	//if ok {
-	//	crp.DriftPrevention.Enabled = enableDriftPrevention.(bool)
-	//	crp.DriftPrevention.ExecLockdown = enableDriftPrevention.(bool)
-	//	execLockdownWhiteList, ok := d.GetOk("exec_lockdown_white_list")
-	//	if ok {
-	//		crp.DriftPrevention.ExecLockdownWhiteList = convertStringArr(execLockdownWhiteList.([]interface{}))
-	//	}
-	//}
 
 	blockedFiles, ok := d.GetOk("blocked_files")
 	if ok {
@@ -2049,24 +1879,6 @@ func expandContainerRuntimePolicy(d *schema.ResourceData) *client.RuntimePolicy 
 			MonitoredFilesAttributes:           v["monitored_files_attributes"].(bool),
 		}
 	}
-
-	//auditAllProcessesActivity, ok := d.GetOk("audit_all_processes_activity")
-	//if ok {
-	//	crp.Auditing.Enabled = true
-	//	crp.Auditing.AuditAllProcesses = auditAllProcessesActivity.(bool)
-	//}
-	//
-	//auditFullCommandArguments, ok := d.GetOk("audit_full_command_arguments")
-	//if ok {
-	//	crp.Auditing.Enabled = true
-	//	crp.Auditing.AuditProcessCmdline = auditFullCommandArguments.(bool)
-	//}
-	//
-	//auditAllNetworkActivity, ok := d.GetOk("audit_all_network_activity")
-	//if ok {
-	//	crp.Auditing.Enabled = true
-	//	crp.Auditing.AuditAllNetwork = auditAllNetworkActivity.(bool)
-	//}
 
 	enableForkGuard, ok := d.GetOk("enable_fork_guard")
 	if ok {
@@ -2149,22 +1961,6 @@ func expandContainerRuntimePolicy(d *schema.ResourceData) *client.RuntimePolicy 
 		crp.PortBlock.Enabled = true
 		crp.PortBlock.BlockOutboundPorts = convertStringArr(blockedOutboundPorts.([]interface{}))
 	}
-
-	//portScan, ok := d.GetOk("enable_port_scan_detection")
-	//if ok {
-	//	crp.EnablePortScanProtection = portScan.(bool)
-	//}
-
-	//readOnly, ok := d.GetOk("readonly_files_and_directories")
-	//if ok {
-	//	crp.ReadonlyFiles.Enabled = true
-	//	crp.ReadonlyFiles.ReadonlyFiles = convertStringArr(readOnly.([]interface{}))
-	//	crp.ReadonlyFiles.ExceptionalReadonlyFiles = []string{}
-	//	expReadOnly, ok := d.GetOk("exceptional_readonly_files_and_directories")
-	//	if ok {
-	//		crp.ReadonlyFiles.ExceptionalReadonlyFiles = convertStringArr(expReadOnly.([]interface{}))
-	//	}
-	//}
 
 	systemTime, ok := d.GetOk("monitor_system_time_changes")
 	if ok {
@@ -2300,16 +2096,6 @@ func expandContainerRuntimePolicy(d *schema.ResourceData) *client.RuntimePolicy 
 		crp.Permission = permission.(string)
 	}
 
-	//enforceSchedulerAddedOn, ok := d.GetOk("enforce_scheduler_added_on")
-	//if ok {
-	//	crp.EnforceSchedulerAddedOn = enforceSchedulerAddedOn.(int)
-	//}
-
-	//updated, ok := d.GetOk("updated")
-	//if ok {
-	//	crp.Updated = updated.(time.Time)
-	//}
-
 	lastupdate, ok := d.GetOk("lastupdate")
 	if ok {
 		crp.Lastupdate = lastupdate.(int)
@@ -2320,11 +2106,6 @@ func expandContainerRuntimePolicy(d *schema.ResourceData) *client.RuntimePolicy 
 		crp.Version = version.(string)
 	}
 
-	//created, ok := d.GetOk("created")
-	//if ok {
-	//	crp.Created = created.(string)
-	//}
-
 	runtimeMode, ok := d.GetOk("runtime_mode")
 	if ok {
 		crp.RuntimeMode = runtimeMode.(int)
@@ -2334,8 +2115,6 @@ func expandContainerRuntimePolicy(d *schema.ResourceData) *client.RuntimePolicy 
 	if ok {
 		crp.RuntimeType = runtimeType.(string)
 	}
-
-	//JSON list
 
 	excludeApplicationScopes, ok := d.GetOk("exclude_application_scopes")
 	if ok {
