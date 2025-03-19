@@ -202,11 +202,12 @@ type LinuxCapabilities struct {
 }
 
 type MalwareScanOptions struct {
-	Action             string   `json:"action"`
-	Enabled            bool     `json:"enabled"`
-	ExcludeDirectories []string `json:"exclude_directories"`
-	ExcludeProcesses   []string `json:"exclude_processes"`
-	IncludeDirectories []string `json:"include_directories"`
+	Action                string   `json:"action"`
+	Enabled               bool     `json:"enabled"`
+	ExcludeDirectories    []string `json:"exclude_directories"`
+	ExcludeProcesses      []string `json:"exclude_processes"`
+	IncludeDirectories    []string `json:"include_directories"`
+	FileForensicCollection bool     `json:"file_forensic_collection"`
 }
 
 type PortBlock struct {
