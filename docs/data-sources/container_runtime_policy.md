@@ -38,7 +38,6 @@ output "container_runtime_policy_details" {
 - `file_block` (Block List, Max: 1) (see [below for nested schema](#nestedblock--file_block))
 - `file_integrity_monitoring` (Block List) Configuration for file integrity monitoring. (see [below for nested schema](#nestedblock--file_integrity_monitoring))
 - `limit_container_privileges` (Block List) Container privileges configuration. (see [below for nested schema](#nestedblock--limit_container_privileges))
-- `malware_scan_options` (Block List, Max: 1) Configuration for Real-Time Malware Protection. (see [below for nested schema](#nestedblock--malware_scan_options))
 - `port_block` (Block List, Max: 1) (see [below for nested schema](#nestedblock--port_block))
 - `readonly_files` (Block List, Max: 1) (see [below for nested schema](#nestedblock--readonly_files))
 - `restricted_volumes` (Block List) Restricted volumes configuration. (see [below for nested schema](#nestedblock--restricted_volumes))
@@ -103,6 +102,7 @@ output "container_runtime_policy_details" {
 - `is_auto_generated` (Boolean)
 - `is_ootb_policy` (Boolean)
 - `limit_new_privileges` (Boolean) If true, prevents the container from obtaining new privileges at runtime. (only enabled in enforce mode)
+- `malware_scan_options` (List of Object) Configuration for Real-Time Malware Protection. (see [below for nested schema](#nestedatt--malware_scan_options))
 - `monitor_system_time_changes` (Boolean) If true, system time changes will be monitored.
 - `permission` (String)
 - `readonly_files_and_directories` (List of String) List of files and directories to be restricted as read-only
@@ -216,18 +216,6 @@ Optional:
 - `utsmode` (Boolean) Whether to limit UTS-related capabilities.
 
 
-<a id="nestedblock--malware_scan_options"></a>
-### Nested Schema for `malware_scan_options`
-
-Optional:
-
-- `action` (String) Set Action, Defaults to 'Alert' when empty
-- `enabled` (Boolean) Defines if enabled or not
-- `exclude_directories` (List of String) List of registry paths to be excluded from being protected.
-- `exclude_processes` (List of String) List of registry processes to be excluded from being protected.
-- `include_directories` (List of String) List of registry paths to be excluded from being protected.
-
-
 <a id="nestedblock--port_block"></a>
 ### Nested Schema for `port_block`
 
@@ -279,6 +267,18 @@ Read-Only:
 
 - `enabled` (Boolean)
 - `failed_checks` (List of String)
+
+
+<a id="nestedatt--malware_scan_options"></a>
+### Nested Schema for `malware_scan_options`
+
+Read-Only:
+
+- `action` (String)
+- `enabled` (Boolean)
+- `exclude_directories` (List of String)
+- `exclude_processes` (List of String)
+- `include_directories` (List of String)
 
 
 <a id="nestedatt--scope_variables"></a>

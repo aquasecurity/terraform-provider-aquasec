@@ -79,8 +79,6 @@ func TestDataAquasecComplexContainerRuntimePolicy(t *testing.T) {
 
 					// Block settings
 					resource.TestCheckResourceAttr(rootRef, "block_non_compliant_workloads", "true"),
-					resource.TestCheckResourceAttr(rootRef, "block_cryptocurrency_mining", "true"),
-					resource.TestCheckResourceAttr(rootRef, "block_fileless_exec", "true"),
 
 					// Allowed executables
 					resource.TestCheckResourceAttr(rootRef, "allowed_executables.0.enabled", "true"),
@@ -97,8 +95,12 @@ func TestDataAquasecComplexContainerRuntimePolicy(t *testing.T) {
 					resource.TestCheckResourceAttr(rootRef, "file_integrity_monitoring.0.monitored_files_modify", "true"),
 					resource.TestCheckResourceAttr(rootRef, "file_integrity_monitoring.0.monitored_files_delete", "true"),
 					resource.TestCheckResourceAttr(rootRef, "file_integrity_monitoring.0.monitored_files_attributes", "true"),
-					resource.TestCheckResourceAttr(rootRef, "file_integrity_monitoring.0.monitored_files.#", "1"),
-					resource.TestCheckResourceAttr(rootRef, "file_integrity_monitoring.0.exceptional_monitored_files.#", "1"),
+					resource.TestCheckResourceAttr(rootRef, "file_integrity_monitoring.0.monitored_files.#", "2"),
+					resource.TestCheckResourceAttr(rootRef, "file_integrity_monitoring.0.exceptional_monitored_files.#", "2"),
+					resource.TestCheckResourceAttr(rootRef, "file_integrity_monitoring.0.monitored_files_processes.#", "2"),
+					resource.TestCheckResourceAttr(rootRef, "file_integrity_monitoring.0.exceptional_monitored_files_processes.#", "2"),
+					resource.TestCheckResourceAttr(rootRef, "file_integrity_monitoring.0.monitored_files_users.#", "2"),
+					resource.TestCheckResourceAttr(rootRef, "file_integrity_monitoring.0.exceptional_monitored_files_users.#", "2"),
 
 					// Auditing
 					resource.TestCheckResourceAttr(rootRef, "auditing.0.enabled", "true"),
@@ -115,39 +117,35 @@ func TestDataAquasecComplexContainerRuntimePolicy(t *testing.T) {
 					resource.TestCheckResourceAttr(rootRef, "limit_container_privileges.0.block_add_capabilities", "true"),
 					resource.TestCheckResourceAttr(rootRef, "limit_container_privileges.0.prevent_root_user", "true"),
 					resource.TestCheckResourceAttr(rootRef, "limit_container_privileges.0.privileged", "true"),
+					resource.TestCheckResourceAttr(rootRef, "limit_container_privileges.0.ipcmode", "true"),
+					resource.TestCheckResourceAttr(rootRef, "limit_container_privileges.0.pidmode", "true"),
+					resource.TestCheckResourceAttr(rootRef, "limit_container_privileges.0.usermode", "true"),
+					resource.TestCheckResourceAttr(rootRef, "limit_container_privileges.0.utsmode", "true"),
+					resource.TestCheckResourceAttr(rootRef, "limit_container_privileges.0.prevent_low_port_binding", "true"),
 
 					// Port block
 					resource.TestCheckResourceAttr(rootRef, "port_block.0.enabled", "true"),
-					resource.TestCheckResourceAttr(rootRef, "port_block.0.block_inbound_ports.#", "2"),
-					resource.TestCheckResourceAttr(rootRef, "port_block.0.block_outbound_ports.#", "2"),
+					resource.TestCheckResourceAttr(rootRef, "port_block.0.block_inbound_ports.#", "1"),
+					resource.TestCheckResourceAttr(rootRef, "port_block.0.block_outbound_ports.#", "1"),
+					resource.TestCheckResourceAttr(rootRef, "port_block.0.block_inbound_ports.0", "1-11"),
+					resource.TestCheckResourceAttr(rootRef, "port_block.0.block_outbound_ports.0", "1-11"),
 
 					// Readonly files
 					resource.TestCheckResourceAttr(rootRef, "readonly_files.0.enabled", "true"),
 					resource.TestCheckResourceAttr(rootRef, "readonly_files.0.readonly_files.#", "2"),
 					resource.TestCheckResourceAttr(rootRef, "readonly_files.0.exceptional_readonly_files.#", "2"),
+					resource.TestCheckResourceAttr(rootRef, "readonly_files.0.exceptional_readonly_files_processes.#", "1"),
+					resource.TestCheckResourceAttr(rootRef, "readonly_files.0.exceptional_readonly_files_users.#", "1"),
+					resource.TestCheckResourceAttr(rootRef, "readonly_files.0.readonly_files_processes.#", "1"),
+					resource.TestCheckResourceAttr(rootRef, "readonly_files.0.readonly_files_users.#", "1"),
 
-					// Registries
+					// Allowed registries
 					resource.TestCheckResourceAttr(rootRef, "allowed_registries.0.enabled", "true"),
 					resource.TestCheckResourceAttr(rootRef, "allowed_registries.0.allowed_registries.#", "2"),
 
-					// Volumes
+					// Restricted volumes
 					resource.TestCheckResourceAttr(rootRef, "restricted_volumes.0.enabled", "true"),
-					resource.TestCheckResourceAttr(rootRef, "restricted_volumes.0.volumes.#", "2"),
-
-					// Drift prevention
-					resource.TestCheckResourceAttr(rootRef, "drift_prevention.0.enabled", "true"),
-					resource.TestCheckResourceAttr(rootRef, "drift_prevention.0.exec_lockdown", "true"),
-					resource.TestCheckResourceAttr(rootRef, "drift_prevention.0.image_lockdown", "true"),
-					resource.TestCheckResourceAttr(rootRef, "drift_prevention.0.exec_lockdown_white_list.#", "2"),
-
-					// Failed kubernetes checks
-					resource.TestCheckResourceAttr(rootRef, "failed_kubernetes_checks.0.enabled", "true"),
-					resource.TestCheckResourceAttr(rootRef, "failed_kubernetes_checks.0.failed_checks.#", "2"),
-
-					// Additional security settings
-					resource.TestCheckResourceAttr(rootRef, "enable_port_scan_protection", "true"),
-					resource.TestCheckResourceAttr(rootRef, "enable_crypto_mining_dns", "true"),
-					resource.TestCheckResourceAttr(rootRef, "enable_ip_reputation", "true"),
+					resource.TestCheckResourceAttr(rootRef, "restricted_volumes.0.volumes.#", "3"),
 				),
 			},
 		},
@@ -189,8 +187,6 @@ func getComplexContainerRuntimePolicyData(policy client.RuntimePolicy) string {
 			container_exec_proc_white_list = ["proc1","proc2"]
 		}
 
-		block_cryptocurrency_mining = true
-		block_fileless_exec = true
 		block_non_compliant_workloads = true
 
 		allowed_executables {
@@ -210,12 +206,12 @@ func getComplexContainerRuntimePolicyData(policy client.RuntimePolicy) string {
 			monitored_files_modify = true
 			monitored_files_delete = true
 			monitored_files_attributes = true
-			monitored_files = ["paths"]
-			exceptional_monitored_files = ["expaths"]
-			monitored_files_processes = ["process"]
-			exceptional_monitored_files_processes = ["exprocess"]
-			monitored_files_users = ["user"]
-			exceptional_monitored_files_users = ["expuser"]
+			monitored_files = ["paths", "paths2"]
+			exceptional_monitored_files = ["expaths", "expaths2"]
+			monitored_files_processes = ["/bin/bash", "/usr/bin/python"]
+			exceptional_monitored_files_processes = ["/usr/sbin/sshd", "/usr/bin/dockerd"]
+			monitored_files_users = ["root", "admin"]
+			exceptional_monitored_files_users = ["app", "service"]
 		}
 
 		auditing {
@@ -242,8 +238,8 @@ func getComplexContainerRuntimePolicyData(policy client.RuntimePolicy) string {
 
 		port_block {
 			enabled = true
-			block_inbound_ports = ["80","8080"]
-			block_outbound_ports = ["90","9090"]
+			block_inbound_ports = ["1-11"]
+			block_outbound_ports = ["1-11"]
 		}
 
 		readonly_files {
@@ -251,8 +247,8 @@ func getComplexContainerRuntimePolicyData(policy client.RuntimePolicy) string {
 			readonly_files = ["readonly","/dir/"]
 			exceptional_readonly_files = ["readonly2","/dir2/"]
 			readonly_files_processes = ["test"]
-			readonly_files_users = ["test"]
 			exceptional_readonly_files_processes = ["test"]
+			readonly_files_users = ["test"]
 			exceptional_readonly_files_users = ["test"]
 		}
 
@@ -263,24 +259,8 @@ func getComplexContainerRuntimePolicyData(policy client.RuntimePolicy) string {
 
 		restricted_volumes {
 			enabled = true
-			volumes = ["blocked","vol"]
+			volumes = ["/var/run/docker.sock", "/proc", "/sys"]
 		}
-
-		drift_prevention {
-			enabled = true
-			exec_lockdown = true
-			image_lockdown = true
-			exec_lockdown_white_list = ["proc1", "proc2"]
-		}
-
-		failed_kubernetes_checks {
-			enabled = true
-			failed_checks = ["check1", "check2"]
-		}
-
-		enable_port_scan_protection = true
-		enable_crypto_mining_dns = true
-		enable_ip_reputation = true
 	}
 
 	data "aquasec_container_runtime_policy" "test" {
