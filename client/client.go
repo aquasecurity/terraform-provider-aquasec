@@ -5,7 +5,6 @@ import (
 	"crypto/x509"
 	"encoding/json"
 	"fmt"
-	"log"
 	neturl "net/url"
 
 	"github.com/aquasecurity/terraform-provider-aquasec/consts"
@@ -123,8 +122,6 @@ func (cli *Client) GetAuthToken() (string, string, error) {
 
 	if cli.clientType == "csp" {
 		_, err = cli.GetCspAuthToken()
-	} else {
-		_, _, err = cli.GetUSEAuthToken()
 	}
 
 	if err != nil {
@@ -149,73 +146,6 @@ func (cli *Client) GetCspAuthToken() (string, error) {
 	}
 
 	return "", fmt.Errorf("request failed. status: %s, response: %s", resp.Status, body)
-}
-
-// GetUSEAuthToken - Connect to Aqua SaaS solution and return a JWT bearerToken (string)
-func (cli *Client) GetUSEAuthToken() (string, string, error) {
-	var provUrl string
-
-	switch cli.url {
-	case consts.SaasUrl:
-		provUrl = consts.SaasProvUrl
-		break
-	case consts.SaasEu1Url:
-		provUrl = consts.SaasEu1ProvUrl
-		break
-	case consts.SaasAsia1Url:
-		provUrl = consts.SaasAsia1ProvUrl
-		break
-	case consts.SaasAsia2Url:
-		provUrl = consts.SaasAsia2ProvUrl
-		break
-	case consts.SaaSAu2Url:
-		provUrl = consts.SaasAu2ProvUrl
-		break
-	case consts.SaasDevUrl:
-		provUrl = consts.SaasDevProvUrl
-		break
-	default:
-		return "", "", fmt.Errorf(fmt.Sprintf("%v URL is not allowed USE url", cli.url))
-	}
-
-	resp, body, errs := cli.makeRequest().Post(cli.tokenUrl + "/v2/signin").
-		Send(`{"email":"` + cli.user + `", "password":"` + cli.password + `"}`).End()
-	if errs != nil {
-		return "", "", getMergedError(errs)
-	}
-
-	if resp.StatusCode == 200 {
-		var raw map[string]interface{}
-		_ = json.Unmarshal([]byte(body), &raw)
-		data := raw["data"].(map[string]interface{})
-		cli.token = data["token"].(string)
-		//get the ese_url to make the API requests.
-		request := cli.gorequest
-		if request == nil {
-			return "", "", fmt.Errorf("request is uninitialized")
-		}
-
-		request.Set("Authorization", "Bearer "+cli.token)
-		events, body, errs := request.Clone().Get(provUrl + "/v1/envs").End()
-		if errs != nil || events == nil {
-			if events != nil {
-				log.Println(events.StatusCode)
-			}
-			err := fmt.Errorf("error calling %s", provUrl)
-			return "", "", err
-		}
-
-		if events.StatusCode == 200 {
-			var raw map[string]interface{}
-			_ = json.Unmarshal([]byte(body), &raw)
-			data := raw["data"].(map[string]interface{})
-			cli.url = "https://" + data["ese_url"].(string)
-		}
-
-		return cli.token, cli.url, nil
-	}
-
-	return "", "", fmt.Errorf("request failed. status: %s, response: %s", resp.Status, body)
 }
 
 func (cli *Client) makeRequest() *gorequest.SuperAgent {
