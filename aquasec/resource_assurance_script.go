@@ -23,6 +23,7 @@ func resourceAssuranceScript() *schema.Resource {
 			"name": {
 				Type:        schema.TypeString,
 				Required:    true,
+				ForceNew:    true,
 				Description: "Name of the assurance script",
 			},
 			"description": {
@@ -78,7 +79,13 @@ func resourceAssuranceScriptCreate(d *schema.ResourceData, m interface{}) error 
 		return err
 	}
 
-	d.SetId(script.Name)
+	// Set the ID to the script_id returned from the API
+	if script.ScriptID != "" {
+		d.SetId(script.ScriptID)
+	} else {
+		d.SetId(script.Name)
+	}
+
 	return resourceAssuranceScriptRead(d, m)
 }
 
@@ -94,6 +101,15 @@ func resourceAssuranceScriptRead(d *schema.ResourceData, m interface{}) error {
 		return err
 	}
 
+	if script == nil {
+		d.SetId("")
+		return nil
+	}
+
+	return setAssuranceScript(d, script)
+}
+
+func setAssuranceScript(d *schema.ResourceData, script *client.AssuranceScript) error {
 	if err := d.Set("name", script.Name); err != nil {
 		return err
 	}
@@ -130,6 +146,8 @@ func resourceAssuranceScriptUpdate(d *schema.ResourceData, m interface{}) error 
 
 	if d.HasChanges("description", "engine", "path", "snippet", "kind") {
 		script := expandAssuranceScript(d)
+		// Ensure we use the script_id for updates
+		script.ScriptID = d.Id()
 		err := c.UpdateAssuranceScript(script)
 		if err != nil {
 			log.Println("[DEBUG] error while updating assurance script: ", err)
@@ -142,7 +160,12 @@ func resourceAssuranceScriptUpdate(d *schema.ResourceData, m interface{}) error 
 
 func resourceAssuranceScriptDelete(d *schema.ResourceData, m interface{}) error {
 	c := m.(*client.Client)
-	err := c.DeleteAssuranceScript(d.Id())
+	scriptID := d.Id()
+	if scriptID == "" {
+		scriptID = d.Get("script_id").(string)
+	}
+
+	err := c.DeleteAssuranceScript(scriptID)
 	if err == nil {
 		d.SetId("")
 	} else {
@@ -158,29 +181,28 @@ func expandAssuranceScript(d *schema.ResourceData) *client.AssuranceScript {
 		Name: d.Get("name").(string),
 	}
 
-	description, ok := d.GetOk("description")
-	if ok {
-		script.Description = description.(string)
+	if v, ok := d.GetOk("script_id"); ok {
+		script.ScriptID = v.(string)
 	}
 
-	engine, ok := d.GetOk("engine")
-	if ok {
-		script.Engine = engine.(string)
+	if v, ok := d.GetOk("description"); ok {
+		script.Description = v.(string)
 	}
 
-	path, ok := d.GetOk("path")
-	if ok {
-		script.Path = path.(string)
+	if v, ok := d.GetOk("engine"); ok {
+		script.Engine = v.(string)
 	}
 
-	snippet, ok := d.GetOk("snippet")
-	if ok {
-		script.Snippet = snippet.(string)
+	if v, ok := d.GetOk("path"); ok {
+		script.Path = v.(string)
 	}
 
-	kind, ok := d.GetOk("kind")
-	if ok {
-		script.Kind = kind.(string)
+	if v, ok := d.GetOk("snippet"); ok {
+		script.Snippet = v.(string)
+	}
+
+	if v, ok := d.GetOk("kind"); ok {
+		script.Kind = v.(string)
 	}
 
 	return &script

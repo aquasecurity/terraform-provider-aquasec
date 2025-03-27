@@ -3,7 +3,6 @@ package client
 import (
 	"encoding/json"
 	"fmt"
-	"io"
 )
 
 type AssuranceScript struct {
@@ -16,39 +15,19 @@ type AssuranceScript struct {
 	Kind         string `json:"kind"`
 	Author       string `json:"author"`
 	LastModified int    `json:"last_modified"`
+	ReadOnly     bool   `json:"read_only"`
+	Severity     string `json:"severity"`
+	AvdID        string `json:"avd_id"`
+	Type         string `json:"type"`
+	Custom       any    `json:"custom"`
+	Title        string `json:"title"`
+	Overwrite    bool   `json:"overwrite"`
 }
 
-func (cli *Client) GetAssuranceScript(name string) (*AssuranceScript, error) {
-	apiPath := fmt.Sprintf("/api/v2/image_assurance/user_scripts/%s", name)
-	resp, body, errs := cli.gorequest.Clone().
-		Set("Authorization", "Bearer "+cli.token).
-		Get(cli.url + apiPath).
-		End()
-
-	if errs != nil {
-		return nil, fmt.Errorf("failed getting Assurance Script: %v", errs)
-	}
-
-	if resp.StatusCode != 200 {
-		return nil, fmt.Errorf("failed getting Assurance Script, status: %v", resp.Status)
-	}
-
-	var script AssuranceScript
-	err := json.Unmarshal([]byte(body), &script)
-	if err != nil {
-		return nil, err
-	}
-
-	return &script, nil
-}
-
-func (cli *Client) CreateAssuranceScript(script *AssuranceScript) error {
+func (c *Client) CreateAssuranceScript(script *AssuranceScript) error {
 	payload := []AssuranceScript{*script}
-	apiPath := "/api/v2/image_assurance/user_scripts"
-
-	resp, _, errs := cli.gorequest.Clone().
-		Set("Authorization", "Bearer "+cli.token).
-		Post(cli.url + apiPath).
+	response, body, errs := c.gorequest.Post(c.url+"/api/v2/image_assurance/user_scripts").
+		Set("Authorization", "Bearer "+c.token).
 		Send(payload).
 		End()
 
@@ -56,23 +35,52 @@ func (cli *Client) CreateAssuranceScript(script *AssuranceScript) error {
 		return fmt.Errorf("failed creating Assurance Script: %v", errs)
 	}
 
-	if resp.StatusCode != 201 && resp.StatusCode != 204 {
-		body, err := io.ReadAll(resp.Body)
-		if err != nil {
-			return fmt.Errorf("failed to read response body: %v", err)
-		}
-		return fmt.Errorf("failed creating Assurance Script, status: %v, body: %s", resp.Status, body)
+	if response.StatusCode != 200 && response.StatusCode != 201 && response.StatusCode != 204 {
+		return fmt.Errorf("failed creating Assurance Script, status: %v, body: %s", response.Status, body)
+	}
+
+	// Parse the response body
+	var createdScripts []AssuranceScript
+	if err := json.Unmarshal([]byte(body), &createdScripts); err != nil {
+		return fmt.Errorf("failed to parse response body: %v", err)
+	}
+
+	// Update the script with the returned data
+	if len(createdScripts) > 0 {
+		*script = createdScripts[0]
 	}
 
 	return nil
 }
 
-func (cli *Client) UpdateAssuranceScript(script *AssuranceScript) error {
-	apiPath := fmt.Sprintf("/api/v2/image_assurance/user_scripts/%s", script.Name)
+func (c *Client) GetAssuranceScript(scriptID string) (*AssuranceScript, error) {
+	response, body, errs := c.gorequest.Get(c.url+"/api/v2/image_assurance/user_scripts/"+scriptID).
+		Set("Authorization", "Bearer "+c.token).
+		End()
 
-	resp, _, errs := cli.gorequest.Clone().
-		Set("Authorization", "Bearer "+cli.token).
-		Put(cli.url + apiPath).
+	if errs != nil {
+		return nil, fmt.Errorf("failed getting Assurance Script: %v", errs)
+	}
+
+	if response.StatusCode == 404 {
+		return nil, nil
+	}
+
+	if response.StatusCode != 200 {
+		return nil, fmt.Errorf("failed getting Assurance Script, status: %v", response.Status)
+	}
+
+	var script AssuranceScript
+	if err := json.Unmarshal([]byte(body), &script); err != nil {
+		return nil, fmt.Errorf("failed to parse response body: %v", err)
+	}
+
+	return &script, nil
+}
+
+func (c *Client) UpdateAssuranceScript(script *AssuranceScript) error {
+	response, body, errs := c.gorequest.Put(c.url+"/api/v2/image_assurance/user_scripts/"+script.ScriptID).
+		Set("Authorization", "Bearer "+c.token).
 		Send(script).
 		End()
 
@@ -80,27 +88,24 @@ func (cli *Client) UpdateAssuranceScript(script *AssuranceScript) error {
 		return fmt.Errorf("failed updating Assurance Script: %v", errs)
 	}
 
-	if resp.StatusCode != 201 && resp.StatusCode != 204 {
-		return fmt.Errorf("failed updating Assurance Script, status: %v", resp.Status)
+	if response.StatusCode != 200 && response.StatusCode != 204 {
+		return fmt.Errorf("failed updating Assurance Script, status: %v, body: %s", response.Status, body)
 	}
 
 	return nil
 }
 
-func (cli *Client) DeleteAssuranceScript(name string) error {
-	apiPath := fmt.Sprintf("/api/v2/image_assurance/user_scripts/%s", name)
-
-	resp, _, errs := cli.gorequest.Clone().
-		Set("Authorization", "Bearer "+cli.token).
-		Delete(cli.url + apiPath).
+func (c *Client) DeleteAssuranceScript(scriptID string) error {
+	response, body, errs := c.gorequest.Delete(c.url+"/api/v2/image_assurance/user_scripts/"+scriptID).
+		Set("Authorization", "Bearer "+c.token).
 		End()
 
 	if errs != nil {
 		return fmt.Errorf("failed deleting Assurance Script: %v", errs)
 	}
 
-	if resp.StatusCode != 204 {
-		return fmt.Errorf("failed deleting Assurance Script, status: %v", resp.Status)
+	if response.StatusCode != 204 && response.StatusCode != 200 {
+		return fmt.Errorf("failed deleting Assurance Script, status: %v, body: %s", response.Status, body)
 	}
 
 	return nil
