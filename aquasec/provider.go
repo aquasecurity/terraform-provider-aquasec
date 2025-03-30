@@ -90,11 +90,11 @@ func Provider(v string) *schema.Provider {
 			"aquasec_acknowledge":  resourceAcknowledge(),
 			"aquasec_notification": resourceSourceNotification(),
 			//saas
-			"aquasec_group":               resourceGroup(),
-			"aquasec_user_saas":           resourceUserSaas(),
-			"aquasec_role_mapping_saas":   resourceRoleMappingSaas(),
-			"aquasec_permission_set_saas": resourcePermissionSetSaas(),
-			"aquasec_assurance_script":    resourceAssuranceScript(),
+			"aquasec_group":                   resourceGroup(),
+			"aquasec_user_saas":               resourceUserSaas(),
+			"aquasec_role_mapping_saas":       resourceRoleMappingSaas(),
+			"aquasec_permission_set_saas":     resourcePermissionSetSaas(),
+			"aquasec_assurance_custom_script": resourceAssuranceScript(),
 		},
 		DataSourcesMap: map[string]*schema.Resource{
 			"aquasec_users":                       dataSourceUsers(),
@@ -122,10 +122,11 @@ func Provider(v string) *schema.Provider {
 			"aquasec_acknowledges":  dataSourceAcknowledges(),
 			"aquasec_notifications": dataSourceNotification(),
 			//saas:
-			"aquasec_groups":                dataSourceGroups(),
-			"aquasec_users_saas":            dataSourceUsersSaas(),
-			"aquasec_roles_mapping_saas":    dataSourceRolesMappingSaas(),
-			"aquasec_permissions_sets_saas": dataSourcePermissionsSetsSaas(),
+			"aquasec_groups":                  dataSourceGroups(),
+			"aquasec_users_saas":              dataSourceUsersSaas(),
+			"aquasec_roles_mapping_saas":      dataSourceRolesMappingSaas(),
+			"aquasec_permissions_sets_saas":   dataSourcePermissionsSetsSaas(),
+			"aquasec_assurance_custom_script": dataSourceAssuranceScript(),
 		},
 		ConfigureContextFunc: providerConfigure,
 	}

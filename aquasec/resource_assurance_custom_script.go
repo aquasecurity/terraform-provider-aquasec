@@ -11,7 +11,7 @@ import (
 
 func resourceAssuranceScript() *schema.Resource {
 	return &schema.Resource{
-		Description: "The `aquasec_assurance_script` resource manages custom compliance scripts within Aqua.",
+		Description: "The `aquasec_assurance_custom_script` resource manages custom compliance scripts within Aqua.",
 		Create:      resourceAssuranceScriptCreate,
 		Read:        resourceAssuranceScriptRead,
 		Update:      resourceAssuranceScriptUpdate,

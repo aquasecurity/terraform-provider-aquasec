@@ -12,12 +12,12 @@ import (
 func TestAccAssuranceScript_basic(t *testing.T) {
 	t.Parallel()
 	name := acctest.RandomWithPrefix("test-assurance-script")
-	resourceName := "aquasec_assurance_script.test"
+	resourceName := "aquasec_assurance_custom_script.test"
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,
-		CheckDestroy: CheckDestroy("aquasec_assurance_script.test"),
+		CheckDestroy: CheckDestroy("aquasec_assurance_custom_script.test"),
 		Steps: []resource.TestStep{
 			{
 				Config: testAccAssuranceScriptBasic(name),
@@ -41,7 +41,7 @@ func TestAccAssuranceScript_basic(t *testing.T) {
 
 func testAccAssuranceScriptBasic(name string) string {
 	return fmt.Sprintf(`
-resource "aquasec_assurance_script" "test" {
+resource "aquasec_assurance_custom_script" "test" {
 	name        = "%s"
 	description = "Test assurance script"
 	engine      = "yaml"

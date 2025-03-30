@@ -53,8 +53,8 @@ func (c *Client) CreateAssuranceScript(script *AssuranceScript) error {
 	return nil
 }
 
-func (c *Client) GetAssuranceScript(scriptID string) (*AssuranceScript, error) {
-	response, body, errs := c.gorequest.Get(c.url+"/api/v2/image_assurance/user_scripts/"+scriptID).
+func (c *Client) GetAssuranceScript(identifier string) (*AssuranceScript, error) {
+	response, body, errs := c.gorequest.Get(c.url+"/api/v2/image_assurance/user_scripts/"+identifier).
 		Set("Authorization", "Bearer "+c.token).
 		End()
 
