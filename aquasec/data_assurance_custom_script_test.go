@@ -51,7 +51,7 @@ resource "aquasec_assurance_custom_script" "test" {
 }
 
 data "aquasec_assurance_custom_script" "test" {
-	name = aquasec_assurance_custom_script.test.id
+	script_id = aquasec_assurance_custom_script.test.id
 	depends_on = [aquasec_assurance_custom_script.test]
 }
 `, name)

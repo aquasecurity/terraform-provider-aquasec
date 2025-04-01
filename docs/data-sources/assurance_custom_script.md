@@ -13,24 +13,8 @@ The `aquasec_assurance_custom_script` data source provides information about an 
 ## Example Usage
 
 ```terraform
-resource "aquasec_assurance_custom_script" "example" {
-	name        = "example"
-	description = "example assurance script"
-	engine      = "yaml"
-	path        = "test.yaml"
-	kind        = "kubernetes"
-	snippet     = <<-EOT
-		---
-		controls:
-		version: "aks-1.1"
-		id: 1
-		text: "Control Plane Components"
-		type: "master"
-	EOT
-}
-
 data "aquasec_assurance_custom_script" "example" {
-	name = aquasec_assurance_custom_script.example.id
+	script_id = "ID of the custom script"
 }
 
 output "name" {
@@ -43,7 +27,7 @@ output "name" {
 
 ### Required
 
-- `name` (String) Name of the assurance script
+- `script_id` (String) ID of the script
 
 ### Read-Only
 
@@ -53,8 +37,8 @@ output "name" {
 - `id` (String) The ID of this resource.
 - `kind` (String) Kind of script (e.g., kubernetes)
 - `last_modified` (Number) Last modification timestamp
+- `name` (String) Name of the assurance script
 - `path` (String) Path of the script file
-- `script_id` (String) ID of the script
 - `snippet` (String) Content of the script
 
 

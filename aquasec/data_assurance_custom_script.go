@@ -10,9 +10,14 @@ func dataSourceAssuranceScript() *schema.Resource {
 		Description: "The `aquasec_assurance_custom_script` data source provides information about an existing custom compliance script within Aqua.",
 		Read:        dataSourceAssuranceScriptRead,
 		Schema: map[string]*schema.Schema{
-			"name": {
+			"script_id": {
 				Type:        schema.TypeString,
 				Required:    true,
+				Description: "ID of the script",
+			},
+			"name": {
+				Type:        schema.TypeString,
+				Computed:    true,
 				Description: "Name of the assurance script",
 			},
 			"description": {
@@ -45,11 +50,6 @@ func dataSourceAssuranceScript() *schema.Resource {
 				Computed:    true,
 				Description: "Author of the script",
 			},
-			"script_id": {
-				Type:        schema.TypeString,
-				Computed:    true,
-				Description: "ID of the script",
-			},
 			"last_modified": {
 				Type:        schema.TypeInt,
 				Computed:    true,
@@ -61,23 +61,20 @@ func dataSourceAssuranceScript() *schema.Resource {
 
 func dataSourceAssuranceScriptRead(d *schema.ResourceData, m interface{}) error {
 	c := m.(*client.Client)
-	name := d.Get("name").(string)
+	scriptID := d.Get("script_id").(string)
 
-	// Get the script by name
-	script, err := c.GetAssuranceScript(name)
+	// Get the script by ID
+	script, err := c.GetAssuranceScript(scriptID)
 	if err != nil {
 		return err
 	}
 
 	if script == nil {
-		return NewNotFoundErrorf("Assurance script %s not found", name)
+		return NewNotFoundErrorf("Assurance script with ID %s not found", scriptID)
 	}
 
-	// Set both ID and script_id
+	// Set ID
 	d.SetId(script.ScriptID)
-	if err := d.Set("script_id", script.ScriptID); err != nil {
-		return err
-	}
 
 	return setAssuranceScript(d, script)
 }
