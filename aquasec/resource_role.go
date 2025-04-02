@@ -87,7 +87,7 @@ func resourceRoleRead(d *schema.ResourceData, m interface{}) error {
 		return err
 	}
 
-	d.Set("name", r.Name)
+	d.Set("role_name", r.Name)
 	d.Set("updated_at", r.UpdatedAt)
 	d.Set("author", r.Author)
 

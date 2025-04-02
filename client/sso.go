@@ -65,34 +65,15 @@ type IntegrationState struct {
 	SAMLSettings   bool `json:"SAMLSettings"`
 }
 
-type RoleMappingSaas struct {
-	CspRole    string   `json:"csp_role"`
-	SamlGroups []string `json:"saml_groups"`
-	Id         int      `json:"id"`
-	Created    string   `json:"created"`
-	AccountId  int      `json:"account_id"`
-}
-
-type RoleMappingSaasList struct {
-	Items []RoleMappingSaas `json:"data"`
-}
-
-type RoleMappingSaasResponse struct {
-	RoleMappingSaas RoleMappingSaas `json:"data"`
-}
-
-// GetSSO - returns Aqua SSO
 func (cli *Client) GetSSO() (*SSO, error) {
-	var err error
 	var response SSO
 
 	res, err := cli.getSsoBasic(consts.SamlSettingsApiPath)
 	if err != nil {
 		return nil, err
 	}
-	err = json.Unmarshal([]byte(res), &response.Saml)
-	if err != nil {
-		log.Printf("Error calling func GetSSO from %s%s, %v ", cli.url, consts.SamlSettingsApiPath, err)
+	if err = json.Unmarshal([]byte(res), &response.Saml); err != nil {
+		log.Printf("Error parsing SAML config: %v", err)
 		return nil, errors.Wrap(err, "could not unmarshal SAML response")
 	}
 
@@ -100,389 +81,107 @@ func (cli *Client) GetSSO() (*SSO, error) {
 	if err != nil {
 		return nil, err
 	}
-	err = json.Unmarshal([]byte(res), &response.OAuth2)
-	if err != nil {
-		log.Printf("Error calling func GetSSO from %s%s, %v ", cli.url, consts.OIDCSettingsApiPath, err)
-		return nil, errors.Wrap(err, "could not unmarshal oAuth2 response")
+	if err = json.Unmarshal([]byte(res), &response.OAuth2); err != nil {
+		log.Printf("Error parsing OAuth2 config: %v", err)
+		return nil, errors.Wrap(err, "could not unmarshal OAuth2 response")
 	}
 
 	res, err = cli.getSsoBasic(consts.OpenIdSettingsApiPath)
 	if err != nil {
 		return nil, err
 	}
-	err = json.Unmarshal([]byte(res), &response.OpenId)
-	if err != nil {
-		log.Printf("Error calling func GetSSO from %s%s, %v ", cli.url, consts.OpenIdSettingsApiPath, err)
+	if err = json.Unmarshal([]byte(res), &response.OpenId); err != nil {
+		log.Printf("Error parsing OpenId config: %v", err)
 		return nil, errors.Wrap(err, "could not unmarshal OpenId response")
 	}
 
-	return &response, err
+	return &response, nil
 }
 
-// GetIntegrationState - returns SSO enable state
-func (cli *Client) GetIntegrationState() (*IntegrationState, error) {
-	var err error
-	var response IntegrationState
-	request := cli.gorequest
-	apiPath := ""
-	baseUrl := ""
-
-	switch cli.clientType {
-	case Csp:
-		apiPath = "/api/v2/integrationsEnabledState"
-		baseUrl = cli.url
-		request.Set("Authorization", "Bearer "+cli.token)
-	case SaasDev:
-		err = fmt.Errorf("GetSSO is Supported only in Aqua on prem env")
-		return nil, err
-	case Saas:
-		err = fmt.Errorf("GetSSO is Supported only in Aqua on prem env")
-		return nil, err
-	default:
-		err = fmt.Errorf("GetSSO is Supported only in Aqua on prem env")
-		return nil, err
-	}
-	err = cli.limiter.Wait(context.Background())
-	if err != nil {
-		return nil, err
-	}
-	events, body, errs := request.Get(baseUrl+apiPath).Set("Authorization", fmt.Sprintf("Bearer %s", cli.token)).End()
-
-	if errs != nil {
-		err = fmt.Errorf("error calling %s", apiPath)
-		return nil, err
-	}
-
-	if events.StatusCode == 200 {
-		err = json.Unmarshal([]byte(body), &response)
-		if err != nil {
-			log.Printf("Error calling func GetIntegrationState from %s%s, %v ", cli.url, apiPath, err)
-			return nil, errors.Wrap(err, "could not unmarshal SSOs response")
-		}
-	}
-	return &response, err
-}
-
-// CreateSSO - creates Aqua SSO
-func (cli *Client) CreateSSO(SSO *SSO) error {
-	var err error
-	if SSO.Saml.RoleMapping != nil && len(SSO.Saml.RoleMapping) > 0 {
-		err = cli.createSsoBasic(consts.SamlSettingsApiPath, SSO.Saml)
-		if err != nil {
+func (cli *Client) CreateSSO(sso *SSO) error {
+	if sso.Saml.RoleMapping != nil {
+		if err := cli.createSsoBasic(consts.SamlSettingsApiPath, sso.Saml); err != nil {
 			return err
 		}
 	}
-
-	if SSO.OAuth2.RoleMapping != nil && len(SSO.OAuth2.RoleMapping) > 0 {
-		err = cli.createSsoBasic(consts.OIDCSettingsApiPath, SSO.OAuth2)
-		if err != nil {
+	if sso.OAuth2.RoleMapping != nil {
+		if err := cli.createSsoBasic(consts.OIDCSettingsApiPath, sso.OAuth2); err != nil {
 			return err
 		}
 	}
-
-	if SSO.OpenId.RoleMapping != nil && len(SSO.OpenId.RoleMapping) > 0 {
-		err = cli.createSsoBasic(consts.OpenIdSettingsApiPath, SSO.OpenId)
-		if err != nil {
+	if sso.OpenId.RoleMapping != nil {
+		if err := cli.createSsoBasic(consts.OpenIdSettingsApiPath, sso.OpenId); err != nil {
 			return err
 		}
 	}
-
 	return nil
 }
 
-// UpdateSSO updates an existing SSO
-func (cli *Client) UpdateSSO(SSO *SSO) error {
-	return cli.CreateSSO(SSO)
+func (cli *Client) UpdateSSO(sso *SSO) error {
+	return cli.CreateSSO(sso)
 }
 
-// DeleteSSO removes a SSO
-func (cli *Client) DeleteSSO(SSO *SSO) error {
-	return cli.CreateSSO(SSO)
+func (cli *Client) DeleteSSO(sso *SSO) error {
+	return cli.CreateSSO(sso)
 }
 
-// getSsoBasic
 func (cli *Client) getSsoBasic(apiPath string) (string, error) {
-	baseUrl := ""
-	var err error
-	request := cli.gorequest
-
-	switch cli.clientType {
-	case Csp:
-		baseUrl = cli.url
-		request.Set("Authorization", "Bearer "+cli.token)
-	case SaasDev:
-		err = fmt.Errorf("GetSSO is Supported only in Aqua on prem env")
-		return "", err
-	case Saas:
-		err = fmt.Errorf("GetSSO is Supported only in Aqua on prem env")
-		return "", err
-	default:
-		err = fmt.Errorf("GetSSO is Supported only in Aqua on prem env")
+	if cli.clientType != Csp {
+		return "", fmt.Errorf("GetSSO is supported only in Aqua on-prem environment")
+	}
+	if err := cli.limiter.Wait(context.Background()); err != nil {
 		return "", err
 	}
-
-	err = cli.limiter.Wait(context.Background())
-	if err != nil {
-		return "", err
-	}
-	events, body, errs := request.Get(baseUrl+apiPath).Set("Authorization", fmt.Sprintf("Bearer %s", cli.token)).End()
-
+	resp, body, errs := cli.gorequest.Get(cli.url + apiPath).Set("Authorization", fmt.Sprintf("Bearer %s", cli.token)).End()
 	if errs != nil {
-		err = fmt.Errorf("error calling %s", apiPath)
-		return "", err
+		return "", fmt.Errorf("failed GET %s: %v", apiPath, errs)
 	}
-
-	if events.StatusCode != 200 {
-		return "", nil
+	if resp.StatusCode != 200 {
+		return "", fmt.Errorf("bad response from %s: %s", apiPath, body)
 	}
 	return body, nil
 }
 
-// createSsoBasic
 func (cli *Client) createSsoBasic(apiPath string, sso interface{}) error {
 	payload, err := json.Marshal(sso)
 	if err != nil {
 		return err
 	}
-	baseUrl := ""
-	request := cli.gorequest
-
-	switch cli.clientType {
-	case Csp:
-		baseUrl = cli.url
-		request.Set("Authorization", "Bearer "+cli.token)
-	case SaasDev:
-		err = fmt.Errorf("GetSSO is Supported only in Aqua on prem env")
-		return err
-	case Saas:
-		err = fmt.Errorf("GetSSO is Supported only in Aqua on prem env")
-		return err
-	default:
-		err = fmt.Errorf("GetSSO is Supported only in Aqua on prem env")
+	if cli.clientType != Csp {
+		return fmt.Errorf("CreateSSO is supported only in Aqua on-prem environment")
+	}
+	if err := cli.limiter.Wait(context.Background()); err != nil {
 		return err
 	}
-
-	err = cli.limiter.Wait(context.Background())
-	if err != nil {
-		return err
-	}
-	events, _, errs := request.Put(baseUrl+apiPath).Set("Authorization", fmt.Sprintf("Bearer %s", cli.token)).Send(string(payload)).End()
-
+	resp, _, errs := cli.gorequest.Put(cli.url + apiPath).Set("Authorization", fmt.Sprintf("Bearer %s", cli.token)).Send(string(payload)).End()
 	if errs != nil {
-		err = fmt.Errorf("error calling %s, error: %v", apiPath, err)
-		return err
+		return fmt.Errorf("failed PUT %s: %v", apiPath, errs)
 	}
-
-	if events.StatusCode != 200 && events.StatusCode != 204 {
-		err = fmt.Errorf(fmt.Sprintf("Bad response form the following api %s, error: %v", apiPath, events.Body))
-		return err
+	if resp.StatusCode != 200 && resp.StatusCode != 204 {
+		return fmt.Errorf("bad response from %s: %v", apiPath, resp.StatusCode)
 	}
 	return nil
 }
 
-// GetRoleMappingSaas - returns Aqua RoleMappingSaas
-func (cli *Client) GetRoleMappingSaas(id string) (*RoleMappingSaas, error) {
-	var err error
-	var response RoleMappingSaas
-	baseUrl := ""
-	apiPath := fmt.Sprintf("/v2/samlmappings/%s", id)
-
-	if cli.clientType == Saas || cli.clientType == SaasDev {
-		baseUrl = cli.tokenUrl
-	} else {
-		err = fmt.Errorf("GetRoleMappingSaas is Supported only in Aqua SaaS env")
+func (cli *Client) GetIntegrationState() (*IntegrationState, error) {
+	if cli.clientType != Csp {
+		return nil, fmt.Errorf("GetIntegrationState is supported only in Aqua on-prem environment")
+	}
+	if err := cli.limiter.Wait(context.Background()); err != nil {
 		return nil, err
 	}
-
-	request := cli.gorequest
-	err = cli.limiter.Wait(context.Background())
-	if err != nil {
-		return nil, err
-	}
-
-	events, body, errs := request.Get(baseUrl+apiPath).Set("Authorization", fmt.Sprintf("Bearer %s", cli.token)).End()
-
+	resp, body, errs := cli.gorequest.Get(cli.url + "/api/v2/integrationsEnabledState").Set("Authorization", fmt.Sprintf("Bearer %s", cli.token)).End()
 	if errs != nil {
-		err = fmt.Errorf("error calling %s", apiPath)
-		return nil, err
+		return nil, fmt.Errorf("error calling integrations state API")
+	}
+	if resp.StatusCode != 200 {
+		return nil, fmt.Errorf("unexpected response status: %s", body)
 	}
 
-	if events.StatusCode != 200 {
-		return nil, fmt.Errorf("error calling %s, error: %s", apiPath, body)
+	var state IntegrationState
+	if err := json.Unmarshal([]byte(body), &state); err != nil {
+		log.Printf("Error parsing integration state: %v", err)
+		return nil, errors.Wrap(err, "could not unmarshal integration state")
 	}
-
-	err = json.Unmarshal([]byte(body), &response)
-	if err != nil {
-		log.Printf("Error calling func GetRoleMappingSaas from %s%s, %v ", baseUrl, apiPath, err)
-		return nil, errors.Wrap(err, "could not unmarshal roleMappingSaas response")
-	}
-
-	return &response, nil
-
-}
-
-// GetRolesMappingSaas - returns Aqua RoleMappingSaas
-func (cli *Client) GetRolesMappingSaas() (*RoleMappingSaasList, error) {
-	var err error
-	var response RoleMappingSaasList
-	baseUrl := ""
-	apiPath := "/v2/samlmappings"
-
-	if cli.clientType == Saas || cli.clientType == SaasDev {
-		baseUrl = cli.tokenUrl
-	} else {
-		err = fmt.Errorf("GetRolesMappingSaas is Supported only in Aqua SaaS env")
-		return nil, err
-	}
-
-	request := cli.gorequest
-	err = cli.limiter.Wait(context.Background())
-	if err != nil {
-		return nil, err
-	}
-
-	events, body, errs := request.Get(baseUrl+apiPath).Set("Authorization", fmt.Sprintf("Bearer %s", cli.token)).End()
-
-	if errs != nil {
-		err = fmt.Errorf("error calling %s", apiPath)
-		return nil, err
-	}
-
-	if events.StatusCode != 200 {
-		return nil, fmt.Errorf("error calling %s, error: %s", apiPath, body)
-	}
-
-	err = json.Unmarshal([]byte(body), &response)
-	if err != nil {
-		log.Printf("Error calling func GetRolesMappingSaas from %s%s, %v ", baseUrl, apiPath, err)
-		return nil, errors.Wrap(err, "could not unmarshal roleMappingSaasList response")
-	}
-
-	return &response, nil
-
-}
-
-func (cli *Client) CreateRoleMappingSaas(saas *RoleMappingSaas) error {
-	var err error
-	var roleMappingResponse RoleMappingSaasResponse
-	baseUrl := ""
-	apiPath := "/v2/samlmappings"
-
-	if cli.clientType == Saas || cli.clientType == SaasDev {
-		baseUrl = cli.tokenUrl
-	} else {
-		err = fmt.Errorf("CreateRoleMappingSaas is Supported only in Aqua SaaS env")
-		return err
-	}
-
-	saasTmp := map[string]interface{}{
-		"csp_role":    saas.CspRole,
-		"saml_groups": saas.SamlGroups,
-	}
-
-	payload, err := json.Marshal(saasTmp)
-
-	request := cli.gorequest
-	err = cli.limiter.Wait(context.Background())
-	if err != nil {
-		return err
-	}
-
-	events, body, errs := request.Post(baseUrl+apiPath).Set("Authorization", fmt.Sprintf("Bearer %s", cli.token)).Send(string(payload)).End()
-
-	if errs != nil {
-		err = fmt.Errorf("error calling %s", apiPath)
-		return err
-	}
-
-	if events.StatusCode != 201 {
-		return fmt.Errorf("error calling %s, error: %s", apiPath, body)
-	}
-
-	err = json.Unmarshal([]byte(body), &roleMappingResponse)
-	if err != nil {
-		log.Printf("Error calling func CreateRoleMappingSaas from %s%s, %v ", baseUrl, apiPath, err)
-		return errors.Wrap(err, "could not unmarshal roleMappingSaas response")
-	}
-	saas.Id = roleMappingResponse.RoleMappingSaas.Id
-	saas.AccountId = roleMappingResponse.RoleMappingSaas.AccountId
-	saas.Created = roleMappingResponse.RoleMappingSaas.Created
-	return nil
-}
-
-func (cli *Client) UpdateRoleMappingSaas(saas *RoleMappingSaas, id string) error {
-	var err error
-	baseUrl := ""
-	apiPath := fmt.Sprintf("/v2/samlmappings/%s", id)
-
-	if cli.clientType == Saas || cli.clientType == SaasDev {
-		baseUrl = cli.tokenUrl
-	} else {
-		err = fmt.Errorf("UpdateRoleMappingSaas is Supported only in Aqua SaaS env")
-		return err
-	}
-
-	saasTmp := map[string]interface{}{
-		"saml_groups": saas.SamlGroups,
-	}
-
-	payload, err := json.Marshal(saasTmp)
-	request := cli.gorequest
-	err = cli.limiter.Wait(context.Background())
-	if err != nil {
-		return err
-	}
-
-	events, body, errs := request.Put(baseUrl+apiPath).Set("Authorization", fmt.Sprintf("Bearer %s", cli.token)).Send(string(payload)).End()
-
-	if errs != nil {
-		err = fmt.Errorf("error calling %s", apiPath)
-		return err
-	}
-
-	if events.StatusCode != 200 {
-		return fmt.Errorf("error calling %s, error: %s", apiPath, body)
-	}
-
-	//err = json.Unmarshal([]byte(body), &saas)
-	//if err != nil {
-	//	log.Printf("Error calling func UpdateRoleMappingSaas from %s%s, %v ", baseUrl, apiPath, err)
-	//	return errors.Wrap(err, "could not unmarshal roleMappingSaas response")
-	//}
-
-	return nil
-}
-
-// DeleteRoleMappingSaas - returns Aqua RoleMappingSaas
-func (cli *Client) DeleteRoleMappingSaas(id string) error {
-	var err error
-	baseUrl := ""
-	apiPath := fmt.Sprintf("/v2/samlmappings/%s", id)
-
-	if cli.clientType == Saas || cli.clientType == SaasDev {
-		baseUrl = cli.tokenUrl
-	} else {
-		err = fmt.Errorf("DeleteRoleMappingSaas is Supported only in Aqua SaaS env")
-		return err
-	}
-
-	request := cli.gorequest
-	err = cli.limiter.Wait(context.Background())
-	if err != nil {
-		return err
-	}
-
-	events, body, errs := request.Delete(baseUrl+apiPath).Set("Authorization", fmt.Sprintf("Bearer %s", cli.token)).End()
-
-	if errs != nil {
-		err = fmt.Errorf("error calling %s", apiPath)
-		return err
-	}
-
-	if events.StatusCode != 200 {
-		return fmt.Errorf("error calling %s, error: %s", apiPath, body)
-	}
-
-	return nil
-
+	return &state, nil
 }
