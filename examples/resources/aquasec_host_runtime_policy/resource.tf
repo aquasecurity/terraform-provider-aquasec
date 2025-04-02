@@ -22,19 +22,19 @@ resource "aquasec_host_runtime_policy" "host_runtime_policy" {
     "blocked",
   ]
   file_integrity_monitoring {
-    monitor_create      = true
-    monitor_read        = true
-    monitor_modify      = true
-    monitor_delete      = true
-    monitor_attributes  = true
-    monitored_paths     = ["paths"]
-    excluded_paths      = ["expaths"]
-    monitored_processes = ["process"]
-    excluded_processes  = ["exprocess"]
-    monitored_users     = ["user"]
-    excluded_users      = ["expuser"]
+    enabled                               = true
+    monitored_files_read                  = true
+    monitored_files_modify                = true
+    monitored_files_delete                = true
+    monitored_files_attributes            = false
+    monitored_files                       = ["paths"]
+    exceptional_monitored_files           = ["expaths"]
+    monitored_files_processes             = ["process"]
+    exceptional_monitored_files_processes = ["exprocess"]
+    monitored_files_users                 = ["user"]
+    exceptional_monitored_files_users     = ["expuser"]
   }
-  audit_all_os_user_activity         = true
+
   audit_full_command_arguments       = true
   audit_host_successful_login_events = true
   audit_host_failed_login_events     = true
@@ -51,9 +51,7 @@ resource "aquasec_host_runtime_policy" "host_runtime_policy" {
   os_groups_blocked = [
     "group2",
   ]
-  package_block = [
-    "package1"
-  ]
+
   monitor_system_time_changes  = true
   monitor_windows_services     = true
   monitor_system_log_integrity = true
