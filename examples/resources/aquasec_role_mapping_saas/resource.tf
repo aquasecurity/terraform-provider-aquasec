@@ -1,8 +1,23 @@
-resource "aquasec_role_mapping_saas" "roles_mapping_saas" {
-  saml_groups = ["group1", "group2"]
-  csp_role    = "Administrator"
+# Create a Permission Set
+resource "aquasec_permission_set_saas" "example" {
+  name        = "example-permissions"
+  description = "Permission set for Example team"
+  actions     = [
+    "account_mgmt.groups.read",
+    "cspm.cloud_accounts.read",
+  ]
 }
 
-output "roles_mapping_saas" {
-  value = aquasec_role_mapping_saas.roles_mapping_saas
+# Create a Role with the permission set and application scope(s)
+resource "aquasec_role" "example" {
+  role_name   = "ExampleTeam"
+  description = "Role for ExampleTeam with limited access"
+  permission  = aquasec_permission_set_saas.example.name
+  scopes      = ["Global"]
+}
+
+# Map SAML groups to the Role
+resource "aquasec_role_mapping_saas" "example" {
+  saml_groups = ["Engineering", "Security"]
+  csp_role    = aquasec_role.example.role_name
 }
