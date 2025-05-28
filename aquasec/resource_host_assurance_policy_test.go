@@ -141,7 +141,7 @@ resource "aquasec_host_assurance_policy" "terraformiap" {
     }
 
     vulnerability_exploitability = true
-    disallow_exploit_types = ["remote_exploit", "local_exploit"]
+    disallow_exploit_types = ["remote", "local"]
     ignore_base_image_vln = false
     ignored_sensitive_resources = ["/etc/passwd", "/etc/shadow"]
     

@@ -3,10 +3,11 @@ package aquasec
 import (
 	"context"
 	"fmt"
+	"strings"
+
 	"github.com/aquasecurity/terraform-provider-aquasec/client"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-	"strings"
 )
 
 func resourceHostRuntimePolicy() *schema.Resource {
@@ -1267,6 +1268,10 @@ func resourceHostRuntimePolicy() *schema.Resource {
 										Type:        schema.TypeString,
 										Description: "Variable value.",
 										Required:    true,
+									},
+									"name": {
+										Type:     schema.TypeString,
+										Optional: true,
 									},
 								},
 							},
@@ -3007,7 +3012,7 @@ func flattenVariables(variables []interface{}) []client.Variable {
 		val := v.(map[string]interface{})
 		result = append(result, client.Variable{
 			Attribute: val["attribute"].(string),
-                        Name:      val["name"].(string),
+			Name:      val["name"].(string),
 			Value:     val["value"].(string),
 		})
 	}
