@@ -67,6 +67,10 @@ func dataSourceUsersSaas() *schema.Resource {
 							Type:     schema.TypeBool,
 							Computed: true,
 						},
+						"mfa_enabled": {
+							Type:     schema.TypeBool,
+							Computed: true,
+						},
 						"created": {
 							Type:     schema.TypeString,
 							Computed: true,

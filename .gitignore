@@ -36,3 +36,5 @@ vendor
 *.winfile eol=crlf
 
 terraform-provider-aquasec
+
+test/
