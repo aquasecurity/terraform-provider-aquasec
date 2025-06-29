@@ -125,7 +125,7 @@ func flattenUsersSaasData(users *[]client.FullUser) ([]interface{}, string) {
 			u["csp_roles"] = user.BasicUser.CspRoles
 			u["user_id"] = user.BasicId.Id
 			u["email"] = user.BasicUser.Email
-
+			u["mfa_enabled"] = user.BasicUser.MfaEnabled
 			u["confirmed"] = user.BasicUser.Confirmed
 			u["password_reset"] = user.BasicUser.PasswordReset
 			u["send_announcements"] = user.BasicUser.SendAnnouncements

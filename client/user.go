@@ -62,6 +62,7 @@ type BasicUser struct {
 	Groups            []Group      `json:"groups,omitempty"`
 	Logins            []Login      `json:"logins"`
 	UserGroups        []UserGroups `json:"user_groups,omitempty"`
+	MfaEnabled        bool         `json:"mfa_enabled,omitempty"`
 }
 
 // UserList contains a list of UserSaas
@@ -388,6 +389,7 @@ func UpdatePayload(saas, update bool, user *FullUser) interface{} {
 		if !update {
 			i["email"] = user.BasicUser.Email
 		}
+		i["mfa_enabled"] = user.BasicUser.MfaEnabled
 	} else {
 		i["email"] = user.BasicUser.Email
 		i["first_time"] = user.BasicUser.FirstTime

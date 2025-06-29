@@ -44,6 +44,11 @@ func resourceUserSaas() *schema.Resource {
 				Type:     schema.TypeString,
 				Required: true,
 			},
+			"mfa_enabled": {
+				Type:     schema.TypeBool,
+				Optional: true,
+				Default:  false,
+			},
 			"confirmed": {
 				Type:     schema.TypeBool,
 				Computed: true,
@@ -150,6 +155,11 @@ func resourceUserSaasCreate(d *schema.ResourceData, m interface{}) error {
 		basicUser.AccountAdmin = accountAdmin.(bool)
 	}
 
+	mfaEnabled, ok := d.GetOk("mfa_enabled")
+	if ok {
+		basicUser.MfaEnabled = mfaEnabled.(bool)
+	}
+
 	userGroups, ok := d.GetOk("groups")
 	if ok {
 		j, err := json.Marshal(userGroups)
@@ -227,6 +237,7 @@ func resourceUserSaasRead(d *schema.ResourceData, m interface{}) error {
 	d.Set("multiaccount", r.Multiaccount)
 	d.Set("account_admin", r.AccountAdmin)
 	d.Set("email", r.Email)
+	d.Set("mfa_enabled", r.MfaEnabled)
 	d.Set("user_id", r.BasicId.Id)
 
 	for i, login := range r.BasicUser.Logins {
@@ -249,6 +260,12 @@ func resourceUserSaasUpdate(d *schema.ResourceData, m interface{}) error {
 	//id := d.Id()
 	if d.HasChanges("email") {
 		return fmt.Errorf("user email cannot be changed")
+	}
+	if d.HasChange("mfa_enabled") {
+		err := d.Set("mfa_enabled", d.Get("mfa_enabled").(bool))
+		if err != nil {
+			return fmt.Errorf("error setting mfa_enabled state: %v", err)
+		}
 	}
 	if d.HasChanges("csp_roles", "account_admin", "groups") {
 		var err error
