@@ -63,6 +63,12 @@ func Provider(v string) *schema.Provider {
 				DefaultFunc: schema.EnvDefaultFunc("AQUA_CONFIG", "~/.aquasec/tf.config"),
 				Description: "This is the file path for Aqua provider configuration. The default configuration path is `~/.aqua/tf.config`. Can alternatively be sourced from the `AQUA_CONFIG` environment variable.",
 			},
+			"validate": {
+				Type:        schema.TypeBool,
+				Optional:    true,
+				Default:     true,
+				Description: "Skip provider credential validation when set to false.",
+			},
 		},
 		ResourcesMap: map[string]*schema.Resource{
 			"aquasec_user":                        resourceUser(),
@@ -174,39 +180,42 @@ func providerConfigure(ctx context.Context, d *schema.ResourceData) (interface{}
 	aquaURL := d.Get("aqua_url").(string)
 	verifyTLS := d.Get("verify_tls").(bool)
 	caCertPath := d.Get("ca_certificate_path").(string)
+	validate := d.Get("validate").(bool)
 
 	if username == "" && password == "" && aquaURL == "" {
 		username, password, aquaURL, err = getProviderConfigurationFromFile(d)
-		if err != nil {
+		if err != nil && validate {
 			return nil, diag.FromErr(err)
 		}
 	}
 
-	if username == "" {
-		diags = append(diags, diag.Diagnostic{
-			Severity: diag.Error,
-			Summary:  "Initializing provider, username parameter is missing.",
-		})
-	}
+	if validate {
+		if username == "" {
+			diags = append(diags, diag.Diagnostic{
+				Severity: diag.Error,
+				Summary:  "Initializing provider, username parameter is missing.",
+			})
+		}
 
-	if password == "" {
-		diags = append(diags, diag.Diagnostic{
-			Severity: diag.Error,
-			Summary:  "Initializing provider, password parameter is missing.",
-		})
-	}
+		if password == "" {
+			diags = append(diags, diag.Diagnostic{
+				Severity: diag.Error,
+				Summary:  "Initializing provider, password parameter is missing.",
+			})
+		}
 
-	if aquaURL == "" {
-		diags = append(diags, diag.Diagnostic{
-			Severity: diag.Error,
-			Summary:  "Initializing provider, aqua_url parameter is missing.",
-		})
+		if aquaURL == "" {
+			diags = append(diags, diag.Diagnostic{
+				Severity: diag.Error,
+				Summary:  "Initializing provider, aqua_url parameter is missing.",
+			})
+		}
 	}
 
 	var caCertByte []byte
 	if caCertPath != "" {
 		caCertByte, err = os.ReadFile(caCertPath)
-		if err != nil {
+		if err != nil && validate {
 			diags = append(diags, diag.Diagnostic{
 				Severity: diag.Error,
 				Summary:  "Unable to read CA certificates",
@@ -223,26 +232,27 @@ func providerConfigure(ctx context.Context, d *schema.ResourceData) (interface{}
 
 	aquaClient := client.NewClient(aquaURL, username, password, verifyTLS, caCertByte)
 
-	token, tokenPresent := os.LookupEnv("TESTING_AUTH_TOKEN")
+	if validate {
+		token, tokenPresent := os.LookupEnv("TESTING_AUTH_TOKEN")
+		url, urlPresent := os.LookupEnv("TESTING_URL")
 
-	url, urlPresent := os.LookupEnv("TESTING_URL")
+		if !tokenPresent || !urlPresent {
+			_, _, err = aquaClient.GetAuthToken()
 
-	if !tokenPresent || !urlPresent {
-		_, _, err = aquaClient.GetAuthToken()
+			if err != nil {
+				diags = append(diags, diag.Diagnostic{
+					Severity: diag.Error,
+					Summary:  "Unable to fetch token",
+					Detail:   err.Error(),
+				})
 
-		if err != nil {
-			diags = append(diags, diag.Diagnostic{
-				Severity: diag.Error,
-				Summary:  "Unable to fetch token",
-				Detail:   err.Error(),
-			})
+				return nil, diags
+			}
+		} else {
+			aquaClient.SetAuthToken(token)
+			aquaClient.SetUrl(url)
 
-			return nil, diags
 		}
-	} else {
-		aquaClient.SetAuthToken(token)
-		aquaClient.SetUrl(url)
-
 	}
 
 	return aquaClient, diags

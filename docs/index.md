@@ -37,6 +37,7 @@ provider "aquasec" {
 
   // Alternatively, you can provide these configurations from a config file, and configure the provider as below
   // config_path = '/path/to/tf.config' // defaults to '~/.aqua/tf.config' -- Alternatively sourced from $AQUA_CONFIG
+  // validate = false // Skip provider credential validation
 }
 ```
 
@@ -51,3 +52,4 @@ provider "aquasec" {
 - `password` (String, Sensitive) This is the password that should be used to make the connection. Can alternatively be sourced from the `AQUA_PASSWORD` environment variable.
 - `username` (String, Sensitive) This is the user id that should be used to make the connection. Can alternatively be sourced from the `AQUA_USER` environment variable.
 - `verify_tls` (Boolean) If true, server tls certificates will be verified by the client before making a connection. Defaults to true. Can alternatively be sourced from the `AQUA_TLS_VERIFY` environment variable.
+- `validate` (Boolean) If set to false, the provider will skip credential validation during configuration. Defaults to true.
