@@ -12,6 +12,9 @@ provider "aquasec" {
   aqua_url = "https://aquaurl.com" // Alternatively sourced from $AQUA_URL
   password = "@password"           // Alternatively sourced from $AQUA_PASSWORD
 
+  // Skip validation when credentials are not available
+  validate = false
+
   // If you are using unverifiable certificates (e.g. self-signed) you may need to disable certificate verification
   verify_tls = false // Alternatively sourced from $AQUA_TLS_VERIFY
 

@@ -32,6 +32,9 @@ provider "aquasec" {
   aqua_url = "https://aquaurl.com" // Alternatively sourced from $AQUA_URL
   password = "@password"           // Alternatively sourced from $AQUA_PASSWORD
 
+  // Skip validation when credentials are not available
+  validate = false // Alternatively sourced from $AQUA_VALIDATE
+
   // If you are using unverifiable certificates (e.g. self-signed) you may need to disable certificate verification
   verify_tls = false // Alternatively sourced from $AQUA_TLS_VERIFY
 
@@ -51,3 +54,4 @@ provider "aquasec" {
 - `password` (String, Sensitive) This is the password that should be used to make the connection. Can alternatively be sourced from the `AQUA_PASSWORD` environment variable.
 - `username` (String, Sensitive) This is the user id that should be used to make the connection. Can alternatively be sourced from the `AQUA_USER` environment variable.
 - `verify_tls` (Boolean) If true, server tls certificates will be verified by the client before making a connection. Defaults to true. Can alternatively be sourced from the `AQUA_TLS_VERIFY` environment variable.
+- `validate` (Boolean) If false, skip validating provider credentials on initialization. Can alternatively be sourced from the `AQUA_VALIDATE` environment variable.

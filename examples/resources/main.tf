@@ -11,6 +11,7 @@ provider "aquasec" {
   username = "admin"
   aqua_url = "https://aquaurl.com"
   password = "@password"
+  validate = false
 }
 
 

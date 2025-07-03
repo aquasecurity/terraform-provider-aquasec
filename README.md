@@ -53,6 +53,8 @@ provider "aquasec" {
   username = "IaC"
   aqua_url = "https://aquaurl.com"
   password = "@password"
+  # Skip validation when credentials are not available
+  validate = false
 }
 ```
 ## Using the Aquasec provider SaaS solution
