@@ -8,6 +8,7 @@ import (
 
 	"github.com/aquasecurity/terraform-provider-aquasec/client"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceRegistry() *schema.Resource {
@@ -123,10 +124,11 @@ func resourceRegistry() *schema.Resource {
 				Optional:    true,
 			},
 			"scanner_type": {
-				Type:        schema.TypeString,
-				Description: "The Scanner type",
-				Optional:    true,
-				Computed:    true,
+				Type:         schema.TypeString,
+				Description:  "The Scanner type (either \"any\" or \"specific\")",
+				Optional:     true,
+				Computed:     true,
+				ValidateFunc: validation.StringInSlice([]string{"any", "specific"}, false),
 			},
 			"scanner_name": {
 				Type:        schema.TypeList,
@@ -135,6 +137,12 @@ func resourceRegistry() *schema.Resource {
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
 				},
+			},
+			"scanner_group_name": {
+				Type:        schema.TypeString,
+				Description: "The scanner group name (required when scanner_type = \"specific\" type)",
+				Optional:    true,
+				Computed:    true,
 			},
 			"options": {
 				Type:     schema.TypeList,
@@ -213,15 +221,65 @@ func resourceRegistry() *schema.Resource {
 					},
 				},
 			},
+			"auto_scan_time": {
+				Type:        schema.TypeSet,
+				Description: "When enabled, registry events are sent to the given Aqua webhook url",
+				Optional:    true,
+				Computed:    true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"auto_pull_day": {
+							Type:        schema.TypeInt,
+							Description: "The day for auto pull",
+							Optional:    true,
+							Computed:    true,
+						},
+						"iteration": {
+							Type:        schema.TypeInt,
+							Description: "Number of iterations",
+							Optional:    true,
+							Computed:    true,
+						},
+						"iteration_type": {
+							Type:        schema.TypeString,
+							Description: "The type of iteration (day, week, month, year)",
+							Optional:    true,
+							Computed:    true,
+						},
+						"time": {
+							Type:        schema.TypeString,
+							Description: "the time for auto pull",
+							Optional:    true,
+							Computed:    true,
+						},
+						"week_days": {
+							Type:        schema.TypeList,
+							Description: "The days of week for auto pull",
+							Optional:    true,
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+						},
+					},
+				},
+			},
 		},
 	}
 }
 
 func resourceRegistryCreate(d *schema.ResourceData, m interface{}) error {
 	ac := m.(*client.Client)
+	var scannerGroupName string
 	scannerType := d.Get("scanner_type").(string)
 	if scannerType == "" {
 		scannerType = "any"
+	}
+
+	if scannerType == "specific" {
+		scannerGroupName = d.Get("scanner_group_name").(string)
+		if len(scannerGroupName) == 0 {
+			return fmt.Errorf("scanner_group_name must be provided when scanner_type is \"specific\"")
+		}
 	}
 
 	autoPull := d.Get("auto_pull").(bool)
@@ -263,6 +321,7 @@ func resourceRegistryCreate(d *schema.ResourceData, m interface{}) error {
 		RegistryScanTimeout:        d.Get("registry_scan_timeout").(int),
 		AutoPullInterval:           autoPullInterval,
 		ScannerType:                scannerType,
+		ScannerGroupName:           scannerGroupName,
 		ScannerName:                convertStringArr(scanner_name),
 		ScannerNameAdded:           convertStringArr(scanner_name_added),
 		ScannerNameRemoved:         convertStringArr(scanner_name_removed),
@@ -300,6 +359,32 @@ func resourceRegistryCreate(d *schema.ResourceData, m interface{}) error {
 				UnQuarantine: webhookentries["un_quarantine"].(bool),
 			}
 			registry.Webhook = Webhook
+		}
+	}
+
+	autoscantime, ok := d.GetOk("auto_scan_time")
+	if ok {
+		for _, autoscantimeMap := range autoscantime.(*schema.Set).List() {
+			autoscantimeentries, ok := autoscantimeMap.(map[string]interface{})
+			if !ok {
+				continue
+			}
+			AutoScanTime := client.AutoScanTime{
+				AutoPullDay:   autoscantimeentries["auto_pull_day"].(int),
+				Iteration:     autoscantimeentries["iteration"].(int),
+				IterationType: autoscantimeentries["iteration_type"].(string),
+				Time:          autoscantimeentries["time"].(string),
+				WeekDays:      convertStringArr(autoscantimeentries["week_days"].([]interface{})),
+			}
+			registry.AutoScanTime = AutoScanTime
+		}
+	} else {
+		registry.AutoScanTime = client.AutoScanTime{
+			AutoPullDay:   0,
+			Iteration:     0,
+			IterationType: "",
+			Time:          "",
+			WeekDays:      []string{},
 		}
 	}
 
@@ -409,20 +494,33 @@ func resourceRegistryRead(d *schema.ResourceData, m interface{}) error {
 	if err = d.Set("webhook", flattenwebhook(r.Webhook)); err != nil {
 		return err
 	}
+	if err = d.Set("scanner_group_name", r.ScannerGroupName); err != nil {
+		return err
+	}
 	scannerType := d.Get("scanner_type").(string)
 	if scannerType == "specific" {
-		if err = d.Set("scanner_name", r.ScannerName); err != nil {
+		if err := d.Set("scanner_name", r.ScannerName); err != nil {
 			return err
 		}
+	}
+	if err = d.Set("auto_scan_time", flattenautoscantime(r.AutoScanTime)); err != nil {
+		return err
 	}
 	return nil
 }
 
 func resourceRegistryUpdate(d *schema.ResourceData, m interface{}) error {
 	c := m.(*client.Client)
+	var scannerGroupName string
 	scannerType := d.Get("scanner_type").(string)
 	if scannerType == "" {
 		scannerType = "any"
+	}
+	if scannerType == "specific" {
+		scannerGroupName = d.Get("scanner_group_name").(string)
+		if len(scannerGroupName) == 0 {
+			return fmt.Errorf("scanner_group_name must be provided when scanner_type is \"specific\"")
+		}
 	}
 	autoPull := d.Get("auto_pull").(bool)
 	autoPullRescan := d.Get("auto_pull_rescan").(bool)
@@ -431,8 +529,7 @@ func resourceRegistryUpdate(d *schema.ResourceData, m interface{}) error {
 		autoPullInterval = 1
 	}
 
-	if d.HasChanges("name", "registry_scan_timeout", "username", "description", "pull_image_tag_pattern", "password", "url", "type", "auto_pull", "auto_pull_rescan", "auto_pull_max", "advanced_settings_cleanup", "auto_pull_time", "auto_pull_interval", "auto_cleanup", "image_creation_date_condition", "scanner_name", "prefixes", "pull_image_count", "pull_image_age", "options", "webhook", "always_pull_patterns", "pull_repo_patterns_excluded") {
-
+	if d.HasChanges("name", "registry_scan_timeout", "username", "description", "pull_image_tag_pattern", "password", "url", "type", "auto_pull", "auto_pull_rescan", "auto_pull_max", "advanced_settings_cleanup", "auto_pull_time", "auto_pull_interval", "auto_cleanup", "image_creation_date_condition", "scanner_name", "prefixes", "pull_image_count", "pull_image_age", "options", "webhook", "always_pull_patterns", "pull_repo_patterns_excluded", "scanner_group_name", "auto_scan_time") {
 		prefixes := d.Get("prefixes").([]interface{})
 		var defaultPrefix string
 		// Add default_prefix to prefixes
@@ -471,6 +568,7 @@ func resourceRegistryUpdate(d *schema.ResourceData, m interface{}) error {
 			PullImageCount:             d.Get("pull_image_count").(int),
 			RegistryScanTimeout:        d.Get("registry_scan_timeout").(int),
 			ScannerType:                scannerType,
+			ScannerGroupName:           scannerGroupName,
 			ScannerName:                convertStringArr(scanner_name),
 			ScannerNameAdded:           convertStringArr(scanner_name_added),
 			ScannerNameRemoved:         convertStringArr(scanner_name_removed),
@@ -510,6 +608,32 @@ func resourceRegistryUpdate(d *schema.ResourceData, m interface{}) error {
 					UnQuarantine: webhookentries["un_quarantine"].(bool),
 				}
 				registry.Webhook = Webhook
+			}
+		}
+
+		autoscantime, ok := d.GetOk("auto_scan_time")
+		if ok {
+			for _, autoscantimeMap := range autoscantime.(*schema.Set).List() {
+				autoscantimeentries, ok := autoscantimeMap.(map[string]interface{})
+				if !ok {
+					continue
+				}
+				AutoScanTime := client.AutoScanTime{
+					AutoPullDay:   autoscantimeentries["auto_pull_day"].(int),
+					Iteration:     autoscantimeentries["iteration"].(int),
+					IterationType: autoscantimeentries["iteration_type"].(string),
+					Time:          autoscantimeentries["time"].(string),
+					WeekDays:      convertStringArr(autoscantimeentries["week_days"].([]interface{})),
+				}
+				registry.AutoScanTime = AutoScanTime
+			}
+		} else {
+			registry.AutoScanTime = client.AutoScanTime{
+				AutoPullDay:   0,
+				Iteration:     0,
+				IterationType: "",
+				Time:          "",
+				WeekDays:      []string{},
 			}
 		}
 
@@ -588,6 +712,18 @@ func flattenwebhook(webhook1 client.Webhook) []map[string]interface{} {
 			"url":           webhook1.URL,
 			"auth_token":    webhook1.AuthToken,
 			"un_quarantine": webhook1.UnQuarantine,
+		},
+	}
+}
+
+func flattenautoscantime(autoscantime client.AutoScanTime) []map[string]interface{} {
+	return []map[string]interface{}{
+		{
+			"auto_pull_day":  autoscantime.AutoPullDay,
+			"iteration":      autoscantime.Iteration,
+			"iteration_type": autoscantime.IterationType,
+			"time":           autoscantime.Time,
+			"week_days":      autoscantime.WeekDays,
 		},
 	}
 }
