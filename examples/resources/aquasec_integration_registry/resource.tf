@@ -47,5 +47,12 @@ resource "aquasec_integration_registry" "integration_registry" {
     auth_token    = "test1-test2-test3"
     un_quarantine = false
   }
+  auto_scan_time {
+    auto_pull_day   = 1
+    iteration       = 1
+    iteration_type  = "week" // "none", "day", "week", "month"
+    time            = "2025-07-09T08:45:00Z" //YYYY-MM-DDTHH:MM:SSZ
+    week_days       = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"] // ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+  }
 }
 

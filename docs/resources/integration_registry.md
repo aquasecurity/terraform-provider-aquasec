@@ -62,6 +62,14 @@ resource "aquasec_integration_registry" "integration_registry" {
     auth_token    = "test1-test2-test3"
     un_quarantine = false
   }
+
+  auto_scan_time {
+    auto_pull_day   = 1
+    iteration       = 1
+    iteration_type  = "week"
+    time            = "2025-07-09T08:45:00Z"
+    week_days       = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
+  }
 }
 ```
 
@@ -100,6 +108,7 @@ resource "aquasec_integration_registry" "integration_registry" {
 - `url` (String) The URL, address or region of the registry
 - `username` (String) The username for registry authentication.
 - `webhook` (Block Set) When enabled, registry events are sent to the given Aqua webhook url (see [below for nested schema](#nestedblock--webhook))
+- `auto_scan_time` (Block Set) When auto_pull is enabled, auto_scan_time has to be configured (see [below for nested schema](#nestedblock--auto_scan_time))
 
 ### Read-Only
 
@@ -123,5 +132,14 @@ Optional:
 - `enabled` (Boolean)
 - `un_quarantine` (Boolean)
 - `url` (String)
+
+<a id="nestedblock--auto_scan_time"></a>
+### Nested schema for `auto_scan_time`
+
+- `auto_pull_day` (Number)
+- `iteration` (Number)
+- `iteration_type` (String)
+- `time` (String)
+- `week_days` (List of string)
 
 
