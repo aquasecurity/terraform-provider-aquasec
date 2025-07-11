@@ -50,9 +50,9 @@ resource "aquasec_integration_registry" "integration_registry" {
   pull_image_tag_pattern      = [":Latest", ":latest"]
   pull_repo_patterns_excluded = [":xyz", ":onlytest"]
 
-  url          = "us-east-1"
-  scanner_name = []
-  scanner_type = "any"
+  url                = "us-east-1"
+  scanner_group_name = ["terraform-test"]  //Configure scanner_group_name when scanner_type is "specific"
+  scanner_type       = "any"
 
   username = ""
   password = ""

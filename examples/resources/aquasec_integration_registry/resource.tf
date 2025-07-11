@@ -38,6 +38,7 @@ resource "aquasec_integration_registry" "integration_registry" {
   url          = "us-east-1"
   scanner_name = []
   scanner_type = "any"
+  scanner_group_name = "terraform-test"  //configure when scanner_type is "specific"
 
   username = ""
   password = ""
