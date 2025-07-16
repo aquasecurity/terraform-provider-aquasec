@@ -51,7 +51,7 @@ resource "aquasec_integration_registry" "integration_registry" {
   pull_repo_patterns_excluded = [":xyz", ":onlytest"]
 
   url                = "us-east-1"
-  scanner_group_name = ["terraform-test"]  //Configure scanner_group_name when scanner_type is "specific"
+  scanner_group_name = ["terraform-test"]  //Configure scanner_group_name when scanner_type is "specific" otherwise configure scanner_name
   scanner_type       = "any"
 
   username = ""
@@ -104,6 +104,7 @@ resource "aquasec_integration_registry" "integration_registry" {
 - `pull_repo_patterns_excluded` (List of String) List of image patterns to exclude
 - `registry_scan_timeout` (Number) Registry scan timeout in Minutes
 - `scanner_name` (List of String) List of scanner names
+- `scanner_group_name` (List of string) List of scanner name when scanner_type is "specific"
 - `scanner_type` (String) The Scanner type
 - `url` (String) The URL, address or region of the registry
 - `username` (String) The username for registry authentication.
