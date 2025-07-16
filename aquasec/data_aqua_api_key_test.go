@@ -2,26 +2,26 @@ package aquasec
 
 import (
 	"fmt"
+	"strconv"
 	"testing"
 
+	"github.com/aquasecurity/terraform-provider-aquasec/client"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
 func TestAccAquaSecAPIKeysDataSource_byID(t *testing.T) {
-	if !isSaasEnv() {
-		t.Skip("Skipping API Keys by-ID data source test in non-SaaS env")
-	}
 	t.Parallel()
 	resource.Test(t, resource.TestCase{
-		PreCheck:  func() { testAccPreCheck(t) },
-		Providers: testAccProviders,
+		PreCheck:     func() { testAccPreCheck(t) },
+		Providers:    testAccProviders,
+		CheckDestroy: testAccCheckAquaSecAPIKeyDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: testAccAquaSecAPIKeyAndDataSourceByID(),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckAquaSecAPIKeyCreated("aquasec_aqua_api_key.test"),
-					testAccCheckAquaSecAPIKeyDataByID("output.aquasec_aqua_api_keys.test"),
+					testAccCheckAquaSecAPIKeyDataByID("data.aquasec_aqua_api_keys.apikeys"),
 				),
 			},
 		},
@@ -37,10 +37,17 @@ func testAccAquaSecAPIKeyAndDataSourceByID() string {
 		ip_addresses = ["127.0.0.1"]
 		expiration   = 30
 	}
+	data "aquasec_aqua_api_keys" "apikeys" {
+		id = aquasec_aqua_api_key.test.id
+	}
 
-	output "aquasec_aqua_api_keys" "test" {
-  		id = aquasec_api_key.test.id
-	}`
+	output "first_desc" {
+		value = data.aquasec_aqua_api_keys.apikeys.apikeys[0].description
+	}
+	output "test_api_key_id" {
+		value = data.aquasec_aqua_api_keys.apikeys.apikeys[0].id
+	}
+	`
 }
 
 func testAccCheckAquaSecAPIKeyCreated(n string) resource.TestCheckFunc {
@@ -65,12 +72,39 @@ func testAccCheckAquaSecAPIKeyDataByID(n string) resource.TestCheckFunc {
 		if rs.Primary.ID == "" {
 			return fmt.Errorf("data source %q has no ID", n)
 		}
-		// ensure some key attributes were populated
-		for _, attr := range []string{"access_key", "secret", "description"} {
-			if v := rs.Primary.Attributes[attr]; v == "" {
-				return fmt.Errorf("attribute %q is empty", attr)
-			}
+
+		descKey := "apikeys.0.description"
+		if v, ok := rs.Primary.Attributes[descKey]; !ok || v == "" {
+			return fmt.Errorf("attribute %q is empty or not found", descKey)
 		}
 		return nil
 	}
+}
+
+func testAccCheckAquaSecAPIKeyDestroy(s *terraform.State) error {
+	client := testAccProvider.Meta().(*client.Client)
+
+	for _, rs := range s.RootModule().Resources {
+		if rs.Type != "aquasec_aqua_api_key" {
+			continue
+		}
+
+		id := rs.Primary.ID
+		if id == "" {
+			continue
+		}
+
+		// Try fetching the deleted key, expect failure
+		keyID, err := strconv.Atoi(id)
+		if err != nil {
+			return fmt.Errorf("invalid ID %q: %v", id, err)
+		}
+
+		_, err = client.GetApiKey(keyID)
+		if err == nil {
+			return fmt.Errorf("API Key still exists (ID %d)", keyID)
+		}
+	}
+
+	return nil
 }

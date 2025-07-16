@@ -1,23 +1,23 @@
 package aquasec
 
 import (
-	"encoding/json"
+	"context"
 	"fmt"
 	"log"
 	"strconv"
-	"strings"
 	"time"
 
 	"github.com/aquasecurity/terraform-provider-aquasec/client"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func resourceAPIKey() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAPIKeyCreate,
-		Read:   resourceAPIKeyRead,
-		Update: resourceAPIKeyUpdate,
-		Delete: resourceAPIKeyDelete,
+		CreateContext: resourceAPIKeyCreate,
+		ReadContext:   resourceAPIKeyRead,
+		UpdateContext: resourceAPIKeyUpdate,
+		DeleteContext: resourceAPIKeyDelete,
 
 		Schema: map[string]*schema.Schema{
 			"id": {
@@ -28,7 +28,7 @@ func resourceAPIKey() *schema.Resource {
 			"description": {
 				Type:        schema.TypeString,
 				Description: "The API key description.",
-				Optional:    true,
+				Required:    true,
 			},
 			"enabled": {
 				Type:        schema.TypeBool,
@@ -133,7 +133,7 @@ func resourceAPIKey() *schema.Resource {
 	}
 }
 
-func resourceAPIKeyCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAPIKeyCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	ac := m.(*client.Client)
 
 	var api client.APIKey
@@ -152,13 +152,7 @@ func resourceAPIKeyCreate(d *schema.ResourceData, m interface{}) error {
 		api.Roles = convertStringArr(roles.([]interface{}))
 	}
 
-	expiration := d.Get("expiration").(int)
-	_, errs := SetExpirationDate(expiration)
-	if errs != nil {
-		log.Printf("[ERROR] Error setting expiration date: %s", errs)
-		return fmt.Errorf("Error setting expiration date: %s", errs)
-	}
-	api.Expiration = expiration
+	api.Expiration = d.Get("expiration").(int)
 	api.Whitelisted = d.Get("whitelisted").(bool)
 	api.IacToken = d.Get("iac_token").(bool)
 
@@ -180,22 +174,22 @@ func resourceAPIKeyCreate(d *schema.ResourceData, m interface{}) error {
 	}
 	err := ac.CreateApiKey(apiKey)
 	if err != nil {
-		return fmt.Errorf("CreateApiKey error: %w", err)
+		return diag.FromErr(fmt.Errorf("CreateApiKey error: %w", err))
 	}
-	if apiKey.ID.String() == "" {
-		return fmt.Errorf("CreateApiKey succeeded but returned empty ID")
+	if strconv.Itoa(apiKey.ID) == "" {
+		return diag.FromErr(fmt.Errorf("CreateApiKey succeeded but returned empty ID"))
 	}
-	d.SetId(apiKey.ID.String())
+	d.SetId(strconv.Itoa(apiKey.ID))
 	d.Set("access_key", apiKey.AccessKey)
 	d.Set("secret", apiKey.SecretKey)
-	err = resourceAPIKeyUpdate(d, m)
-	if err != nil {
-		return err
+	updateDiags := resourceAPIKeyUpdate(ctx, d, m)
+	if updateDiags.HasError() {
+		return updateDiags
 	}
-	return resourceAPIKeyRead(d, m)
+	return resourceAPIKeyRead(ctx, d, m)
 }
 
-func resourceAPIKeyRead(d *schema.ResourceData, m interface{}) error {
+/*func resourceAPIKeyRead(d *schema.ResourceData, m interface{}) error {
 	ac := m.(*client.Client)
 
 	id, err := strconv.Atoi(d.Id())
@@ -212,7 +206,7 @@ func resourceAPIKeyRead(d *schema.ResourceData, m interface{}) error {
 		return err
 	}
 
-	d.Set("id", apikey.ID.String())
+	d.Set("id", strconv.Itoa(apikey.ID))
 	d.Set("description", apikey.Description)
 	d.Set("enabled", apikey.Enabled)
 	d.Set("ip_addresses", apikey.IPAddresses)
@@ -230,53 +224,94 @@ func resourceAPIKeyRead(d *schema.ResourceData, m interface{}) error {
 
 	return nil
 }
+*/
 
-func resourceAPIKeyUpdate(d *schema.ResourceData, m interface{}) error {
-	ac := m.(*client.Client)
+func resourceAPIKeyRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+	client := m.(*client.Client)
+
 	id, err := strconv.Atoi(d.Id())
-
 	if err != nil {
-		return fmt.Errorf("invalid API key ID: %d", id)
+		return diag.FromErr(err)
 	}
 
+	key, err := client.GetApiKey(id)
+	if err != nil {
+		return diag.FromErr(err)
+	}
+
+	if key.ID == 0 {
+		d.SetId("") // resource removed
+		return nil
+	}
+	expirationDays := d.Get("expiration").(int)
+	key.Expiration = int(daysToMilliseconds(expirationDays))
+	_ = d.Set("expiration", expirationDays)
+	_ = d.Set("access_key", key.AccessKey)
+	_ = d.Set("description", key.Description)
+	_ = d.Set("account_id", key.AccountID)
+	_ = d.Set("enabled", key.Enabled)
+	_ = d.Set("roles", key.Roles)
+	_ = d.Set("group_id", key.GroupID)
+	_ = d.Set("ip_addresses", key.IPAddresses)
+
+	return nil
+}
+
+func resourceAPIKeyUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+	ac := m.(*client.Client)
+
 	if d.HasChanges("description", "ip_addresses", "enabled", "roles", "whitelisted", "iac_token", "group_id") {
-		roles := d.Get("roles").([]interface{})
-		ipaddresses := d.Get("ip_addresses").([]interface{})
-		id := d.Id()
+		var roles []string
+		if v, ok := d.GetOk("roles"); ok {
+			roles = convertStringArr(v.([]interface{}))
+		} else {
+			roles = []string{} // always send empty array if roles missing
+		}
+		var ipaddresses []string
+		if v, ok := d.GetOk("ip_addresses"); ok {
+			ipaddresses = convertStringArr(v.([]interface{}))
+		} else {
+			ipaddresses = []string{}
+		}
+		id, errs := strconv.Atoi(d.Id())
+		if errs != nil {
+			return diag.FromErr(fmt.Errorf("invalid API key ID: %s", d.Id()))
+		}
+		expirationMs := int(daysToMilliseconds(d.Get("expiration").(int)))
 		apikey := &client.APIKey{
-			ID:          json.Number(id),
+			ID:          id,
 			Description: d.Get("description").(string),
 			Enabled:     d.Get("enabled").(bool),
-			IPAddresses: convertStringArr(ipaddresses),
-			Roles:       convertStringArr(roles),
+			IPAddresses: ipaddresses,
+			Roles:       roles,
 			Whitelisted: d.Get("whitelisted").(bool),
 			IacToken:    d.Get("iac_token").(bool),
 			GroupID:     d.Get("group_id").(int),
+			Expiration:  expirationMs,
 		}
 
 		err := ac.UpdateApiKey(apikey)
 		if err != nil {
-			return fmt.Errorf("error while updating API Key: %w", err)
+			return diag.FromErr(fmt.Errorf("error while updating API Key: %w", err))
 		}
 	}
 	return nil
 }
 
-func resourceAPIKeyDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAPIKeyDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	ac := m.(*client.Client)
 
 	id, err := strconv.Atoi(d.Id())
 	if err != nil {
-		return fmt.Errorf("invalid API key ID: %s", d.Id())
+		return diag.FromErr(fmt.Errorf("invalid API key ID: %s", d.Id()))
 	}
 
 	err = ac.DeleteApiKey(id)
-	if err == nil {
-		d.SetId("")
-	} else {
-		log.Println("[DEBUG] error deleting user: ", err)
-		return err
+	if err != nil {
+		log.Println("[DEBUG] error deleting API key: ", err)
+		return diag.FromErr(err)
 	}
+	d.SetId("")
 	return nil
 }
 
@@ -292,4 +327,8 @@ func SetExpirationDate(days int) (time.Time, error) {
 		return time.Time{}, fmt.Errorf("expiration date cannot exceed one year from today")
 	}
 	return expirationDate, nil
+}
+
+func daysToMilliseconds(days int) int64 {
+	return int64(days) * 24 * 60 * 60 * 1000
 }

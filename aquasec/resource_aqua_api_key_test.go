@@ -2,17 +2,17 @@ package aquasec
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
 	"testing"
 
+	"github.com/aquasecurity/terraform-provider-aquasec/client"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
 func TestAquasecAPIKey_basic(t *testing.T) {
-	if !isSaasEnv() {
-		t.Skip("Skipping API Key test because its saas env")
-	}
+
 	t.Parallel()
 
 	descriptionCreate := "Initial API Key"
@@ -35,25 +35,26 @@ func TestAquasecAPIKey_basic(t *testing.T) {
 			{
 				Config: testAccAPIKeyConfig(descriptionCreate, enabledCreate, rolesCreate, ip_addressesCreate, expirationCreate),
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("aquasec_api_key.test", "description", "Initial API Key"),
-					resource.TestCheckResourceAttr("aquasec_api_key.test", "enabled", "true"),
-					resource.TestCheckResourceAttr("aquasec_api_key.test", "roles.#", "1"),
-					resource.TestCheckResourceAttr("aquasec_api_key.test", "ip_addresses.#", "1"),
+					resource.TestCheckResourceAttr("aquasec_aqua_api_key.test", "description", "Initial API Key"),
+					resource.TestCheckResourceAttr("aquasec_aqua_api_key.test", "enabled", "true"),
+					resource.TestCheckResourceAttr("aquasec_aqua_api_key.test", "roles.#", "1"),
+					resource.TestCheckResourceAttr("aquasec_aqua_api_key.test", "ip_addresses.#", "1"),
 				),
 			},
 			{
 				Config: testAccAPIKeyConfig(descriptionUpdate, enabledUpdate, rolesUpdate, ip_addressesUpdate, expirationUpdate),
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("aquasec_api_key.test", "description", "Updated API Key"),
-					resource.TestCheckResourceAttr("aquasec_api_key.test", "enabled", "false"),
-					resource.TestCheckResourceAttr("aquasec_api_key.test", "roles.#", "1"),
-					resource.TestCheckResourceAttr("aquasec_api_key.test", "ip_addresses.#", "1"),
+					resource.TestCheckResourceAttr("aquasec_aqua_api_key.test", "description", "Updated API Key"),
+					resource.TestCheckResourceAttr("aquasec_aqua_api_key.test", "enabled", "false"),
+					resource.TestCheckResourceAttr("aquasec_aqua_api_key.test", "roles.#", "1"),
+					resource.TestCheckResourceAttr("aquasec_aqua_api_key.test", "ip_addresses.#", "1"),
 				),
 			},
 			{
 				Config: testAccAPIKeyConfig("Deleted API Key", false, []string{}, []string{}, 0),
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckNoResourceAttr("aquasec_api_key.test", "id"),
+					resource.TestCheckResourceAttr("aquasec_aqua_api_key.test", "description", "Deleted API Key"),
+					resource.TestCheckResourceAttr("aquasec_aqua_api_key.test", "expiration", "0"),
 				),
 			},
 		},
@@ -75,13 +76,25 @@ func testAccAPIKeyConfig(description string, enabled bool, roles []string, ipAdd
 }
 
 func testAccAPIKeyDestroy(s *terraform.State) error {
+	client := testAccProvider.Meta().(*client.Client)
+
 	for _, rs := range s.RootModule().Resources {
-		if rs.Type != "aquasec_aqua_api_key.test" {
+		if rs.Type != "aquasec_aqua_api_key" {
 			continue
 		}
-
-		if rs.Primary.ID != "" {
-			return fmt.Errorf("Object %q still exists", rs.Primary.ID)
+		id, errs := strconv.Atoi(rs.Primary.ID)
+		if errs != nil {
+			return fmt.Errorf("failed to convert ID to int: %v", errs)
+		}
+		_, err := client.GetApiKey(id)
+		if err == nil {
+			return fmt.Errorf("API Key %q still exists", rs.Primary.ID)
+		}
+		if strings.Contains(err.Error(), "404") {
+			continue
+		}
+		if err != nil {
+			return fmt.Errorf("unexpected error while checking deletion: %s", err)
 		}
 		return nil
 	}

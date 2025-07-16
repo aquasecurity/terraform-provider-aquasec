@@ -19,6 +19,11 @@ output "roles" {
   value = data.aquasec_aqua_api_keys.single.roles
 }
 
+output "secret" {
+  value = aquasec_aqua_api_key.terraform_api_key.secret  //resource.resource_name.secret
+  sensitive = true
+}
+
 #Listing of all API Keys
 
 data "aquasec_aqua_api_keys" "list" {

@@ -4,34 +4,33 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"log"
 
 	"github.com/pkg/errors"
 )
 
 // APIKey represents the structure of an API key in Aqua SaaS
 type APIKey struct {
-	ID            json.Number `json:"id,omitempty"`
-	Description   string      `json:"description,omitempty"`
-	AccessKey     string      `json:"access_key,omitempty"`
-	SecretKey     string      `json:"secret,omitempty"`
-	Enabled       bool        `json:"enabled,omitempty"`
-	IPAddresses   []string    `json:"ip_addresses,omitempty"`
-	Roles         []string    `json:"roles,omitempty"`
-	CreatedAt     string      `json:"created,omitempty"`
-	UpdatedAt     string      `json:"updated,omitempty"`
-	Expiration    int         `json:"expiration,omitempty"`
-	Whitelisted   bool        `json:"whitelisted,omitempty"`
-	IacToken      bool        `json:"iac_token,omitempty"`
-	AccountID     int         `json:"account_id,omitempty"`
-	Owner         int         `json:"owner,omitempty"`
-	SystemKey     bool        `json:"system_key,omitempty"`
-	GroupID       int         `json:"group_id,omitempty"`
-	PermissionIDs []int       `json:"permission_ids,omitempty"`
-	Limit         int         `json:"limit,omitempty"`
-	Offset        int         `json:"offset,omitempty"`
-	OpenAccess    bool        `json:"open_access,omitempty"`
-	ScansPerMonth int         `json:"scans_per_month,omitempty"`
+	ID            int      `json:"id,omitempty"`
+	Description   string   `json:"description,omitempty"`
+	AccessKey     string   `json:"access_key,omitempty"`
+	SecretKey     string   `json:"secret,omitempty"`
+	Enabled       bool     `json:"enabled,omitempty"`
+	IPAddresses   []string `json:"ip_addresses,omitempty"`
+	Roles         []string `json:"roles,omitempty"`
+	CreatedAt     string   `json:"created,omitempty"`
+	UpdatedAt     string   `json:"updated,omitempty"`
+	Expiration    int      `json:"expiration,omitempty"`
+	Whitelisted   bool     `json:"whitelisted,omitempty"`
+	IacToken      bool     `json:"iac_token,omitempty"`
+	AccountID     int      `json:"account_id,omitempty"`
+	Owner         int      `json:"owner,omitempty"`
+	SystemKey     bool     `json:"system_key,omitempty"`
+	GroupID       int      `json:"group_id,omitempty"`
+	PermissionIDs []int    `json:"permission_ids,omitempty"`
+	Limit         int      `json:"limit,omitempty"`
+	Offset        int      `json:"offset,omitempty"`
+	OpenAccess    bool     `json:"open_access,omitempty"`
+	ScansPerMonth int      `json:"scans_per_month,omitempty"`
 }
 
 type APIKeyResponse struct {
@@ -49,7 +48,6 @@ type ApiKeyList struct {
 
 // GetApiKey fetches a single API key by its ID
 func (cli *Client) GetApiKey(id int) (*APIKey, error) {
-	var response APIKey
 	request := cli.gorequest
 
 	apiPath := fmt.Sprintf("/v2/apikeys/%d", id)
@@ -71,12 +69,12 @@ func (cli *Client) GetApiKey(id int) (*APIKey, error) {
 		return nil, fmt.Errorf("GetApiKey failed with status %d: %s", events.StatusCode, body)
 	}
 
-	if err := json.Unmarshal([]byte(body), &response); err != nil {
-		log.Printf("Error unmarshalling response: %v", err)
-		return nil, errors.Wrap(err, "could not unmarshal API key response")
+	key, err := getApiKeyResponse(body)
+	if err != nil {
+		return nil, err
 	}
 
-	return &response, nil
+	return key, nil
 }
 
 // GetApiKeys fetches all API keys with pagination support.
@@ -137,8 +135,8 @@ func (cli *Client) CreateApiKey(apikey *APIKey) error {
 	payload := map[string]interface{}{
 		"description": apikey.Description,
 	}
-	if apikey.ID.String() != "" {
-		payload["source_key_id"] = apikey.ID.String()
+	if apikey.ID != 0 {
+		payload["source_key_id"] = apikey.ID
 	}
 	if len(apikey.IPAddresses) > 0 {
 		payload["ip_addresses"] = apikey.IPAddresses
@@ -181,7 +179,7 @@ func (cli *Client) CreateApiKey(apikey *APIKey) error {
 	*apikey = *result
 
 	// Verify the ID is populated
-	if apikey.ID.String() == "" {
+	if apikey.ID == 0 {
 		return fmt.Errorf("CreateApiKey succeeded but returned empty ID")
 	}
 	return nil
@@ -193,7 +191,7 @@ func (cli *Client) UpdateApiKey(apikey *APIKey) error {
 	apiPath := ""
 
 	if cli.clientType == Saas || cli.clientType == SaasDev {
-		apiPath = fmt.Sprintf("/v2/apikeys/%s", apikey.ID)
+		apiPath = fmt.Sprintf("/v2/apikeys/%d", apikey.ID)
 		baseUrl = cli.tokenUrl
 	}
 
@@ -217,8 +215,7 @@ func (cli *Client) UpdateApiKey(apikey *APIKey) error {
 		return err
 	}
 
-	resp, body, errs := request.SetDebug(true).Put(baseUrl+apiPath).Set("Authorization", fmt.Sprintf("Bearer %s", cli.token)).Send(payload).End()
-
+	resp, body, errs := request.Put(baseUrl+apiPath).Set("Authorization", fmt.Sprintf("Bearer %s", cli.token)).Send(payload).End()
 	if errs != nil {
 		return errors.Wrap(errs[0], "UpdateApiKey request failed")
 	}
