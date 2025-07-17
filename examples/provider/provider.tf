@@ -1,7 +1,7 @@
 terraform {
   required_providers {
     aquasec = {
-      version = "0.8.39"
+      version = "0.8.41"
       source  = "aquasecurity/aquasec"
     }
   }
