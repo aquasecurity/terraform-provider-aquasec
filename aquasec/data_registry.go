@@ -231,6 +231,7 @@ func dataRegistryRead(d *schema.ResourceData, m interface{}) error {
 		if scannerType == "specific" {
 			d.Set("scanner_name", convertStringArr(scanner_name))
 		}
+
 		d.SetId(name)
 	} else {
 		return err
