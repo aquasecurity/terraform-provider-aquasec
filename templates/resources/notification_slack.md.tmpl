@@ -2,14 +2,26 @@
 page_title: "{{.Type}} - {{.ProviderName}}"
 subcategory: ""
 description: |-
-{{ .Description | plainmarkdown | trimspace | prefixlines "  " }}
+{{- if .Description }}
+  {{ .Description | plainmarkdown | trimspace | prefixlines "  " }}
+{{- else }}
+  <!-- No description provided -->
+{{- end }}
 ---
 
 # {{.Name}} ({{.Type}})
 
+{{- if .Description }}
 {{ .Description | trimspace }}
+{{- else }}
+<!-- No description provided -->
+{{- end }}
 
 ~> **Note about resource deprecation**
 Resource aquasec_notification_slack is deprecated, please use aquasec_notification instead
 
+{{- if .SchemaMarkdown }}
 {{ .SchemaMarkdown | trimspace }}
+{{- else }}
+<!-- No schema markdown provided -->
+{{- end }}

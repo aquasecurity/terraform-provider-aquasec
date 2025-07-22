@@ -51,5 +51,5 @@ provider "aquasec" {
 - `config_path` (String) This is the file path for Aqua provider configuration. The default configuration path is `~/.aqua/tf.config`. Can alternatively be sourced from the `AQUA_CONFIG` environment variable.
 - `password` (String, Sensitive) This is the password that should be used to make the connection. Can alternatively be sourced from the `AQUA_PASSWORD` environment variable.
 - `username` (String, Sensitive) This is the user id that should be used to make the connection. Can alternatively be sourced from the `AQUA_USER` environment variable.
+- `validate` (Boolean) Skip provider credential validation when set to false.
 - `verify_tls` (Boolean) If true, server tls certificates will be verified by the client before making a connection. Defaults to true. Can alternatively be sourced from the `AQUA_TLS_VERIFY` environment variable.
-- `validate` (Boolean) If set to false, the provider will skip credential validation during configuration. Defaults to true.
