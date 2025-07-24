@@ -49,6 +49,26 @@ type Registry struct {
 	//ACRConnectionType          string        `json:"acr_connection_type"`
 	//SubscriptionId             string        `json:"subscription_id"`
 	//TenantId                   string        `json:"tenant_id"`
+	DetectedType                int      `json:"detected_type,omitempty"`
+	RegistriesType              string   `json:"registries_type,omitempty"`
+	PullRepoPatterns            []string `json:"pull_repo_patterns,omitempty"`
+	PullTagsPattern             []string `json:"pull_tags_pattern,omitempty"`
+	PullMaxTags                 int      `json:"pull_max_tags,omitempty"`
+	Permission                  string   `json:"permission,omitempty"`
+	IsRegistryConnected         bool     `json:"is_registry_connected,omitempty"`
+	ImageS3Prefixes             []string `json:"image_s3_prefixes,omitempty"`
+	ForceSave                   bool     `json:"force_save,omitempty"`
+	ForceOotb                   bool     `json:"force_ootb,omitempty"`
+	AutoPullLatestXffEnabled    bool     `json:"auto_pull_latest_xff_enabled,omitempty"`
+	IsArchitectureSystemDefault bool     `json:"is_architecture_system_default,omitempty"`
+	ClientCert                  string   `json:"client_cert,omitempty"`
+	ClientKey                   string   `json:"client_key,omitempty"`
+	AutoPullInProgress          bool     `json:"auto_pull_in_progress,omitempty"`
+	AutoPullProcessedPageNumber int      `json:"auto_pull_processed_page_number,omitempty"`
+	Architecture                string   `json:"architecture,omitempty"`
+	CloudResources              []string `json:"cloud_resources,omitempty"`
+	ErrorMsg                    string   `json:"error_msg,omitempty"`
+	NexusMttsFfEnabled          bool     `json:"nexus_mtts_ff_enabled"`
 }
 type Webhook struct {
 	Enabled      bool   `json:"enabled,omitempty"`
@@ -133,7 +153,7 @@ func (cli *Client) CreateRegistry(reg Registry) error {
 		return err
 	}
 	request := cli.gorequest
-	apiPath := fmt.Sprintf("/api/v1/registries")
+	apiPath := "/api/v1/registries"
 	err = cli.limiter.Wait(context.Background())
 	if err != nil {
 		return err
