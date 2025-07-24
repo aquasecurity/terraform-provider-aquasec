@@ -9,7 +9,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
-func TestAquasecresourceRegistry(t *testing.T) {
+func TestAquasecresourceAnyRegistry(t *testing.T) {
 	t.Parallel()
 	name := acctest.RandomWithPrefix("terraform-test")
 	url := "https://docker.io"
@@ -19,13 +19,17 @@ func TestAquasecresourceRegistry(t *testing.T) {
 	autopull := false
 	scanner_type := "any"
 	description := "Terrafrom-test"
+	option := "status"
+	value := "Connected"
+	force_ootb := false
+	force_save := false
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,
 		CheckDestroy: CheckDestroy("aquasec_integration_registry.new"),
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckAquasecRegistry(name, url, rtype, username, password, autopull, scanner_type, description),
+				Config: testAccCheckAquasecRegistry(name, url, rtype, username, password, autopull, scanner_type, description, option, value, force_ootb, force_save),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckAquasecRegistryExists("aquasec_integration_registry.new"),
 				),
@@ -40,7 +44,43 @@ func TestAquasecresourceRegistry(t *testing.T) {
 	})
 }
 
-func testAccCheckAquasecRegistry(name string, url string, rtype string, username string, password string, autopull bool, scanner_type string, description string) string {
+func TestAquasecresourceSpecificRegistry(t *testing.T) {
+	t.Parallel()
+	name := acctest.RandomWithPrefix("terraform-test")
+	url := "https://docker.io"
+	rtype := "HUB"
+	username := ""
+	password := ""
+	autopull := false
+	scanner_type := "specific"
+	scanner_group_name := "terraform-test"
+	description := "Terrafrom-test"
+	option := "status"
+	value := "Connected"
+	force_ootb := false
+	force_save := false
+	resource.Test(t, resource.TestCase{
+		PreCheck:     func() { testAccPreCheck(t) },
+		Providers:    testAccProviders,
+		CheckDestroy: CheckDestroy("aquasec_integration_registry.new"),
+		Steps: []resource.TestStep{
+			{
+				Config: testAccCheckAquasecSpecificRegistry(name, url, rtype, username, password, autopull, scanner_type, scanner_group_name, description, option, value, force_ootb, force_save),
+				Check: resource.ComposeTestCheckFunc(
+					testAccCheckAquasecRegistryExists("aquasec_integration_registry.new"),
+				),
+			},
+			{
+				ResourceName:            "aquasec_integration_registry.new",
+				ImportState:             true,
+				ImportStateVerify:       true,
+				ImportStateVerifyIgnore: []string{"prefixes", "scanner_name", "last_updated"}, //TODO: implement read prefixes
+			},
+		},
+	})
+}
+
+func testAccCheckAquasecRegistry(name string, url string, rtype string, username string, password string, autopull bool, scanner_type string, description string, option string, value string, force_ootb bool, force_save bool) string {
 	return fmt.Sprintf(`
 	resource "aquasec_integration_registry" "new" {
 		name = "%s"
@@ -51,7 +91,40 @@ func testAccCheckAquasecRegistry(name string, url string, rtype string, username
 		auto_pull = "%v"
 		scanner_type = "%s"
 		description = "%s"
-	}`, name, url, rtype, username, password, autopull, scanner_type, description)
+
+		options {
+			option = "%s"
+			value = "%s"
+		}
+
+		force_ootb = "%v"
+		force_save = "%v"
+
+	}`, name, url, rtype, username, password, autopull, scanner_type, description, option, value, force_ootb, force_save)
+
+}
+
+func testAccCheckAquasecSpecificRegistry(name string, url string, rtype string, username string, password string, autopull bool, scanner_type string, scanner_group_name string, description string, option string, value string, force_ootb bool, force_save bool) string {
+	return fmt.Sprintf(`
+	resource "aquasec_integration_registry" "new" {
+		name = "%s"
+		url = "%s"
+		type = "%s"
+		username = "%s"
+		password = "%s"
+		auto_pull = "%v"
+		scanner_type = "%s"
+		scanner_group_name = "%s"
+		description = "%s"
+
+		options {
+			option = "%s"
+			value = "%s"
+		}
+		
+		force_ootb = "%v"
+		force_save = "%v"
+	}`, name, url, rtype, username, password, autopull, scanner_type, scanner_group_name, description, option, value, force_ootb, force_save)
 
 }
 
