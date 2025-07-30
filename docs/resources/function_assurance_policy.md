@@ -52,7 +52,7 @@ resource "aquasec_function_assurance_policy" "example_function_assurance_policy"
 
 ### Optional
 
-- `aggregated_vulnerability` (Map of String) Aggregated vulnerability information.
+- `aggregated_vulnerability` (Block List) Aggregated vulnerability information. (see [below for nested schema](#nestedblock--aggregated_vulnerability))
 - `allowed_images` (List of String) List of explicitly allowed images.
 - `assurance_type` (String) What type of assurance policy is described.
 - `audit_on_failure` (Boolean) Indicates if auditing for failures.
@@ -65,6 +65,7 @@ resource "aquasec_function_assurance_policy" "example_function_assurance_policy"
 - `blacklisted_licenses` (List of String) List of blacklisted licenses.
 - `blacklisted_licenses_enabled` (Boolean) Indicates if license blacklist is relevant.
 - `block_failed` (Boolean) Indicates if failed images are blocked.
+- `category` (String)
 - `control_exclude_no_fix` (Boolean)
 - `custom_checks` (Block List) List of Custom user scripts for checks. (see [below for nested schema](#nestedblock--custom_checks))
 - `custom_checks_enabled` (Boolean) Indicates if scanning should include custom checks.
@@ -97,6 +98,8 @@ resource "aquasec_function_assurance_policy" "example_function_assurance_policy"
 - `force_microenforcer` (Boolean)
 - `function_integrity_enabled` (Boolean)
 - `ignore_base_image_vln` (Boolean)
+- `ignore_recently_published_fix_vln` (Boolean)
+- `ignore_recently_published_fix_vln_period` (Number)
 - `ignore_recently_published_vln` (Boolean)
 - `ignore_recently_published_vln_period` (Number)
 - `ignore_risk_resources_enabled` (Boolean) Indicates if risk resources are ignored.
@@ -147,6 +150,17 @@ resource "aquasec_function_assurance_policy" "example_function_assurance_policy"
 ### Read-Only
 
 - `id` (String) The ID of this resource.
+
+<a id="nestedblock--aggregated_vulnerability"></a>
+### Nested Schema for `aggregated_vulnerability`
+
+Optional:
+
+- `custom_severity_enabled` (Boolean) Indicates to consider custom severity during control evaluation
+- `enabled` (Boolean) Enable the aggregated vulnerability
+- `score_range` (List of Number) Indicates score range for vuln score eg [5.5, 6.0]
+- `severity` (String) Max severity to be allowed in the image
+
 
 <a id="nestedblock--auto_scan_time"></a>
 ### Nested Schema for `auto_scan_time`
