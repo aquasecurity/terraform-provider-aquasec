@@ -9,7 +9,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
-func TestAquasecresourceRegistry(t *testing.T) {
+func TestAquasecresourceAnyRegistry(t *testing.T) {
 	t.Parallel()
 	name := acctest.RandomWithPrefix("terraform-test")
 	url := "https://docker.io"
@@ -19,13 +19,17 @@ func TestAquasecresourceRegistry(t *testing.T) {
 	autopull := false
 	scanner_type := "any"
 	description := "Terrafrom-test"
+	option := "status"
+	value := "Connected"
+	force_ootb := false
+	force_save := false
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,
 		CheckDestroy: CheckDestroy("aquasec_integration_registry.new"),
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckAquasecRegistry(name, url, rtype, username, password, autopull, scanner_type, description),
+				Config: testAccCheckAquasecRegistry(name, url, rtype, username, password, autopull, scanner_type, description, option, value, force_ootb, force_save),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckAquasecRegistryExists("aquasec_integration_registry.new"),
 				),
@@ -40,7 +44,7 @@ func TestAquasecresourceRegistry(t *testing.T) {
 	})
 }
 
-func testAccCheckAquasecRegistry(name string, url string, rtype string, username string, password string, autopull bool, scanner_type string, description string) string {
+func testAccCheckAquasecRegistry(name string, url string, rtype string, username string, password string, autopull bool, scanner_type string, description string, option string, value string, force_ootb bool, force_save bool) string {
 	return fmt.Sprintf(`
 	resource "aquasec_integration_registry" "new" {
 		name = "%s"
@@ -51,7 +55,16 @@ func testAccCheckAquasecRegistry(name string, url string, rtype string, username
 		auto_pull = "%v"
 		scanner_type = "%s"
 		description = "%s"
-	}`, name, url, rtype, username, password, autopull, scanner_type, description)
+
+		options {
+			option = "%s"
+			value = "%s"
+		}
+
+		force_ootb = "%v"
+		force_save = "%v"
+
+	}`, name, url, rtype, username, password, autopull, scanner_type, description, option, value, force_ootb, force_save)
 
 }
 

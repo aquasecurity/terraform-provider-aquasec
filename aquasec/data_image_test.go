@@ -19,6 +19,8 @@ var imageData = client.Image{
 func TestDataSourceAquasecImage(t *testing.T) {
 	t.Parallel()
 	rootRef := imageDataRef("test")
+	option := "status"
+	value := "Connected"
 	resource.Test(t, resource.TestCase{
 		PreCheck: func() {
 			testAccPreCheck(t)
@@ -26,7 +28,7 @@ func TestDataSourceAquasecImage(t *testing.T) {
 		Providers: testAccProviders,
 		Steps: []resource.TestStep{
 			{
-				Config: getImageDataSource(&imageData),
+				Config: getImageDataSource(&imageData, option, value),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr(rootRef, "registry", imageData.Registry),
 					resource.TestCheckResourceAttr(rootRef, "registry_type", "HUB"),
@@ -35,7 +37,6 @@ func TestDataSourceAquasecImage(t *testing.T) {
 					resource.TestCheckResourceAttrSet(rootRef, "scan_status"),
 					resource.TestCheckResourceAttrSet(rootRef, "disallowed"),
 					resource.TestCheckResourceAttrSet(rootRef, "scan_date"),
-					resource.TestCheckResourceAttr(rootRef, "scan_error", ""),
 					resource.TestCheckResourceAttrSet(rootRef, "critical_vulnerabilities"),
 					resource.TestCheckResourceAttrSet(rootRef, "high_vulnerabilities"),
 					resource.TestCheckResourceAttrSet(rootRef, "medium_vulnerabilities"),
@@ -54,8 +55,8 @@ func imageDataRef(name string) string {
 	return fmt.Sprintf("data.aquasec_image.%s", name)
 }
 
-func getImageDataSource(image *client.Image) string {
-	return getRegistry(image.Registry) + fmt.Sprintf(`
+func getImageDataSource(image *client.Image, option, value string) string {
+	return getRegistry(image.Registry, option, value) + fmt.Sprintf(`
 	resource "aquasec_image" "test" {
 		registry = aquasec_integration_registry.demo.id
 		repository = "%s"

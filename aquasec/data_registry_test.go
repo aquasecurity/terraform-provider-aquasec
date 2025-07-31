@@ -9,7 +9,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
-func TestAquasecRegistryDatasource(t *testing.T) {
+func TestAquasecRegistryAnyDatasourceAny(t *testing.T) {
 	t.Parallel()
 	name := acctest.RandomWithPrefix("terraform-test")
 	url := "https://docker.io"
@@ -17,36 +17,44 @@ func TestAquasecRegistryDatasource(t *testing.T) {
 	username := ""
 	password := ""
 	autopull := false
+	option := "status"
+	value := "Connected"
 	resource.Test(t, resource.TestCase{
 		PreCheck:  func() { testAccPreCheck(t) },
 		Providers: testAccProviders,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckAquasecRegistryDataSource(name, url, rtype, username, password, autopull),
+				Config: testAccCheckAquasecRegistryDataSourceAny(name, url, rtype, username, password, option, value, autopull),
 				Check:  testAccCheckAquasecRegistryDataSourceExists("data.aquasec_integration_registries.testregistries"),
 			},
 		},
 	})
 }
 
-func testAccCheckAquasecRegistryDataSource(name, url, rtype, username, password string, autopull bool) string {
+func testAccCheckAquasecRegistryDataSourceAny(name, url, rtype, username, password, option, value string, autopull bool) string {
 	return fmt.Sprintf(`
-	resource "aquasec_integration_registry" "new" {
+	resource "aquasec_integration_registry" "any" {
 		name = "%s"
 		url = "%s"
 		type = "%s"
 		username = "%s"
 		password = "%s"
 		auto_pull = "%v"
+
+		options {
+			option = "%s"
+			value = "%s"
+		}
+
 	}
 
 	data "aquasec_integration_registries" "testregistries" {
-		name = aquasec_integration_registry.new.name
+		name = aquasec_integration_registry.any.name
 		depends_on = [
-			aquasec_integration_registry.new
+			aquasec_integration_registry.any
         ]
 	}
-	`, name, url, rtype, username, password, autopull)
+	`, name, url, rtype, username, password, autopull, option, value)
 
 }
 

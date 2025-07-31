@@ -23,13 +23,29 @@ description: |-
 
 - `advanced_settings_cleanup` (Boolean) Automatically clean up that don't match the pull criteria
 - `always_pull_patterns` (List of String) List of image patterns to pull always
+- `architecture` (String) The architecture of the registry
+- `auto_pull_latest_xff_enabled` (Boolean) Auto pull latest xff enabled
+- `auto_scan_time` (Block Set) When enabled, registry events are sent to the given Aqua webhook url (see [below for nested schema](#nestedblock--auto_scan_time))
+- `client_cert` (String) The client certificate for the registry
+- `client_key` (String) The client key for the registry
+- `cloud_resources` (List of String) The cloud resource of the registry
+- `error_msg` (String) The error message of the registry
+- `force_ootb` (Boolean) To identify and ignore supersonic client calls initiated from OOTB
+- `force_save` (Boolean) Whether to force save the registry even if the test connection fails
 - `image_creation_date_condition` (String) Additional condition for pulling and rescanning images, Defaults to 'none'
+- `image_s3_prefixes` (List of String) The S3 prefixes for images
+- `is_architecture_system_default` (Boolean) Whether the architecture is the system default
 - `lastupdate` (Number) The last time the registry was modified in UNIX time
+- `nexus_mtts_ff_enabled` (Boolean) Enable mutual TLS for Sonatype Nexus Repository
 - `options` (Block List) (see [below for nested schema](#nestedblock--options))
+- `permission` (String) Permission action
 - `pull_image_age` (String) When auto pull image enabled, sets maximum age of auto pulled images
 - `pull_image_count` (Number) When auto pull image enabled, sets maximum age of auto pulled images tags from each repository.
 - `pull_image_tag_pattern` (List of String) List of image tags patterns to pull
+- `pull_max_tags` (Number) The maximum number of tags for auto pull
+- `pull_repo_patterns` (List of String) Patterns for repositories to be pulled from auto pull
 - `pull_repo_patterns_excluded` (List of String) List of image patterns to exclude
+- `pull_tags_pattern` (List of String) Patterns for tags to be pulled from auto pull
 - `registry_scan_timeout` (Number) Registry scan timeout in Minutes
 - `scanner_name` (List of String) List of scanner names
 - `scanner_type` (String) Scanner type
@@ -39,17 +55,34 @@ description: |-
 
 - `auto_cleanup` (Boolean) Automatically clean up images and repositories which are no longer present in the registry from Aqua console
 - `auto_pull` (Boolean) Whether to automatically pull images from the registry on creation and daily
+- `auto_pull_in_progress` (Boolean) Whether auto pull is in progress
 - `auto_pull_interval` (Number) The interval in days to start pulling new images from the registry, Defaults to 1
 - `auto_pull_max` (Number) Maximum number of repositories to pull every day, defaults to 100
+- `auto_pull_processed_page_number` (Number) The page number processed for auto pull
 - `auto_pull_rescan` (Boolean) Whether to automatically pull and rescan images from the registry on creation and daily
 - `auto_pull_time` (String) The time of day to start pulling new images from the registry, in the format HH:MM (24-hour clock), defaults to 03:00
 - `description` (String) The description of the registry
+- `detected_type` (Number) The detected type of the registry
 - `id` (String) The ID of this resource.
+- `is_registry_connected` (Boolean) Whether the registry is connected
 - `password` (String) The password for registry authentication
 - `prefixes` (List of String) List of possible prefixes to image names pulled from the registry
+- `registries_type` (String) The type of registries
 - `type` (String) Registry type (HUB / V1 / V2 / ACR / GAR / ENGINE / AWS / GCR).
 - `url` (String) The URL, address or region of the registry
 - `username` (String) The username for registry authentication.
+
+<a id="nestedblock--auto_scan_time"></a>
+### Nested Schema for `auto_scan_time`
+
+Optional:
+
+- `auto_pull_day` (Number) The day for auto pull
+- `iteration` (Number) Number of iterations
+- `iteration_type` (String) The type of iteration (day, week, month, year)
+- `time` (String) the time for auto pull
+- `week_days` (List of String) The days of week for auto pull
+
 
 <a id="nestedblock--options"></a>
 ### Nested Schema for `options`

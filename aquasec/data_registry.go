@@ -1,15 +1,17 @@
 package aquasec
 
 import (
+	"context"
 	"log"
 
 	"github.com/aquasecurity/terraform-provider-aquasec/client"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func dataSourceRegistry() *schema.Resource {
 	return &schema.Resource{
-		Read: dataRegistryRead,
+		ReadContext: dataRegistryRead,
 		Schema: map[string]*schema.Schema{
 			"username": {
 				Type:        schema.TypeString,
@@ -193,11 +195,167 @@ func dataSourceRegistry() *schema.Resource {
 					Type: schema.TypeString,
 				},
 			},
+			"auto_scan_time": {
+				Type:        schema.TypeSet,
+				Description: "When enabled, registry events are sent to the given Aqua webhook url",
+				Optional:    true,
+				Computed:    true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"auto_pull_day": {
+							Type:        schema.TypeInt,
+							Description: "The day for auto pull",
+							Optional:    true,
+							Computed:    true,
+						},
+						"iteration": {
+							Type:        schema.TypeInt,
+							Description: "Number of iterations",
+							Optional:    true,
+							Computed:    true,
+						},
+						"iteration_type": {
+							Type:        schema.TypeString,
+							Description: "The type of iteration (day, week, month, year)",
+							Optional:    true,
+							Computed:    true,
+						},
+						"time": {
+							Type:        schema.TypeString,
+							Description: "the time for auto pull",
+							Optional:    true,
+							Computed:    true,
+						},
+						"week_days": {
+							Type:        schema.TypeList,
+							Description: "The days of week for auto pull",
+							Optional:    true,
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+						},
+					},
+				},
+			},
+			"detected_type": {
+				Type:        schema.TypeInt,
+				Description: "The detected type of the registry",
+				Computed:    true,
+			},
+			"force_save": {
+				Type:        schema.TypeBool,
+				Description: "Whether to force save the registry even if the test connection fails",
+				Optional:    true,
+				Default:     false,
+			},
+			"force_ootb": {
+				Type:        schema.TypeBool,
+				Description: "To identify and ignore supersonic client calls initiated from OOTB",
+				Optional:    true,
+				Default:     false,
+			},
+			"image_s3_prefixes": {
+				Type:        schema.TypeList,
+				Description: "The S3 prefixes for images",
+				Optional:    true,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+			},
+			"is_registry_connected": {
+				Type:        schema.TypeBool,
+				Description: "Whether the registry is connected",
+				Computed:    true,
+			},
+			"permission": {
+				Type:        schema.TypeString,
+				Description: "Permission action",
+				Optional:    true,
+			},
+			"pull_max_tags": {
+				Type:        schema.TypeInt,
+				Description: "The maximum number of tags for auto pull",
+				Optional:    true,
+			},
+			"pull_tags_pattern": {
+				Type:        schema.TypeList,
+				Description: "Patterns for tags to be pulled from auto pull",
+				Optional:    true,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+			},
+			"pull_repo_patterns": {
+				Type:        schema.TypeList,
+				Description: "Patterns for repositories to be pulled from auto pull",
+				Optional:    true,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+			},
+			"registries_type": {
+				Type:        schema.TypeString,
+				Description: "The type of registries",
+				Computed:    true,
+			},
+			"auto_pull_latest_xff_enabled": {
+				Type:        schema.TypeBool,
+				Description: "Auto pull latest xff enabled",
+				Optional:    true,
+			},
+			"is_architecture_system_default": {
+				Type:        schema.TypeBool,
+				Description: "Whether the architecture is the system default",
+				Optional:    true,
+			},
+			"client_cert": {
+				Type:        schema.TypeString,
+				Description: "The client certificate for the registry",
+				Optional:    true,
+			},
+			"client_key": {
+				Type:        schema.TypeString,
+				Description: "The client key for the registry",
+				Optional:    true,
+			},
+			"auto_pull_in_progress": {
+				Type:        schema.TypeBool,
+				Description: "Whether auto pull is in progress",
+				Computed:    true,
+			},
+			"auto_pull_processed_page_number": {
+				Type:        schema.TypeInt,
+				Description: "The page number processed for auto pull",
+				Computed:    true,
+			},
+			"architecture": {
+				Type:        schema.TypeString,
+				Description: "The architecture of the registry",
+				Optional:    true,
+			},
+			"cloud_resources": {
+				Type:        schema.TypeList,
+				Description: "The cloud resource of the registry",
+				Optional:    true,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+			},
+			"error_msg": {
+				Type:        schema.TypeString,
+				Description: "The error message of the registry",
+				Optional:    true,
+			},
+			"nexus_mtts_ff_enabled": {
+				Type:        schema.TypeBool,
+				Description: "Enable mutual TLS for Sonatype Nexus Repository",
+				Optional:    true,
+			},
 		},
 	}
 }
 
-func dataRegistryRead(d *schema.ResourceData, m interface{}) error {
+func dataRegistryRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Println("[DEBUG]  inside dataRegistryRead")
 	ac := m.(*client.Client)
 	name := d.Get("name").(string)
@@ -231,10 +389,29 @@ func dataRegistryRead(d *schema.ResourceData, m interface{}) error {
 		if scannerType == "specific" {
 			d.Set("scanner_name", convertStringArr(scanner_name))
 		}
-
+		d.Set("is_architecture_system_default", reg.IsArchitectureSystemDefault)
+		d.Set("client_cert", reg.ClientCert)
+		d.Set("client_key", reg.ClientKey)
+		d.Set("auto_pull_in_progress", reg.AutoPullInProgress)
+		d.Set("auto_pull_processed_page_number", reg.AutoPullProcessedPageNumber)
+		d.Set("architecture", reg.Architecture)
+		d.Set("error_msg", reg.ErrorMsg)
+		d.Set("nexus_mtts_ff_enabled", reg.NexusMttsFfEnabled)
+		d.Set("force_save", reg.ForceSave)
+		d.Set("force_ootb", reg.ForceOotb)
+		d.Set("is_registry_connected", reg.IsRegistryConnected)
+		d.Set("permission", reg.Permission)
+		d.Set("pull_max_tags", reg.PullMaxTags)
+		d.Set("registries_type", reg.RegistriesType)
+		d.Set("detected_type", reg.DetectedType)
+		d.Set("auto_pull_latest_xff_enabled", reg.AutoPullLatestXffEnabled)
+		d.Set("image_s3_prefixes", reg.ImageS3Prefixes)
+		d.Set("cloud_resources", reg.CloudResources)
+		d.Set("pull_repo_patterns", reg.PullRepoPatterns)
+		d.Set("pull_tags_pattern", reg.PullTagsPattern)
 		d.SetId(name)
 	} else {
-		return err
+		return diag.FromErr(err)
 	}
 
 	return nil
