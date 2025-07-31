@@ -61,7 +61,7 @@ func TestResourceAquasecImageCreate(t *testing.T) {
 					"architecture", "created", "digest", "docker_id", "docker_version",
 					"environment_variables.#", "histories.#", "assurance_checks_performed.#",
 					"assurance_checks_performed.0.*", "assurance_checks_performed.1.*",
-					"os", "os_version",
+					"os", "os_version", "image_type",
 					"medium_vulnerabilities", "high_vulnerabilities", "total_vulnerabilities",
 				},
 			},
