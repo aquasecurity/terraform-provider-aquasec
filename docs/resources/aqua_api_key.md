@@ -34,8 +34,6 @@ resource "aquasec_aqua_api_key" "terraform_api_key" {
     ]
     //Whether the apikey is enabled or not.
     enabled = true
-    whitelisted = false
-    iac_token = false
 }
 ```
 

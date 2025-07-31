@@ -1,13 +1,16 @@
 package aquasec
 
 import (
+	"context"
+
 	"github.com/aquasecurity/terraform-provider-aquasec/client"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func dataImageAssurancePolicy() *schema.Resource {
 	return &schema.Resource{
-		Read: dataImageAssurancePolicyRead,
+		ReadContext: dataImageAssurancePolicyRead,
 		Schema: map[string]*schema.Schema{
 			/*
 				"assurance_type": {
@@ -479,6 +482,14 @@ func dataImageAssurancePolicy() *schema.Resource {
 				Type:     schema.TypeInt,
 				Computed: true,
 			},
+			"ignore_recently_published_fix_vln": {
+				Type:     schema.TypeBool,
+				Computed: true,
+			},
+			"ignore_recently_published_fix_vln_period": {
+				Type:     schema.TypeInt,
+				Computed: true,
+			},
 			"ignore_risk_resources_enabled": {
 				Type:        schema.TypeBool,
 				Description: "Indicates if risk resources are ignored.",
@@ -608,11 +619,47 @@ func dataImageAssurancePolicy() *schema.Resource {
 				Description: "Indicates that policy should ignore cases that do not have a known fix.",
 				Computed:    true,
 			},
+			"aggregated_vulnerability": {
+				Type:        schema.TypeList,
+				Description: "Aggregated vulnerability information.",
+				Computed:    true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"enabled": {
+							Type:        schema.TypeBool,
+							Description: "Enable the aggregated vulnerability",
+							Computed:    true,
+						},
+						"score_range": {
+							Type:     schema.TypeList,
+							Computed: true,
+							Elem: &schema.Schema{
+								Type: schema.TypeFloat,
+							},
+							Description: "Indicates score range for vuln score eg [5.5, 6.0]",
+						},
+						"custom_severity_enabled": {
+							Type:        schema.TypeBool,
+							Computed:    true,
+							Description: "Indicates to consider custom severity during control evaluation",
+						},
+						"severity": {
+							Type:        schema.TypeString,
+							Computed:    true,
+							Description: "Max severity to be allowed in the image",
+						},
+					},
+				},
+			},
+			"category": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
 		},
 	}
 }
 
-func dataImageAssurancePolicyRead(d *schema.ResourceData, m interface{}) error {
+func dataImageAssurancePolicyRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	ac := m.(*client.Client)
 	name := d.Get("name").(string)
 	assurance_type := "image"
@@ -649,6 +696,7 @@ func dataImageAssurancePolicyRead(d *schema.ResourceData, m interface{}) error {
 		d.Set("blacklisted_licenses", iap.BlacklistedLicenses)
 		d.Set("whitelisted_licenses_enabled", iap.WhitelistedLicensesEnabled)
 		d.Set("whitelisted_licenses", iap.WhitelistedLicenses)
+		d.Set("category", iap.Category)
 		d.Set("custom_checks", flattenCustomChecks(iap.CustomChecks))
 		d.Set("scap_files", iap.ScapFiles)
 		d.Set("scope", flatteniapscope(iap.Scope))
@@ -676,6 +724,8 @@ func dataImageAssurancePolicyRead(d *schema.ResourceData, m interface{}) error {
 		d.Set("enforce_after_days", iap.EnforceAfterDays)
 		d.Set("ignore_recently_published_vln", iap.IgnoreRecentlyPublishedVln)
 		d.Set("ignore_recently_published_vln_period", iap.IgnoreRecentlyPublishedVlnPeriod)
+		d.Set("ignore_recently_published_fix_vln", iap.IgnoreRecentlyPublishedFixVln)
+		d.Set("ignore_recently_published_fix_vln_period", iap.IgnoreRecentlyPublishedFixVlnPeriod)
 		d.Set("ignore_risk_resources_enabled", iap.IgnoreRiskResourcesEnabled)
 		d.Set("ignored_risk_resources", iap.IgnoredRiskResources)
 		d.Set("application_scopes", iap.ApplicationScopes)
@@ -693,9 +743,10 @@ func dataImageAssurancePolicyRead(d *schema.ResourceData, m interface{}) error {
 		d.Set("malware_action", iap.MalwareAction)
 		d.Set("partial_results_image_fail", iap.PartialResultsImageFail)
 		d.Set("maximum_score_exclude_no_fix", iap.MaximumScoreExcludeNoFix)
+        d.Set("aggregated_vulnerability", flattenAggregatedVulnerability(iap.AggregatedVulnerability))
 		d.SetId(name)
 	} else {
-		return err
+		return diag.FromErr(err)
 	}
 	return nil
 }

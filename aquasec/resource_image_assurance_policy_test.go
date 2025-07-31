@@ -14,13 +14,14 @@ func TestAquasecImageAssurancePolicy(t *testing.T) {
 	description := "Created using Terraform"
 	name := acctest.RandomWithPrefix("terraform-test")
 	application_scopes := "Global"
+	ignore_recently_published_fix_vln_period := 30
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,
 		CheckDestroy: CheckDestroy("aquasec_image_assurance_policy.terraformiap"),
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckImageAssurancePolicy(description, name, application_scopes),
+				Config: testAccCheckImageAssurancePolicy(description, name, application_scopes, ignore_recently_published_fix_vln_period),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckImageAssurancePolicyExists("aquasec_image_assurance_policy.terraformiap"),
 				),
@@ -34,7 +35,7 @@ func TestAquasecImageAssurancePolicy(t *testing.T) {
 	})
 }
 
-func testAccCheckImageAssurancePolicy(description string, name string, application_scopes string) string {
+func testAccCheckImageAssurancePolicy(description string, name string, application_scopes string, ignore_recently_published_fix_vln_period int) string {
 	return fmt.Sprintf(`
 	resource "aquasec_image_assurance_policy" "terraformiap" {
 		description = "%s"
@@ -42,7 +43,8 @@ func testAccCheckImageAssurancePolicy(description string, name string, applicati
 		application_scopes = [
 			"%s"
 		]
-	}`, description, name, application_scopes)
+		ignore_recently_published_fix_vln_period = %d
+	}`, description, name, application_scopes, ignore_recently_published_fix_vln_period)
 
 }
 
