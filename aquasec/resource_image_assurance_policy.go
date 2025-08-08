@@ -1,20 +1,22 @@
 package aquasec
 
 import (
+	"context"
 	"fmt"
 	"strings"
 
 	"github.com/aquasecurity/terraform-provider-aquasec/client"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func resourceImageAssurancePolicy() *schema.Resource {
 	return &schema.Resource{
-		Description: "Aqua Image Assurance covers the first part of the container lifecycle: image development. The Image Assurance subsystem detects, assesses, and reports security issues in your images.",
-		Create:      resourceImageAssurancePolicyCreate,
-		Read:        resourceImageAssurancePolicyRead,
-		Update:      resourceImageAssurancePolicyUpdate,
-		Delete:      resourceImageAssurancePolicyDelete,
+		Description:   "Aqua Image Assurance covers the first part of the container lifecycle: image development. The Image Assurance subsystem detects, assesses, and reports security issues in your images.",
+		CreateContext: resourceImageAssurancePolicyCreate,
+		ReadContext:   resourceImageAssurancePolicyRead,
+		UpdateContext: resourceImageAssurancePolicyUpdate,
+		DeleteContext: resourceImageAssurancePolicyDelete,
 		Importer: &schema.ResourceImporter{
 			StateContext: schema.ImportStatePassthroughContext,
 		},
@@ -78,6 +80,10 @@ func resourceImageAssurancePolicy() *schema.Resource {
 			},
 			"control_exclude_no_fix": {
 				Type:     schema.TypeBool,
+				Optional: true,
+			},
+			"category": {
+				Type:     schema.TypeString,
 				Optional: true,
 			},
 			"custom_checks_enabled": {
@@ -501,6 +507,14 @@ func resourceImageAssurancePolicy() *schema.Resource {
 				Computed: true,
 				Optional: true,
 			},
+			"ignore_recently_published_fix_vln": {
+				Type:     schema.TypeBool,
+				Optional: true,
+			},
+			"ignore_recently_published_fix_vln_period": {
+				Type:     schema.TypeInt,
+				Optional: true,
+			},
 			"ignore_risk_resources_enabled": {
 				Type:        schema.TypeBool,
 				Description: "Indicates if risk resources are ignored.",
@@ -818,18 +832,43 @@ func resourceImageAssurancePolicy() *schema.Resource {
 				},
 			}, // list
 			"aggregated_vulnerability": {
-				Type:        schema.TypeMap,
+				Type:        schema.TypeList,
 				Description: "Aggregated vulnerability information.",
 				Optional:    true,
-				Elem: &schema.Schema{
-					Type: schema.TypeString,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"enabled": {
+							Type:        schema.TypeBool,
+							Description: "Enable the aggregated vulnerability",
+							Optional:    true,
+						},
+						"score_range": {
+							Type:     schema.TypeList,
+							Optional: true,
+							MinItems: 1,
+							Elem: &schema.Schema{
+								Type: schema.TypeFloat,
+							},
+							Description: "Indicates score range for vuln score eg [5.5, 6.0]",
+						},
+						"custom_severity_enabled": {
+							Type:        schema.TypeBool,
+							Optional:    true,
+							Description: "Indicates to consider custom severity during control evaluation",
+						},
+						"severity": {
+							Type:        schema.TypeString,
+							Optional:    true,
+							Description: "Max severity to be allowed in the image",
+						},
+					},
 				},
 			},
 		},
 	}
 }
 
-func resourceImageAssurancePolicyCreate(d *schema.ResourceData, m interface{}) error {
+func resourceImageAssurancePolicyCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	ac := m.(*client.Client)
 	name := d.Get("name").(string)
 	assurance_type := "image"
@@ -838,14 +877,14 @@ func resourceImageAssurancePolicyCreate(d *schema.ResourceData, m interface{}) e
 	err := ac.CreateAssurancePolicy(iap, assurance_type)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.SetId(name)
-	return resourceImageAssurancePolicyRead(d, m)
+	return resourceImageAssurancePolicyRead(ctx, d, m)
 
 }
 
-func resourceImageAssurancePolicyUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceImageAssurancePolicyUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	ac := m.(*client.Client)
 	name := d.Get("name").(string)
 	assurance_type := "image"
@@ -859,6 +898,7 @@ func resourceImageAssurancePolicyUpdate(d *schema.ResourceData, m interface{}) e
 		"maximum_score_enabled",
 		"maximum_score",
 		"control_exclude_no_fix",
+		"category",
 		"custom_checks_enabled",
 		"scap_enabled",
 		"cves_black_list_enabled",
@@ -904,6 +944,8 @@ func resourceImageAssurancePolicyUpdate(d *schema.ResourceData, m interface{}) e
 		"enforce_after_days",
 		"ignore_recently_published_vln",
 		"ignore_recently_published_vln_period",
+		"ignore_recently_published_fix_vln",
+		"ignore_recently_published_fix_vln_period",
 		"ignore_risk_resources_enabled",
 		"ignored_risk_resources",
 		"application_scopes",
@@ -940,24 +982,25 @@ func resourceImageAssurancePolicyUpdate(d *schema.ResourceData, m interface{}) e
 		"exclude_application_scopes",
 		"linux_cis_enabled",
 		"openshift_hardening_enabled",
+		"aggregated_vulnerability",
 	) {
 		iap := expandAssurancePolicy(d, assurance_type)
 		err := ac.UpdateAssurancePolicy(iap, assurance_type)
 		if err == nil {
-			err1 := resourceImageAssurancePolicyRead(d, m)
+			err1 := resourceImageAssurancePolicyRead(ctx, d, m)
 			if err1 == nil {
 				d.SetId(name)
 			} else {
 				return err1
 			}
 		} else {
-			return err
+			return diag.FromErr(err)
 		}
 	}
 	return nil
 }
 
-func resourceImageAssurancePolicyRead(d *schema.ResourceData, m interface{}) error {
+func resourceImageAssurancePolicyRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	ac := m.(*client.Client)
 	assurance_type := "image"
 
@@ -968,7 +1011,7 @@ func resourceImageAssurancePolicyRead(d *schema.ResourceData, m interface{}) err
 			d.SetId("")
 			return nil
 		}
-		return err
+		return diag.FromErr(err)
 	}
 
 	d.Set("assurance_type", iap.AssuranceType)
@@ -984,6 +1027,7 @@ func resourceImageAssurancePolicyRead(d *schema.ResourceData, m interface{}) err
 	d.Set("maximum_score_enabled", iap.MaximumScoreEnabled)
 	d.Set("maximum_score", iap.MaximumScore)
 	d.Set("control_exclude_no_fix", iap.ControlExcludeNoFix)
+	d.Set("category", iap.Category)
 	d.Set("custom_checks_enabled", iap.CustomChecksEnabled)
 	d.Set("scap_enabled", iap.ScapEnabled)
 	d.Set("cves_black_list_enabled", iap.CvesBlackListEnabled)
@@ -1029,6 +1073,8 @@ func resourceImageAssurancePolicyRead(d *schema.ResourceData, m interface{}) err
 	d.Set("enforce_after_days", iap.EnforceAfterDays)
 	d.Set("ignore_recently_published_vln", iap.IgnoreRecentlyPublishedVln)
 	d.Set("ignore_recently_published_vln_period", iap.IgnoreRecentlyPublishedVlnPeriod)
+	d.Set("ignore_recently_published_fix_vln", iap.IgnoreRecentlyPublishedFixVln)
+	d.Set("ignore_recently_published_fix_vln_period", iap.IgnoreRecentlyPublishedFixVlnPeriod)
 	d.Set("ignore_risk_resources_enabled", iap.IgnoreRiskResourcesEnabled)
 	d.Set("ignored_risk_resources", iap.IgnoredRiskResources)
 	d.Set("application_scopes", iap.ApplicationScopes)
@@ -1063,11 +1109,13 @@ func resourceImageAssurancePolicyRead(d *schema.ResourceData, m interface{}) err
 	d.Set("exclude_application_scopes", iap.ExcludeApplicationScopes)
 	d.Set("linux_cis_enabled", iap.LinuxCisEnabled)
 	d.Set("openshift_hardening_enabled", iap.OpenshiftHardeningEnabled)
-
+	if _, ok := d.GetOk("aggregated_vulnerability"); ok {
+		d.Set("aggregated_vulnerability", flattenAggregatedVulnerability(iap.AggregatedVulnerability))
+	}
 	return nil
 }
 
-func resourceImageAssurancePolicyDelete(d *schema.ResourceData, m interface{}) error {
+func resourceImageAssurancePolicyDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	ac := m.(*client.Client)
 	name := d.Get("name").(string)
 	assurance_type := "image"
@@ -1076,7 +1124,7 @@ func resourceImageAssurancePolicyDelete(d *schema.ResourceData, m interface{}) e
 	if err == nil {
 		d.SetId("")
 	} else {
-		return err
+		return diag.FromErr(err)
 	}
 	return nil
 }
@@ -1166,8 +1214,12 @@ func flattenTrustedBaseImages(TrustedBaseImages []client.BaseImagesTrusted) []ma
 	tbi := make([]map[string]interface{}, len(TrustedBaseImages))
 	for i, v := range TrustedBaseImages {
 		tbi[i] = map[string]interface{}{
-			"registry":  v.Registry,
-			"imagename": v.Imagename,
+			"registry":    v.Registry,
+			"imagename":   v.Imagename,
+			"lastupdated": v.LastUpdated,
+			"imageid":     v.ImageID,
+			"imagedigest": v.ImageDigest,
+			"author":      v.Author,
 		}
 	}
 	return tbi
@@ -1202,6 +1254,24 @@ func flattenKubernetesControls(kubernetesControls client.KubernetesControlsArray
 	}
 
 	return flattenedControls
+}
+
+func flattenAggregatedVulnerability(agg client.AggregatedVulnerability) []map[string]interface{} {
+	block := map[string]interface{}{
+		"enabled":                 agg.Enabled,
+		"custom_severity_enabled": agg.CustomSeverityEnabled,
+	}
+	if len(agg.ScoreRange) > 0 {
+		sr := make([]interface{}, len(agg.ScoreRange))
+		for i, v := range agg.ScoreRange {
+			sr[i] = float64(v)
+		}
+		block["score_range"] = sr
+	}
+	if agg.Severity != "" {
+		block["severity"] = agg.Severity
+	}
+	return []map[string]interface{}{block}
 }
 
 func setVulnerabilityScore(vulnerabilityScoreRange []int) []int {
@@ -1286,6 +1356,11 @@ func expandAssurancePolicy(d *schema.ResourceData, a_type string) *client.Assura
 	control_exclude_no_fix, ok := d.GetOk("control_exclude_no_fix")
 	if ok {
 		iap.ControlExcludeNoFix = control_exclude_no_fix.(bool)
+	}
+
+	category, ok := d.GetOk("category")
+	if ok {
+		iap.Category = category.(string)
 	}
 
 	custom_checks_enabled, ok := d.GetOk("custom_checks_enabled")
@@ -1554,7 +1629,7 @@ func expandAssurancePolicy(d *schema.ResourceData, a_type string) *client.Assura
 	kubernetes_controls_names, ok := d.GetOk("kubernetes_controls_names")
 	if ok {
 		strArr := convertStringArr(kubernetes_controls_names.([]interface{}))
-		iap.KubenetesControlsNames = strArr
+		iap.KubernetesControlsNames = strArr
 	}
 	blacklist_permissions_enabled, ok := d.GetOk("blacklist_permissions_enabled")
 	if ok {
@@ -1589,6 +1664,16 @@ func expandAssurancePolicy(d *schema.ResourceData, a_type string) *client.Assura
 	ignore_recently_published_vln_period, ok := d.GetOk("ignore_recently_published_vln_period")
 	if ok {
 		iap.IgnoreRecentlyPublishedVlnPeriod = ignore_recently_published_vln_period.(int)
+	}
+
+	ignore_recently_published_fix_vln, ok := d.GetOk("ignore_recently_published_fix_vln")
+	if ok {
+		iap.IgnoreRecentlyPublishedFixVln = ignore_recently_published_fix_vln.(bool)
+	}
+
+	ignore_recently_published_fix_vln_period, ok := d.GetOk("ignore_recently_published_fix_vln_period")
+	if ok {
+		iap.IgnoreRecentlyPublishedFixVlnPeriod = ignore_recently_published_fix_vln_period.(int)
 	}
 
 	ignore_risk_resources_enabled, ok := d.GetOk("ignore_risk_resources_enabled")
@@ -1792,7 +1877,35 @@ func expandAssurancePolicy(d *schema.ResourceData, a_type string) *client.Assura
 		}
 	}
 
-	exclude_application_scopes, ok := d.GetOk("exclude_application_scopes")
+    iap.AggregatedVulnerability = client.AggregatedVulnerability{}
+    aggregated_vulnerability, ok := d.GetOk("aggregated_vulnerability")
+    if ok {
+    list := aggregated_vulnerability.([]interface{})
+        if len(list) > 0 {
+            v := list[0].(map[string]interface{})
+            var sr []float32
+            if arrIface, exists := v["score_range"].([]interface{}); exists {
+                sr = make([]float32, len(arrIface))
+                for i, iv := range arrIface {
+                    if fv, ok := iv.(float64); ok {
+                        sr[i] = float32(fv)
+                    }
+                }
+            }
+            enabled, _ := v["enabled"].(bool)
+            customEnabled, _ := v["custom_severity_enabled"].(bool)
+            severity, _ := v["severity"].(string)
+
+            iap.AggregatedVulnerability = client.AggregatedVulnerability{
+                Enabled:               enabled,
+                ScoreRange:            sr,
+                CustomSeverityEnabled: customEnabled,
+                Severity:              severity,
+            }
+        }
+    }
+
+    exclude_application_scopes, ok := d.GetOk("exclude_application_scopes")
 	if ok {
 		strArr := convertStringArr(exclude_application_scopes.([]interface{}))
 		iap.ExcludeApplicationScopes = strArr
