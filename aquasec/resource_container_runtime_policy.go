@@ -1981,11 +1981,12 @@ func expandContainerRuntimePolicy(d *schema.ResourceData) *client.RuntimePolicy 
 		v := malwareScanOptionsMap.([]interface{})[0].(map[string]interface{})
 
 		crp.MalwareScanOptions = client.MalwareScanOptions{
-			Enabled:            v["enabled"].(bool),
-			Action:             v["action"].(string),
-			ExcludeDirectories: convertStringArrNull(v["exclude_directories"].([]interface{})),
-			ExcludeProcesses:   convertStringArrNull(v["exclude_processes"].([]interface{})),
-			IncludeDirectories: convertStringArrNull(v["include_directories"].([]interface{})),
+			Enabled:               v["enabled"].(bool),
+			Action:                v["action"].(string),
+			ExcludeDirectories:    convertStringArrNull(v["exclude_directories"].([]interface{})),
+			ExcludeProcesses:      convertStringArrNull(v["exclude_processes"].([]interface{})),
+			IncludeDirectories:    convertStringArrNull(v["include_directories"].([]interface{})),
+			FileForensicCollection: v["file_forensic_collection"].(bool),
 		}
 	}
 

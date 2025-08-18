@@ -2117,11 +2117,12 @@ func expandHostRuntimePolicy(d *schema.ResourceData) *client.RuntimePolicy {
 		v := malwareScanOptionsMap.([]interface{})[0].(map[string]interface{})
 
 		crp.MalwareScanOptions = client.MalwareScanOptions{
-			Enabled:            v["enabled"].(bool),
-			Action:             v["action"].(string),
-			ExcludeDirectories: convertStringArrNull(v["exclude_directories"].([]interface{})),
-			ExcludeProcesses:   convertStringArrNull(v["exclude_processes"].([]interface{})),
-			IncludeDirectories: convertStringArrNull(v["include_directories"].([]interface{})),
+			Enabled:               v["enabled"].(bool),
+			Action:                v["action"].(string),
+			ExcludeDirectories:    convertStringArrNull(v["exclude_directories"].([]interface{})),
+			ExcludeProcesses:      convertStringArrNull(v["exclude_processes"].([]interface{})),
+			IncludeDirectories:    convertStringArrNull(v["include_directories"].([]interface{})),
+			FileForensicCollection: v["file_forensic_collection"].(bool),
 		}
 	}
 
@@ -2682,11 +2683,12 @@ func flattenMalwareScanOptions(monitoring client.MalwareScanOptions) []map[strin
 	//}
 	return []map[string]interface{}{
 		{
-			"enabled":             monitoring.Enabled,
-			"action":              monitoring.Action,
-			"exclude_directories": monitoring.ExcludeDirectories,
-			"exclude_processes":   monitoring.ExcludeProcesses,
-			"include_directories": monitoring.IncludeDirectories,
+			"enabled":                monitoring.Enabled,
+			"action":                 monitoring.Action,
+			"exclude_directories":    monitoring.ExcludeDirectories,
+			"exclude_processes":      monitoring.ExcludeProcesses,
+			"include_directories":    monitoring.IncludeDirectories,
+			"file_forensic_collection": monitoring.FileForensicCollection,
 		},
 	}
 }
