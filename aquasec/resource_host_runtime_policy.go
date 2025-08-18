@@ -518,7 +518,6 @@ func resourceHostRuntimePolicy() *schema.Resource {
 			"enable_ip_reputation": {
 				Type:        schema.TypeBool,
 				Description: "",
-				Default:     true,
 				Optional:    true,
 			}, //bool
 			"fork_guard_process_limit": {

@@ -435,7 +435,6 @@ func resourceContainerRuntimePolicy() *schema.Resource {
 				Type:        schema.TypeBool,
 				Description: "",
 				Optional:    true,
-				Default:     true,
 			}, //bool
 			"enable_crypto_mining_dns": {
 				Type:        schema.TypeBool,
