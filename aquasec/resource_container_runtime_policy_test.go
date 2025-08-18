@@ -305,6 +305,11 @@ func TestResourceAquasecFullContainerRuntimePolicyCreate(t *testing.T) {
 					resource.TestCheckResourceAttr(rootRef, "allowed_registries.0.allowed_registries.#", "1"),
 					resource.TestCheckResourceAttr(rootRef, "allowed_registries.0.allowed_registries.0", "Docker Hub"),
 					resource.TestCheckResourceAttr(rootRef, "allowed_registries.0.enabled", "true"),
+					
+					// Malware scan options
+					resource.TestCheckResourceAttr(rootRef, "malware_scan_options.0.enabled", "true"),
+					resource.TestCheckResourceAttr(rootRef, "malware_scan_options.0.action", "alert"),
+					resource.TestCheckResourceAttr(rootRef, "malware_scan_options.0.file_forensic_collection", "false"),
 
 					//todo: bring back after we upgrade the testing env
 					//resource.TestCheckResourceAttr(rootRef, "monitor_system_time_changes", "true"),
