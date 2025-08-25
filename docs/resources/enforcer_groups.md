@@ -48,7 +48,7 @@ description: |-
 - `gateways` (List of String) List of Aqua gateway IDs for the Enforcers.
 - `host_assurance` (Boolean) Set `True` to enable host scanning and respective Host Assurance controls.
 - `host_behavioral_engine` (Boolean) Set `True` to enable these Host Runtime Policy controls: `OS Users and Groups Allowed` and `OS Users and Groups Blocked`
-- `host_forensics` (Boolean) Select Enabled to send activity logs in your host to the Aqua Server for forensics purposes.
+- `host_forensics_collection` (Boolean) Select Enabled to send activity logs in your host to the Aqua Server for forensics purposes.
 - `host_network_protection` (Boolean) Set `True` to apply Firewall Policies to hosts, and allow recording network maps for Aqua services. The Network Firewall setting must be disabled when deploying the Aqua Enforcer on a machine running Rocky Linux. See https://docs.aquasec.com/docs/platform-support-limitations-rocky-linux for further information
 - `host_os` (String) The OS type for the host
 - `host_protection` (Boolean) Set `True` to enable all Host Runtime Policy controls except for `OS Users and Groups Allowed` and `OS Users and Groups Blocked`.
@@ -65,6 +65,7 @@ description: |-
 - `permission` (String) Permission Action
 - `risk_explorer_auto_discovery` (Boolean) Set `True` to allow Enforcers to be discovered in the Risk Explorer.
 - `runtime_type` (String) The container runtime environment.
+- `schedule_scan_settings` (Block List) Scheduling scan time for which you are creating the Enforcer group. (see [below for nested schema](#nestedblock--schedule_scan_settings))
 - `sync_host_images` (Boolean) Set `True` to configure Enforcers to discover local host images. Discovered images will be listed under Images > Host Images, as well as under Infrastructure (in the Images tab for applicable hosts).
 - `syscall_enabled` (Boolean) Set `True` will allow profiling and monitoring system calls made by running containers.
 - `user_access_control` (Boolean) Set `True` to apply User Access Control Policies to containers. Note that Aqua Enforcers must be deployed with the AQUA_RUNC_INTERCEPTION environment variable set to 0 in order to use User Access Control Policies.
@@ -100,6 +101,17 @@ Optional:
 - `namespace` (String) May be specified for these orchestrators: Kubernetes, Kubernetes GKE, VMware Tanzu Kubernetes Grid Integrated Edition (PKS).
 - `service_account` (String) May be specified for these orchestrators: Kubernetes, Kubernetes GKE, OpenShift, VMware Tanzu Kubernetes Grid Integrated Edition (PKS).
 - `type` (String)
+
+
+<a id="nestedblock--schedule_scan_settings"></a>
+### Nested Schema for `schedule_scan_settings`
+
+Optional:
+
+- `days` (List of Number)
+- `disabled` (Boolean)
+- `is_custom` (Boolean)
+- `time` (List of Number)
 
 
 <a id="nestedatt--command"></a>
