@@ -20,9 +20,10 @@ func TestAquasecEnforcerGroupResource(t *testing.T) {
 		Gateways: []string{
 			"3ef9a43f2693_gateway",
 		},
-		Type:              "agent",
-		EnforcerImageName: "registry.aquasec.com/enforcer:6.5.22034",
-		Orchestrator:      client.EnforcerOrchestrator{},
+		Type:                 "agent",
+		EnforcerImageName:    "registry.aquasec.com/enforcer:6.5.22034",
+		Orchestrator:         client.EnforcerOrchestrator{},
+		ScheduleScanSettings: client.EnforcerScheduleScanSettings{},
 	}
 
 	rootRef := enforcerGroupsRef(basicEnforcerGroup.ID)
@@ -69,6 +70,12 @@ func getBasicEnforcerGroupResource(enforcerGroup client.EnforcerGroup) string {
 			namespace = "%s"
 			master = "%v"
 		}
+		schedule_scan_settings {
+			disabled  = %v
+			is_custom = %v
+			days      = [0, 1, 2, 3, 4, 5, 6]
+			time      = [3, 0]
+		}
 	}
 	`, enforcerGroup.ID,
 		enforcerGroup.ID,
@@ -81,6 +88,8 @@ func getBasicEnforcerGroupResource(enforcerGroup client.EnforcerGroup) string {
 		enforcerGroup.Orchestrator.ServiceAccount,
 		enforcerGroup.Orchestrator.Namespace,
 		enforcerGroup.Orchestrator.Master,
+		enforcerGroup.ScheduleScanSettings.Disabled,
+		enforcerGroup.ScheduleScanSettings.IsCustom,
 	)
 }
 

@@ -23,7 +23,7 @@ resource "aquasec_enforcer_groups" "group" {
   # Risk Explorer
   risk_explorer_auto_discovery = true
   # host_forensics
-  host_forensics = true
+  host_forensics_collection = true
   # forensics
   forensics = true
 

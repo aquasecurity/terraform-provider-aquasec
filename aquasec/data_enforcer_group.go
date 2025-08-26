@@ -1,16 +1,18 @@
 package aquasec
 
 import (
+	"context"
 	"log"
 
 	"github.com/aquasecurity/terraform-provider-aquasec/client"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func dataSourceEnforcerGroup() *schema.Resource {
 	return &schema.Resource{
 		Description: "The data source `aquasec_enforcer_groups` provides an Enforcer group template that generates a configuration file, which is subsequently used to generate one or more Enforcers using a Docker command.",
-		Read:        dataEnforcerGroupRead,
+		ReadContext: dataEnforcerGroupRead,
 		Schema: map[string]*schema.Schema{
 			"group_id": {
 				Type:        schema.TypeString,
@@ -80,7 +82,7 @@ func dataSourceEnforcerGroup() *schema.Resource {
 				Description: "Select Enabled to send activity logs in your containers to the Aqua Server for forensics purposes.",
 				Optional:    true,
 			},
-			"host_forensics": {
+			"host_forensics_collection": {
 				Type:        schema.TypeBool,
 				Description: "Select Enabled to send activity logs in your host to the Aqua Server for forensics purposes.",
 				Optional:    true,
@@ -386,11 +388,42 @@ func dataSourceEnforcerGroup() *schema.Resource {
 					Type: schema.TypeString,
 				},
 			},
+			"schedule_scan_settings": {
+				Type:        schema.TypeList,
+				Description: "Scheduling scan time for which you are creating the Enforcer group.",
+				Computed:    true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"disabled": {
+							Type:     schema.TypeBool,
+							Computed: true,
+						},
+						"is_custom": {
+							Type:     schema.TypeBool,
+							Computed: true,
+						},
+						"days": {
+							Type:     schema.TypeList,
+							Computed: true,
+							Elem: &schema.Schema{
+								Type: schema.TypeInt,
+							},
+						},
+						"time": {
+							Type:     schema.TypeList,
+							Computed: true,
+							Elem: &schema.Schema{
+								Type: schema.TypeInt,
+							},
+						},
+					},
+				},
+			},
 		},
 	}
 }
 
-func dataEnforcerGroupRead(d *schema.ResourceData, m interface{}) error {
+func dataEnforcerGroupRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	ac := m.(*client.Client)
 	name := d.Get("group_id").(string)
 	group, err := ac.GetEnforcerGroup(name)
@@ -408,7 +441,7 @@ func dataEnforcerGroupRead(d *schema.ResourceData, m interface{}) error {
 		d.Set("behavioral_engine", group.BehavioralEngine)
 		d.Set("host_behavioral_engine", group.HostBehavioralEngine)
 		d.Set("forensics", group.ContainerForensicsCollection)
-		d.Set("host_forensics", group.HostForensicsCollection)
+		d.Set("host_forensics_collection", group.HostForensicsCollection)
 		d.Set("host_network_protection", group.HostNetworkProtection)
 		d.Set("user_access_control", group.UserAccessControl)
 		d.Set("image_assurance", group.ImageAssurance)
@@ -418,6 +451,7 @@ func dataEnforcerGroupRead(d *schema.ResourceData, m interface{}) error {
 		d.Set("token", group.Token)
 		d.Set("command", flattenCommands(group.Command))
 		d.Set("orchestrator", flattenOrchestrators(group.Orchestrator))
+		d.Set("schedule_scan_settings", flattenScheduleScanSettings(group.ScheduleScanSettings))
 		d.Set("type", group.Type)
 		d.Set("host_os", group.HostOs)
 		d.Set("install_command", group.InstallCommand)
@@ -460,7 +494,7 @@ func dataEnforcerGroupRead(d *schema.ResourceData, m interface{}) error {
 		log.Println("[DEBUG]  setting id: ", name)
 		d.SetId(name)
 	} else {
-		return err
+		return diag.FromErr(err)
 	}
 	//gateways := d.Get("gateways").([]interface{})
 
@@ -480,6 +514,21 @@ func flattenOrchestrator(Orch client.EnforcerOrchestrator) map[string]interface{
 		"service_account": Orch.ServiceAccount,
 		"namespace":       Orch.Namespace,
 	}
+}
+
+func flattenScheduleScanSetting(setting client.EnforcerScheduleScanSettings) map[string]interface{} {
+	return map[string]interface{}{
+		"disabled":  setting.Disabled,
+		"is_custom": setting.IsCustom,
+		"days":      setting.Days,
+		"time":      setting.Time,
+	}
+}
+
+func flattenScheduleScanSettings(setting client.EnforcerScheduleScanSettings) []map[string]interface{} {
+	set := make([]map[string]interface{}, 1)
+	set[0] = flattenScheduleScanSetting(setting)
+	return set
 }
 
 func flattenCommands(Command client.EnforcerCommand) []map[string]interface{} {
