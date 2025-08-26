@@ -103,6 +103,11 @@ func TestResourceAquasecComplexHostRuntimePolicyCreate(t *testing.T) {
 					//resource.TestCheckResourceAttr(rootRef, "monitor_system_time_changes", "true"),
 					//resource.TestCheckResourceAttr(rootRef, "monitor_windows_services", "true"),
 					resource.TestCheckResourceAttr(rootRef, "monitor_system_log_integrity", "true"),
+
+					// Malware scan options
+					resource.TestCheckResourceAttr(rootRef, "malware_scan_options.0.enabled", "true"),
+					resource.TestCheckResourceAttr(rootRef, "malware_scan_options.0.action", "alert"),
+					resource.TestCheckResourceAttr(rootRef, "malware_scan_options.0.file_forensic_collection", "true"),
 				),
 			},
 		},
@@ -154,8 +159,16 @@ func getComplexHostRuntimePolicyResource(policy client.RuntimePolicy) string {
 		audit_user_account_management = true
 		audit_success_login = true
 	  }
+	  malware_scan_options {
+		enabled = true
+		action = "alert"
+		file_forensic_collection = true
+		exclude_directories = []
+		include_directories = ["%%SystemDrive%%\\*", "%%AllDrives%%\\*", "/*"]
+		exclude_processes = ["systemd"]
+	  }
 	  enable_ip_reputation = true
-	  enable_port_scan_protection     = true
+	  enable_port_scan_protection      = true
 	  monitor_system_log_integrity     = true
 }
 `,
