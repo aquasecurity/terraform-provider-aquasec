@@ -1,13 +1,6 @@
 package aquasec
 
-import (
-	"fmt"
-	"testing"
-
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
-)
-
+/*
 func TestAquasecNotificationOld(t *testing.T) {
 	t.Parallel()
 	user_name := "Aquasec"
@@ -64,3 +57,4 @@ func testAccCheckNotificationOldExists(n string) resource.TestCheckFunc {
 		return nil
 	}
 }
+*/

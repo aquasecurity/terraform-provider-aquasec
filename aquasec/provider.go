@@ -102,6 +102,7 @@ func Provider(v string) *schema.Provider {
 			"aquasec_permission_set_saas":     resourcePermissionSetSaas(),
 			"aquasec_assurance_custom_script": resourceAssuranceScript(),
 			"aquasec_aqua_api_key":            resourceAPIKey(),
+			"aquasec_scanner_group":           resourceScannerGroup(),
 		},
 		DataSourcesMap: map[string]*schema.Resource{
 			"aquasec_users":                       dataSourceUsers(),
@@ -135,6 +136,7 @@ func Provider(v string) *schema.Provider {
 			"aquasec_permissions_sets_saas":   dataSourcePermissionsSetsSaas(),
 			"aquasec_assurance_custom_script": dataSourceAssuranceScript(),
 			"aquasec_aqua_api_keys":           dataSourceAPIKeys(),
+			"aquasec_scanner_group":           dataSourceScannerGroup(),
 		},
 		ConfigureContextFunc: providerConfigure,
 	}
