@@ -515,6 +515,11 @@ func dataHostRuntimePolicy() *schema.Resource {
 							},
 							Optional: true,
 						},
+						"file_forensic_collection": {
+							Type:        schema.TypeBool,
+							Description: "Whether to enable file forensic collection.",
+							Computed:    true,
+						},
 					},
 				},
 				Optional: true,
