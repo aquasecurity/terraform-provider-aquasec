@@ -22,16 +22,19 @@ func init() {
 	if !present {
 		panic("AQUA_USER env is missing, please set it")
 	}
+	fmt.Printf("AQUA_USER: %s", username)
 
 	password, present = os.LookupEnv("AQUA_PASSWORD")
 	if !present {
 		panic("AQUA_PASSWORD env is missing, please set it")
 	}
+	fmt.Printf("AQUA_PASSWORD: %s", password)
 
 	aquaURL, present = os.LookupEnv("AQUA_URL")
 	if !present {
 		panic("AQUA_URL env is missing, please set it")
 	}
+	fmt.Printf("AQUA_URL: %s", aquaURL)
 
 	verifyTLSString, present = os.LookupEnv("AQUA_TLS_VERIFY")
 	if !present {
@@ -51,6 +54,7 @@ func init() {
 
 	verifyTLS, _ = strconv.ParseBool(verifyTLSString)
 
+	fmt.Printf("AQUA_USER: %s, AQUA_PASSWORDL %s, AQUA_URL:%s", username, password, aquaURL)
 	aquaClient := client.NewClient(aquaURL, username, password, verifyTLS, caCertByte)
 	token, url, err := aquaClient.GetAuthToken()
 
