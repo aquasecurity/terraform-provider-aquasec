@@ -10,7 +10,7 @@ import (
 	"github.com/pkg/errors"
 )
 
-//Acknowledge defines a security issue acknowledge
+// Acknowledge defines a security issue acknowledge
 type Acknowledge struct {
 	IssueType              string    `json:"issue_type"`
 	ResourceType           string    `json:"resource_type"`
@@ -34,6 +34,8 @@ type Acknowledge struct {
 	Os                     string    `json:"os"`
 	OsVersion              string    `json:"os_version"`
 	DockerId               string    `json:"docker_id"`
+	RepositoryName         string    `json:"repository_name"`
+	Repository             string    `json:"repository"`
 }
 
 type AcknowledgeList struct {
@@ -45,7 +47,7 @@ type AcknowledgePost struct {
 	Issues  []Acknowledge `json:"issues"`
 }
 
-//AcknowledgeCreate create security acknowledge
+// AcknowledgeCreate create security acknowledge
 func (cli *Client) AcknowledgeCreate(acknowledgePost AcknowledgePost) error {
 	payload, err := json.Marshal(acknowledgePost)
 
@@ -54,7 +56,7 @@ func (cli *Client) AcknowledgeCreate(acknowledgePost AcknowledgePost) error {
 	}
 
 	request := cli.gorequest
-	apiPath := fmt.Sprintf("/api/v2/risks/acknowledge")
+	apiPath := "/api/v2/risks/acknowledge"
 	err = cli.limiter.Wait(context.Background())
 	if err != nil {
 		return err
@@ -70,7 +72,7 @@ func (cli *Client) AcknowledgeCreate(acknowledgePost AcknowledgePost) error {
 	return nil
 }
 
-//AcknowledgeRead reads all security acknowledges
+// AcknowledgeRead reads all security acknowledges
 func (cli *Client) AcknowledgeRead() (*AcknowledgeList, error) {
 	var err error
 	var response AcknowledgeList
@@ -97,14 +99,14 @@ func (cli *Client) AcknowledgeRead() (*AcknowledgeList, error) {
 	return &response, nil
 }
 
-//AcknowledgeDelete delete security acknowledge
+// AcknowledgeDelete delete security acknowledge
 func (cli *Client) AcknowledgeDelete(acknowledgePost AcknowledgePost) error {
 	payload, err := json.Marshal(acknowledgePost)
 	if err != nil {
 		return err
 	}
 	request := cli.gorequest
-	apiPath := fmt.Sprintf("/api/v2/risks/acknowledge/multiple")
+	apiPath := "/api/v2/risks/acknowledge/multiple"
 	err = cli.limiter.Wait(context.Background())
 	if err != nil {
 		return err

@@ -1,17 +1,20 @@
 package aquasec
 
 import (
+	"context"
 	"fmt"
-	"github.com/aquasecurity/terraform-provider-aquasec/client"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"log"
 	"math/rand"
+
+	"github.com/aquasecurity/terraform-provider-aquasec/client"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func dataSourceAcknowledges() *schema.Resource {
 	return &schema.Resource{
 		Description: "The data source `aquasec_acknowledges` provides a method to query all acknowledges within the Aqua ",
-		Read:        dataAcknowledgesRead,
+		ReadContext: dataAcknowledgesRead,
 		Schema: map[string]*schema.Schema{
 			"acknowledges": {
 				Type:        schema.TypeList,
@@ -129,6 +132,11 @@ func dataSourceAcknowledges() *schema.Resource {
 							Description: "",
 							Computed:    true,
 						},
+						"repository": {
+							Type:        schema.TypeString,
+							Description: "",
+							Optional:    true,
+						},
 					},
 				},
 			},
@@ -136,7 +144,7 @@ func dataSourceAcknowledges() *schema.Resource {
 	}
 }
 
-func dataAcknowledgesRead(d *schema.ResourceData, m interface{}) error {
+func dataAcknowledgesRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	log.Println("[DEBUG]  inside dataAcknowledges")
 	c := m.(*client.Client)
 	result, err := c.AcknowledgeRead()
@@ -147,10 +155,10 @@ func dataAcknowledgesRead(d *schema.ResourceData, m interface{}) error {
 		}
 		d.SetId(id)
 		if err := d.Set("acknowledges", acknowledges); err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 	} else {
-		return err
+		return diag.FromErr(err)
 	}
 
 	return nil
@@ -188,6 +196,7 @@ func flattenAcknowledgesData(acknowledgesList *client.AcknowledgeList) ([]interf
 			a["os"] = acknowledge.Os
 			a["os_version"] = acknowledge.OsVersion
 			a["docker_id"] = acknowledge.DockerId
+			a["repository"] = acknowledge.Repository
 			acks[i] = a
 		}
 

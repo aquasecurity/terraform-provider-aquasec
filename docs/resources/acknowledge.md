@@ -73,6 +73,7 @@ Optional:
 - `os` (String) When the resource_type is 'package', the operating system is required (e.g., 'ubuntu', 'alpine').
 - `os_version` (String) When the resource_type is 'package', the operating system version is required.
 - `registry_name` (String) Only acknowledge the issue in the context of the specified repository (also requires 'registry_name').
+- `repository_name` (String)
 - `resource_cpe` (String) The CPE of the resource as listed in the issue by the Aqua API. This is required for resources of type 'executable'. For packages and files, the next parameters can be specified instead.
 - `resource_format` (String) The format of the resource.
 - `resource_hash` (String) When the resource_type is 'file', the hash of the file is required

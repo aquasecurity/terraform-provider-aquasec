@@ -278,6 +278,7 @@ Read-Only:
 - `enabled` (Boolean)
 - `exclude_directories` (List of String)
 - `exclude_processes` (List of String)
+- `file_forensic_collection` (Boolean)
 - `include_directories` (List of String)
 
 
