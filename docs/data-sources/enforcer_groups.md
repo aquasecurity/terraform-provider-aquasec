@@ -94,7 +94,7 @@ output "group_details" {
 - `risk_explorer_auto_discovery` (Boolean) When set to `True` allows Enforcers to be discovered in the Risk Explorer.
 - `runtime_policy_name` (String) Function Runtime Policy that will applay on the nano enforcer.
 - `runtime_type` (String) The container runtime environment.
-- `schedule_scan_time` (Set of Object) Scheduling scan time for which you are creating the Enforcer group. (see [below for nested schema](#nestedatt--schedule_scan_time))
+- `schedule_scan_settings` (List of Object) Scheduling scan time for which you are creating the Enforcer group. (see [below for nested schema](#nestedatt--schedule_scan_settings))
 - `sync_host_images` (Boolean) When set to `True` configures Enforcers to discover local host images. Discovered images will be listed under Images > Host Images, as well as under Infrastructure (in the Images tab for applicable hosts).
 - `syscall_enabled` (Boolean) When set to `True` allows profiling and monitoring system calls made by running containers.
 - `token` (String) The batch install token.
@@ -123,13 +123,13 @@ Read-Only:
 - `type` (String)
 
 
-<a id="nestedatt--schedule_scan_time"></a>
-### Nested Schema for `schedule_scan_time`
+<a id="nestedatt--schedule_scan_settings"></a>
+### Nested Schema for `schedule_scan_settings`
 
 Read-Only:
 
 - `days` (List of Number)
-- `disbled` (Boolean)
+- `disabled` (Boolean)
 - `is_custom` (Boolean)
 - `time` (List of Number)
 

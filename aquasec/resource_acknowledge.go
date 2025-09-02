@@ -1,19 +1,22 @@
 package aquasec
 
 import (
+	"context"
 	"fmt"
-	"github.com/aquasecurity/terraform-provider-aquasec/client"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"strings"
 	"time"
+
+	"github.com/aquasecurity/terraform-provider-aquasec/client"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func resourceAcknowledge() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAcknowledgeCreate,
-		Update: resourceAcknowledgeUpdate,
-		Read:   resourceAcknowledgeRead,
-		Delete: resourceAcknowledgeDelete,
+		CreateContext: resourceAcknowledgeCreate,
+		UpdateContext: resourceAcknowledgeUpdate,
+		ReadContext:   resourceAcknowledgeRead,
+		DeleteContext: resourceAcknowledgeDelete,
 		// todo: bring it back when will have Acknowledges IDs
 		//Importer: &schema.ResourceImporter{
 		//	StateContext: schema.ImportStatePassthroughContext,
@@ -135,6 +138,11 @@ func resourceAcknowledge() *schema.Resource {
 							Description: "",
 							Optional:    true,
 						},
+						"repository_name": {
+							Type:        schema.TypeString,
+							Description: "The name of the repository in whose context the issue was acknowledged (if not for all images)",
+							Optional:    true,
+						},
 					},
 				},
 			},
@@ -142,7 +150,7 @@ func resourceAcknowledge() *schema.Resource {
 	}
 }
 
-func resourceAcknowledgeCreate(d *schema.ResourceData, m interface{}) error {
+func resourceAcknowledgeCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	ac := m.(*client.Client)
 	acknowledgePost := client.AcknowledgePost{}
 	eIssues := client.AcknowledgePost{}.Issues
@@ -160,19 +168,14 @@ func resourceAcknowledgeCreate(d *schema.ResourceData, m interface{}) error {
 
 	err := ac.AcknowledgeCreate(acknowledgePost)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.SetId(id)
 
-	err = resourceAcknowledgeRead(d, m)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return resourceAcknowledgeRead(ctx, d, m)
 }
 
-func resourceAcknowledgeUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAcknowledgeUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	ac := m.(*client.Client)
 	var err error
 	var comment string
@@ -188,7 +191,7 @@ func resourceAcknowledgeUpdate(d *schema.ResourceData, m interface{}) error {
 			err = ac.AcknowledgeDelete(client.AcknowledgePost{Issues: expendedIssuesToDelete})
 
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 		}
 
@@ -199,19 +202,14 @@ func resourceAcknowledgeUpdate(d *schema.ResourceData, m interface{}) error {
 				Issues:  expendIssuesToCreate,
 			})
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 		}
-
-		err = resourceAcknowledgeRead(d, m)
-		if err != nil {
-			return err
-		}
 	}
-	return nil
+	return resourceAcknowledgeRead(ctx, d, m)
 }
 
-func resourceAcknowledgeRead(d *schema.ResourceData, m interface{}) error {
+func resourceAcknowledgeRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	ac := m.(*client.Client)
 	acknowledgePost := client.AcknowledgePost{}
 	//var mappedResult map[string]interface{}
@@ -233,7 +231,7 @@ func resourceAcknowledgeRead(d *schema.ResourceData, m interface{}) error {
 			d.SetId("")
 			return nil
 		}
-		return err
+		return diag.FromErr(err)
 	}
 
 	updateIssuesFromReadList(&acknowledgePost, currentAcknowledges)
@@ -246,7 +244,7 @@ func resourceAcknowledgeRead(d *schema.ResourceData, m interface{}) error {
 	return nil
 }
 
-func resourceAcknowledgeDelete(d *schema.ResourceData, m interface{}) error {
+func resourceAcknowledgeDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	ac := m.(*client.Client)
 	acknowledgePost := client.AcknowledgePost{}
 
@@ -260,7 +258,7 @@ func resourceAcknowledgeDelete(d *schema.ResourceData, m interface{}) error {
 	if err == nil {
 		d.SetId("")
 	} else {
-		return err
+		return diag.FromErr(err)
 	}
 
 	return nil
@@ -342,6 +340,11 @@ func expandIssues(issues interface{}) ([]client.Acknowledge, string) {
 		if attr, ok := i["author"]; ok && attr != "" {
 			acknowledge.Author = attr.(string)
 		}
+
+		if attr, ok := i["repository_name"]; ok && attr != "" {
+			acknowledge.RepositoryName = attr.(string)
+		}
+
 		acknowledgePost = append(acknowledgePost, acknowledge)
 		id = id + acknowledge.IssueName
 	}
@@ -383,6 +386,7 @@ func flattenIssue(ack client.Acknowledge) map[string]interface{} {
 		"os":                       ack.Os,
 		"os_version":               ack.OsVersion,
 		"docker_id":                ack.DockerId,
+		"repository_name":          ack.RepositoryName,
 	}
 }
 
