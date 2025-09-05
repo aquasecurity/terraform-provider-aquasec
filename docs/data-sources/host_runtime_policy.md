@@ -112,6 +112,10 @@ Optional:
 - `exclude_processes` (List of String) List of registry processes to be excluded from being protected.
 - `include_directories` (List of String) List of registry paths to be excluded from being protected.
 
+Read-Only:
+
+- `file_forensic_collection` (Boolean) Whether to enable file forensic collection.
+
 
 <a id="nestedblock--package_block"></a>
 ### Nested Schema for `package_block`

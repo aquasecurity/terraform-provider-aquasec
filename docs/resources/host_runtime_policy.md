@@ -359,6 +359,7 @@ Optional:
 - `enabled` (Boolean) Defines if enabled or not
 - `exclude_directories` (List of String) List of registry paths to be excluded from being protected.
 - `exclude_processes` (List of String) List of registry processes to be excluded from being protected.
+- `file_forensic_collection` (Boolean) Whether to enable file forensic collection.
 - `include_directories` (List of String) List of registry paths to be excluded from being protected.
 
 
