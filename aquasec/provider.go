@@ -137,6 +137,7 @@ func Provider(v string) *schema.Provider {
 			"aquasec_assurance_custom_script": dataSourceAssuranceScript(),
 			"aquasec_aqua_api_keys":           dataSourceAPIKeys(),
 			"aquasec_scanner_group":           dataSourceScannerGroup(),
+			"aquasec_vmware_assurance_policy": dataVmwareAssurancePolicy(),
 		},
 		ConfigureContextFunc: providerConfigure,
 	}

@@ -42,6 +42,7 @@ func testAccCheckVMwareAssurancePolicy(description string, name string, applicat
 		application_scopes = [
 			"%s"
 		]
+		ignore_recently_published_fix_vln_period = 30
 	}`, description, name, application_scopes)
 
 }

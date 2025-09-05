@@ -1,14 +1,17 @@
 package aquasec
 
 import (
+	"context"
 	"fmt"
+
 	"github.com/aquasecurity/terraform-provider-aquasec/client"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func dataIntegrationState() *schema.Resource {
 	return &schema.Resource{
-		Read: dataIntegrationStateRead,
+		ReadContext: dataIntegrationStateRead,
 		Schema: map[string]*schema.Schema{
 			"oidc_settings": {
 				Type:        schema.TypeBool,
@@ -29,7 +32,7 @@ func dataIntegrationState() *schema.Resource {
 	}
 }
 
-func dataIntegrationStateRead(d *schema.ResourceData, m interface{}) error {
+func dataIntegrationStateRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	ac := m.(*client.Client)
 
 	iap, err := ac.GetIntegrationState()
@@ -40,7 +43,7 @@ func dataIntegrationStateRead(d *schema.ResourceData, m interface{}) error {
 		_, id := flattenIntegrationEnablesStateData(iap)
 		d.SetId(id)
 	} else {
-		return err
+		return diag.FromErr(err)
 	}
 	return nil
 }

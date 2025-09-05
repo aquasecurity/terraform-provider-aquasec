@@ -1,18 +1,21 @@
 package aquasec
 
 import (
+	"context"
 	"fmt"
-	"github.com/aquasecurity/terraform-provider-aquasec/client"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"strings"
+
+	"github.com/aquasecurity/terraform-provider-aquasec/client"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func resourceVMwareAssurancePolicy() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceVMwareAssurancePolicyCreate,
-		Read:   resourceVMwareAssurancePolicyRead,
-		Update: resourceVMwareAssurancePolicyUpdate,
-		Delete: resourceVMwareAssurancePolicyDelete,
+		CreateContext: resourceVMwareAssurancePolicyCreate,
+		ReadContext:   resourceVMwareAssurancePolicyRead,
+		UpdateContext: resourceVMwareAssurancePolicyUpdate,
+		DeleteContext: resourceVMwareAssurancePolicyDelete,
 		Importer: &schema.ResourceImporter{
 			StateContext: schema.ImportStatePassthroughContext,
 		},
@@ -820,11 +823,31 @@ func resourceVMwareAssurancePolicy() *schema.Resource {
 					Type: schema.TypeString,
 				},
 			},
+			"category": {
+				Type:        schema.TypeString,
+				Description: "Indicates the category of policy",
+				Optional:    true,
+			},
+			"ignore_recently_published_fix_vln": {
+				Type:        schema.TypeBool,
+				Description: "Indicates whether to ignore recently published vulnerabilities with fixes",
+				Optional:    true,
+			},
+			"ignore_recently_published_fix_vln_period": {
+				Type:        schema.TypeInt,
+				Description: "Period for ignoring recently published vulnerabilities with fixes",
+				Optional:    true,
+			},
+			"windows_cis_enabled": {
+				Type:        schema.TypeBool,
+				Description: "Indicates if windows cis scan enabled",
+				Optional:    true,
+			},
 		},
 	}
 }
 
-func resourceVMwareAssurancePolicyCreate(d *schema.ResourceData, m interface{}) error {
+func resourceVMwareAssurancePolicyCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	ac := m.(*client.Client)
 	name := d.Get("name").(string)
 	assurance_type := "cf_application"
@@ -833,14 +856,13 @@ func resourceVMwareAssurancePolicyCreate(d *schema.ResourceData, m interface{}) 
 	err := ac.CreateAssurancePolicy(iap, assurance_type)
 
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 	d.SetId(name)
-	return resourceVMwareAssurancePolicyRead(d, m)
-
+	return resourceVMwareAssurancePolicyRead(ctx, d, m)
 }
 
-func resourceVMwareAssurancePolicyUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceVMwareAssurancePolicyUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	ac := m.(*client.Client)
 	assurance_type := "cf_application"
 
@@ -935,24 +957,28 @@ func resourceVMwareAssurancePolicyUpdate(d *schema.ResourceData, m interface{}) 
 		"linux_cis_enabled",
 		"openshift_hardening_enabled",
 		"kubernetes_controls_avd_ids",
+		"category",
+		"ignore_recently_published_fix_vln",
+		"ignore_recently_published_fix_vln_period",
+		"windows_cis_enabled",
 	) {
 		iap := expandAssurancePolicy(d, assurance_type)
 		err := ac.UpdateAssurancePolicy(iap, assurance_type)
 		if err == nil {
-			err1 := resourceVMwareAssurancePolicyRead(d, m)
+			err1 := resourceVMwareAssurancePolicyRead(ctx, d, m)
 			if err1 == nil {
 				d.SetId(iap.Name)
 			} else {
 				return err1
 			}
 		} else {
-			return err
+			return diag.FromErr(err)
 		}
 	}
 	return nil
 }
 
-func resourceVMwareAssurancePolicyRead(d *schema.ResourceData, m interface{}) error {
+func resourceVMwareAssurancePolicyRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	ac := m.(*client.Client)
 	assurance_type := "cf_application"
 
@@ -963,7 +989,7 @@ func resourceVMwareAssurancePolicyRead(d *schema.ResourceData, m interface{}) er
 			d.SetId("")
 			return nil
 		}
-		return err
+		return diag.FromErr(err)
 	}
 
 	d.Set("assurance_type", iap.AssuranceType)
@@ -1059,11 +1085,15 @@ func resourceVMwareAssurancePolicyRead(d *schema.ResourceData, m interface{}) er
 	d.Set("linux_cis_enabled", iap.LinuxCisEnabled)
 	d.Set("openshift_hardening_enabled", iap.OpenshiftHardeningEnabled)
 	d.Set("kubernetes_controls_avd_ids", iap.KubernetesControlsAvdIds)
+	d.Set("category", iap.Category)
+	d.Set("ignore_recently_published_fix_vln", iap.IgnoreRecentlyPublishedFixVln)
+	d.Set("ignore_recently_published_fix_vln_period", iap.IgnoreRecentlyPublishedFixVlnPeriod)
+	d.Set("windows_cis_enabled", iap.WindowsCisEnabled)
 
 	return nil
 }
 
-func resourceVMwareAssurancePolicyDelete(d *schema.ResourceData, m interface{}) error {
+func resourceVMwareAssurancePolicyDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	ac := m.(*client.Client)
 	name := d.Get("name").(string)
 	assurance_type := "cf_application"
@@ -1072,7 +1102,7 @@ func resourceVMwareAssurancePolicyDelete(d *schema.ResourceData, m interface{}) 
 	if err == nil {
 		d.SetId("")
 	} else {
-		return err
+		return diag.FromErr(err)
 	}
 	return nil
 }

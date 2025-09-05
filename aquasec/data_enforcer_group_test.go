@@ -57,7 +57,7 @@ func testAccCheckAquasecEnforcerGroupDataSource(enforcerGroup client.EnforcerGro
 		schedule_scan_settings {
 			disabled  = %v
 			is_custom = %v
-			days      = [0, 1, 2, 3, 4, 5, 6]
+			days      = [0,1,2,3,4,5,6]
 			time      = [3, 0]
 		}
 	}

@@ -11,14 +11,23 @@ import (
 
 // User represents a local Aqua user
 type Gateway struct {
-	ID           string `json:"id"`
-	Logical_Name string `json:"logicalname"`
-	Description  string `json:"description"`
-	Version      string `json:"version"`
-	Host_Name    string `json:"hostname"`
-	SSH_Address  string `json:"public_address"`
-	GRPC_Address string `json:"grpc_address"`
-	Status       string `json:"status"`
+	ID            string `json:"id"`
+	Logical_Name  string `json:"logicalname"`
+	Description   string `json:"description"`
+	Version       string `json:"version"`
+	Host_Name     string `json:"hostname"`
+	SSH_Address   string `json:"public_address"`
+	GRPC_Address  string `json:"grpc_address"`
+	Status        string `json:"status"`
+	Type          string `json:"type"`
+	Commit        string `json:"commit"`
+	ProjectID     int    `json:"project_id"`
+	Address       string `json:"address"`
+	LastUpdate    int    `json:"last_update"`
+	ServerID      string `json:"server_id"`
+	ServerName    string `json:"server_name"`
+	DockerVersion string `json:"docker_version"`
+	HostOS        string `json:"host_os"`
 }
 
 // GetUser - returns single Aqua gateway

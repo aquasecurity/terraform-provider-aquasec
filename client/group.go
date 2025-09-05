@@ -11,9 +11,10 @@ import (
 
 // Group represents a local Aqua Group
 type Group struct {
-	Id      int    `json:"id"`
-	Name    string `json:"name,omitempty"`
-	Created string `json:"created,omitempty"`
+	Id         int    `json:"id"`
+	Name       string `json:"name,omitempty"`
+	Created    string `json:"created,omitempty"`
+	GroupAdmin bool   `json:"group_admin,omitempty"`
 }
 
 // GroupList contains a list of Group
