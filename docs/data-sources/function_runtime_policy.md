@@ -130,6 +130,7 @@ Read-Only:
 - `exclude_directories` (List of String)
 - `exclude_processes` (List of String)
 - `include_directories` (List of String)
+- `file_forensic_collection` (Boolean) Whether to enable file forensic collection.
 
 
 <a id="nestedatt--scope_variables"></a>

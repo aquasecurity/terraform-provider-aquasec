@@ -224,7 +224,7 @@ resource "aquasec_container_runtime_policy" "container_runtime_policy" {
   malware_scan_options {
     enabled = true
     action = "alert"
-    //file_forensic_collection = true
+    file_forensic_collection = true
     include_directories = ["C:\\*", "/*"]
     exclude_directories = ["/proc", "/sys", "/dev", "/tmp"]
     exclude_processes = ["sshd", "dockerd", "kubelet"]

@@ -60,6 +60,13 @@ resource "aquasec_host_runtime_policy" "host_runtime_policy" {
     exceptional_monitored_files_users     = ["expuser"]
   }
 
+  # Malware scan options
+  malware_scan_options {
+    enabled = true
+    action = "alert"
+    file_forensic_collection = true
+  }
+
   audit_full_command_arguments       = true
   audit_host_successful_login_events = true
   audit_host_failed_login_events     = true

@@ -66,6 +66,7 @@ resource "aquasec_function_runtime_policy" "audit_mode_example" {
   malware_scan_options {
     enabled             = true
     action              = "Alert"
+    file_forensic_collection = true
     include_directories = ["/var/task", "/opt"]
     exclude_directories = ["/tmp", "/var/runtime"]
   }
