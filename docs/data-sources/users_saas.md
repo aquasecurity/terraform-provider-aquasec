@@ -35,21 +35,22 @@ Read-Only:
 
 - `account_admin` (Boolean)
 - `confirmed` (Boolean)
+- `count_failed_signin` (Number)
 - `created` (String)
 - `csp_roles` (List of String)
 - `dashboard` (Boolean)
 - `email` (String)
 - `groups` (List of Object) (see [below for nested schema](#nestedobjatt--users--groups))
+- `id` (String)
+- `last_signin_attempt` (String)
 - `logins` (List of Object) (see [below for nested schema](#nestedobjatt--users--logins))
 - `mfa_enabled` (Boolean)
 - `multiaccount` (Boolean)
 - `password_reset` (Boolean)
-- `provider` (String)
 - `send_announcements` (Boolean)
 - `send_new_plugins` (Boolean)
 - `send_new_risks` (Boolean)
 - `send_scan_results` (Boolean)
-- `user_id` (String)
 
 <a id="nestedobjatt--users--groups"></a>
 ### Nested Schema for `users.groups`
@@ -67,8 +68,10 @@ Read-Only:
 Read-Only:
 
 - `created` (String)
+- `csp_roles` (List of String)
+- `cspm_groups` (List of String)
+- `groups` (List of String)
 - `id` (Number)
 - `ip_address` (String)
-- `user_id` (Number)
 
 

@@ -52,6 +52,7 @@ resource "aquasec_vmware_assurance_policy" "example_vmware_assurance_policy" {
 - `blacklisted_licenses` (List of String) List of blacklisted licenses.
 - `blacklisted_licenses_enabled` (Boolean) Indicates if license blacklist is relevant.
 - `block_failed` (Boolean) Indicates if failed images are blocked.
+- `category` (String) Indicates the category of policy
 - `control_exclude_no_fix` (Boolean)
 - `custom_checks` (Block List) List of Custom user scripts for checks. (see [below for nested schema](#nestedblock--custom_checks))
 - `custom_checks_enabled` (Boolean) Indicates if scanning should include custom checks.
@@ -84,6 +85,8 @@ resource "aquasec_vmware_assurance_policy" "example_vmware_assurance_policy" {
 - `force_microenforcer` (Boolean)
 - `function_integrity_enabled` (Boolean)
 - `ignore_base_image_vln` (Boolean)
+- `ignore_recently_published_fix_vln` (Boolean) Indicates whether to ignore recently published vulnerabilities with fixes
+- `ignore_recently_published_fix_vln_period` (Number) Period for ignoring recently published vulnerabilities with fixes
 - `ignore_recently_published_vln` (Boolean)
 - `ignore_recently_published_vln_period` (Number)
 - `ignore_risk_resources_enabled` (Boolean) Indicates if risk resources are ignored.
@@ -130,6 +133,7 @@ resource "aquasec_vmware_assurance_policy" "example_vmware_assurance_policy" {
 - `vulnerability_score_range` (List of Number)
 - `whitelisted_licenses` (List of String) List of whitelisted licenses.
 - `whitelisted_licenses_enabled` (Boolean) Indicates if license blacklist is relevant.
+- `windows_cis_enabled` (Boolean) Indicates if windows cis scan enabled
 
 ### Read-Only
 
