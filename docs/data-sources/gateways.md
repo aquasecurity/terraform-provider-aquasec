@@ -54,13 +54,22 @@ output "gateway_grpc_address" {
 
 Read-Only:
 
+- `address` (String)
+- `commit` (String)
 - `description` (String)
+- `docker_version` (String)
 - `grpc_address` (String)
+- `host_os` (String)
 - `hostname` (String)
 - `id` (String)
+- `last_update` (Number)
 - `logicalname` (String)
+- `project_id` (Number)
 - `public_address` (String)
+- `server_id` (String)
+- `server_name` (String)
 - `status` (String)
+- `type` (String)
 - `version` (String)
 
 

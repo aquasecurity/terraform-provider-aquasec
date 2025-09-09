@@ -28,14 +28,14 @@ func TestAquasecUsersSaasManagement(t *testing.T) {
 		Steps: []resource.TestStep{
 			{
 				// Config returns the test resource
-				Config: testAccCheckAquasecUsersSaas(email, groups, true, false, false),
+				Config: testAccCheckAquasecUsersSaas(email, groups, false, false),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckAquasecUsersSaassExists("aquasec_user_saas.new"),
 				),
 			},
 			{
 				// Config returns the test resource
-				Config: testAccCheckAquasecUsersSaas1(email, newGroups, true, false, false),
+				Config: testAccCheckAquasecUsersSaas1(email, newGroups, false, false),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckAquasecUsersSaassExists("aquasec_user_saas.new"),
 				),
@@ -50,7 +50,7 @@ func TestAquasecUsersSaasManagement(t *testing.T) {
 	})
 }
 
-func testAccCheckAquasecUsersSaas(email, groups string, groupAdmin, accountAdmin, mfaEnabled bool) string {
+func testAccCheckAquasecUsersSaas(email, groups string, accountAdmin, mfaEnabled bool) string {
 	return fmt.Sprintf(`
 
 	resource "aquasec_group" "new" {
@@ -62,15 +62,14 @@ func testAccCheckAquasecUsersSaas(email, groups string, groupAdmin, accountAdmin
 		csp_roles = []
 		groups {
 			name = "%s"
-			group_admin = %v
 		}
 		account_admin = %v
 		mfa_enabled   = %v
 		depends_on = ["aquasec_group.new"]
-	  }`, groups, email, groups, groupAdmin, accountAdmin, mfaEnabled)
+	  }`, groups, email, groups, accountAdmin, mfaEnabled)
 }
 
-func testAccCheckAquasecUsersSaas1(email, groups string, groupAdmin, accountAdmin, mfaEnabled bool) string {
+func testAccCheckAquasecUsersSaas1(email, groups string, accountAdmin, mfaEnabled bool) string {
 	return fmt.Sprintf(`
 
 	resource "aquasec_group" "new" {
@@ -82,12 +81,11 @@ func testAccCheckAquasecUsersSaas1(email, groups string, groupAdmin, accountAdmi
 		csp_roles = []
 		groups {
 			name = "%s"
-			group_admin = %v
 		}
 		account_admin = %v
 		mfa_enabled = %v
 		depends_on = ["aquasec_group.new"]
-	  }`, groups, email, groups, groupAdmin, accountAdmin, mfaEnabled)
+	  }`, groups, email, groups, accountAdmin, mfaEnabled)
 }
 
 func testAccCheckAquasecUsersSaassExists(n string) resource.TestCheckFunc {

@@ -111,19 +111,22 @@ func flattenUsersData(users *[]client.FullUser) ([]interface{}, string) {
 }
 
 func flattenUsersSaasData(users *[]client.FullUser) ([]interface{}, string) {
-	id := ""
+	var (
+		us     []interface{}
+		idList []string
+	)
 	if users != nil {
-		us := make([]interface{}, len(*users), len(*users))
+		us = make([]interface{}, len(*users))
 
 		for i, user := range *users {
-			id = id + user.Id
+			idList = append(idList, user.Id)
 			u := make(map[string]interface{})
-			groups := make([]interface{}, len(user.Groups), len(user.Groups))
-			logins := make([]interface{}, len(user.Logins), len(user.Logins))
+			groups := make([]interface{}, len(user.Groups))
+			logins := make([]interface{}, len(user.Logins))
 
 			//u["dashboard"] 	 	= user.BasicUser.
 			u["csp_roles"] = user.BasicUser.CspRoles
-			u["user_id"] = user.BasicId.Id
+			u["id"] = user.BasicId.Id
 			u["email"] = user.BasicUser.Email
 			u["mfa_enabled"] = user.BasicUser.MfaEnabled
 			u["confirmed"] = user.BasicUser.Confirmed
@@ -134,38 +137,46 @@ func flattenUsersSaasData(users *[]client.FullUser) ([]interface{}, string) {
 			u["send_new_risks"] = user.BasicUser.SendNewRisks
 			u["account_admin"] = user.BasicUser.AccountAdmin
 			u["created"] = user.BasicUser.Created
-			//u["provider"] 	 	= user.BasicUser.Provider
+			//u["provider"] = user.BasicUser.Provider
 			u["multiaccount"] = user.BasicUser.Multiaccount
+			u["count_failed_signin"] = user.BasicUser.CountFailedSignin
+			u["last_signin_attempt"] = user.BasicUser.LastSigninAttempt
 
-			//adding Groups
-			for i, group := range user.BasicUser.Groups {
+			// Adding Groups
+			for j, group := range user.BasicUser.Groups {
 				g := make(map[string]interface{})
 				g["id"] = group.Id
 				g["name"] = group.Name
 				g["created"] = group.Created
-				//g["users"]	= group.Users
-				groups[i] = g
+				groups[j] = g
 			}
 			u["groups"] = groups
 
-			//Adding logins
-			for i, login := range user.BasicUser.Logins {
+			// Adding Logins
+			for j, login := range user.BasicUser.Logins {
 				l := make(map[string]interface{})
 				l["id"] = login.Id
 				l["ip_address"] = login.IpAddress
 				l["created"] = login.Created
-				l["user_id"] = login.UserId
-				logins[i] = l
+				l["csp_roles"] = login.CspRoles
+				l["cspm_groups"] = login.CspmGroups
+				l["groups"] = login.Groups
+				logins[j] = l
 			}
 			u["logins"] = logins
 
 			us[i] = u
 		}
-
-		return us, id
 	}
 
-	return make([]interface{}, 0), ""
+	var id string
+	if len(idList) > 0 {
+		id = strings.Join(idList, ",")
+	} else {
+		id = "no_users"
+	}
+
+	return us, id
 }
 
 func flattenGroupsData(groups *[]client.Group) ([]interface{}, string) {
@@ -204,6 +215,14 @@ func flattenGatewaysData(gateways *[]client.Gateway) ([]interface{}, string) {
 			u["public_address"] = gateway.SSH_Address
 			u["grpc_address"] = gateway.GRPC_Address
 			u["status"] = gateway.Status
+			u["project_id"] = gateway.ProjectID
+			u["type"] = gateway.Type
+			u["address"] = gateway.Address
+			u["last_update"] = gateway.LastUpdate
+			u["server_id"] = gateway.ServerID
+			u["server_name"] = gateway.ServerName
+			u["docker_version"] = gateway.DockerVersion
+			u["host_os"] = gateway.HostOS
 
 			us[i] = u
 		}

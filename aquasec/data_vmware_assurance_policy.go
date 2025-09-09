@@ -8,17 +8,15 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
-func dataImageAssurancePolicy() *schema.Resource {
+func dataVmwareAssurancePolicy() *schema.Resource {
 	return &schema.Resource{
-		ReadContext: dataImageAssurancePolicyRead,
+		ReadContext: dataVmwareAssurancePolicyRead,
 		Schema: map[string]*schema.Schema{
-			/*
-				"assurance_type": {
-					Type:        schema.TypeString,
-					Description: "What type of assurance policy is described.",
-					Computed:    true,
-				},
-			*/
+			"assurance_type": {
+				Type:        schema.TypeString,
+				Description: "What type of assurance policy is described.",
+				Computed:    true,
+			},
 			"id": {
 				Type:     schema.TypeString,
 				Computed: true,
@@ -403,22 +401,6 @@ func dataImageAssurancePolicy() *schema.Resource {
 							Type:     schema.TypeString,
 							Computed: true,
 						},
-						"imageid": {
-							Type:     schema.TypeInt,
-							Computed: true,
-						},
-						"imagedigest": {
-							Type:     schema.TypeString,
-							Computed: true,
-						},
-						"author": {
-							Type:     schema.TypeString,
-							Computed: true,
-						},
-						"lastupdated": {
-							Type:     schema.TypeInt,
-							Computed: true,
-						},
 					},
 				},
 			},
@@ -671,95 +653,243 @@ func dataImageAssurancePolicy() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
+			"vulnerability_exploitability": {
+				Type:        schema.TypeBool,
+				Description: "",
+				Computed:    true,
+			},
+			"disallow_exploit_types": {
+				Type:        schema.TypeList,
+				Description: "",
+				Computed:    true,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+			},
+			"ignore_base_image_vln": {
+				Type:        schema.TypeBool,
+				Description: "",
+				Computed:    true,
+			},
+			"ignored_sensitive_resources": {
+				Type:        schema.TypeList,
+				Description: "",
+				Computed:    true,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+			},
+			"scan_malware_in_archives": {
+				Type:        schema.TypeBool,
+				Description: "",
+				Computed:    true,
+			},
+			"scan_windows_registry": {
+				Type:        schema.TypeBool,
+				Description: "",
+				Computed:    true,
+			},
+			"scan_process_memory": {
+				Type:        schema.TypeBool,
+				Description: "",
+				Computed:    true,
+			},
+			"policy_settings": {
+				Type:        schema.TypeList,
+				Description: "",
+				Computed:    true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"enforce": {
+							Type:        schema.TypeBool,
+							Description: "",
+							Computed:    true,
+						},
+						"warn": {
+							Type:        schema.TypeBool,
+							Description: "",
+							Computed:    true,
+						},
+						"warning_message": {
+							Type:        schema.TypeString,
+							Description: "",
+							Computed:    true,
+						},
+						"is_audit_checked": {
+							Type:        schema.TypeBool,
+							Description: "",
+							Computed:    true,
+						},
+					},
+				},
+			},
+			"exclude_application_scopes": {
+				Type:        schema.TypeList,
+				Description: "",
+				Computed:    true,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+			},
+			"linux_cis_enabled": {
+				Type:        schema.TypeBool,
+				Description: "",
+				Computed:    true,
+			},
+			"windows_cis_enabled": {
+				Type:        schema.TypeBool,
+				Description: "Checks the host according to the Windows CIS benchmark (relevant for hosts running Windows).",
+				Computed:    true,
+			},
+			"openshift_hardening_enabled": {
+				Type:        schema.TypeBool,
+				Description: "",
+				Computed:    true,
+			},
+			"vulnerability_score_range": {
+				Type:        schema.TypeList,
+				Description: "",
+				Computed:    true,
+				Elem: &schema.Schema{
+					Type: schema.TypeInt,
+				},
+			},
+			"custom_severity": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"permission": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"kubernetes_controls": {
+				Type:     schema.TypeList,
+				Computed: true,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+			},
+			"kubernetes_controls_names": {
+				Type:     schema.TypeList,
+				Computed: true,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+			},
+			"kubernetes_controls_avd_ids": {
+				Type:     schema.TypeList,
+				Computed: true,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+			},
 		},
 	}
 }
 
-func dataImageAssurancePolicyRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+func dataVmwareAssurancePolicyRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	ac := m.(*client.Client)
 	name := d.Get("name").(string)
-	assurance_type := "image"
+	assurance_type := "cf_application"
 
-	iap, err := ac.GetAssurancePolicy(name, assurance_type)
+	vmw, err := ac.GetAssurancePolicy(name, assurance_type)
 	if err == nil {
-		d.Set("description", iap.Description)
-		//d.Set("assurance_type", iap.AssuranceType)
-		d.Set("author", iap.Author)
-		d.Set("application_scopes", iap.ApplicationScopes)
-		d.Set("registry", iap.Registry)
-		d.Set("cvss_severity_enabled", iap.CvssSeverityEnabled)
-		d.Set("cvss_severity", iap.CvssSeverity)
-		d.Set("cvss_severity_exclude_no_fix", iap.CvssSeverityExcludeNoFix)
-		d.Set("custom_severity_enabled", iap.CustomSeverityEnabled)
-		d.Set("maximum_score_enabled", iap.MaximumScoreEnabled)
-		d.Set("maximum_score", iap.MaximumScore)
-		d.Set("control_exclude_no_fix", iap.ControlExcludeNoFix)
-		d.Set("custom_checks_enabled", iap.CustomChecksEnabled)
-		d.Set("scap_enabled", iap.ScapEnabled)
-		d.Set("cves_black_list_enabled", iap.CvesBlackListEnabled)
-		d.Set("packages_black_list_enabled", iap.PackagesBlackListEnabled)
-		d.Set("packages_white_list_enabled", iap.PackagesWhiteListEnabled)
-		d.Set("only_none_root_users", iap.OnlyNoneRootUsers)
-		d.Set("trusted_base_images_enabled", iap.TrustedBaseImagesEnabled)
-		d.Set("scan_sensitive_data", iap.ScanSensitiveData)
-		d.Set("audit_on_failure", iap.AuditOnFailure)
-		d.Set("fail_cicd", iap.FailCicd)
-		d.Set("block_failed", iap.BlockFailed)
-		d.Set("disallow_malware", iap.DisallowMalware)
-		d.Set("monitored_malware_paths", iap.MonitoredMalwarePaths)
-		d.Set("exceptional_monitored_malware_paths", iap.ExceptionalMonitoredMalwarePaths)
-		d.Set("blacklisted_licenses_enabled", iap.BlacklistedLicensesEnabled)
-		d.Set("blacklisted_licenses", iap.BlacklistedLicenses)
-		d.Set("whitelisted_licenses_enabled", iap.WhitelistedLicensesEnabled)
-		d.Set("whitelisted_licenses", iap.WhitelistedLicenses)
-		d.Set("category", iap.Category)
-		d.Set("custom_checks", flattenCustomChecks(iap.CustomChecks))
-		d.Set("scap_files", iap.ScapFiles)
-		d.Set("scope", flatteniapscope(iap.Scope))
-		d.Set("registries", iap.Registries)
-		d.Set("labels", iap.Labels)
-		d.Set("images", iap.Images)
-		d.Set("cves_black_list", iap.CvesBlackList)
-		d.Set("packages_black_list", flattenPackages(iap.PackagesBlackList))
-		d.Set("packages_white_list", flattenPackages(iap.PackagesWhiteList))
-		d.Set("allowed_images", iap.AllowedImages)
-		d.Set("trusted_base_images", flattenTrustedBaseImages(iap.TrustedBaseImages))
-		d.Set("read_only", iap.ReadOnly)
-		d.Set("force_microenforcer", iap.ForceMicroenforcer)
-		d.Set("docker_cis_enabled", iap.DockerCisEnabled)
-		d.Set("kube_cis_enabled", iap.KubeCisEnabled)
-		d.Set("enforce_excessive_permissions", iap.EnforceExcessivePermissions)
-		d.Set("function_integrity_enabled", iap.FunctionIntegrityEnabled)
-		d.Set("dta_enabled", iap.DtaEnabled)
-		d.Set("cves_white_list_enabled", iap.CvesWhiteListEnabled)
-		d.Set("cves_white_list", iap.CvesWhiteList)
-		d.Set("blacklist_permissions_enabled", iap.BlacklistPermissionsEnabled)
-		d.Set("blacklist_permissions", iap.BlacklistPermissions)
-		d.Set("enabled", iap.Enabled)
-		d.Set("enforce", iap.Enforce)
-		d.Set("enforce_after_days", iap.EnforceAfterDays)
-		d.Set("ignore_recently_published_vln", iap.IgnoreRecentlyPublishedVln)
-		d.Set("ignore_recently_published_vln_period", iap.IgnoreRecentlyPublishedVlnPeriod)
-		d.Set("ignore_recently_published_fix_vln", iap.IgnoreRecentlyPublishedFixVln)
-		d.Set("ignore_recently_published_fix_vln_period", iap.IgnoreRecentlyPublishedFixVlnPeriod)
-		d.Set("ignore_risk_resources_enabled", iap.IgnoreRiskResourcesEnabled)
-		d.Set("ignored_risk_resources", iap.IgnoredRiskResources)
-		d.Set("application_scopes", iap.ApplicationScopes)
-		d.Set("auto_scan_enabled", iap.AutoScanEnabled)
-		d.Set("auto_scan_configured", iap.AutoScanConfigured)
-		d.Set("auto_scan_time", flattenAutoScanTime(iap.AutoScanTime))
-		d.Set("required_labels_enabled", iap.RequiredLabelsEnabled)
-		d.Set("required_labels", flattenLabels(iap.RequiredLabels))
-		d.Set("forbidden_labels_enabled", iap.ForbiddenLabelsEnabled)
-		d.Set("forbidden_labels", flattenLabels(iap.ForbiddenLabels))
-		d.Set("domain_name", iap.DomainName)
-		d.Set("domain", iap.Domain)
-		d.Set("dta_severity", iap.DtaSeverity)
-		d.Set("scan_nfs_mounts", iap.ScanNfsMounts)
-		d.Set("malware_action", iap.MalwareAction)
-		d.Set("partial_results_image_fail", iap.PartialResultsImageFail)
-		d.Set("maximum_score_exclude_no_fix", iap.MaximumScoreExcludeNoFix)
-		d.Set("aggregated_vulnerability", flattenAggregatedVulnerability(iap.AggregatedVulnerability))
+		d.Set("description", vmw.Description)
+		//d.Set("assurance_type", vmw.AssuranceType)
+		d.Set("author", vmw.Author)
+		d.Set("application_scopes", vmw.ApplicationScopes)
+		d.Set("registry", vmw.Registry)
+		d.Set("cvss_severity_enabled", vmw.CvssSeverityEnabled)
+		d.Set("cvss_severity", vmw.CvssSeverity)
+		d.Set("cvss_severity_exclude_no_fix", vmw.CvssSeverityExcludeNoFix)
+		d.Set("custom_severity_enabled", vmw.CustomSeverityEnabled)
+		d.Set("maximum_score_enabled", vmw.MaximumScoreEnabled)
+		d.Set("maximum_score", vmw.MaximumScore)
+		d.Set("control_exclude_no_fix", vmw.ControlExcludeNoFix)
+		d.Set("custom_checks_enabled", vmw.CustomChecksEnabled)
+		d.Set("scap_enabled", vmw.ScapEnabled)
+		d.Set("cves_black_list_enabled", vmw.CvesBlackListEnabled)
+		d.Set("packages_black_list_enabled", vmw.PackagesBlackListEnabled)
+		d.Set("packages_white_list_enabled", vmw.PackagesWhiteListEnabled)
+		d.Set("only_none_root_users", vmw.OnlyNoneRootUsers)
+		d.Set("trusted_base_images_enabled", vmw.TrustedBaseImagesEnabled)
+		d.Set("scan_sensitive_data", vmw.ScanSensitiveData)
+		d.Set("audit_on_failure", vmw.AuditOnFailure)
+		d.Set("fail_cicd", vmw.FailCicd)
+		d.Set("block_failed", vmw.BlockFailed)
+		d.Set("disallow_malware", vmw.DisallowMalware)
+		d.Set("monitored_malware_paths", vmw.MonitoredMalwarePaths)
+		d.Set("exceptional_monitored_malware_paths", vmw.ExceptionalMonitoredMalwarePaths)
+		d.Set("blacklisted_licenses_enabled", vmw.BlacklistedLicensesEnabled)
+		d.Set("blacklisted_licenses", vmw.BlacklistedLicenses)
+		d.Set("whitelisted_licenses_enabled", vmw.WhitelistedLicensesEnabled)
+		d.Set("whitelisted_licenses", vmw.WhitelistedLicenses)
+		d.Set("category", vmw.Category)
+		d.Set("custom_checks", flattenCustomChecks(vmw.CustomChecks))
+		d.Set("scap_files", vmw.ScapFiles)
+		d.Set("scope", flatteniapscope(vmw.Scope))
+		d.Set("registries", vmw.Registries)
+		d.Set("labels", vmw.Labels)
+		d.Set("images", vmw.Images)
+		d.Set("cves_black_list", vmw.CvesBlackList)
+		d.Set("packages_black_list", flattenPackages(vmw.PackagesBlackList))
+		d.Set("packages_white_list", flattenPackages(vmw.PackagesWhiteList))
+		d.Set("allowed_images", vmw.AllowedImages)
+		d.Set("trusted_base_images", flattenTrustedBaseImages(vmw.TrustedBaseImages))
+		d.Set("read_only", vmw.ReadOnly)
+		d.Set("force_microenforcer", vmw.ForceMicroenforcer)
+		d.Set("docker_cis_enabled", vmw.DockerCisEnabled)
+		d.Set("kube_cis_enabled", vmw.KubeCisEnabled)
+		d.Set("enforce_excessive_permissions", vmw.EnforceExcessivePermissions)
+		d.Set("function_integrity_enabled", vmw.FunctionIntegrityEnabled)
+		d.Set("dta_enabled", vmw.DtaEnabled)
+		d.Set("cves_white_list_enabled", vmw.CvesWhiteListEnabled)
+		d.Set("cves_white_list", vmw.CvesWhiteList)
+		d.Set("blacklist_permissions_enabled", vmw.BlacklistPermissionsEnabled)
+		d.Set("blacklist_permissions", vmw.BlacklistPermissions)
+		d.Set("enabled", vmw.Enabled)
+		d.Set("enforce", vmw.Enforce)
+		d.Set("enforce_after_days", vmw.EnforceAfterDays)
+		d.Set("ignore_recently_published_vln", vmw.IgnoreRecentlyPublishedVln)
+		d.Set("ignore_recently_published_vln_period", vmw.IgnoreRecentlyPublishedVlnPeriod)
+		d.Set("ignore_recently_published_fix_vln", vmw.IgnoreRecentlyPublishedFixVln)
+		d.Set("ignore_recently_published_fix_vln_period", vmw.IgnoreRecentlyPublishedFixVlnPeriod)
+		d.Set("ignore_risk_resources_enabled", vmw.IgnoreRiskResourcesEnabled)
+		d.Set("ignored_risk_resources", vmw.IgnoredRiskResources)
+		d.Set("application_scopes", vmw.ApplicationScopes)
+		d.Set("auto_scan_enabled", vmw.AutoScanEnabled)
+		d.Set("auto_scan_configured", vmw.AutoScanConfigured)
+		d.Set("auto_scan_time", flattenAutoScanTime(vmw.AutoScanTime))
+		d.Set("required_labels_enabled", vmw.RequiredLabelsEnabled)
+		d.Set("required_labels", flattenLabels(vmw.RequiredLabels))
+		d.Set("forbidden_labels_enabled", vmw.ForbiddenLabelsEnabled)
+		d.Set("forbidden_labels", flattenLabels(vmw.ForbiddenLabels))
+		d.Set("domain_name", vmw.DomainName)
+		d.Set("domain", vmw.Domain)
+		d.Set("dta_severity", vmw.DtaSeverity)
+		d.Set("scan_nfs_mounts", vmw.ScanNfsMounts)
+		d.Set("malware_action", vmw.MalwareAction)
+		d.Set("partial_results_image_fail", vmw.PartialResultsImageFail)
+		d.Set("maximum_score_exclude_no_fix", vmw.MaximumScoreExcludeNoFix)
+		d.Set("aggregated_vulnerability", flattenAggregatedVulnerability(vmw.AggregatedVulnerability))
+		d.Set("custom_severity", vmw.CustomSeverity)
+		d.Set("vulnerability_exploitability", vmw.VulnerabilityExploitability)
+		d.Set("disallow_exploit_types", vmw.DisallowExploitTypes)
+		d.Set("ignore_base_image_vln", vmw.IgnoreBaseImageVln)
+		d.Set("ignored_sensitive_resources", vmw.IgnoredSensitiveResources)
+		d.Set("permission", vmw.Permission)
+		d.Set("scan_malware_in_archives", vmw.ScanMalwareInArchives)
+		d.Set("kubernetes_controls", vmw.KubernetesControls)
+		d.Set("kubernetes_controls_names", vmw.KubernetesControlsNames)
+		d.Set("scan_windows_registry", vmw.ScanWindowsRegistry)
+		d.Set("scan_process_memory", vmw.ScanProcessMemory)
+		d.Set("policy_settings", flattenPolicySettings(vmw.PolicySettings))
+		d.Set("exclude_application_scopes", vmw.ExcludeApplicationScopes)
+		d.Set("linux_cis_enabled", vmw.LinuxCisEnabled)
+		d.Set("windows_cis_enabled", vmw.WindowsCisEnabled)
+		d.Set("openshift_hardening_enabled", vmw.OpenshiftHardeningEnabled)
+		d.Set("kubernetes_controls_avd_ids", vmw.KubernetesControlsAvdIds)
+		d.Set("vulnerability_score_range", vmw.VulnerabilityScoreRange)
 		d.SetId(name)
 	} else {
 		return diag.FromErr(err)
