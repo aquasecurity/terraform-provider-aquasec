@@ -48,6 +48,7 @@ Read-Only:
 - `os_version` (String)
 - `permission` (String)
 - `registry_name` (String)
+- `repository_name` (String)
 - `resource_cpe` (String)
 - `resource_format` (String)
 - `resource_hash` (String)
