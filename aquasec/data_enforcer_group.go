@@ -451,7 +451,7 @@ func dataEnforcerGroupRead(ctx context.Context, d *schema.ResourceData, m interf
 		d.Set("token", group.Token)
 		d.Set("command", flattenCommands(group.Command))
 		d.Set("orchestrator", flattenOrchestrators(group.Orchestrator))
-		d.Set("schedule_scan_settings", flattenScheduleScanSettings(group.ScheduleScanSettings))
+		d.Set("schedule_scan_settings", flattenScheduleScanSetting(group.ScheduleScanSettings))
 		d.Set("type", group.Type)
 		d.Set("host_os", group.HostOs)
 		d.Set("install_command", group.InstallCommand)
@@ -516,19 +516,15 @@ func flattenOrchestrator(Orch client.EnforcerOrchestrator) map[string]interface{
 	}
 }
 
-func flattenScheduleScanSetting(setting client.EnforcerScheduleScanSettings) map[string]interface{} {
-	return map[string]interface{}{
-		"disabled":  setting.Disabled,
-		"is_custom": setting.IsCustom,
-		"days":      setting.Days,
-		"time":      setting.Time,
+func flattenScheduleScanSetting(setting client.EnforcerScheduleScanSettings) []interface{} {
+	return []interface{}{
+		map[string]interface{}{
+			"disabled":  setting.Disabled,
+			"is_custom": setting.IsCustom,
+			"days":      setting.Days,
+			"time":      setting.Time,
+		},
 	}
-}
-
-func flattenScheduleScanSettings(setting client.EnforcerScheduleScanSettings) []map[string]interface{} {
-	set := make([]map[string]interface{}, 1)
-	set[0] = flattenScheduleScanSetting(setting)
-	return set
 }
 
 func flattenCommands(Command client.EnforcerCommand) []map[string]interface{} {

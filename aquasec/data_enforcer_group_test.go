@@ -34,6 +34,14 @@ func TestAquasecEnforcerGroupDatasource(t *testing.T) {
 				Config: testAccCheckAquasecEnforcerGroupDataSource(basicEnforcerGroup),
 				Check:  testAccCheckAquasecEnforcerGroupDataSourceExists("data.aquasec_enforcer_groups.testegdata"),
 			},
+			{
+				Config: testAccCheckAquasecEnforcerGroupDataSourceWithScheduleScanSettings(basicEnforcerGroup),
+				Check:  testAccCheckAquasecEnforcerGroupDataSourceExists("data.aquasec_enforcer_groups.testegdata"),
+			},
+			{
+				Config: testAccCheckAquasecEnforcerGroupDataSource(basicEnforcerGroup),
+				Check:  testAccCheckAquasecEnforcerGroupDataSourceExists("data.aquasec_enforcer_groups.testegdata"),
+			},
 		},
 	})
 }
@@ -54,11 +62,48 @@ func testAccCheckAquasecEnforcerGroupDataSource(enforcerGroup client.EnforcerGro
 			namespace = "%s"
 			master = "%v"
 		}
+	}
+	data "aquasec_enforcer_groups" "testegdata" {
+		group_id = aquasec_enforcer_groups.testegdata.group_id
+		depends_on = [
+          aquasec_enforcer_groups.testegdata
+        ]
+	}
+	`,
+		enforcerGroup.ID,
+		enforcerGroup.Description,
+		enforcerGroup.LogicalName,
+		enforcerGroup.Enforce,
+		enforcerGroup.Gateways[0],
+		enforcerGroup.Type,
+		enforcerGroup.Orchestrator.Type,
+		enforcerGroup.Orchestrator.ServiceAccount,
+		enforcerGroup.Orchestrator.Namespace,
+		enforcerGroup.Orchestrator.Master,
+	)
+}
+
+func testAccCheckAquasecEnforcerGroupDataSourceWithScheduleScanSettings(enforcerGroup client.EnforcerGroup) string {
+	return fmt.Sprintf(`
+	
+	resource "aquasec_enforcer_groups" "testegdata" {
+		group_id = "%s"
+		description = "%s"
+		logical_name = "%s"
+		enforce = "%v"
+		gateways = ["%s"]
+		type = "%s"
+		orchestrator {
+			type = "%s"
+            service_account = "%s"
+			namespace = "%s"
+			master = "%v"
+		}
 		schedule_scan_settings {
-			disabled  = %v
-			is_custom = %v
-			days      = [0,1,2,3,4,5,6]
-			time      = [3, 0]
+			disabled  = false
+			is_custom = true
+			days      = [0,1,2,3,4]
+			time      = [6,0]
 		}
 	}
 	data "aquasec_enforcer_groups" "testegdata" {
@@ -78,9 +123,7 @@ func testAccCheckAquasecEnforcerGroupDataSource(enforcerGroup client.EnforcerGro
 		enforcerGroup.Orchestrator.ServiceAccount,
 		enforcerGroup.Orchestrator.Namespace,
 		enforcerGroup.Orchestrator.Master,
-		enforcerGroup.ScheduleScanSettings.Disabled,
-		enforcerGroup.ScheduleScanSettings.IsCustom)
-
+	)
 }
 
 func testAccCheckAquasecEnforcerGroupDataSourceExists(n string) resource.TestCheckFunc {

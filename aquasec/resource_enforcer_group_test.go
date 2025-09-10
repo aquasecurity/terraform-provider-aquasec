@@ -47,6 +47,28 @@ func TestAquasecEnforcerGroupResource(t *testing.T) {
 				),
 			},
 			{
+				Config: getBasicEnforcerGroupResourceWithScheduleScanSettings(basicEnforcerGroup),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr(rootRef, "group_id", basicEnforcerGroup.ID),
+					resource.TestCheckResourceAttr(rootRef, "description", basicEnforcerGroup.Description),
+					resource.TestCheckResourceAttr(rootRef, "logical_name", basicEnforcerGroup.LogicalName),
+					resource.TestCheckResourceAttr(rootRef, "enforce", fmt.Sprintf("%v", basicEnforcerGroup.Enforce)),
+					resource.TestCheckResourceAttr(rootRef, "gateways.0", basicEnforcerGroup.Gateways[0]),
+					resource.TestCheckResourceAttr(rootRef, "type", basicEnforcerGroup.Type),
+				),
+			},
+			{
+				Config: getBasicEnforcerGroupResource(basicEnforcerGroup),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					resource.TestCheckResourceAttr(rootRef, "group_id", basicEnforcerGroup.ID),
+					resource.TestCheckResourceAttr(rootRef, "description", basicEnforcerGroup.Description),
+					resource.TestCheckResourceAttr(rootRef, "logical_name", basicEnforcerGroup.LogicalName),
+					resource.TestCheckResourceAttr(rootRef, "enforce", fmt.Sprintf("%v", basicEnforcerGroup.Enforce)),
+					resource.TestCheckResourceAttr(rootRef, "gateways.0", basicEnforcerGroup.Gateways[0]),
+					resource.TestCheckResourceAttr(rootRef, "type", basicEnforcerGroup.Type),
+				),
+			},
+			{
 				ResourceName:      fmt.Sprintf("aquasec_enforcer_groups.%s", basicEnforcerGroup.ID),
 				ImportState:       true,
 				ImportStateVerify: true,
@@ -70,11 +92,41 @@ func getBasicEnforcerGroupResource(enforcerGroup client.EnforcerGroup) string {
 			namespace = "%s"
 			master = "%v"
 		}
+	}
+	`, enforcerGroup.ID,
+		enforcerGroup.ID,
+		enforcerGroup.Description,
+		enforcerGroup.LogicalName,
+		enforcerGroup.Enforce,
+		enforcerGroup.Gateways[0],
+		enforcerGroup.Type,
+		enforcerGroup.Orchestrator.Type,
+		enforcerGroup.Orchestrator.ServiceAccount,
+		enforcerGroup.Orchestrator.Namespace,
+		enforcerGroup.Orchestrator.Master,
+	)
+}
+
+func getBasicEnforcerGroupResourceWithScheduleScanSettings(enforcerGroup client.EnforcerGroup) string {
+	return fmt.Sprintf(`
+	resource "aquasec_enforcer_groups" "%s" {
+		group_id = "%s"
+		description = "%s"
+		logical_name = "%s"
+		enforce = "%v"
+		gateways = ["%s"]
+		type = "%s"
+		orchestrator {
+			type = "%s"
+            service_account = "%s"
+			namespace = "%s"
+			master = "%v"
+		}
 		schedule_scan_settings {
-			disabled  = %v
-			is_custom = %v
-			days = [0,1,2,3,4,5,6]
-			time = [3,0]
+			disabled  = false
+			is_custom = true
+			days      = [0,1,2,3,4,5,6]
+			time      = [4,0]
 		}
 	}
 	`, enforcerGroup.ID,
@@ -88,8 +140,6 @@ func getBasicEnforcerGroupResource(enforcerGroup client.EnforcerGroup) string {
 		enforcerGroup.Orchestrator.ServiceAccount,
 		enforcerGroup.Orchestrator.Namespace,
 		enforcerGroup.Orchestrator.Master,
-		enforcerGroup.ScheduleScanSettings.Disabled,
-		enforcerGroup.ScheduleScanSettings.IsCustom,
 	)
 }
 
