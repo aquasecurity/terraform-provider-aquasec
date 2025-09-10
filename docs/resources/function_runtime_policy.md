@@ -191,6 +191,7 @@ Optional:
 - `enabled` (Boolean) Defines if malware scanning is enabled or not
 - `exclude_directories` (List of String) List of directories to exclude from scanning.
 - `exclude_processes` (List of String) List of processes to exclude from scanning.
+- `file_forensic_collection` (Boolean) Whether to enable file forensic collection.
 - `include_directories` (List of String) List of directories to include in scanning.
 
 

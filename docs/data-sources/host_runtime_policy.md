@@ -33,7 +33,6 @@ output "host_runtime_policy_details" {
 
 - `auditing` (Block List, Max: 1) (see [below for nested schema](#nestedblock--auditing))
 - `file_integrity_monitoring` (Block List) Configuration for file integrity monitoring. (see [below for nested schema](#nestedblock--file_integrity_monitoring))
-- `malware_scan_options` (Block List, Max: 1) Configuration for Real-Time Malware Protection. (see [below for nested schema](#nestedblock--malware_scan_options))
 - `package_block` (Block List, Max: 1) (see [below for nested schema](#nestedblock--package_block))
 
 ### Read-Only
@@ -54,6 +53,7 @@ output "host_runtime_policy_details" {
 - `enforce` (Boolean) Indicates that policy should effect container execution (not just for audit).
 - `enforce_after_days` (Number) Indicates the number of days after which the runtime policy will be changed to enforce mode.
 - `id` (String) The ID of this resource.
+- `malware_scan_options` (List of Object) Configuration for Real-Time Malware Protection. (see [below for nested schema](#nestedatt--malware_scan_options))
 - `monitor_system_log_integrity` (Boolean) If true, system log will be monitored.
 - `monitor_system_time_changes` (Boolean) If true, system time changes will be monitored.
 - `monitor_windows_services` (Boolean) If true, windows service operations will be monitored.
@@ -101,22 +101,6 @@ Optional:
 - `monitored_files_users` (List of String) List of users associated with monitored files.
 
 
-<a id="nestedblock--malware_scan_options"></a>
-### Nested Schema for `malware_scan_options`
-
-Optional:
-
-- `action` (String) Set Action, Defaults to 'Alert' when empty
-- `enabled` (Boolean) Defines if enabled or not
-- `exclude_directories` (List of String) List of registry paths to be excluded from being protected.
-- `exclude_processes` (List of String) List of registry processes to be excluded from being protected.
-- `include_directories` (List of String) List of registry paths to be excluded from being protected.
-
-Read-Only:
-
-- `file_forensic_collection` (Boolean) Whether to enable file forensic collection.
-
-
 <a id="nestedblock--package_block"></a>
 ### Nested Schema for `package_block`
 
@@ -129,6 +113,19 @@ Optional:
 - `exceptional_block_packages_processes` (List of String)
 - `exceptional_block_packages_users` (List of String)
 - `packages_black_list` (List of String)
+
+
+<a id="nestedatt--malware_scan_options"></a>
+### Nested Schema for `malware_scan_options`
+
+Read-Only:
+
+- `action` (String)
+- `enabled` (Boolean)
+- `exclude_directories` (List of String)
+- `exclude_processes` (List of String)
+- `file_forensic_collection` (Boolean)
+- `include_directories` (List of String)
 
 
 <a id="nestedatt--scope_variables"></a>
