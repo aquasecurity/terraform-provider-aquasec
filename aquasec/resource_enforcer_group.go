@@ -378,19 +378,24 @@ func resourceEnforcerGroup() *schema.Resource {
 				Type:        schema.TypeList,
 				Description: "Scheduling scan time for which you are creating the Enforcer group.",
 				Optional:    true,
+				Computed:    true,
+				MaxItems:    1,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"disabled": {
 							Type:     schema.TypeBool,
 							Optional: true,
+							Computed: true,
 						},
 						"is_custom": {
 							Type:     schema.TypeBool,
 							Optional: true,
+							Computed: true,
 						},
 						"days": {
 							Type:     schema.TypeList,
 							Optional: true,
+							Computed: true,
 							Elem: &schema.Schema{
 								Type: schema.TypeInt,
 							},
@@ -398,6 +403,7 @@ func resourceEnforcerGroup() *schema.Resource {
 						"time": {
 							Type:     schema.TypeList,
 							Optional: true,
+							Computed: true,
 							Elem: &schema.Schema{
 								Type: schema.TypeInt,
 							},
@@ -499,7 +505,7 @@ func resourceEnforcerGroupRead(ctx context.Context, d *schema.ResourceData, m in
 	d.Set("token", r.Token)
 	d.Set("command", flattenCommands(r.Command))
 	d.Set("orchestrator", flattenOrchestrators(r.Orchestrator))
-	d.Set("schedule_scan_settings", flattenScheduleScanSettings(r.ScheduleScanSettings))
+	d.Set("schedule_scan_settings", flattenScheduleScanSetting(r.ScheduleScanSettings))
 	d.Set("host_os", r.HostOs)
 	d.Set("install_command", r.InstallCommand)
 	d.Set("hosts_count", r.HostsCount)
