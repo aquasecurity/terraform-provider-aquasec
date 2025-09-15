@@ -179,6 +179,7 @@ func resourceContainerRuntimePolicy() *schema.Resource {
 								Type: schema.TypeString,
 							},
 							Optional: true,
+							Computed: true,
 						},
 						"exclude_directories": {
 							Type:        schema.TypeList,
