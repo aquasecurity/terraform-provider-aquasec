@@ -220,11 +220,78 @@ func dataImageAssurancePolicy() *schema.Resource {
 				},
 			},
 			"scap_files": {
-				Type:        schema.TypeList,
-				Description: "List of SCAP user scripts for checks.",
-				Computed:    true,
-				Elem: &schema.Schema{
-					Type: schema.TypeString,
+				Type:     schema.TypeList,
+				Computed: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"name": {
+							Type:     schema.TypeString,
+							Computed: true,
+						},
+						"path": {
+							Type:     schema.TypeString,
+							Computed: true,
+						},
+						"description": {
+							Type:     schema.TypeString,
+							Computed: true,
+						},
+						"engine": {
+							Type:     schema.TypeString,
+							Computed: true,
+						},
+						"kind": {
+							Type:     schema.TypeString,
+							Computed: true,
+						},
+						"type": {
+							Type:     schema.TypeString,
+							Computed: true,
+						},
+						"severity": {
+							Type:     schema.TypeString,
+							Computed: true,
+						},
+						"snippet": {
+							Type:     schema.TypeString,
+							Computed: true,
+						},
+						"script_id": {
+							Type:     schema.TypeString,
+							Computed: true,
+						},
+						"custom": {
+							Type:     schema.TypeString,
+							Computed: true,
+						},
+						"readonly": {
+							Type:     schema.TypeBool,
+							Computed: true,
+						},
+						"overwrite": {
+							Type:     schema.TypeBool,
+							Computed: true,
+						},
+						"author": {
+							Type:     schema.TypeString,
+							Computed: true,
+						},
+						"avd_id": {
+							Type:     schema.TypeString,
+							Computed: true,
+						},
+						"recommended_actions": {
+							Type: schema.TypeList,
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+							Computed: true,
+						},
+						"last_modified": {
+							Type:     schema.TypeInt,
+							Computed: true,
+						},
+					},
 				},
 			},
 			"scope": {
@@ -382,11 +449,50 @@ func dataImageAssurancePolicy() *schema.Resource {
 				},
 			},
 			"allowed_images": {
-				Type:        schema.TypeList,
-				Description: "List of explicitly allowed images.",
-				Computed:    true,
-				Elem: &schema.Schema{
-					Type: schema.TypeString,
+				Type:     schema.TypeList,
+				Computed: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"imagename": {
+							Type:     schema.TypeString,
+							Computed: true,
+						},
+						"registry": {
+							Type:     schema.TypeString,
+							Computed: true,
+						},
+						"imageid": {
+							Type:     schema.TypeInt,
+							Computed: true,
+						},
+						"imagedigest": {
+							Type:     schema.TypeString,
+							Computed: true,
+						},
+						"blacklisted": {
+							Type:     schema.TypeBool,
+							Computed: true,
+						},
+						"author": {
+							Type:     schema.TypeString,
+							Computed: true,
+						},
+						"lastupdated": {
+							Type:     schema.TypeInt,
+							Computed: true,
+						},
+						"reason": {
+							Type:     schema.TypeList,
+							Computed: true,
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+						},
+						"whitelisted": {
+							Type:     schema.TypeBool,
+							Computed: true,
+						},
+					},
 				},
 			},
 			"trusted_base_images": {
@@ -714,7 +820,7 @@ func dataImageAssurancePolicyRead(ctx context.Context, d *schema.ResourceData, m
 		d.Set("whitelisted_licenses", iap.WhitelistedLicenses)
 		d.Set("category", iap.Category)
 		d.Set("custom_checks", flattenCustomChecks(iap.CustomChecks))
-		d.Set("scap_files", iap.ScapFiles)
+		d.Set("scap_files", flattenScapFiles(iap.ScapFiles))
 		d.Set("scope", flatteniapscope(iap.Scope))
 		d.Set("registries", iap.Registries)
 		d.Set("labels", iap.Labels)
@@ -722,7 +828,7 @@ func dataImageAssurancePolicyRead(ctx context.Context, d *schema.ResourceData, m
 		d.Set("cves_black_list", iap.CvesBlackList)
 		d.Set("packages_black_list", flattenPackages(iap.PackagesBlackList))
 		d.Set("packages_white_list", flattenPackages(iap.PackagesWhiteList))
-		d.Set("allowed_images", iap.AllowedImages)
+		d.Set("allowed_images", flattenAllowedImages(iap.AllowedImages))
 		d.Set("trusted_base_images", flattenTrustedBaseImages(iap.TrustedBaseImages))
 		d.Set("read_only", iap.ReadOnly)
 		d.Set("force_microenforcer", iap.ForceMicroenforcer)
