@@ -1,5 +1,5 @@
 data "aquasec_application_scope_saas" "saas" {
-  name = "Global" 
+  name = "Global"
 }
 
 output "scopes" {

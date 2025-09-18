@@ -14,12 +14,12 @@ The `aquasec_assurance_custom_script` resource manages custom compliance scripts
 
 ```terraform
 resource "aquasec_assurance_custom_script" "aquasec_assurance_custom_script" {
-	name        = "aquasec_assurance_custom_script"
-	description = "Test assurance script"
-	engine      = "yaml"
-	path        = "test.yaml"
-	kind        = "kubernetes"
-	snippet     = <<-EOT
+  name        = "aquasec_assurance_custom_script"
+  description = "Test assurance script"
+  engine      = "yaml"
+  path        = "test.yaml"
+  kind        = "kubernetes"
+  snippet     = <<-EOT
 		---
 		controls:
 		version: "aks-1.1"
