@@ -17,7 +17,7 @@ description: |-
 resource "aquasec_permission_set_saas" "example" {
   name        = "example-permissions"
   description = "Permission set for Example team"
-  actions     = [
+  actions = [
     "account_mgmt.groups.read",
     "cspm.cloud_accounts.read",
   ]

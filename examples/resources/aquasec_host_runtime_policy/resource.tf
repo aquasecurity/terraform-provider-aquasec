@@ -14,12 +14,12 @@ resource "aquasec_host_runtime_policy" "host_runtime_policy" {
       value     = "xxxxxxxxx"
     }
     variables {
-      attribute  = "os.hostname"
-      name       = "name"
-      value      = "10.0.0.1"
+      attribute = "os.hostname"
+      name      = "name"
+      value     = "10.0.0.1"
     }
   }
-  
+
 
   application_scopes = [
     "Global",

@@ -57,10 +57,10 @@ resource "aquasec_integration_registry" "integration_registry" {
   pull_tags_pattern           = [""]
   pull_max_tags               = 1
 
-  url          = "us-east-1"
-  scanner_name = []
-  scanner_type = "any"
-  scanner_group_name = "terraform-test"  //configure when scanner_type is "specific"
+  url                = "us-east-1"
+  scanner_name       = []
+  scanner_type       = "any"
+  scanner_group_name = "terraform-test" //configure when scanner_type is "specific"
 
   username    = ""
   password    = ""
@@ -73,11 +73,11 @@ resource "aquasec_integration_registry" "integration_registry" {
     un_quarantine = false
   }
   auto_scan_time {
-    auto_pull_day   = 1
-    iteration       = 1
-    iteration_type  = "week" // "none", "day", "week", "month"
-    time            = "2025-07-09T08:45:00Z" //YYYY-MM-DDTHH:MM:SSZ
-    week_days       = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"] // ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+    auto_pull_day  = 1
+    iteration      = 1
+    iteration_type = "week"                                                   // "none", "day", "week", "month"
+    time           = "2025-07-09T08:45:00Z"                                   //YYYY-MM-DDTHH:MM:SSZ
+    week_days      = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"] // ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
   }
 
   force_ootb = false
