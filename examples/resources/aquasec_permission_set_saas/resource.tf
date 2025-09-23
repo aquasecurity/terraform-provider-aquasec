@@ -6,12 +6,12 @@ resource "aquasec_permission_set_saas" "example" {
     # Account Management
     ###################
     "account_mgmt.groups.read",
-    
+
     ###################
     # Cloud Security
     ###################
     "cspm.cloud_accounts.read",
-    
+
     ###################
     # CNAPP Platform
     ###################

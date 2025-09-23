@@ -1,0 +1,159 @@
+name: "Nightly Acceptance Tests & Drift Detection"
+
+on:
+  schedule:
+    # Runs nightly at 00:30 UTC
+    - cron: '30 0 * * *'
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.18'
+        id: go
+
+      - name: Check out code into the Go module directory
+        uses: actions/checkout@v4
+
+      - name: Get dependencies
+        run: |
+          go mod download
+
+      - name: Build
+        run: |
+          go build -v .
+
+  drift:
+    name: "Drift Detection (TF ${{ matrix.terraform }})"
+    runs-on: ubuntu-latest
+    needs: build
+    strategy:
+      max-parallel: 1
+      fail-fast: false
+      matrix:
+        terraform: [
+          '0.15.5',
+          '0.14.11',
+          '1.1.2',
+          '1.5.3'
+        ]
+    env:
+      TF_VAR_aquasec_url: ${{ secrets.AQUA_URL }}
+      TF_VAR_aquasec_username: ${{ secrets.AQUA_USER }}
+      TF_VAR_aquasec_password: ${{ secrets.AQUA_PASSWORD }}
+    defaults:
+      run:
+        working-directory: examples/
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform ${{ matrix.terraform }}
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ matrix.terraform }}
+          terraform_wrapper: true
+        id: setup_tf
+
+      - name: Terraform Init
+        run: terraform init -input=false
+
+      - name: Terraform Validate
+        run: terraform validate
+
+      - name: Terraform Fmt Check
+        run: terraform fmt -check
+
+      - name: Terraform Plan (drift detection)
+        id: plan
+        run: |
+          set +e
+          terraform plan -input=false -detailed-exitcode
+          exitcode=$?
+          echo "exitcode=$exitcode" >> "$GITHUB_OUTPUT"
+          # Fail for both drift (2) and error (1)
+          if [ "$exitcode" -ne 0 ]; then
+            exit $exitcode
+          fi
+
+    outputs:
+      drifted: ${{ steps.plan.outputs.exitcode }}
+
+  acceptance:
+    name: "Acceptance Tests (TF ${{ matrix.terraform }})"
+    runs-on: ubuntu-latest
+    needs: drift
+    strategy:
+      max-parallel: 1
+      fail-fast: false
+      matrix:
+        terraform: [
+          '0.15.5',
+          '0.14.11',
+          '1.1.2',
+          '1.5.3'
+        ]
+    env:
+      AQUA_URL: ${{ secrets.AQUA_URL }}
+      AQUA_USER: ${{ secrets.AQUA_USER }}
+      AQUA_PASSWORD: ${{ secrets.AQUA_PASSWORD }}
+    steps:
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.18'
+        id: go
+
+      - name: Check out repo
+        uses: actions/checkout@v4
+
+      - name: Get dependencies
+        run: |
+          go mod download
+
+      - name: Run TF acceptance tests
+        id: accept_tests
+        uses: nick-fields/retry@v2
+        env:
+          TF_ACC: "1"
+          TF_ACC_TERRAFORM_VERSION: ${{ matrix.terraform }}
+          AQUA_URL: ${{ secrets.AQUA_URL }}
+          AQUA_USER: ${{ secrets.AQUA_USER }}
+          AQUA_PASSWORD: ${{ secrets.AQUA_PASSWORD }}
+        with:
+          max_attempts: 2
+          timeout_minutes: 15
+          command: go test -v -cover ./aquasec/ -timeout 15m
+
+    outputs:
+      accepted: ${{ steps.accept_tests.outcome }}
+
+  notify:
+    name: "Notify via Power Automate Webhook"
+    runs-on: ubuntu-latest
+    needs: [drift, acceptance]
+    if: ${{ always() }}
+    steps:
+      - name: Trigger Power Automate Flow
+        uses: fjogeleit/http-request-action@v1.16.3 
+        with:
+          url: ${{ secrets.POWER_AUTOMATE_HOOK_URL }}
+          method: 'POST'
+          contentType: 'application/json'
+          data: |
+            {
+              "status": "${{ (needs.drift.result == 'failure' || needs.acceptance.result == 'failure') && 'FAILED' || 'PASSED' }}",
+              "branch": "main",
+              "drift_exitcode": "${{ needs.drift.outputs.drifted }}",
+              "acceptance_outcome": "${{ needs.acceptance.outputs.accepted }}",
+              "workflow": "${{ github.workflow }}",
+              "run_id": "${{ github.run_id }}",
+              "github_url": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}",
+              "tested_versions": ["0.15.5","0.14.11","1.1.2","1.5.3"]
+            }
