@@ -137,6 +137,48 @@ func dataSourceAcknowledges() *schema.Resource {
 							Description: "The name of the repository in whose context the issue was acknowledged (if not for all images)",
 							Computed:    true,
 						},
+						"ack_repo_id": {
+							Type:        schema.TypeInt,
+							Description: "Unique ID generated when a security issue on a resource is suppressed. It is used to remove the suppression after the expiration period.",
+							Computed:    true,
+						},
+						"suppression_rule_id": {
+							Type:        schema.TypeInt,
+							Description: "Suppression rule ID",
+							Computed:    true,
+						},
+						"suppression_rule_name": {
+							Type:        schema.TypeString,
+							Description: "Suppression rule name",
+							Computed:    true,
+						},
+						"suppression_rule_scopes": {
+							Type:     schema.TypeList,
+							Computed: true,
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+						},
+						"has_custom_severity": {
+							Type:        schema.TypeBool,
+							Description: "Indicates whether custom severity is assigned to the suppressed vulnerability",
+							Computed:    true,
+						},
+						"registry": {
+							Type:        schema.TypeString,
+							Description: "If the issue was acknowledged in the context of a specific image or repository, the name of the registry where they are located",
+							Computed:    true,
+						},
+						"repository": {
+							Type:        schema.TypeString,
+							Description: "The name of the repository in whose context the issue was acknowledged (if not for all images)",
+							Computed:    true,
+						},
+						"image": {
+							Type:        schema.TypeString,
+							Description: "The name of the image in whose context the issue was acknowledged (if not for all images)",
+							Computed:    true,
+						},
 					},
 				},
 			},
@@ -197,6 +239,14 @@ func flattenAcknowledgesData(acknowledgesList *client.AcknowledgeList) ([]interf
 			a["os_version"] = acknowledge.OsVersion
 			a["docker_id"] = acknowledge.DockerId
 			a["repository_name"] = acknowledge.RepositoryName
+			a["ack_repo_id"] = acknowledge.AckRepoId
+			a["suppression_rule_id"] = acknowledge.SuppressionRuleId
+			a["suppression_rule_name"] = acknowledge.SuppressionRuleName
+			a["suppression_rule_scopes"] = acknowledge.SuppressionRuleScopes
+			a["has_custom_severity"] = acknowledge.HasCustomSeverity
+			a["registry"] = acknowledge.Registry
+			a["repository"] = acknowledge.Repository
+			a["image"] = acknowledge.Image
 			acks[i] = a
 		}
 

@@ -65,7 +65,7 @@ description: |-
 - `permission` (String) Permission Action
 - `risk_explorer_auto_discovery` (Boolean) Set `True` to allow Enforcers to be discovered in the Risk Explorer.
 - `runtime_type` (String) The container runtime environment.
-- `schedule_scan_settings` (Block List) Scheduling scan time for which you are creating the Enforcer group. (see [below for nested schema](#nestedblock--schedule_scan_settings))
+- `schedule_scan_settings` (Block List, Max: 1) Scheduling scan time for which you are creating the Enforcer group. (see [below for nested schema](#nestedblock--schedule_scan_settings))
 - `sync_host_images` (Boolean) Set `True` to configure Enforcers to discover local host images. Discovered images will be listed under Images > Host Images, as well as under Infrastructure (in the Images tab for applicable hosts).
 - `syscall_enabled` (Boolean) Set `True` will allow profiling and monitoring system calls made by running containers.
 - `user_access_control` (Boolean) Set `True` to apply User Access Control Policies to containers. Note that Aqua Enforcers must be deployed with the AQUA_RUNC_INTERCEPTION environment variable set to 0 in order to use User Access Control Policies.
