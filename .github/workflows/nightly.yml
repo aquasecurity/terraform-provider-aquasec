@@ -74,7 +74,7 @@ jobs:
         id: plan
         run: |
           set +e
-          terraform plan -input=false -detailed-exitcode
+          terraform plan -input=false -detailed-exitcode -out=tfplan.binary
           exitcode=$?
           echo "exitcode=$exitcode" >> "$GITHUB_OUTPUT"
           # Fail for both drift (2) and error (1)
