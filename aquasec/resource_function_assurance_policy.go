@@ -25,8 +25,18 @@ func resourceFunctionAssurancePolicy() *schema.Resource {
 			"assurance_type": {
 				Type:        schema.TypeString,
 				Description: "What type of assurance policy is described.",
-				Optional:    true,
-				Computed:    true,
+				Required:    true,
+				ValidateFunc: func(val interface{}, key string) (warns []string, errs []error) {
+					s, ok := val.(string)
+					if !ok {
+						errs = append(errs, fmt.Errorf("%q must be a string, got %T", key, val))
+						return
+					}
+					if strings.ToLower(s) != "function" {
+						errs = append(errs, fmt.Errorf("%q must be \"function\" (case-insensitive), got %q", key, s))
+					}
+					return
+				},
 			},
 
 			"id": {
@@ -870,7 +880,7 @@ func resourceFunctionAssurancePolicy() *schema.Resource {
 func resourceFunctionAssurancePolicyCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	ac := m.(*client.Client)
 	name := d.Get("name").(string)
-	assurance_type := "function"
+	assurance_type := d.Get("assurance_type").(string)
 
 	iap := expandAssurancePolicy(d, assurance_type)
 	err := ac.CreateAssurancePolicy(iap, assurance_type)
@@ -885,7 +895,7 @@ func resourceFunctionAssurancePolicyCreate(ctx context.Context, d *schema.Resour
 
 func resourceFunctionAssurancePolicyUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	ac := m.(*client.Client)
-	assurance_type := "function"
+	assurance_type := d.Get("assurance_type").(string)
 
 	if d.HasChanges("description",
 		"registry",
@@ -1001,7 +1011,7 @@ func resourceFunctionAssurancePolicyUpdate(ctx context.Context, d *schema.Resour
 
 func resourceFunctionAssurancePolicyRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	ac := m.(*client.Client)
-	assurance_type := "function"
+	assurance_type := d.Get("assurance_type").(string)
 
 	iap, err := ac.GetAssurancePolicy(d.Id(), assurance_type)
 
@@ -1119,7 +1129,7 @@ func resourceFunctionAssurancePolicyRead(ctx context.Context, d *schema.Resource
 func resourceFunctionAssurancePolicyDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	ac := m.(*client.Client)
 	name := d.Get("name").(string)
-	assurance_type := "function"
+	assurance_type := d.Get("assurance_type").(string)
 	err := ac.DeleteAssurancePolicy(name, assurance_type)
 
 	if err == nil {
