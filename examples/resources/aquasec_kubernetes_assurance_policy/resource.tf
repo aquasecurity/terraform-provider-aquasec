@@ -2,6 +2,7 @@ resource "aquasec_kubernetes_assurance_policy" "example_kubernetes_assurance_pol
   // Values that are required
   application_scopes = ["Global"]
   name               = "example_kubernetes_assurance_policy"
+  assurance_type     = "kubernetes"
 
   //Values that default to true
   audit_on_failure = true

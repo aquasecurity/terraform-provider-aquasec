@@ -25,8 +25,18 @@ func resourceKubernetesAssurancePolicy() *schema.Resource {
 			"assurance_type": {
 				Type:        schema.TypeString,
 				Description: "What type of assurance policy is described.",
-				Optional:    true,
-				Computed:    true,
+				Required:    true,
+				ValidateFunc: func(val interface{}, key string) (warns []string, errs []error) {
+					s, ok := val.(string)
+					if !ok {
+						errs = append(errs, fmt.Errorf("%q must be a string, got %T", key, val))
+						return
+					}
+					if strings.ToLower(s) != "kubernetes" {
+						errs = append(errs, fmt.Errorf("%q must be \"kubernetes\" (case-insensitive), got %q", key, s))
+					}
+					return
+				},
 			},
 			"id": {
 				Type:     schema.TypeString,
@@ -874,7 +884,7 @@ func resourceKubernetesAssurancePolicy() *schema.Resource {
 func resourceKubernetesAssurancePolicyCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	ac := m.(*client.Client)
 	name := d.Get("name").(string)
-	assurance_type := "kubernetes"
+	assurance_type := d.Get("assurance_type").(string)
 
 	iap := expandAssurancePolicy(d, assurance_type)
 	err := ac.CreateAssurancePolicy(iap, assurance_type)
@@ -890,7 +900,7 @@ func resourceKubernetesAssurancePolicyCreate(ctx context.Context, d *schema.Reso
 func resourceKubernetesAssurancePolicyUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	ac := m.(*client.Client)
 	name := d.Get("name").(string)
-	assurance_type := "kubernetes"
+	assurance_type := d.Get("assurance_type").(string)
 
 	if d.HasChanges(
 		"description",
@@ -1007,7 +1017,7 @@ func resourceKubernetesAssurancePolicyUpdate(ctx context.Context, d *schema.Reso
 
 func resourceKubernetesAssurancePolicyRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	ac := m.(*client.Client)
-	assurance_type := "kubernetes"
+	assurance_type := d.Get("assurance_type").(string)
 
 	iap, err := ac.GetAssurancePolicy(d.Id(), assurance_type)
 
@@ -1124,7 +1134,7 @@ func resourceKubernetesAssurancePolicyRead(ctx context.Context, d *schema.Resour
 func resourceKubernetesAssurancePolicyDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	ac := m.(*client.Client)
 	name := d.Get("name").(string)
-	assurance_type := "kubernetes"
+	assurance_type := d.Get("assurance_type").(string)
 	err := ac.DeleteAssurancePolicy(name, assurance_type)
 
 	if err == nil {

@@ -27,6 +27,7 @@ resource "aquasec_function_assurance_policy" "example_function_assurance_policy"
   //Required values
   application_scopes = ["Global"]
   name               = "example_function_assurance_policy"
+  assurance_type     = "function"
 
   //Values that default to true
   audit_on_failure = true
@@ -48,13 +49,13 @@ resource "aquasec_function_assurance_policy" "example_function_assurance_policy"
 ### Required
 
 - `application_scopes` (List of String)
+- `assurance_type` (String) What type of assurance policy is described.
 - `name` (String)
 
 ### Optional
 
 - `aggregated_vulnerability` (Block List) Aggregated vulnerability information. (see [below for nested schema](#nestedblock--aggregated_vulnerability))
 - `allowed_images` (List of String) List of explicitly allowed images.
-- `assurance_type` (String) What type of assurance policy is described.
 - `audit_on_failure` (Boolean) Indicates if auditing for failures.
 - `author` (String) Name of user account that created the policy.
 - `auto_scan_configured` (Boolean)

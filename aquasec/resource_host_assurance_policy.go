@@ -2,9 +2,10 @@ package aquasec
 
 import (
 	"fmt"
+	"strings"
+
 	"github.com/aquasecurity/terraform-provider-aquasec/client"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-	"strings"
 )
 
 func resourceHostAssurancePolicy() *schema.Resource {
@@ -21,8 +22,18 @@ func resourceHostAssurancePolicy() *schema.Resource {
 			"assurance_type": {
 				Type:        schema.TypeString,
 				Description: "What type of assurance policy is described.",
-				Optional:    true,
-				Computed:    true,
+				Required:    true,
+				ValidateFunc: func(val interface{}, key string) (warns []string, errs []error) {
+					s, ok := val.(string)
+					if !ok {
+						errs = append(errs, fmt.Errorf("%q must be a string, got %T", key, val))
+						return
+					}
+					if strings.ToLower(s) != "host" {
+						errs = append(errs, fmt.Errorf("%q must be \"host\" (case-insensitive), got %q", key, s))
+					}
+					return
+				},
 			},
 			"id": {
 				Type:     schema.TypeString,
@@ -798,7 +809,7 @@ func resourceHostAssurancePolicy() *schema.Resource {
 func resourceHostAssurancePolicyCreate(d *schema.ResourceData, m interface{}) error {
 	ac := m.(*client.Client)
 	name := d.Get("name").(string)
-	assurance_type := "host"
+	assurance_type := d.Get("assurance_type").(string)
 
 	iap := expandAssurancePolicy(d, assurance_type)
 	err := ac.CreateAssurancePolicy(iap, assurance_type)
@@ -813,7 +824,7 @@ func resourceHostAssurancePolicyCreate(d *schema.ResourceData, m interface{}) er
 
 func resourceHostAssurancePolicyUpdate(d *schema.ResourceData, m interface{}) error {
 	ac := m.(*client.Client)
-	assurance_type := "host"
+	assurance_type := d.Get("assurance_type").(string)
 
 	if d.HasChanges("description",
 		"registry",
@@ -927,7 +938,7 @@ func resourceHostAssurancePolicyUpdate(d *schema.ResourceData, m interface{}) er
 
 func resourceHostAssurancePolicyRead(d *schema.ResourceData, m interface{}) error {
 	ac := m.(*client.Client)
-	assurance_type := "host"
+	assurance_type := d.Get("assurance_type").(string)
 
 	iap, err := ac.GetAssurancePolicy(d.Id(), assurance_type)
 
@@ -1039,7 +1050,8 @@ func resourceHostAssurancePolicyRead(d *schema.ResourceData, m interface{}) erro
 func resourceHostAssurancePolicyDelete(d *schema.ResourceData, m interface{}) error {
 	ac := m.(*client.Client)
 	name := d.Get("name").(string)
-	assurance_type := "host"
+	assurance_type := d.Get("assurance_type").(string)
+
 	err := ac.DeleteAssurancePolicy(name, assurance_type)
 
 	if err == nil {

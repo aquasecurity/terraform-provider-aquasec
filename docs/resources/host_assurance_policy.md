@@ -26,6 +26,7 @@ resource "aquasec_host_assurance_policy" "advanced" {
   name               = "host_policy_advanced"
   description        = "Advanced host assurance policy with key security controls"
   application_scopes = ["Global"]
+  assurance_type     = "host"
 
   # Policy enforcement
   enabled          = true
@@ -76,13 +77,13 @@ resource "aquasec_host_assurance_policy" "advanced" {
 ### Required
 
 - `application_scopes` (List of String)
+- `assurance_type` (String) What type of assurance policy is described.
 - `name` (String)
 
 ### Optional
 
 - `aggregated_vulnerability` (Map of String) Aggregated vulnerability information.
 - `allowed_images` (List of String) List of explicitly allowed images.
-- `assurance_type` (String) What type of assurance policy is described.
 - `audit_on_failure` (Boolean) Indicates if auditing for failures.
 - `author` (String) Name of user account that created the policy.
 - `auto_scan_configured` (Boolean)

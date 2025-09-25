@@ -25,10 +25,19 @@ func resourceImageAssurancePolicy() *schema.Resource {
 			"assurance_type": {
 				Type:        schema.TypeString,
 				Description: "What type of assurance policy is described.",
-				Optional:    true,
-				Computed:    true,
+				Required:    true,
+				ValidateFunc: func(val interface{}, key string) (warns []string, errs []error) {
+					s, ok := val.(string)
+					if !ok {
+						errs = append(errs, fmt.Errorf("%q must be a string, got %T", key, val))
+						return
+					}
+					if strings.ToLower(s) != "image" {
+						errs = append(errs, fmt.Errorf("%q must be \"image\" (case-insensitive), got %q", key, s))
+					}
+					return
+				},
 			},
-
 			"id": {
 				Type:     schema.TypeString,
 				Computed: true,
@@ -871,7 +880,7 @@ func resourceImageAssurancePolicy() *schema.Resource {
 func resourceImageAssurancePolicyCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	ac := m.(*client.Client)
 	name := d.Get("name").(string)
-	assurance_type := "image"
+	assurance_type := d.Get("assurance_type").(string)
 
 	iap := expandAssurancePolicy(d, assurance_type)
 	err := ac.CreateAssurancePolicy(iap, assurance_type)
@@ -887,7 +896,7 @@ func resourceImageAssurancePolicyCreate(ctx context.Context, d *schema.ResourceD
 func resourceImageAssurancePolicyUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	ac := m.(*client.Client)
 	name := d.Get("name").(string)
-	assurance_type := "image"
+	assurance_type := d.Get("assurance_type").(string)
 
 	if d.HasChanges("description",
 		"registry",
@@ -1002,7 +1011,7 @@ func resourceImageAssurancePolicyUpdate(ctx context.Context, d *schema.ResourceD
 
 func resourceImageAssurancePolicyRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	ac := m.(*client.Client)
-	assurance_type := "image"
+	assurance_type := d.Get("assurance_type").(string)
 
 	iap, err := ac.GetAssurancePolicy(d.Id(), assurance_type)
 
@@ -1118,7 +1127,8 @@ func resourceImageAssurancePolicyRead(ctx context.Context, d *schema.ResourceDat
 func resourceImageAssurancePolicyDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	ac := m.(*client.Client)
 	name := d.Get("name").(string)
-	assurance_type := "image"
+	assurance_type := d.Get("assurance_type").(string)
+
 	err := ac.DeleteAssurancePolicy(name, assurance_type)
 
 	if err == nil {
@@ -1284,11 +1294,9 @@ func setVulnerabilityScore(vulnerabilityScoreRange []int) []int {
 func expandAssurancePolicy(d *schema.ResourceData, a_type string) *client.AssurancePolicy {
 	app_scopes := d.Get("application_scopes").([]interface{})
 	assurance_type := d.Get("assurance_type").(string)
-	if assurance_type == "" {
-		assurance_type = a_type
-	}
+
 	iap := client.AssurancePolicy{
-		AssuranceType:     a_type,
+		AssuranceType:     assurance_type,
 		Name:              d.Get("name").(string),
 		ApplicationScopes: convertStringArr(app_scopes),
 	}
@@ -1877,35 +1885,35 @@ func expandAssurancePolicy(d *schema.ResourceData, a_type string) *client.Assura
 		}
 	}
 
-    iap.AggregatedVulnerability = client.AggregatedVulnerability{}
-    aggregated_vulnerability, ok := d.GetOk("aggregated_vulnerability")
-    if ok {
-    list := aggregated_vulnerability.([]interface{})
-        if len(list) > 0 {
-            v := list[0].(map[string]interface{})
-            var sr []float32
-            if arrIface, exists := v["score_range"].([]interface{}); exists {
-                sr = make([]float32, len(arrIface))
-                for i, iv := range arrIface {
-                    if fv, ok := iv.(float64); ok {
-                        sr[i] = float32(fv)
-                    }
-                }
-            }
-            enabled, _ := v["enabled"].(bool)
-            customEnabled, _ := v["custom_severity_enabled"].(bool)
-            severity, _ := v["severity"].(string)
+	iap.AggregatedVulnerability = client.AggregatedVulnerability{}
+	aggregated_vulnerability, ok := d.GetOk("aggregated_vulnerability")
+	if ok {
+		list := aggregated_vulnerability.([]interface{})
+		if len(list) > 0 {
+			v := list[0].(map[string]interface{})
+			var sr []float32
+			if arrIface, exists := v["score_range"].([]interface{}); exists {
+				sr = make([]float32, len(arrIface))
+				for i, iv := range arrIface {
+					if fv, ok := iv.(float64); ok {
+						sr[i] = float32(fv)
+					}
+				}
+			}
+			enabled, _ := v["enabled"].(bool)
+			customEnabled, _ := v["custom_severity_enabled"].(bool)
+			severity, _ := v["severity"].(string)
 
-            iap.AggregatedVulnerability = client.AggregatedVulnerability{
-                Enabled:               enabled,
-                ScoreRange:            sr,
-                CustomSeverityEnabled: customEnabled,
-                Severity:              severity,
-            }
-        }
-    }
+			iap.AggregatedVulnerability = client.AggregatedVulnerability{
+				Enabled:               enabled,
+				ScoreRange:            sr,
+				CustomSeverityEnabled: customEnabled,
+				Severity:              severity,
+			}
+		}
+	}
 
-    exclude_application_scopes, ok := d.GetOk("exclude_application_scopes")
+	exclude_application_scopes, ok := d.GetOk("exclude_application_scopes")
 	if ok {
 		strArr := convertStringArr(exclude_application_scopes.([]interface{}))
 		iap.ExcludeApplicationScopes = strArr
