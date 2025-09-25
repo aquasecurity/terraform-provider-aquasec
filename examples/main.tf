@@ -30,62 +30,6 @@ resource "aquasec_acknowledge" "acknowledge" {
   }
 }
 
-resource "aquasec_application_scope" "terraformiap" {
-  description = "test123"
-  name        = "test18"
-  // Categories is a nested block of artifacts, workloads and infrastructure
-  categories {
-    // Artifacts is a nested block of Image, Function, CF, and CodeBuild
-    artifacts {
-      // Every object requires expression(logical combinations of variables v1, v2, v3...) and list of variables consists of attribute(pre-defined) and value
-      image {
-        expression = "v1 && v2"
-        variables {
-          attribute = "aqua.registry"
-          value     = "test-registry"
-        }
-        variables {
-          attribute = "image.repo"
-          value     = "nginx"
-        }
-      }
-      codebuild {
-        expression = "v1"
-        variables {
-          attribute = "aqua.topic"
-          value     = "topic1"
-        }
-      }
-    }
-    // Workloads is a nested block of Kubernetes, OS, CF
-    workloads {
-      // Every object requires expression(logical combinations of variables v1, v2, v3...) and list of variables consists of attribute(pre-defined) and value
-      kubernetes {
-        expression = "v1 && v2"
-        variables {
-          attribute = "kubernetes.cluster"
-          value     = "aqua"
-        }
-        variables {
-          attribute = "kubernetes.namespace"
-          value     = "aqua"
-        }
-      }
-    }
-    // Infrastructure is a nested block of Kubernetes, OS
-    infrastructure {
-      // Every object requires expression and list of variables consists of attribute(pre-defined) and value
-      kubernetes {
-        expression = "v1"
-        variables {
-          attribute = "kubernetes.cluster"
-          value     = "aqua"
-        }
-      }
-    }
-  }
-}
-
 resource "aquasec_application_scope_saas" "terraformiap" {
   description = "aquasec application scope saas"
   name        = "aquasec_application_scope_saas"
@@ -874,104 +818,6 @@ resource "aquasec_permission_set_saas" "example" {
   ]
 }
 
-resource "aquasec_permissions_sets" "my_terraform_perm_set" {
-  name        = "my_terraform_perm_set"
-  description = "Test Permissions Sets created by Terraform"
-  ui_access   = true
-  is_super    = false
-  actions = [
-    #################
-    # Policies
-    #################
-    # Assurance Policies
-    "acl_policies.read",  # Removed from version 2022.4
-    "acl_policies.write", # Removed from version 2022.4
-    # Image Profiles
-    "image_profiles.read",
-    "image_profiles.write", # Only for version 2022.4
-    # Firewall Policies
-    "network_policies.read",
-    "network_policies.write", # Only for version 2022.4
-    # Runtime Policies
-    "runtime_policies.read",
-    "runtime_policies.write",
-    # Response Policies                 # Only for version 2022.4
-    "response_policies.read",  # Only for version 2022.4
-    "response_policies.write", # Only for version 2022.4
-    # User Access Control Policies
-    "image_assurance.read",
-    "image_assurance.write",
-
-    #################
-    # Assets
-    #################
-    # Dashboard
-    "dashboard.read",
-    "dashboard.write", # Only for version 2022.4
-    # Risk Explorer
-    "risk_explorer.read",
-    # Images
-    "images.read",
-    "images.write", # Only for version 2022.4
-    # Host Images
-    "risks.host_images.read",
-    "risks.host_images.write", # Only for version 2022.4
-    # Functions
-    "functions.read",
-    "functions.write", # Only for version 2022.4
-    # Enforcers
-    "enforcers.read",
-    "enforcers.write", # Only for version 2022.4
-    # Containers
-    "containers.read",
-    # Services
-    "services.read",
-    "services.write", # Only for version 2022.4
-    # Infrastructure
-    "infrastructure.read",
-    "infrastructure.write", # Only for version 2022.4
-
-    #################
-    # Compliance
-    #################
-    # Vulnerabilities
-    "risks.vulnerabilities.read",
-    "risks.vulnerabilities.write",
-    # CIS Benchmarks
-    "risks.benchmark.read",
-    "risks.benchmark.write", # Only for version 2022.4
-
-    #################
-    # System
-    #################
-    # Audit Events
-    "audits.read",
-    # Secrets
-    "secrets.read",
-    "secrets.write", # Only for version 2022.4
-    # Settings
-    "settings.read",
-    "settings.write", # Only for version 2022.4
-    # Integrations
-    "integrations.read",
-    "integrations.write", # Only for version 2022.4
-    # Image Registry Integrations
-    "registries_integrations.read",
-    "registries_integrations.write", # Only for version 2022.4
-    # Scanner CLI                       # Only for version 2022.4
-    "scan.read", # Only for version 2022.4
-    # Gateways
-    "gateways.read",
-    "gateways.write", # Only for version 2022.4
-    # Consoles
-    "consoles.read",
-    # Webhook authorization API
-    "web_hook.read",
-    # Incidents
-    "incidents.read"
-  ]
-}
-
 resource "aquasec_role" "IaC" {
   role_name   = "RoleIaC"
   description = "RoleIaC"
@@ -1118,11 +964,15 @@ output "application_scopes" {
 }
 
 output "codebuild_config" {
-  value = [
-    for category in data.aquasec_application_scope.default.categories : [
-      for artifact in category.artifacts : artifact.codebuild if artifact.codebuild != null
-    ] if category.artifacts != null
-  ][0][0]
+  value = try(
+    tolist([
+      for category in data.aquasec_application_scope.default.categories : [
+        for artifact in (category.artifacts != null ? category.artifacts : []) : artifact.codebuild
+        if artifact.codebuild != null
+      ]
+    ])[0][0],
+    null
+  )
 }
 
 data "aquasec_application_scope_saas" "saas" {
@@ -1190,56 +1040,6 @@ output "assurance_custom_script_name" {
   value = data.aquasec_assurance_custom_script.example.name
 }
 
-data "aquasec_container_runtime_policy" "container_runtime_policy" {
-  name = "FunctionRuntimePolicyName"
-}
-
-output "container_runtime_policy_details" {
-  value = data.aquasec_container_runtime_policy.container_runtime_policy
-}
-
-data "aquasec_enforcer_groups" "groups" {
-  group_id = "IacGroup"
-}
-
-output "group_details" {
-  value = data.aquasec_enforcer_groups.groups
-}
-
-data "aquasec_firewall_policy" "test" {
-  name = "example_firewall_policy"
-}
-
-output "test-ffp" {
-  value = data.aquasec_firewall_policy.test
-}
-
-data "aquasec_function_assurance_policy" "test" {
-  name = "test-function-assurance-policy"
-}
-
-output "test-fap" {
-  value = data.aquasec_function_assurance_policy.test
-}
-
-
-data "aquasec_function_runtime_policy" "existing_policy" {
-  name = "Serverless Runtime Policy"
-}
-
-# Use the retrieved policy information
-output "policy_drift_prevention_enabled" {
-  value = data.aquasec_function_runtime_policy.existing_policy.drift_prevention[0].enabled
-}
-
-output "policy_blocked_executables" {
-  value = data.aquasec_function_runtime_policy.existing_policy.executable_blacklist[0].executables
-}
-
-output "policy_application_scopes" {
-  value = data.aquasec_function_runtime_policy.existing_policy.application_scopes
-}
-
 data "aquasec_gateways" "testgateway" {}
 
 output "gateway_data" {
@@ -1273,85 +1073,14 @@ output "first_group_name" {
   value = data.aquasec_groups.groups.groups.0.name
 }
 
-data "aquasec_host_assurance_policy" "cis_example" {
-  name = "cis-policy"
-}
-
-output "cis_checks" {
-  value = {
-    linux      = data.aquasec_host_assurance_policy.cis_example.linux_cis_enabled
-    windows    = data.aquasec_host_assurance_policy.cis_example.windows_cis_enabled
-    docker     = data.aquasec_host_assurance_policy.cis_example.docker_cis_enabled
-    kubernetes = data.aquasec_host_assurance_policy.cis_example.kube_cis_enabled
-  }
-}
-
-data "aquasec_host_assurance_policy" "vuln_example" {
-  name = "vulnerability-policy"
-}
-
-output "vulnerability_settings" {
-  value = {
-    max_score      = data.aquasec_host_assurance_policy.vuln_example.maximum_score
-    enabled        = data.aquasec_host_assurance_policy.vuln_example.maximum_score_enabled
-    exclude_no_fix = data.aquasec_host_assurance_policy.vuln_example.maximum_score_exclude_no_fix
-  }
-}
-
-data "aquasec_host_assurance_policy" "autoscan_example" {
-  name = "autoscan-policy"
-}
-
-output "scan_schedule" {
-  value = data.aquasec_host_assurance_policy.autoscan_example.auto_scan_time
-}
-
-data "aquasec_host_runtime_policy" "host_runtime_policy" {
-  name = "hostRuntimePolicyName"
-}
-
-output "host_runtime_policy_details" {
-  value = data.aquasec_host_runtime_policy.host_runtime_policy
-}
-
 data "aquasec_image" "test" {
   registry   = "Docker Hub"
-  repository = "elasticsearch"
-  tag        = "7.10.1"
+  repository = "nginx"
+  tag        = "alpine3.19"
 }
 
 output "image" {
   value = data.aquasec_image.test
-}
-
-data "aquasec_image_assurance_policy" "test" {
-  name = "test-image-assurance-policy"
-}
-
-output "test-iap" {
-  value = data.aquasec_image_assurance_policy.test
-}
-
-data "aquasec_integration_registries" "testregistries" {
-  name = "samplename"
-}
-
-output "registries" {
-  value = data.aquasec_integration_registries.testregistries
-}
-
-data "aquasec_integration_state" "integration_state" {}
-
-output "aquasec_integration_state" {
-  value = data.aquasec_integration_state.integration_state
-}
-
-data "aquasec_kubernetes_assurance_policy" "test" {
-  name = "test-kubernetes-assurance-policy"
-}
-
-output "test-kap" {
-  value = data.aquasec_kubernetes_assurance_policy.test
 }
 
 data "aquasec_notifications" "slack-example" {}
@@ -1393,16 +1122,6 @@ output "role_first_user_name" {
   value = data.aquasec_roles.roles.roles[0]
 }
 
-data "aquasec_roles_mapping" "roles_mapping" {}
-
-output "role_mapping_all" {
-  value = data.aquasec_roles_mapping.roles_mapping
-}
-
-output "role_mapping_saml" {
-  value = data.aquasec_roles_mapping.roles_mapping.saml
-}
-
 data "aquasec_roles_mapping_saas" "roles_mapping_saas" {}
 
 output "role_mapping" {
@@ -1415,23 +1134,6 @@ output "scanner_group_names" {
   value = [for sg in data.aquasec_scanner_group.all.scanner_groups : sg.name]
 }
 
-data "aquasec_scanner_group" "example" {
-  name = "terraform-test"
-}
-
-output "scanner_group_desc" {
-  value = data.aquasec_scanner_group.example.description
-}
-
-data "aquasec_service" "test-svc" {
-  name     = "test-svc"
-  policies = [""]
-}
-
-output "service" {
-  value = data.aquasec_service.test-svc
-}
-
 data "aquasec_users" "users" {}
 
 output "first_user_name" {
@@ -1442,10 +1144,19 @@ output "first_user_email" {
   value = data.aquasec_users.users.users[0].email
 }
 
-data "aquasec_vmware_assurance_policy" "test" {
-  name = "test-vmware-assurance-policy"
+data "aquasec_permissions_sets_saas" "saas" {}
+
+output "data_permissions_sets_saas" {
+  value = data.aquasec_permissions_sets_saas.saas
 }
 
-output "test-vwap" {
-  value = data.aquasec_vmware_assurance_policy.test
+output "data_permissions_sets_names_saas" {
+  value = data.aquasec_permissions_sets_saas.saas[*].permissions_sets[*].name
+}
+
+output "data_dashboard_permissions_saas" {
+  value = [
+    for ps in data.aquasec_permissions_sets_saas.saas.permissions_sets : ps.name
+    if contains(ps.actions, "cnapp.dashboards.read")
+  ]
 }
