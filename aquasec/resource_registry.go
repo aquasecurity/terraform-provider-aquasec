@@ -418,7 +418,7 @@ func resourceRegistryCreate(ctx context.Context, d *schema.ResourceData, m inter
 
 	old, new := d.GetChange("scanner_name")
 
-	existsing_scanners := old.([]interface{})
+	existing_scanners := old.([]interface{})
 
 	scanner_name_added, scanner_name_removed := scannerNamesListCreate(old.([]interface{}), new.([]interface{}))
 
@@ -445,7 +445,7 @@ func resourceRegistryCreate(ctx context.Context, d *schema.ResourceData, m inter
 		ScannerName:                 convertStringArr(scanner_name),
 		ScannerNameAdded:            convertStringArr(scanner_name_added),
 		ScannerNameRemoved:          convertStringArr(scanner_name_removed),
-		ExistingScanners:            convertStringArr(existsing_scanners),
+		ExistingScanners:            convertStringArr(existing_scanners),
 		Prefixes:                    convertStringArr(prefixes),
 		AlwaysPullPatterns:          convertStringArr(always_pull_patterns),
 		PullRepoPatternsExcluded:    convertStringArr(pull_repo_patterns_excluded),
@@ -545,20 +545,7 @@ func resourceRegistryRead(ctx context.Context, d *schema.ResourceData, m interfa
 		return diag.FromErr(err)
 	}
 
-	// Check if default_prefix, and remove it for tf diff
 	prefixes := r.Prefixes
-	if r.DefaultPrefix != "" {
-		// Find the index of r.DefaultPrefix
-		var indexToRemove int
-		for i, prefix := range prefixes {
-			if prefix == r.DefaultPrefix {
-				indexToRemove = i
-				break
-			}
-		}
-		// Remove the element by slicing the slice
-		prefixes = append(prefixes[:indexToRemove], prefixes[indexToRemove+1:]...)
-	}
 
 	if err = d.Set("auto_pull", r.AutoPull); err != nil {
 		return diag.FromErr(err)
@@ -728,10 +715,18 @@ func resourceRegistryUpdate(ctx context.Context, d *schema.ResourceData, m inter
 		prefixes := d.Get("prefixes").([]interface{})
 		var defaultPrefix string
 		// Add default_prefix to prefixes
-		r, _ := c.GetRegistry(d.Id())
+		r, errs := c.GetRegistry(d.Id())
+		if errs != nil {
+			return diag.FromErr(errs)
+		}
+		prefixesSet := make(map[string]struct{})
+		for _, p := range prefixes {
+			prefixesSet[p.(string)] = struct{}{}
+		}
 		if r.DefaultPrefix != "" {
-			prefixes = append(prefixes, r.DefaultPrefix)
-			defaultPrefix = r.DefaultPrefix
+			if _, exists := prefixesSet[r.DefaultPrefix]; exists {
+				defaultPrefix = r.DefaultPrefix
+			}
 		}
 		always_pull_patterns := d.Get("always_pull_patterns").([]interface{})
 		pull_repo_patterns_excluded := d.Get("pull_repo_patterns_excluded").([]interface{})
@@ -744,7 +739,7 @@ func resourceRegistryUpdate(ctx context.Context, d *schema.ResourceData, m inter
 
 		old, new := d.GetChange("scanner_name")
 
-		existsing_scanners := old.([]interface{})
+		existing_scanners := old.([]interface{})
 
 		scanner_name_added, scanner_name_removed := scannerNamesListCreate(old.([]interface{}), new.([]interface{}))
 
@@ -771,7 +766,7 @@ func resourceRegistryUpdate(ctx context.Context, d *schema.ResourceData, m inter
 			ScannerName:                 convertStringArr(scanner_name),
 			ScannerNameAdded:            convertStringArr(scanner_name_added),
 			ScannerNameRemoved:          convertStringArr(scanner_name_removed),
-			ExistingScanners:            convertStringArr(existsing_scanners),
+			ExistingScanners:            convertStringArr(existing_scanners),
 			Prefixes:                    convertStringArr(prefixes),
 			DefaultPrefix:               defaultPrefix,
 			AlwaysPullPatterns:          convertStringArr(always_pull_patterns),
