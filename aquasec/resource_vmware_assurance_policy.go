@@ -658,7 +658,8 @@ func resourceVMwareAssurancePolicy() *schema.Resource {
 				Elem: &schema.Schema{
 					Type: schema.TypeString,
 				},
-			}, "ignore_base_image_vln": {
+			},
+			"ignore_base_image_vln": {
 				Type:        schema.TypeBool,
 				Description: "",
 				Optional:    true,
