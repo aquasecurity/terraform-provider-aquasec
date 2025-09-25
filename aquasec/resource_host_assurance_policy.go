@@ -930,7 +930,7 @@ func resourceHostAssurancePolicyUpdate(ctx context.Context, d *schema.ResourceDa
 			if errs == nil {
 				d.SetId(iap.Name)
 			} else {
-				return diag.Errorf("Error updating Host Assurance Policy %s: %v", iap.Name, errs)
+				return errs
 			}
 		} else {
 			return diag.FromErr(err)
