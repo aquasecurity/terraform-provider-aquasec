@@ -517,6 +517,19 @@ func dataKubernetesAssurancePolicy() *schema.Resource {
 					Type: schema.TypeString,
 				},
 			},
+			"ignore_base_image_vln": {
+				Type:        schema.TypeBool,
+				Description: "",
+				Computed:    true,
+			}, //bool
+			"ignored_sensitive_resources": {
+				Type:        schema.TypeList,
+				Description: "",
+				Computed:    true,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+			},
 			"application_scopes": {
 				Type:     schema.TypeList,
 				Computed: true,
@@ -738,6 +751,8 @@ func dataKubernetesAssurancePolicyRead(ctx context.Context, d *schema.ResourceDa
 		d.Set("ignore_recently_published_fix_vln_period", iap.IgnoreRecentlyPublishedFixVlnPeriod)
 		d.Set("ignore_risk_resources_enabled", iap.IgnoreRiskResourcesEnabled)
 		d.Set("ignored_risk_resources", iap.IgnoredRiskResources)
+		d.Set("ignore_base_image_vln", iap.IgnoreBaseImageVln)
+		d.Set("ignored_sensitive_resources", iap.IgnoredSensitiveResources)
 		d.Set("application_scopes", iap.ApplicationScopes)
 		d.Set("auto_scan_enabled", iap.AutoScanEnabled)
 		d.Set("auto_scan_configured", iap.AutoScanConfigured)
