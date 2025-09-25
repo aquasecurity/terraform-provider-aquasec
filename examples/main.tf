@@ -967,7 +967,7 @@ output "codebuild_config" {
   value = try(
     tolist([
       for category in data.aquasec_application_scope.default.categories : [
-        for artifact in (category.artifacts != null ? category.artifacts : []) : artifact.codebuild
+        for artifact in(category.artifacts != null ? category.artifacts : []) : artifact.codebuild
         if artifact.codebuild != null
       ]
     ])[0][0],
@@ -1132,16 +1132,6 @@ data "aquasec_scanner_group" "all" {}
 
 output "scanner_group_names" {
   value = [for sg in data.aquasec_scanner_group.all.scanner_groups : sg.name]
-}
-
-data "aquasec_users" "users" {}
-
-output "first_user_name" {
-  value = data.aquasec_users.users.users[0].name
-}
-
-output "first_user_email" {
-  value = data.aquasec_users.users.users[0].email
 }
 
 data "aquasec_permissions_sets_saas" "saas" {}
