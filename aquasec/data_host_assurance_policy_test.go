@@ -70,6 +70,7 @@ resource "aquasec_host_assurance_policy" "test" {
 	name = "%s"
 	description = "%s"
 	application_scopes = ["Global"]
+	assurance_type = "host"
 
 	linux_cis_enabled = true
 	windows_cis_enabled = true
@@ -146,6 +147,7 @@ resource "aquasec_host_assurance_policy" "full" {
 	name = "%s"
 	description = "Created using Terraform"
 	application_scopes = ["Global"]
+	assurance_type = "host"
 
 	docker_cis_enabled = true
 	kube_cis_enabled = true

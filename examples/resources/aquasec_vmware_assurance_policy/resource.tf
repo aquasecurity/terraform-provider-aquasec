@@ -2,6 +2,7 @@ resource "aquasec_vmware_assurance_policy" "example_vmware_assurance_policy" {
   // Required values
   application_scopes = ["Global"]
   name               = "example_vmware_assurance_policy"
+  assurance_type     = "cf_application"
 
   // Values default to true
   audit_on_failure = true

@@ -17,6 +17,7 @@ resource "aquasec_kubernetes_assurance_policy" "example_kubernetes_assurance_pol
   // Values that are required
   application_scopes = ["Global"]
   name               = "example_kubernetes_assurance_policy"
+  assurance_type     = "kubernetes"
 
   //Values that default to true
   audit_on_failure = true
@@ -42,13 +43,13 @@ resource "aquasec_kubernetes_assurance_policy" "example_kubernetes_assurance_pol
 ### Required
 
 - `application_scopes` (List of String)
+- `assurance_type` (String) What type of assurance policy is described.
 - `name` (String)
 
 ### Optional
 
 - `aggregated_vulnerability` (Block List) Aggregated vulnerability information. (see [below for nested schema](#nestedblock--aggregated_vulnerability))
 - `allowed_images` (List of String) List of explicitly allowed images.
-- `assurance_type` (String) What type of assurance policy is described.
 - `audit_on_failure` (Boolean) Indicates if auditing for failures.
 - `author` (String) Name of user account that created the policy.
 - `auto_scan_configured` (Boolean)
