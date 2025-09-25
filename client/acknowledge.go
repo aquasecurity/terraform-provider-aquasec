@@ -35,6 +35,14 @@ type Acknowledge struct {
 	OsVersion              string    `json:"os_version"`
 	DockerId               string    `json:"docker_id"`
 	RepositoryName         string    `json:"repository_name"`
+	AckRepoId              int       `json:"ack_repo_id"`
+	SuppressionRuleId      int       `json:"suppression_rule_id"`
+	SuppressionRuleName    string    `json:"suppression_rule_name"`
+	SuppressionRuleScopes  []string  `json:"suppression_rule_scopes"`
+	HasCustomSeverity      bool      `json:"has_custom_severity"`
+	Registry               string    `json:"registry"`
+	Repository             string    `json:"repository"`
+	Image                  string    `json:"image"`
 }
 
 type AcknowledgeList struct {
@@ -55,7 +63,7 @@ func (cli *Client) AcknowledgeCreate(acknowledgePost AcknowledgePost) error {
 	}
 
 	request := cli.gorequest
-	apiPath := fmt.Sprintf("/api/v2/risks/acknowledge")
+	apiPath := "/api/v2/risks/acknowledge"
 	err = cli.limiter.Wait(context.Background())
 	if err != nil {
 		return err
@@ -78,7 +86,7 @@ func (cli *Client) AcknowledgeRead() (*AcknowledgeList, error) {
 
 	request := cli.gorequest
 
-	apiPath := fmt.Sprintf("/api/v2/risks/acknowledge?order_by=date")
+	apiPath := "/api/v2/risks/acknowledge?order_by=date"
 	err = cli.limiter.Wait(context.Background())
 	if err != nil {
 		return nil, err
@@ -105,7 +113,7 @@ func (cli *Client) AcknowledgeDelete(acknowledgePost AcknowledgePost) error {
 		return err
 	}
 	request := cli.gorequest
-	apiPath := fmt.Sprintf("/api/v2/risks/acknowledge/multiple")
+	apiPath := "/api/v2/risks/acknowledge/multiple"
 	err = cli.limiter.Wait(context.Background())
 	if err != nil {
 		return err
