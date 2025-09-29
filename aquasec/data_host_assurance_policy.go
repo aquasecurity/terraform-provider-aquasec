@@ -1,16 +1,19 @@
 package aquasec
 
 import (
+	"context"
 	"fmt"
-	"github.com/aquasecurity/terraform-provider-aquasec/client"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"strings"
+
+	"github.com/aquasecurity/terraform-provider-aquasec/client"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func dataHostAssurancePolicy() *schema.Resource {
 	return &schema.Resource{
 		Description: "Host Assurance is a subsystem of Aqua. It is responsible for:\n Scans host VMs and Kubernetes nodes' file system for security issues, vulnerabilities in OS and programming language packages, open-source licenses, and compliance with CIS benchmarks.\nEvaluates scan findings according to defined Host Assurance Policies.\nDetermines host compliance based on these policies.\nGenerates an audit event for host assurance failure.",
-		Read:        dataHostAssurancePolicyRead,
+		ReadContext: dataHostAssurancePolicyRead,
 		Schema: map[string]*schema.Schema{
 			"name": {
 				Type:     schema.TypeString,
@@ -91,7 +94,6 @@ func dataHostAssurancePolicy() *schema.Resource {
 				Description: "Enables OpenShift hardening checks.",
 				Computed:    true,
 			},
-			
 			// Malware Settings
 			"scan_malware_in_archives": {
 				Type:     schema.TypeBool,
@@ -298,11 +300,53 @@ func dataHostAssurancePolicy() *schema.Resource {
 					Type: schema.TypeString,
 				},
 			},
+			"ignore_recently_published_vln": {
+				Type:     schema.TypeBool,
+				Computed: true,
+			},
+			"ignore_recently_published_vln_period": {
+				Type:     schema.TypeInt,
+				Computed: true,
+			},
+			"ignore_recently_published_fix_vln": {
+				Type:     schema.TypeBool,
+				Computed: true,
+			},
+			"ignore_recently_published_fix_vln_period": {
+				Type:     schema.TypeInt,
+				Computed: true,
+			},
+			"ignore_risk_resources_enabled": {
+				Type:        schema.TypeBool,
+				Description: "Indicates if risk resources are ignored.",
+				Computed:    true,
+			},
+			"ignored_risk_resources": {
+				Type:        schema.TypeList,
+				Description: "List of ignored risk resources.",
+				Computed:    true,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+			},
+			"ignore_base_image_vln": {
+				Type:        schema.TypeBool,
+				Description: "",
+				Computed:    true,
+			}, //bool
+			"ignored_sensitive_resources": {
+				Type:        schema.TypeList,
+				Description: "",
+				Computed:    true,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+			},
 		},
 	}
 }
 
-func dataHostAssurancePolicyRead(d *schema.ResourceData, m interface{}) error {
+func dataHostAssurancePolicyRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	ac := m.(*client.Client)
 	name := d.Get("name").(string)
 	assurance_type := "host"
@@ -313,7 +357,7 @@ func dataHostAssurancePolicyRead(d *schema.ResourceData, m interface{}) error {
 			d.SetId("")
 			return nil
 		}
-		return err
+		return diag.FromErr(err)
 	}
 
 	d.SetId(fmt.Sprintf("%d", iap.Id))
@@ -321,17 +365,14 @@ func dataHostAssurancePolicyRead(d *schema.ResourceData, m interface{}) error {
 	d.Set("assurance_type", iap.AssuranceType)
 	d.Set("author", iap.Author)
 	d.Set("application_scopes", iap.ApplicationScopes)
-	
 	// Policy Settings
 	d.Set("policy_settings", flattenPolicySettings(iap.PolicySettings))
-	
 	// Security Controls
 	d.Set("linux_cis_enabled", iap.LinuxCisEnabled)
 	d.Set("windows_cis_enabled", iap.WindowsCisEnabled)
 	d.Set("docker_cis_enabled", iap.DockerCisEnabled)
 	d.Set("kube_cis_enabled", iap.KubeCisEnabled)
 	d.Set("openshift_hardening_enabled", iap.OpenshiftHardeningEnabled)
-	
 	// Malware Settings
 	d.Set("scan_malware_in_archives", iap.ScanMalwareInArchives)
 	d.Set("scan_windows_registry", iap.ScanWindowsRegistry)
@@ -340,7 +381,6 @@ func dataHostAssurancePolicyRead(d *schema.ResourceData, m interface{}) error {
 	d.Set("monitored_malware_paths", iap.MonitoredMalwarePaths)
 	d.Set("exceptional_monitored_malware_paths", iap.ExceptionalMonitoredMalwarePaths)
 	d.Set("malware_action", iap.MalwareAction)
-	
 	// Vulnerability Controls
 	d.Set("vulnerability_exploitability", iap.VulnerabilityExploitability)
 	d.Set("disallow_exploit_types", iap.DisallowExploitTypes)
@@ -348,24 +388,20 @@ func dataHostAssurancePolicyRead(d *schema.ResourceData, m interface{}) error {
 	d.Set("maximum_score_enabled", iap.MaximumScoreEnabled)
 	d.Set("maximum_score", iap.MaximumScore)
 	d.Set("maximum_score_exclude_no_fix", iap.MaximumScoreExcludeNoFix)
-	
 	// Additional Security Options
 	d.Set("scan_nfs_mounts", iap.ScanNfsMounts)
 	d.Set("scan_sensitive_data", iap.ScanSensitiveData)
 	d.Set("partial_results_image_fail", iap.PartialResultsImageFail)
 	d.Set("force_microenforcer", iap.ForceMicroenforcer)
-	
 	// Scoping and Control
 	d.Set("domain", iap.Domain)
 	d.Set("domain_name", iap.DomainName)
 	d.Set("exclude_application_scopes", iap.ExcludeApplicationScopes)
 	d.Set("scope", flatteniapscope(iap.Scope))
-	
 	// Auto Scan Configuration
 	d.Set("auto_scan_enabled", iap.AutoScanEnabled)
 	d.Set("auto_scan_configured", iap.AutoScanConfigured)
 	d.Set("auto_scan_time", flattenAutoScanTime(iap.AutoScanTime))
-	
 	// Other settings
 	d.Set("lastupdate", iap.Lastupdate)
 	d.Set("custom_severity", iap.CustomSeverity)
@@ -373,6 +409,13 @@ func dataHostAssurancePolicyRead(d *schema.ResourceData, m interface{}) error {
 	d.Set("kubernetes_controls", iap.KubernetesControls)
 	d.Set("kubernetes_controls_names", iap.KubernetesControlsNames)
 	d.Set("kubernetes_controls_avd_ids", iap.KubernetesControlsAvdIds)
-
+	d.Set("ignore_recently_published_vln", iap.IgnoreRecentlyPublishedVln)
+	d.Set("ignore_recently_published_vln_period", iap.IgnoreRecentlyPublishedVlnPeriod)
+	d.Set("ignore_recently_published_fix_vln", iap.IgnoreRecentlyPublishedFixVln)
+	d.Set("ignore_recently_published_fix_vln_period", iap.IgnoreRecentlyPublishedFixVlnPeriod)
+	d.Set("ignore_risk_resources_enabled", iap.IgnoreRiskResourcesEnabled)
+	d.Set("ignored_risk_resources", iap.IgnoredRiskResources)
+	d.Set("ignore_base_image_vln", iap.IgnoreBaseImageVln)
+	d.Set("ignored_sensitive_resources", iap.IgnoredSensitiveResources)
 	return nil
 }

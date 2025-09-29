@@ -86,6 +86,14 @@ output "scan_schedule" {
 - `exclude_application_scopes` (List of String)
 - `force_microenforcer` (Boolean)
 - `id` (String) The ID of this resource.
+- `ignore_base_image_vln` (Boolean)
+- `ignore_recently_published_fix_vln` (Boolean)
+- `ignore_recently_published_fix_vln_period` (Number)
+- `ignore_recently_published_vln` (Boolean)
+- `ignore_recently_published_vln_period` (Number)
+- `ignore_risk_resources_enabled` (Boolean) Indicates if risk resources are ignored.
+- `ignored_risk_resources` (List of String) List of ignored risk resources.
+- `ignored_sensitive_resources` (List of String)
 - `kube_cis_enabled` (Boolean) Enables Kubernetes CIS benchmark checks.
 - `kubernetes_controls` (List of String)
 - `kubernetes_controls_avd_ids` (List of String)

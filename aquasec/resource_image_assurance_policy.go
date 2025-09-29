@@ -1877,35 +1877,35 @@ func expandAssurancePolicy(d *schema.ResourceData, a_type string) *client.Assura
 		}
 	}
 
-    iap.AggregatedVulnerability = client.AggregatedVulnerability{}
-    aggregated_vulnerability, ok := d.GetOk("aggregated_vulnerability")
-    if ok {
-    list := aggregated_vulnerability.([]interface{})
-        if len(list) > 0 {
-            v := list[0].(map[string]interface{})
-            var sr []float32
-            if arrIface, exists := v["score_range"].([]interface{}); exists {
-                sr = make([]float32, len(arrIface))
-                for i, iv := range arrIface {
-                    if fv, ok := iv.(float64); ok {
-                        sr[i] = float32(fv)
-                    }
-                }
-            }
-            enabled, _ := v["enabled"].(bool)
-            customEnabled, _ := v["custom_severity_enabled"].(bool)
-            severity, _ := v["severity"].(string)
+	iap.AggregatedVulnerability = client.AggregatedVulnerability{}
+	aggregated_vulnerability, ok := d.GetOk("aggregated_vulnerability")
+	if ok {
+		list := aggregated_vulnerability.([]interface{})
+		if len(list) > 0 {
+			v := list[0].(map[string]interface{})
+			var sr []float32
+			if arrIface, exists := v["score_range"].([]interface{}); exists {
+				sr = make([]float32, len(arrIface))
+				for i, iv := range arrIface {
+					if fv, ok := iv.(float64); ok {
+						sr[i] = float32(fv)
+					}
+				}
+			}
+			enabled, _ := v["enabled"].(bool)
+			customEnabled, _ := v["custom_severity_enabled"].(bool)
+			severity, _ := v["severity"].(string)
 
-            iap.AggregatedVulnerability = client.AggregatedVulnerability{
-                Enabled:               enabled,
-                ScoreRange:            sr,
-                CustomSeverityEnabled: customEnabled,
-                Severity:              severity,
-            }
-        }
-    }
+			iap.AggregatedVulnerability = client.AggregatedVulnerability{
+				Enabled:               enabled,
+				ScoreRange:            sr,
+				CustomSeverityEnabled: customEnabled,
+				Severity:              severity,
+			}
+		}
+	}
 
-    exclude_application_scopes, ok := d.GetOk("exclude_application_scopes")
+	exclude_application_scopes, ok := d.GetOk("exclude_application_scopes")
 	if ok {
 		strArr := convertStringArr(exclude_application_scopes.([]interface{}))
 		iap.ExcludeApplicationScopes = strArr
