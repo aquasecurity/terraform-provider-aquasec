@@ -17,6 +17,7 @@ resource "aquasec_vmware_assurance_policy" "example_vmware_assurance_policy" {
   // Required values
   application_scopes = ["Global"]
   name               = "example_vmware_assurance_policy"
+  assurance_type     = "cf_application"
 
   // Values default to true
   audit_on_failure = true
@@ -35,13 +36,13 @@ resource "aquasec_vmware_assurance_policy" "example_vmware_assurance_policy" {
 ### Required
 
 - `application_scopes` (List of String)
+- `assurance_type` (String) What type of assurance policy is described.
 - `name` (String)
 
 ### Optional
 
 - `aggregated_vulnerability` (Map of String) Aggregated vulnerability information.
 - `allowed_images` (List of String) List of explicitly allowed images.
-- `assurance_type` (String) What type of assurance policy is described.
 - `audit_on_failure` (Boolean) Indicates if auditing for failures.
 - `author` (String) Name of user account that created the policy.
 - `auto_scan_configured` (Boolean)
