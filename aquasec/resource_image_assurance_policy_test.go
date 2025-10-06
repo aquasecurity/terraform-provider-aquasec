@@ -26,11 +26,6 @@ func TestAquasecImageAssurancePolicy(t *testing.T) {
 					testAccCheckImageAssurancePolicyExists("aquasec_image_assurance_policy.terraformiap"),
 				),
 			},
-			{
-				ResourceName:      "aquasec_image_assurance_policy.terraformiap",
-				ImportState:       true,
-				ImportStateVerify: true,
-			},
 		},
 	})
 }

@@ -29,7 +29,124 @@ resource "aquasec_image_assurance_policy" "test_image_policy" {
   cvss_severity_enabled = true
   disallow_malware      = true
   scan_sensitive_data   = true
+}
 
+resource "aquasec_image_assurance_policy" "img1" {
+  allowed_images {
+      imagename   = "hello-world"
+      registry    = "docker.io"
+      author      = "terraform-user"
+      blacklisted = false
+      whitelisted = true
+      imagedigest = ""
+      imageid     = 0
+      lastupdated = 0
+      reason      = [
+          "Approved image"
+      ]
+  }
+  application_scopes                   = [
+      "Global",
+  ]
+  audit_on_failure                     = true
+  auto_scan_configured                 = false
+  auto_scan_enabled                    = false
+  blacklist_permissions                = [
+      "delete"
+  ]
+  blacklist_permissions_enabled        = true
+  blacklisted_licenses                 = [
+      "LGPL","GPL",
+  ]
+  blacklisted_licenses_enabled         = true
+  block_failed                         = true
+  control_exclude_no_fix               = true
+  custom_checks_enabled                = false
+  custom_severity_enabled              = true
+  cves_black_list                      = [
+      "CVE-2022-6754",
+  ]
+  cves_black_list_enabled              = true
+  cves_white_list                      = [
+      "CVE-2022-6755",
+  ]
+  cves_white_list_enabled              = true
+  cvss_severity                        = "low"
+  cvss_severity_enabled                = true
+  cvss_severity_exclude_no_fix         = true
+  description                          = "Testing IMG Policy"
+  disallow_malware                     = true
+  docker_cis_enabled                   = true
+  dta_enabled                          = true
+  enabled                              = true
+  enforce                              = true
+  enforce_after_days                   = 10
+  enforce_excessive_permissions        = true
+  exceptional_monitored_malware_paths  = [
+      "/iab","/etc",
+  ]
+  fail_cicd                            = true
+  forbidden_labels_enabled             = false
+  force_microenforcer                  = true
+  function_integrity_enabled           = true
+  ignore_recently_published_vln        = true
+  ignore_risk_resources_enabled        = true
+  ignored_risk_resources               = [
+      "abc",
+  ]
+  images                               = [
+      "Hello-World","TestImage"
+  ]
+  kube_cis_enabled                     = true
+  labels                               = [
+      "Test","XYZ",
+  ]
+  malware_action                       = "delete"
+  maximum_score                        = 1
+  maximum_score_enabled                = true
+  maximum_score_exclude_no_fix         = true
+  monitored_malware_paths              = [
+      "/bin","/usr",
+  ]
+  name                                 = "TestIMG"
+  only_none_root_users                 = true
+  packages_black_list_enabled          = false
+  packages_white_list_enabled          = false
+  partial_results_image_fail           = true
+  read_only                            = false
+  registries                           = [
+      "testaqua.azurecr.io",
+  ]
+  required_labels_enabled              = false
+  scan_nfs_mounts                      = true
+  scan_sensitive_data                  = true
+  scap_enabled                         = true
+  scap_files {
+      name         = "accesses_host_IPC_namespace"
+      description  = "Check for host IPC access"
+      severity     = "high"
+      snippet      = "some Rego code here"
+      script_id    = "script-123"
+      custom       = "custom value"
+      overwrite    = false
+      recommended_actions = [
+          "do not set 'spec.template.spec.hostipc' to false"
+      ]
+  }
+
+  trusted_base_images_enabled          = false
+  whitelisted_licenses                 = [
+      "BSD"
+  ]
+  whitelisted_licenses_enabled         = true
+  scope {
+      expression = "v1"
+
+      variables {
+              attribute = "image.name"
+              value     = "*"
+      }
+  }
 }
 ```
 
@@ -44,7 +161,7 @@ resource "aquasec_image_assurance_policy" "test_image_policy" {
 ### Optional
 
 - `aggregated_vulnerability` (Block List) Aggregated vulnerability information. (see [below for nested schema](#nestedblock--aggregated_vulnerability))
-- `allowed_images` (List of String) List of explicitly allowed images.
+- `allowed_images` (Block List) (see [below for nested schema](#nestedblock--allowed_images))
 - `assurance_type` (String) What type of assurance policy is described.
 - `audit_on_failure` (Boolean) Indicates if auditing for failures.
 - `author` (String) Name of user account that created the policy.
@@ -129,7 +246,7 @@ resource "aquasec_image_assurance_policy" "test_image_policy" {
 - `scan_sensitive_data` (Boolean) Indicates if scan should include sensitive data in the image.
 - `scan_windows_registry` (Boolean)
 - `scap_enabled` (Boolean) Indicates if scanning should include scap.
-- `scap_files` (List of String) List of SCAP user scripts for checks.
+- `scap_files` (Block List) (see [below for nested schema](#nestedblock--scap_files))
 - `scope` (Block Set) (see [below for nested schema](#nestedblock--scope))
 - `trusted_base_images` (Block Set) List of trusted images. (see [below for nested schema](#nestedblock--trusted_base_images))
 - `trusted_base_images_enabled` (Boolean) Indicates if list of trusted base images is relevant.
@@ -151,6 +268,22 @@ Optional:
 - `enabled` (Boolean) Enable the aggregated vulnerability
 - `score_range` (List of Number) Indicates score range for vuln score eg [5.5, 6.0]
 - `severity` (String) Max severity to be allowed in the image
+
+
+<a id="nestedblock--allowed_images"></a>
+### Nested Schema for `allowed_images`
+
+Optional:
+
+- `author` (String)
+- `blacklisted` (Boolean)
+- `imagedigest` (String)
+- `imageid` (Number)
+- `imagename` (String)
+- `lastupdated` (Number)
+- `reason` (List of String)
+- `registry` (String)
+- `whitelisted` (Boolean)
 
 
 <a id="nestedblock--auto_scan_time"></a>
@@ -255,6 +388,29 @@ Optional:
 
 - `key` (String)
 - `value` (String)
+
+
+<a id="nestedblock--scap_files"></a>
+### Nested Schema for `scap_files`
+
+Optional:
+
+- `author` (String)
+- `avd_id` (String)
+- `custom` (String)
+- `description` (String)
+- `engine` (String)
+- `kind` (String)
+- `last_modified` (Number)
+- `name` (String)
+- `overwrite` (Boolean)
+- `path` (String)
+- `readonly` (Boolean)
+- `recommended_actions` (List of String)
+- `script_id` (String)
+- `severity` (String)
+- `snippet` (String)
+- `type` (String)
 
 
 <a id="nestedblock--scope"></a>

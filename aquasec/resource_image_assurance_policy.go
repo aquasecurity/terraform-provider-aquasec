@@ -240,11 +240,79 @@ func resourceImageAssurancePolicy() *schema.Resource {
 				},
 			},
 			"scap_files": {
-				Type:        schema.TypeList,
-				Description: "List of SCAP user scripts for checks.",
-				Optional:    true,
-				Elem: &schema.Schema{
-					Type: schema.TypeString,
+				Type:     schema.TypeList,
+				Optional: true,
+				Computed: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"name": {
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"path": {
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"description": {
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"engine": {
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"kind": {
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"type": {
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"severity": {
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"snippet": {
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"script_id": {
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"custom": {
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"readonly": {
+							Type:     schema.TypeBool,
+							Optional: true,
+						},
+						"overwrite": {
+							Type:     schema.TypeBool,
+							Optional: true,
+						},
+						"author": {
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"avd_id": {
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"recommended_actions": {
+							Type: schema.TypeList,
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+							Optional: true,
+						},
+						"last_modified": {
+							Type:     schema.TypeInt,
+							Optional: true,
+						},
+					},
 				},
 			},
 			"scope": {
@@ -406,11 +474,51 @@ func resourceImageAssurancePolicy() *schema.Resource {
 				},
 			},
 			"allowed_images": {
-				Type:        schema.TypeList,
-				Description: "List of explicitly allowed images.",
-				Optional:    true,
-				Elem: &schema.Schema{
-					Type: schema.TypeString,
+				Type:     schema.TypeList,
+				Optional: true,
+				Computed: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"imagename": {
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"registry": {
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"imageid": {
+							Type:     schema.TypeInt,
+							Optional: true,
+						},
+						"imagedigest": {
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"blacklisted": {
+							Type:     schema.TypeBool,
+							Optional: true,
+						},
+						"author": {
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"lastupdated": {
+							Type:     schema.TypeInt,
+							Optional: true,
+						},
+						"reason": {
+							Type:     schema.TypeList,
+							Optional: true,
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+						},
+						"whitelisted": {
+							Type:     schema.TypeBool,
+							Optional: true,
+						},
+					},
 				},
 			},
 			"trusted_base_images": {
@@ -514,6 +622,7 @@ func resourceImageAssurancePolicy() *schema.Resource {
 			"ignore_recently_published_fix_vln_period": {
 				Type:     schema.TypeInt,
 				Optional: true,
+				Computed: true,
 			},
 			"ignore_risk_resources_enabled": {
 				Type:        schema.TypeBool,
@@ -1047,7 +1156,7 @@ func resourceImageAssurancePolicyRead(ctx context.Context, d *schema.ResourceDat
 	d.Set("whitelisted_licenses_enabled", iap.WhitelistedLicensesEnabled)
 	d.Set("whitelisted_licenses", iap.WhitelistedLicenses)
 	d.Set("custom_checks", flattenCustomChecks(iap.CustomChecks))
-	d.Set("scap_files", iap.ScapFiles)
+	d.Set("scap_files", flattenScapFiles(iap.ScapFiles))
 	d.Set("scope", flatteniapscope(iap.Scope))
 	d.Set("registries", iap.Registries)
 	d.Set("labels", iap.Labels)
@@ -1055,7 +1164,10 @@ func resourceImageAssurancePolicyRead(ctx context.Context, d *schema.ResourceDat
 	d.Set("cves_black_list", iap.CvesBlackList)
 	d.Set("packages_black_list", flattenPackages(iap.PackagesBlackList))
 	d.Set("packages_white_list", flattenPackages(iap.PackagesWhiteList))
-	d.Set("allowed_images", iap.AllowedImages)
+	err = d.Set("allowed_images", flattenAllowedImages(iap.AllowedImages))
+	if err != nil {
+		return diag.FromErr(err)
+	}
 	d.Set("trusted_base_images", flattenTrustedBaseImages(iap.TrustedBaseImages))
 	d.Set("read_only", iap.ReadOnly)
 	d.Set("force_microenforcer", iap.ForceMicroenforcer)
@@ -1181,6 +1293,39 @@ func flattenCustomChecks(checks []client.Checks) []map[string]interface{} {
 	return check
 }
 
+func flattenScapFiles(scapFiles []client.ScapFiles) []map[string]interface{} {
+	result := make([]map[string]interface{}, len(scapFiles))
+	for i, scap := range scapFiles {
+		result[i] = map[string]interface{}{
+			"name":                scap.Name,
+			"path":                scap.Path,
+			"description":         scap.Description,
+			"engine":              scap.Engine,
+			"kind":                scap.Kind,
+			"type":                scap.Type,
+			"severity":            scap.Severity,
+			"snippet":             scap.Snippet,
+			"script_id":           scap.ScriptID,
+			"custom":              scap.Custom,
+			"readonly":            scap.ReadOnly,
+			"overwrite":           scap.Overwrite,
+			"author":              scap.Author,
+			"avd_id":              scap.AvdID,
+			"last_modified":       scap.LastModified,
+			"recommended_actions": flattenStringList(scap.RecommendedActions),
+		}
+	}
+	return result
+}
+
+func flattenStringList(input []string) []interface{} {
+	result := make([]interface{}, len(input))
+	for i, v := range input {
+		result[i] = v
+	}
+	return result
+}
+
 func flattenLabels(labels []client.Labels) []map[string]interface{} {
 	label := make([]map[string]interface{}, len(labels))
 	for i := range labels {
@@ -1223,6 +1368,24 @@ func flattenTrustedBaseImages(TrustedBaseImages []client.BaseImagesTrusted) []ma
 		}
 	}
 	return tbi
+}
+
+func flattenAllowedImages(images []client.ExplicitlyAllowedImage) []map[string]interface{} {
+	allowedImage := make([]map[string]interface{}, len(images))
+	for i, img := range images {
+		allowedImage[i] = map[string]interface{}{
+			"imagename":   img.ImageName,
+			"registry":    img.Registry,
+			"author":      img.Author,
+			"imagedigest": img.ImageDigest,
+			"imageid":     img.ImageID,
+			"blacklisted": img.Blacklisted,
+			"lastupdated": img.LastUpdated,
+			"reason":      img.Reason,
+			"whitelisted": img.Whitelisted,
+		}
+	}
+	return allowedImage
 }
 
 func flattenPolicySettings(policySettings client.PolicySettings) []map[string]interface{} {
@@ -1465,7 +1628,39 @@ func expandAssurancePolicy(d *schema.ResourceData, a_type string) *client.Assura
 
 	scap_files, ok := d.GetOk("scap_files")
 	if ok {
-		iap.ScapFiles = scap_files.([]interface{})
+		scapList := scap_files.([]interface{})
+		scapArr := make([]client.ScapFiles, len(scapList))
+		for i, item := range scapList {
+			scapMap := item.(map[string]interface{})
+			scap := client.ScapFiles{
+				Name:         scapMap["name"].(string),
+				Path:         scapMap["path"].(string),
+				Description:  scapMap["description"].(string),
+				Engine:       scapMap["engine"].(string),
+				Kind:         scapMap["kind"].(string),
+				Type:         scapMap["type"].(string),
+				Severity:     scapMap["severity"].(string),
+				Snippet:      scapMap["snippet"].(string),
+				ScriptID:     scapMap["script_id"].(string),
+				Custom:       scapMap["custom"].(string),
+				ReadOnly:     scapMap["readonly"].(bool),
+				Overwrite:    scapMap["overwrite"].(bool),
+				Author:       scapMap["author"].(string),
+				AvdID:        scapMap["avd_id"].(string),
+				LastModified: scapMap["last_modified"].(int),
+			}
+
+			if v, ok := scapMap["recommended_actions"]; ok {
+				recommended := []string{}
+				for _, val := range v.([]interface{}) {
+					recommended = append(recommended, val.(string))
+				}
+				scap.RecommendedActions = recommended
+			}
+
+			scapArr[i] = scap
+		}
+		iap.ScapFiles = scapArr
 	}
 
 	scope, ok := d.GetOk("scope")
@@ -1562,7 +1757,32 @@ func expandAssurancePolicy(d *schema.ResourceData, a_type string) *client.Assura
 
 	allowed_images, ok := d.GetOk("allowed_images")
 	if ok {
-		iap.AllowedImages = allowed_images.([]interface{})
+		allowedImagesList := allowed_images.([]interface{})
+		allowedImages := make([]client.ExplicitlyAllowedImage, len(allowedImagesList))
+		for i, item := range allowedImagesList {
+			data := item.(map[string]interface{})
+			var reasons []string
+			if rawReasons, ok := data["reason"].([]interface{}); ok {
+				reasons = make([]string, len(rawReasons))
+				for i, r := range rawReasons {
+					reasons[i] = r.(string)
+				}
+			}
+			image := client.ExplicitlyAllowedImage{
+				ImageName:   data["imagename"].(string),
+				Registry:    data["registry"].(string),
+				Author:      data["author"].(string),
+				Blacklisted: data["blacklisted"].(bool),
+				ImageDigest: data["imagedigest"].(string),
+				ImageID:     data["imageid"].(int),
+				LastUpdated: data["lastupdated"].(int),
+				Reason:      reasons,
+				Whitelisted: data["whitelisted"].(bool),
+			}
+
+			allowedImages[i] = image
+		}
+		iap.AllowedImages = allowedImages
 	}
 
 	trusted_base_images, ok := d.GetOk("trusted_base_images")
@@ -1877,35 +2097,35 @@ func expandAssurancePolicy(d *schema.ResourceData, a_type string) *client.Assura
 		}
 	}
 
-    iap.AggregatedVulnerability = client.AggregatedVulnerability{}
-    aggregated_vulnerability, ok := d.GetOk("aggregated_vulnerability")
-    if ok {
-    list := aggregated_vulnerability.([]interface{})
-        if len(list) > 0 {
-            v := list[0].(map[string]interface{})
-            var sr []float32
-            if arrIface, exists := v["score_range"].([]interface{}); exists {
-                sr = make([]float32, len(arrIface))
-                for i, iv := range arrIface {
-                    if fv, ok := iv.(float64); ok {
-                        sr[i] = float32(fv)
-                    }
-                }
-            }
-            enabled, _ := v["enabled"].(bool)
-            customEnabled, _ := v["custom_severity_enabled"].(bool)
-            severity, _ := v["severity"].(string)
+	iap.AggregatedVulnerability = client.AggregatedVulnerability{}
+	aggregated_vulnerability, ok := d.GetOk("aggregated_vulnerability")
+	if ok {
+		list := aggregated_vulnerability.([]interface{})
+		if len(list) > 0 {
+			v := list[0].(map[string]interface{})
+			var sr []float32
+			if arrIface, exists := v["score_range"].([]interface{}); exists {
+				sr = make([]float32, len(arrIface))
+				for i, iv := range arrIface {
+					if fv, ok := iv.(float64); ok {
+						sr[i] = float32(fv)
+					}
+				}
+			}
+			enabled, _ := v["enabled"].(bool)
+			customEnabled, _ := v["custom_severity_enabled"].(bool)
+			severity, _ := v["severity"].(string)
 
-            iap.AggregatedVulnerability = client.AggregatedVulnerability{
-                Enabled:               enabled,
-                ScoreRange:            sr,
-                CustomSeverityEnabled: customEnabled,
-                Severity:              severity,
-            }
-        }
-    }
+			iap.AggregatedVulnerability = client.AggregatedVulnerability{
+				Enabled:               enabled,
+				ScoreRange:            sr,
+				CustomSeverityEnabled: customEnabled,
+				Severity:              severity,
+			}
+		}
+	}
 
-    exclude_application_scopes, ok := d.GetOk("exclude_application_scopes")
+	exclude_application_scopes, ok := d.GetOk("exclude_application_scopes")
 	if ok {
 		strArr := convertStringArr(exclude_application_scopes.([]interface{}))
 		iap.ExcludeApplicationScopes = strArr
