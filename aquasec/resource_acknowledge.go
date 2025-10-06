@@ -142,6 +142,48 @@ func resourceAcknowledge() *schema.Resource {
 							Description: "The name of the repository in whose context the issue was acknowledged (if not for all images)",
 							Optional:    true,
 						},
+						"ack_repo_id": {
+							Type:        schema.TypeInt,
+							Description: "Unique ID generated when a security issue on a resource is suppressed. It is used to remove the suppression after the expiration period.",
+							Optional:    true,
+						},
+						"suppression_rule_id": {
+							Type:        schema.TypeInt,
+							Description: "Suppression rule ID",
+							Optional:    true,
+						},
+						"suppression_rule_name": {
+							Type:        schema.TypeString,
+							Description: "Suppression rule name",
+							Optional:    true,
+						},
+						"suppression_rule_scopes": {
+							Type:     schema.TypeList,
+							Optional: true,
+							Elem: &schema.Schema{
+								Type: schema.TypeString,
+							},
+						},
+						"has_custom_severity": {
+							Type:        schema.TypeBool,
+							Description: "Indicates whether custom severity is assigned to the suppressed vulnerability",
+							Optional:    true,
+						},
+						"registry": {
+							Type:        schema.TypeString,
+							Description: "If the issue was acknowledged in the context of a specific image or repository, the name of the registry where they are located",
+							Optional:    true,
+						},
+						"repository": {
+							Type:        schema.TypeString,
+							Description: "The name of the repository in whose context the issue was acknowledged (if not for all images)",
+							Optional:    true,
+						},
+						"image": {
+							Type:        schema.TypeString,
+							Description: "The name of the image in whose context the issue was acknowledged (if not for all images)",
+							Optional:    true,
+						},
 					},
 				},
 			},
@@ -344,6 +386,43 @@ func expandIssues(issues interface{}) ([]client.Acknowledge, string) {
 			acknowledge.RepositoryName = attr.(string)
 		}
 
+		if attr, ok := i["ack_repo_id"]; ok && attr != nil {
+			acknowledge.AckRepoId = attr.(int)
+		}
+
+		if attr, ok := i["suppression_rule_id"]; ok && attr != nil {
+			acknowledge.SuppressionRuleId = attr.(int)
+		}
+
+		if attr, ok := i["suppression_rule_name"]; ok && attr != "" {
+			acknowledge.SuppressionRuleName = attr.(string)
+		}
+
+		if attr, ok := i["suppression_rule_scopes"]; ok && attr != nil {
+			suppressionRuleScopes := attr.([]interface{})
+			suppressionRuleScopesString := make([]string, len(suppressionRuleScopes))
+			for i, v := range suppressionRuleScopes {
+				suppressionRuleScopesString[i] = v.(string)
+			}
+			acknowledge.SuppressionRuleScopes = suppressionRuleScopesString
+		}
+
+		if attr, ok := i["has_custom_severity"]; ok && attr != nil {
+			acknowledge.HasCustomSeverity = attr.(bool)
+		}
+
+		if attr, ok := i["registry"]; ok && attr != "" {
+			acknowledge.Registry = attr.(string)
+		}
+
+		if attr, ok := i["repository"]; ok && attr != "" {
+			acknowledge.Repository = attr.(string)
+		}
+
+		if attr, ok := i["image"]; ok && attr != "" {
+			acknowledge.Image = attr.(string)
+		}
+
 		acknowledgePost = append(acknowledgePost, acknowledge)
 		id = id + acknowledge.IssueName
 	}
@@ -386,6 +465,14 @@ func flattenIssue(ack client.Acknowledge) map[string]interface{} {
 		"os_version":               ack.OsVersion,
 		"docker_id":                ack.DockerId,
 		"repository_name":          ack.RepositoryName,
+		"ack_repo_id":              ack.AckRepoId,
+		"suppression_rule_id":      ack.SuppressionRuleId,
+		"suppression_rule_name":    ack.SuppressionRuleName,
+		"suppression_rule_scopes":  ack.SuppressionRuleScopes,
+		"has_custom_severity":      ack.HasCustomSeverity,
+		"registry":                 ack.Registry,
+		"repository":               ack.Repository,
+		"image":                    ack.Image,
 	}
 }
 
@@ -405,7 +492,7 @@ func updateIssuesFromReadList(issues *client.AcknowledgePost, readIssues *client
 			ack.Author = val.(client.Acknowledge).Author
 			issues.Issues[i] = ack
 		} else {
-			return fmt.Errorf(fmt.Sprintf("issue: %s wasn't crerated and is missing from active acknowledgments", ack.IssueName))
+			return fmt.Errorf("issue: %s wasn't crerated and is missing from active acknowledgments", ack.IssueName)
 		}
 	}
 	return nil
