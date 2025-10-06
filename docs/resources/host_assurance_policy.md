@@ -125,6 +125,8 @@ resource "aquasec_host_assurance_policy" "advanced" {
 - `force_microenforcer` (Boolean)
 - `function_integrity_enabled` (Boolean)
 - `ignore_base_image_vln` (Boolean)
+- `ignore_recently_published_fix_vln` (Boolean)
+- `ignore_recently_published_fix_vln_period` (Number)
 - `ignore_recently_published_vln` (Boolean)
 - `ignore_recently_published_vln_period` (Number)
 - `ignore_risk_resources_enabled` (Boolean) Indicates if risk resources are ignored.
