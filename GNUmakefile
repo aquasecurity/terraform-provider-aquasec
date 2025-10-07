@@ -2,11 +2,11 @@
 # This ensures docker volumes are mounted from within provider directory instead.
 PROVIDER_DIR := $(abspath $(lastword $(dir $(MAKEFILE_LIST))))
 TEST         := "$(PROVIDER_DIR)/aquasec"
-HOSTNAME	 := github.com
+HOSTNAME	 := registry.terraform.io
 NAMESPACE	 := aquasec
 NAME 		 := aquasec
 BINARY		 := terraform-provider-${NAME}
-VERSION      := 0.10.0
+VERSION      := 0.11.0
 OS_ARCH      := $(shell go env GOOS)_$(shell go env GOARCH)
 
 default: build

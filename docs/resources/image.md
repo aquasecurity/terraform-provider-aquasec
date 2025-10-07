@@ -35,7 +35,6 @@ resource "aquasec_image" "example_aquasec_image" {
 
 - `allow_image` (Boolean) If this field is set to true, the image will be whitelisted.
 - `block_image` (Boolean) If this field is set to true, the image will be blacklisted.
-- `labels` (List of String) Aqua labels of the image.
 - `permission_modification_comment` (String) A comment on why the image was whitelisted or blacklisted
 
 ### Read-Only
@@ -63,6 +62,7 @@ resource "aquasec_image" "example_aquasec_image" {
 - `id` (String) The ID of this resource.
 - `image_size` (Number) The size of the image in bytes.
 - `image_type` (String) The type of the image.
+- `labels` (List of String) Aqua labels of the image.
 - `low_vulnerabilities` (Number) Number of low severity vulnerabilities detected in the image.
 - `malware` (Number) Number of malware found on the image.
 - `medium_vulnerabilities` (Number) Number of medium severity vulnerabilities detected in the image.

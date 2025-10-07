@@ -43,7 +43,7 @@ To quickly get started using the Aquasec provider for Terraform, configure the p
 terraform {
   required_providers {
     aquasec = {
-      version = "0.10.0"
+      version = "0.11.0"
       source  = "aquasecurity/aquasec"
     }
   }
@@ -53,6 +53,15 @@ provider "aquasec" {
   username = "IaC"
   aqua_url = "https://aquaurl.com"
   password = "@password"
+}
+
+//Alternative API Based authentication
+provider "aquasec" {
+  aqua_api_key      = var.aquasec_api_key
+  aqua_api_secret   = var.aquasec_api_secret
+  validity          = 240
+  allowed_endpoints = ["ANY"]
+  csp_roles         = ["Admin"]
 }
 ```
 ## Using the Aquasec provider SaaS solution
