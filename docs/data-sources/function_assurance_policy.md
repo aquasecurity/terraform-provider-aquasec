@@ -64,12 +64,14 @@ description: |-
 - `force_microenforcer` (Boolean)
 - `function_integrity_enabled` (Boolean)
 - `id` (String) The ID of this resource.
+- `ignore_base_image_vln` (Boolean)
 - `ignore_recently_published_fix_vln` (Boolean)
 - `ignore_recently_published_fix_vln_period` (Number)
 - `ignore_recently_published_vln` (Boolean)
 - `ignore_recently_published_vln_period` (Number)
 - `ignore_risk_resources_enabled` (Boolean) Indicates if risk resources are ignored.
 - `ignored_risk_resources` (List of String) List of ignored risk resources.
+- `ignored_sensitive_resources` (List of String)
 - `images` (List of String) List of images.
 - `kube_cis_enabled` (Boolean) Performs a Kubernetes CIS benchmark check for the host.
 - `labels` (List of String) List of labels.
