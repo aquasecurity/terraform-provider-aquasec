@@ -3,6 +3,7 @@ resource "aquasec_host_assurance_policy" "advanced" {
   name               = "host_policy_advanced"
   description        = "Advanced host assurance policy with key security controls"
   application_scopes = ["Global"]
+  assurance_type     = "host"
 
   # Policy enforcement
   enabled          = true

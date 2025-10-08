@@ -17,6 +17,7 @@ resource "aquasec_image_assurance_policy" "test_image_policy" {
   // Required values
   name               = "test_image_assurance_policy"
   application_scopes = ["Global"]
+  assurance_type     = "image"
 
   // Below options default to true:
   block_failed     = true
@@ -156,13 +157,13 @@ resource "aquasec_image_assurance_policy" "img1" {
 ### Required
 
 - `application_scopes` (List of String)
+- `assurance_type` (String) What type of assurance policy is described.
 - `name` (String)
 
 ### Optional
 
 - `aggregated_vulnerability` (Block List) Aggregated vulnerability information. (see [below for nested schema](#nestedblock--aggregated_vulnerability))
 - `allowed_images` (Block List) (see [below for nested schema](#nestedblock--allowed_images))
-- `assurance_type` (String) What type of assurance policy is described.
 - `audit_on_failure` (Boolean) Indicates if auditing for failures.
 - `author` (String) Name of user account that created the policy.
 - `auto_scan_configured` (Boolean)

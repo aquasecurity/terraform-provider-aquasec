@@ -2,6 +2,7 @@ resource "aquasec_image_assurance_policy" "test_image_policy" {
   // Required values
   name               = "test_image_assurance_policy"
   application_scopes = ["Global"]
+  assurance_type     = "image"
 
   // Below options default to true:
   block_failed     = true

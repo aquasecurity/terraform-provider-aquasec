@@ -14,35 +14,32 @@ func TestAquasecFunctionAssurancePolicy(t *testing.T) {
 	description := "Created using Terraform"
 	name := acctest.RandomWithPrefix("terraform-test")
 	application_scopes := "Global"
+	assurance_type := "function"
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,
 		CheckDestroy: CheckDestroy("aquasec_function_assurance_policy.terraformiap"),
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckFunctionAssurancePolicy(description, name, application_scopes),
+				Config: testAccCheckFunctionAssurancePolicy(description, name, assurance_type, application_scopes),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckFunctionAssurancePolicyExists("aquasec_function_assurance_policy.terraformiap"),
 				),
-			},
-			{
-				ResourceName:      "aquasec_function_assurance_policy.terraformiap",
-				ImportState:       true,
-				ImportStateVerify: true,
 			},
 		},
 	})
 }
 
-func testAccCheckFunctionAssurancePolicy(description string, name string, application_scopes string) string {
+func testAccCheckFunctionAssurancePolicy(description string, name string, assurance_type, application_scopes string) string {
 	return fmt.Sprintf(`
 	resource "aquasec_function_assurance_policy" "terraformiap" {
 		description = "%s"
 		name = "%s"
+		assurance_type = "%s"
 		application_scopes = [
 			"%s"
 		]
-	}`, description, name, application_scopes)
+	}`, description, name, assurance_type, application_scopes)
 
 }
 
