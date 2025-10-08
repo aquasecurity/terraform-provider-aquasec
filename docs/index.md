@@ -21,7 +21,7 @@ Use the navigation to the left to read about the available resources and data so
 terraform {
   required_providers {
     aquasec = {
-      version = "0.10.0"
+      version = "0.11.0"
       source  = "aquasecurity/aquasec"
     }
   }
@@ -38,6 +38,13 @@ provider "aquasec" {
   // Alternatively, you can provide these configurations from a config file, and configure the provider as below
   // config_path = '/path/to/tf.config' // defaults to '~/.aqua/tf.config' -- Alternatively sourced from $AQUA_CONFIG
   // validate = false // Skip provider credential validation
+
+  //Alternatively, you can use API key authentication as below instead of username/password authentication.
+  aqua_api_key      = var.aquasec_api_key    // Alternatively sourced from $AQUA_API
+  aqua_api_secret   = var.aquasec_api_secret // Alternatively sourced from $AQUA_SECRET
+  validity          = 240                    // Alternatively sourced from $AQUA_TOKEN_VALIDITY
+  allowed_endpoints = ["ANY"]                // Alternatively sourced from $AQUA_ALLOWED_ENDPOINTS
+  csp_roles         = ["Admin"]              // Alternatively sourced from $AQUA_CSP_ROLES
 }
 ```
 
@@ -46,10 +53,15 @@ provider "aquasec" {
 
 ### Optional
 
+- `allowed_endpoints` (List of String) API methods the token has access to
+- `aqua_api_key` (String, Sensitive) API key for authentication. If set, API key mode is used instead of token-based auth.
+- `aqua_api_secret` (String, Sensitive) Shared secret for API key HMAC signing.
 - `aqua_url` (String) This is the base URL of your Aqua instance. Can alternatively be sourced from the `AQUA_URL` environment variable.
 - `ca_certificate_path` (String) This is the file path for server CA certificates if they are not available on the host OS. Can alternatively be sourced from the `AQUA_CA_CERT_PATH` environment variable.
 - `config_path` (String) This is the file path for Aqua provider configuration. The default configuration path is `~/.aqua/tf.config`. Can alternatively be sourced from the `AQUA_CONFIG` environment variable.
+- `csp_roles` (List of String)
 - `password` (String, Sensitive) This is the password that should be used to make the connection. Can alternatively be sourced from the `AQUA_PASSWORD` environment variable.
 - `username` (String, Sensitive) This is the user id that should be used to make the connection. Can alternatively be sourced from the `AQUA_USER` environment variable.
 - `validate` (Boolean) Skip provider credential validation when set to false.
+- `validity` (Number) Lifetime of the token, in minutes. Set between 1 and 1500. Once the token expires, need to generate a new one
 - `verify_tls` (Boolean) If true, server tls certificates will be verified by the client before making a connection. Defaults to true. Can alternatively be sourced from the `AQUA_TLS_VERIFY` environment variable.

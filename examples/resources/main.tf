@@ -1,7 +1,7 @@
 terraform {
   required_providers {
     aquasec = {
-      //version = "0.10.0"
+      //version = "0.11.0"
       source = "aquasecurity/aquasec"
     }
   }
@@ -11,6 +11,13 @@ provider "aquasec" {
   username = "admin"
   aqua_url = "https://aquaurl.com"
   password = "@password"
+
+  # alternatively, you can use API key authentication as below instead of username/password authentication.
+  #  aqua_api_key          = var.aquasec_api_key
+  #  aqua_api_secret       = var.aquasec_api_secret
+  #  validity              = 240
+  #  allowed_endpoints     = ["ANY"]
+  #  csp_roles             = ["Admin"]
 }
 
 

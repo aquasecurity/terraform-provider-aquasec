@@ -16,9 +16,14 @@ import (
 
 // Config - godoc
 type Config struct {
-	Username string `json:"tenant"`
-	Password string `json:"token"`
-	AquaURL  string `json:"aqua_url"`
+	Username         string   `json:"tenant"`
+	Password         string   `json:"token"`
+	AquaURL          string   `json:"aqua_url"`
+	APIKey           string   `json:"aqua_api_key"`
+	SecretKey        string   `json:"aqua_api_secret"`
+	Validity         int      `json:"validity"`
+	AllowedEndpoints []string `json:"allowed_endpoints"`
+	CSPRoles         []string `json:"csp_roles"`
 }
 
 // Provider -
@@ -45,6 +50,20 @@ func Provider(v string) *schema.Provider {
 				DefaultFunc: schema.EnvDefaultFunc("AQUA_URL", nil),
 				Description: "This is the base URL of your Aqua instance. Can alternatively be sourced from the `AQUA_URL` environment variable.",
 			},
+			"aqua_api_key": {
+				Type:        schema.TypeString,
+				Optional:    true,
+				Sensitive:   true,
+				DefaultFunc: schema.EnvDefaultFunc("AQUA_API_KEY", nil),
+				Description: "API key for authentication. If set, API key mode is used instead of token-based auth.",
+			},
+			"aqua_api_secret": {
+				Type:        schema.TypeString,
+				Optional:    true,
+				Sensitive:   true,
+				DefaultFunc: schema.EnvDefaultFunc("AQUA_API_SECRET", nil),
+				Description: "Shared secret for API key HMAC signing.",
+			},
 			"verify_tls": {
 				Type:        schema.TypeBool,
 				Optional:    true,
@@ -68,6 +87,27 @@ func Provider(v string) *schema.Provider {
 				Optional:    true,
 				Default:     true,
 				Description: "Skip provider credential validation when set to false.",
+			},
+			"validity": {
+				Type:        schema.TypeInt,
+				Optional:    true,
+				Default:     240,
+				Description: "Lifetime of the token, in minutes. Set between 1 and 1500. Once the token expires, need to generate a new one",
+			},
+			"allowed_endpoints": {
+				Type:        schema.TypeList,
+				Optional:    true,
+				Description: "API methods the token has access to",
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+			},
+			"csp_roles": {
+				Type:     schema.TypeList,
+				Optional: true,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
 			},
 		},
 		ResourcesMap: map[string]*schema.Resource{
@@ -143,23 +183,23 @@ func Provider(v string) *schema.Provider {
 	}
 }
 
-func getProviderConfigurationFromFile(d *schema.ResourceData) (string, string, string, error) {
+func getProviderConfigurationFromFile(d *schema.ResourceData) (string, string, string, string, string, error) {
 	log.Print("[DEBUG] Trying to load configuration from file")
 	if configPath, ok := d.GetOk("config_path"); ok && configPath.(string) != "" {
 		path, err := homedir.Expand(configPath.(string))
 		if err != nil {
 			log.Printf("[DEBUG] Failed to expand config file path %s, error %s", configPath, err)
-			return "", "", "", nil
+			return "", "", "", "", "", nil
 		}
 		if _, err := os.Stat(path); os.IsNotExist(err) {
 			log.Printf("[DEBUG] Terraform config file %s does not exist, error %s", path, err)
-			return "", "", "", nil
+			return "", "", "", "", "", nil
 		}
 		log.Printf("[DEBUG] Terraform configuration file is: %s", path)
 		configFile, err := os.Open(path)
 		if err != nil {
 			log.Printf("[DEBUG] Unable to open Terraform configuration file %s", path)
-			return "", "", "", fmt.Errorf("Unable to open terraform configuration file. Error %v", err)
+			return "", "", "", "", "", fmt.Errorf("Unable to open terraform configuration file. Error %v", err)
 		}
 		defer configFile.Close()
 
@@ -168,11 +208,11 @@ func getProviderConfigurationFromFile(d *schema.ResourceData) (string, string, s
 		err = json.Unmarshal(configBytes, &config)
 		if err != nil {
 			log.Printf("[DEBUG] Failed to parse config file %s", path)
-			return "", "", "", fmt.Errorf("Invalid terraform configuration file format. Error %v", err)
+			return "", "", "", "", "", fmt.Errorf("Invalid terraform configuration file format. Error %v", err)
 		}
-		return config.Username, config.Password, config.AquaURL, nil
+		return config.Username, config.Password, config.AquaURL, config.APIKey, config.SecretKey, nil
 	}
-	return "", "", "", nil
+	return "", "", "", "", "", nil
 }
 
 func providerConfigure(ctx context.Context, d *schema.ResourceData) (interface{}, diag.Diagnostics) {
@@ -183,32 +223,35 @@ func providerConfigure(ctx context.Context, d *schema.ResourceData) (interface{}
 	username := d.Get("username").(string)
 	password := d.Get("password").(string)
 	aquaURL := d.Get("aqua_url").(string)
+	apiKey := d.Get("aqua_api_key").(string)
+	secretkey := d.Get("aqua_api_secret").(string)
 	verifyTLS := d.Get("verify_tls").(bool)
 	caCertPath := d.Get("ca_certificate_path").(string)
 	validate := d.Get("validate").(bool)
 
-	if username == "" && password == "" && aquaURL == "" {
-		username, password, aquaURL, err = getProviderConfigurationFromFile(d)
+	if username == "" && password == "" && aquaURL == "" && apiKey == "" && secretkey == "" {
+		username, password, aquaURL, apiKey, secretkey, err = getProviderConfigurationFromFile(d)
 		if err != nil && validate {
 			return nil, diag.FromErr(err)
 		}
 	}
 
 	if validate {
-		if username == "" {
-			diags = append(diags, diag.Diagnostic{
-				Severity: diag.Error,
-				Summary:  "Initializing provider, username parameter is missing.",
-			})
-		}
+		if apiKey == "" {
+			if username == "" {
+				diags = append(diags, diag.Diagnostic{
+					Severity: diag.Error,
+					Summary:  "Initializing provider, username parameter is missing.",
+				})
+			}
 
-		if password == "" {
-			diags = append(diags, diag.Diagnostic{
-				Severity: diag.Error,
-				Summary:  "Initializing provider, password parameter is missing.",
-			})
+			if password == "" {
+				diags = append(diags, diag.Diagnostic{
+					Severity: diag.Error,
+					Summary:  "Initializing provider, password parameter is missing.",
+				})
+			}
 		}
-
 		if aquaURL == "" {
 			diags = append(diags, diag.Diagnostic{
 				Severity: diag.Error,
@@ -235,7 +278,21 @@ func providerConfigure(ctx context.Context, d *schema.ResourceData) (interface{}
 		return nil, diags
 	}
 
-	aquaClient := client.NewClient(aquaURL, username, password, verifyTLS, caCertByte)
+	var aquaClient *client.Client
+	if apiKey != "" {
+		aquaClient = client.NewClientWithAPIKey(aquaURL, apiKey, secretkey, verifyTLS, caCertByte)
+		if v, ok := d.GetOk("validity"); ok {
+			aquaClient.Validity = v.(int)
+		}
+		if v, ok := d.GetOk("allowed_endpoints"); ok {
+			aquaClient.AllowedEndpoints = convertStringArr(v.([]interface{}))
+		}
+		if v, ok := d.GetOk("csp_roles"); ok {
+			aquaClient.CSPRoles = convertStringArr(v.([]interface{}))
+		}
+	} else {
+		aquaClient = client.NewClientWithTokenAuth(aquaURL, username, password, verifyTLS, caCertByte)
+	}
 
 	if validate {
 		token, tokenPresent := os.LookupEnv("TESTING_AUTH_TOKEN")
