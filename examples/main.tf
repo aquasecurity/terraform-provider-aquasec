@@ -451,6 +451,7 @@ resource "aquasec_function_assurance_policy" "example_function_assurance_policy"
   //Required values
   application_scopes = ["Global"]
   name               = "example_function_assurance_policy"
+  assurance_type     = "function"
 
   //Values that default to true
   audit_on_failure = true
@@ -548,6 +549,7 @@ resource "aquasec_host_assurance_policy" "advanced" {
   name               = "host_policy_advanced"
   description        = "Advanced host assurance policy with key security controls"
   application_scopes = ["Global"]
+  assurance_type     = "host"
 
   # Policy enforcement
   enabled          = true
@@ -669,6 +671,7 @@ resource "aquasec_image" "example_aquasec_image" {
 resource "aquasec_image_assurance_policy" "test_image_policy" {
   name               = "test_image_assurance_policy"
   application_scopes = ["Global"]
+  assurance_type     = "image"
 
   block_failed     = true
   fail_cicd        = true
@@ -756,6 +759,7 @@ resource "aquasec_kubernetes_assurance_policy" "example_kubernetes_assurance_pol
   // Values that are required
   application_scopes = ["Global"]
   name               = "example_kubernetes_assurance_policy"
+  assurance_type     = "kubernetes"
 
   //Values that default to true
   audit_on_failure = true
@@ -938,6 +942,7 @@ resource "aquasec_user_saas" "IaC2" {
 resource "aquasec_vmware_assurance_policy" "example_vmware_assurance_policy" {
   application_scopes = ["Global"]
   name               = "example_vmware_assurance_policy"
+  assurance_type     = "cf_application"
 
   audit_on_failure = true
   block_failed     = true
