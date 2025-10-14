@@ -35,7 +35,7 @@ resource "aquasec_host_runtime_policy" "host_runtime_policy" {
     }
   }
 
-
+  scope_expression = "v1 && v2"
   application_scopes = [
     "Global",
   ]
