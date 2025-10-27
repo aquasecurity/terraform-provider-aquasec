@@ -16,18 +16,15 @@ jobs:
         uses: actions/setup-go@v5
         with:
           go-version: '1.18'
-        id: go
 
-      - name: Check out code into the Go module directory
+      - name: Check out code
         uses: actions/checkout@v4
 
       - name: Get dependencies
-        run: |
-          go mod download
+        run: go mod download
 
       - name: Build
-        run: |
-          go build -v .
+        run: go build -v .
 
   drift:
     name: "Drift Detection (TF ${{ matrix.terraform }})"
@@ -37,12 +34,11 @@ jobs:
       max-parallel: 1
       fail-fast: false
       matrix:
-        terraform: [
-          '0.15.5',
-          '0.14.11',
-          '1.1.2',
-          '1.5.3'
-        ]
+        terraform:
+          - '0.15.5'
+          - '0.14.11'
+          - '1.1.2'
+          - '1.5.3'
     env:
       TF_VAR_aquasec_url: ${{ secrets.AQUA_URL }}
       TF_VAR_aquasec_username: ${{ secrets.AQUA_USER }}
@@ -77,13 +73,25 @@ jobs:
           terraform plan -input=false -detailed-exitcode -out=tfplan.binary
           exitcode=$?
           echo "exitcode=$exitcode" >> "$GITHUB_OUTPUT"
-          # Fail for both drift (2) and error (1)
+          # exit code 0 = no changes, 2 = changes (drift detected), 1 = error
           if [ "$exitcode" -ne 0 ]; then
             exit $exitcode
           fi
 
-    outputs:
-      drifted: ${{ steps.plan.outputs.exitcode }}
+      - name: Write result file
+        run: |
+          version="${{ matrix.terraform }}"
+          exitcode="${{ steps.plan.outputs.exitcode }}"
+          if [ -z "$exitcode" ]; then
+            exitcode=99  # choose a default, e.g. 99 for unknown
+          fi
+          echo "{\"version\":\"${{ matrix.terraform }}\",\"exitcode\":${{ steps.plan.outputs.exitcode }}}" > result-drift-${{ matrix.terraform }}.json
+      - name: Upload result artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: drift-results-${{ matrix.terraform }}
+          path: examples/result-drift-${{ matrix.terraform }}.json
+          if-no-files-found: error
 
   acceptance:
     name: "Acceptance Tests (TF ${{ matrix.terraform }})"
@@ -93,12 +101,11 @@ jobs:
       max-parallel: 1
       fail-fast: false
       matrix:
-        terraform: [
-          '0.15.5',
-          '0.14.11',
-          '1.1.2',
-          '1.5.3'
-        ]
+        terraform:
+          - '0.15.5'
+          - '0.14.11'
+          - '1.1.2'
+          - '1.5.3'
     env:
       AQUA_URL: ${{ secrets.AQUA_URL }}
       AQUA_USER: ${{ secrets.AQUA_USER }}
@@ -108,52 +115,129 @@ jobs:
         uses: actions/setup-go@v5
         with:
           go-version: '1.18'
-        id: go
 
       - name: Check out repo
         uses: actions/checkout@v4
 
       - name: Get dependencies
-        run: |
-          go mod download
+        run: go mod download
 
       - name: Run TF acceptance tests
         id: accept_tests
         uses: nick-fields/retry@v2
+        with:
+          max_attempts: 2
+          timeout_minutes: 15
+          command: go test -v -cover ./aquasec/ -timeout 15m
         env:
           TF_ACC: "1"
           TF_ACC_TERRAFORM_VERSION: ${{ matrix.terraform }}
           AQUA_URL: ${{ secrets.AQUA_URL }}
           AQUA_USER: ${{ secrets.AQUA_USER }}
           AQUA_PASSWORD: ${{ secrets.AQUA_PASSWORD }}
-        with:
-          max_attempts: 2
-          timeout_minutes: 15
-          command: go test -v -cover ./aquasec/ -timeout 15m
 
-    outputs:
-      accepted: ${{ steps.accept_tests.outcome }}
+      - name: Write acceptance result file
+        run: |
+          version="${{ matrix.terraform }}"
+          outcome="${{ steps.accept_tests.outcome }}"
+          # If outcome is empty or weird, default to "unknown"
+          if [ -z "$outcome" ]; then
+            outcome="unknown"
+          fi
+          result="failure"
+          if [ "${{ steps.accept_tests.outcome }}" = "success" ]; then
+            result="success"
+          fi
+          echo "{\"version\":\"${{ matrix.terraform }}\",\"result\":\"${result}\"}" > result-acceptance-${{ matrix.terraform }}.json
+      - name: Debug before upload
+        run: |
+          echo "Current directory: $(pwd)"
+          ls -la .
+      - name: Upload acceptance result artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: acceptance-results-${{ matrix.terraform }}
+          path: ./result-acceptance-${{ matrix.terraform }}.json
+          if-no-files-found: error
 
   notify:
     name: "Notify via Power Automate Webhook"
     runs-on: ubuntu-latest
-    needs: [drift, acceptance]
+    needs:
+      - drift
+      - acceptance
     if: ${{ always() }}
     steps:
+      - name: Download all drift artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: drift-artifacts
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Build summary payload
+        id: build_payload
+        run: |
+          echo "PWD: $(pwd)"
+          ls -R artifacts
+
+          drift_summary="{"
+          acc_summary="{"
+          first=true
+
+          # Loop through drift artifacts
+          for file in artifacts/drift-results-*/result-drift-*.json; do
+            version=$(jq -r .version < "$file")
+            exitcode=$(jq -r .exitcode < "$file")
+            status="unknown"
+            if [ "$exitcode" -eq 0 ]; then
+              status="no_drift"
+            elif [ "$exitcode" -eq 2 ]; then
+              status="drift_detected"
+            elif [ "$exitcode" -eq 1 ]; then
+              status="error"
+            fi
+
+            if [ "$first" = false ]; then
+              drift_summary+=", "
+            fi
+            drift_summary+="\"${version}\": \"${status}\""
+            first=false
+          done
+          drift_summary+="}"
+
+          first=true
+          # Loop through acceptance artifacts
+          for file in artifacts/acceptance-results-*/result-acceptance-*.json; do
+            version=$(jq -r .version < "$file")
+            result=$(jq -r .result < "$file")
+
+            if [ "$first" = false ]; then
+              acc_summary+=", "
+            fi
+            acc_summary+="\"${version}\": \"${result}\""
+            first=false
+          done
+          acc_summary+="}"
+
+          echo "payload="$(jq -n \
+            --arg wf "${{ github.workflow }}" \
+            --arg branch "${{ github.ref_name }}" \
+            --arg runid "${{ github.run_id }}" \
+            --arg url "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
+            --argjson tested_versions '["0.15.5","0.14.11","1.1.2","1.5.3"]' \
+            --argjson drift_summary "$drift_summary" \
+            --argjson acceptance_summary "$acc_summary" \
+            '{workflow: $wf, branch: $branch, run_id: $runid, github_url: $url, tested_versions: $tested_versions, drift_summary: $drift_summary, acceptance_summary: $acceptance_summary }') \
+            >> $GITHUB_OUTPUT
       - name: Trigger Power Automate Flow
-        uses: fjogeleit/http-request-action@v1.16.3 
+        uses: fjogeleit/http-request-action@v1.16.3
         with:
           url: ${{ secrets.POWER_AUTOMATE_HOOK_URL }}
           method: 'POST'
           contentType: 'application/json'
           data: |
-            {
-              "status": "${{ (needs.drift.result == 'failure' || needs.acceptance.result == 'failure') && 'FAILED' || 'PASSED' }}",
-              "branch": "main",
-              "drift_exitcode": "${{ needs.drift.outputs.drifted }}",
-              "acceptance_outcome": "${{ needs.acceptance.outputs.accepted }}",
-              "workflow": "${{ github.workflow }}",
-              "run_id": "${{ github.run_id }}",
-              "github_url": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}",
-              "tested_versions": ["0.15.5","0.14.11","1.1.2","1.5.3"]
-            }
+            ${{ steps.build_payload.outputs.payload }}
