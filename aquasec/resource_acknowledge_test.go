@@ -9,6 +9,8 @@ import (
 )
 
 func TestAquasecAcknowledge(t *testing.T) {
+	//t.Skip()
+	t.Parallel()
 	// Define the issue to be acknowledged
 	issue := map[string]interface{}{
 		"docker_id":        "",
@@ -62,7 +64,7 @@ resource "aquasec_image" "example_aquasec_image" {
 
     provisioner "local-exec" {
     command = <<EOT
-      sleep 60
+      sleep 120
     EOT
   }
 }
