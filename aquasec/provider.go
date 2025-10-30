@@ -143,6 +143,7 @@ func Provider(v string) *schema.Provider {
 			"aquasec_assurance_custom_script": resourceAssuranceScript(),
 			"aquasec_aqua_api_key":            resourceAPIKey(),
 			"aquasec_scanner_group":           resourceScannerGroup(),
+			"aquasec_log_management":          resourceLogManagement(),
 			"aquasec_serverless_application":  resourceServerlessApplication(),
 		},
 		DataSourcesMap: map[string]*schema.Resource{
@@ -179,6 +180,7 @@ func Provider(v string) *schema.Provider {
 			"aquasec_aqua_api_keys":           dataSourceAPIKeys(),
 			"aquasec_scanner_group":           dataSourceScannerGroup(),
 			"aquasec_vmware_assurance_policy": dataVmwareAssurancePolicy(),
+			"aquasec_log_managements":         dataLogManagement(),
 			"aquasec_serverless_applications": dataSourceServerlessApplication(),
 		},
 		ConfigureContextFunc: providerConfigure,
