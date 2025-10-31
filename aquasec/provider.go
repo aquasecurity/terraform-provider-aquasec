@@ -80,7 +80,7 @@ func Provider(v string) *schema.Provider {
 				Type:        schema.TypeString,
 				Optional:    true,
 				DefaultFunc: schema.EnvDefaultFunc("AQUA_CONFIG", "~/.aquasec/tf.config"),
-				Description: "This is the file path for Aqua provider configuration. The default configuration path is `~/.aqua/tf.config`. Can alternatively be sourced from the `AQUA_CONFIG` environment variable.",
+				Description: "This is the file path for Aqua provider configuration. The default configuration path is `~/.aquasec/tf.config`. Can alternatively be sourced from the `AQUA_CONFIG` environment variable.",
 			},
 			"validate": {
 				Type:        schema.TypeBool,
