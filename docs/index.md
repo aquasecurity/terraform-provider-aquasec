@@ -36,7 +36,7 @@ provider "aquasec" {
   verify_tls = false // Alternatively sourced from $AQUA_TLS_VERIFY
 
   // Alternatively, you can provide these configurations from a config file, and configure the provider as below
-  // config_path = '/path/to/tf.config' // defaults to '~/.aqua/tf.config' -- Alternatively sourced from $AQUA_CONFIG
+  // config_path = '/path/to/tf.config' // defaults to '~/.aquasec/tf.config' -- Alternatively sourced from $AQUA_CONFIG
   // validate = false // Skip provider credential validation
 
   //Alternatively, you can use API key authentication as below instead of username/password authentication.
@@ -58,7 +58,7 @@ provider "aquasec" {
 - `aqua_api_secret` (String, Sensitive) Shared secret for API key HMAC signing.
 - `aqua_url` (String) This is the base URL of your Aqua instance. Can alternatively be sourced from the `AQUA_URL` environment variable.
 - `ca_certificate_path` (String) This is the file path for server CA certificates if they are not available on the host OS. Can alternatively be sourced from the `AQUA_CA_CERT_PATH` environment variable.
-- `config_path` (String) This is the file path for Aqua provider configuration. The default configuration path is `~/.aqua/tf.config`. Can alternatively be sourced from the `AQUA_CONFIG` environment variable.
+- `config_path` (String) This is the file path for Aqua provider configuration. The default configuration path is `~/.aquasec/tf.config`. Can alternatively be sourced from the `AQUA_CONFIG` environment variable.
 - `csp_roles` (List of String)
 - `password` (String, Sensitive) This is the password that should be used to make the connection. Can alternatively be sourced from the `AQUA_PASSWORD` environment variable.
 - `username` (String, Sensitive) This is the user id that should be used to make the connection. Can alternatively be sourced from the `AQUA_USER` environment variable.
