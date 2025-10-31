@@ -76,11 +76,11 @@ func Provider(v string) *schema.Provider {
 				DefaultFunc: schema.EnvDefaultFunc("AQUA_CA_CERT_PATH", nil),
 				Description: "This is the file path for server CA certificates if they are not available on the host OS. Can alternatively be sourced from the `AQUA_CA_CERT_PATH` environment variable.",
 			},
-			"config_path": {
-				Type:        schema.TypeString,
-				Optional:    true,
-				DefaultFunc: schema.EnvDefaultFunc("AQUA_CONFIG", "~/.aquasec/tf.config"),
-				Description: "This is the file path for Aqua provider configuration. The default configuration path is `~/.aqua/tf.config`. Can alternatively be sourced from the `AQUA_CONFIG` environment variable.",
+                        "config_path": {
+                                Type:        schema.TypeString,
+                                Optional:    true,
+                                DefaultFunc: schema.EnvDefaultFunc("AQUA_CONFIG", "~/.aquasec/tf.config"),
+                                Description: "This is the file path for Aqua provider configuration. The default configuration path is `~/.aquasec/tf.config`. Can alternatively be sourced from the `AQUA_CONFIG` environment variable.",
 			},
 			"validate": {
 				Type:        schema.TypeBool,

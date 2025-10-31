@@ -16,7 +16,7 @@ provider "aquasec" {
   verify_tls = false // Alternatively sourced from $AQUA_TLS_VERIFY
 
   // Alternatively, you can provide these configurations from a config file, and configure the provider as below
-  // config_path = '/path/to/tf.config' // defaults to '~/.aqua/tf.config' -- Alternatively sourced from $AQUA_CONFIG
+  // config_path = '/path/to/tf.config' // defaults to '~/.aquasec/tf.config' -- Alternatively sourced from $AQUA_CONFIG
   // validate = false // Skip provider credential validation
 
   //Alternatively, you can use API key authentication as below instead of username/password authentication.
