@@ -52,9 +52,10 @@ func resourceRegistry() *schema.Resource {
 				Optional:    true,
 			},
 			"type": {
-				Type:        schema.TypeString,
-				Description: "Registry type (HUB / V1 / V2 / ACR / GAR / ENGINE / AWS / GCR).",
-				Required:    true,
+				Type: schema.TypeString,
+				Description: "Registry type (HUB / V1 / V2 / ACR / GAR / AWS / GCR / ENGINE / CTRDENGINE / " +
+					"ART / NEXUS / QUAY / DTR / ATOMIC / OPENSHIFT / CF / HARBOR / ICR / PODMAN)",
+				Required: true,
 			},
 			"username": {
 				Type:        schema.TypeString,

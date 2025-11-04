@@ -91,7 +91,7 @@ resource "aquasec_integration_registry" "integration_registry" {
 ### Required
 
 - `name` (String) The name of the registry; string, required - this will be treated as the registry's ID, so choose a simple alphanumerical name without special signs and spaces
-- `type` (String) Registry type (HUB / V1 / V2 / ACR / GAR / ENGINE / AWS / GCR).
+- `type` (String) Registry type (HUB / V1 / V2 / ACR / GAR / AWS / GCR / ENGINE / CTRDENGINE / ART / NEXUS / QUAY / DTR / ATOMIC / OPENSHIFT / CF / HARBOR / ICR / PODMAN)
 
 ### Optional
 

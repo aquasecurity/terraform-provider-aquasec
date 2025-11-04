@@ -24,9 +24,10 @@ func dataSourceRegistry() *schema.Resource {
 				Computed:    true,
 			},
 			"type": {
-				Type:        schema.TypeString,
-				Description: "Registry type (HUB / V1 / V2 / ACR / GAR / ENGINE / AWS / GCR).",
-				Computed:    true,
+				Type: schema.TypeString,
+				Description: "Registry type (HUB / V1 / V2 / ACR / GAR / AWS / GCR / ENGINE / CTRDENGINE / " +
+					"ART / NEXUS / QUAY / DTR / ATOMIC / OPENSHIFT / CF / HARBOR / ICR / PODMAN)",
+				Computed: true,
 			},
 			"name": {
 				Type:        schema.TypeString,
