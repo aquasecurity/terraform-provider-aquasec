@@ -247,14 +247,6 @@ func providerConfigure(ctx context.Context, d *schema.ResourceData) (interface{}
 				Summary:  "Initializing provider, aqua_url parameter is missing.",
 			})
 		}
-		apiPairOK := apiKey != "" && secretkey != ""
-		upOK := username != "" && password != ""
-		if !apiPairOK && !upOK {
-			diags = append(diags, diag.Diagnostic{
-				Severity: diag.Error,
-				Summary:  "Initializing provider, aqua_api_secret is missing while aqua_api_key is set.",
-			})
-		}
 		if username == "" {
 			diags = append(diags, diag.Diagnostic{
 				Severity: diag.Error,
