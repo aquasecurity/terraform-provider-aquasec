@@ -48,16 +48,19 @@ const UserAgentBase = "terraform-provider-aquasec"
 
 var version string
 
-func NewClientWithTokenAuth(urlStr, user, password string, verifyTLS bool, caCertByte []byte) *Client {
+func NewClientWithTokenAuth(urlStr, user, password string, verifyTLS bool, caCertByte []byte) (*Client, error) {
 	return NewClient(urlStr, user, password, "", "", false, verifyTLS, caCertByte)
 }
 
-func NewClientWithAPIKey(urlStr, apiKey, secretkey string, verifyTLS bool, caCertByte []byte) *Client {
+func NewClientWithAPIKey(urlStr, apiKey, secretkey string, verifyTLS bool, caCertByte []byte) (*Client, error) {
+	if strings.TrimSpace(apiKey) == "" || strings.TrimSpace(secretkey) == "" {
+		return nil, fmt.Errorf("api key auth requires both aqua_api_key and aqua_api_secret")
+	}
 	return NewClient(urlStr, "", "", apiKey, secretkey, true, verifyTLS, caCertByte)
 }
 
 // NewClient - initialize and return the Client
-func NewClient(url, user, password, apiKey, secretkey string, useAPIKey, verifyTLS bool, caCertByte []byte) *Client {
+func NewClient(url, user, password, apiKey, secretkey string, useAPIKey, verifyTLS bool, caCertByte []byte) (*Client, error) {
 	tlsConfig := &tls.Config{
 		InsecureSkipVerify: !verifyTLS,
 	}
@@ -133,7 +136,7 @@ func NewClient(url, user, password, apiKey, secretkey string, useAPIKey, verifyT
 		break
 	}
 
-	return c
+	return c, nil
 }
 
 func (cli *Client) AuthenticateWithAPIKey() (string, error) {

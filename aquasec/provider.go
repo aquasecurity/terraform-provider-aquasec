@@ -241,25 +241,22 @@ func providerConfigure(ctx context.Context, d *schema.ResourceData) (interface{}
 	}
 
 	if validate {
-		if apiKey == "" {
-			if username == "" {
-				diags = append(diags, diag.Diagnostic{
-					Severity: diag.Error,
-					Summary:  "Initializing provider, username parameter is missing.",
-				})
-			}
-
-			if password == "" {
-				diags = append(diags, diag.Diagnostic{
-					Severity: diag.Error,
-					Summary:  "Initializing provider, password parameter is missing.",
-				})
-			}
-		}
 		if aquaURL == "" {
 			diags = append(diags, diag.Diagnostic{
 				Severity: diag.Error,
 				Summary:  "Initializing provider, aqua_url parameter is missing.",
+			})
+		}
+		if username == "" {
+			diags = append(diags, diag.Diagnostic{
+				Severity: diag.Error,
+				Summary:  "Initializing provider, username parameter is missing.",
+			})
+		}
+		if password == "" {
+			diags = append(diags, diag.Diagnostic{
+				Severity: diag.Error,
+				Summary:  "Initializing provider, password parameter is missing.",
 			})
 		}
 	}
@@ -283,8 +280,24 @@ func providerConfigure(ctx context.Context, d *schema.ResourceData) (interface{}
 	}
 
 	var aquaClient *client.Client
-	if apiKey != "" {
-		aquaClient = client.NewClientWithAPIKey(aquaURL, apiKey, secretkey, verifyTLS, caCertByte)
+	if username != "" && password != "" {
+		aquaClient, err = client.NewClientWithTokenAuth(aquaURL, username, password, verifyTLS, caCertByte)
+		if err != nil {
+			return nil, diag.Diagnostics{diag.Diagnostic{
+				Severity: diag.Error,
+				Summary:  "Error creating Aqua client with token authentication",
+				Detail:   err.Error(),
+			}}
+		}
+	} else if apiKey != "" {
+		aquaClient, err = client.NewClientWithAPIKey(aquaURL, apiKey, secretkey, verifyTLS, caCertByte)
+		if err != nil {
+			return nil, diag.Diagnostics{diag.Diagnostic{
+				Severity: diag.Error,
+				Summary:  "Error creating Aqua client with API key",
+				Detail:   err.Error(),
+			}}
+		}
 		if v, ok := d.GetOk("validity"); ok {
 			aquaClient.Validity = v.(int)
 		}
@@ -295,7 +308,11 @@ func providerConfigure(ctx context.Context, d *schema.ResourceData) (interface{}
 			aquaClient.CSPRoles = convertStringArr(v.([]interface{}))
 		}
 	} else {
-		aquaClient = client.NewClientWithTokenAuth(aquaURL, username, password, verifyTLS, caCertByte)
+		return nil, diag.Diagnostics{diag.Diagnostic{
+			Severity: diag.Error,
+			Summary:  "Missing credentials",
+			Detail:   "Provide username+password or aqua_api_key+aqua_api_secret.",
+		}}
 	}
 
 	if validate {

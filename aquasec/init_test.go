@@ -68,9 +68,15 @@ func init() {
 
 	var aquaClient *client.Client
 	if useAPIKey {
-		aquaClient = client.NewClientWithAPIKey(aquaURL, apiKey, secretKey, verifyTLS, caCertByte)
+		aquaClient, err = client.NewClientWithAPIKey(aquaURL, apiKey, secretKey, verifyTLS, caCertByte)
+		if err != nil {
+			panic(fmt.Errorf("failed to create client with api key auth, error: %s", err))
+		}
 	} else {
-		aquaClient = client.NewClientWithTokenAuth(aquaURL, username, password, verifyTLS, caCertByte)
+		aquaClient, err = client.NewClientWithTokenAuth(aquaURL, username, password, verifyTLS, caCertByte)
+		if err != nil {
+			panic(fmt.Errorf("failed to create client with token auth, error: %s", err))
+		}
 	}
 	token, url, err := aquaClient.GetAuthToken()
 
