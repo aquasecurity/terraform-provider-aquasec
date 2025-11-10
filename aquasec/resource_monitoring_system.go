@@ -1,0 +1,160 @@
+package aquasec
+
+import (
+	"context"
+
+	"github.com/aquasecurity/terraform-provider-aquasec/client"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+)
+
+func resourceMonitoringSystem() *schema.Resource {
+	return &schema.Resource{
+		CreateContext: resourceMonitoringSystemCreate,
+		ReadContext:   resourceMonitoringSystemRead,
+		UpdateContext: resourceMonitoringSystemUpdate,
+		DeleteContext: resourceMonitoringSystemDelete,
+		Importer: &schema.ResourceImporter{
+			StateContext: schema.ImportStatePassthroughContext,
+		},
+		Schema: map[string]*schema.Schema{
+			"id": {
+				Type:        schema.TypeString,
+				Description: "Id of the monitoring system.",
+				Computed:    true,
+			},
+			"name": {
+				Type:        schema.TypeString,
+				Description: "The name of the monitoring system.",
+				Required:    true,
+			},
+			"type": {
+				Type:        schema.TypeString,
+				Description: "The type of the monitoring system.",
+				Required:    true,
+			},
+			"token": {
+				Type:        schema.TypeString,
+				Description: "The authentication token for the monitoring system.",
+				Optional:    true,
+				Sensitive:   true,
+			},
+			"enabled": {
+				Type:        schema.TypeBool,
+				Description: "Indicates whether the monitoring system is enabled.",
+				Required:    true,
+			},
+			"interval": {
+				Type:        schema.TypeInt,
+				Description: "The interval in minutes for monitoring checks.",
+				Optional:    true,
+			},
+		},
+	}
+}
+
+func resourceMonitoringSystemCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+	ac := m.(*client.Client)
+	name := d.Get("name").(string)
+	enabled := d.Get("enabled").(bool)
+	interval := d.Get("interval").(int)
+	typeMonSys := d.Get("type").(string)
+	var tokenPtr *string
+	if v, ok := d.GetOk("token"); ok {
+		s := v.(string)
+		if s != "" {
+			tokenPtr = &s
+		}
+	}
+
+	monitoringSystem := client.MonitoringSystem{
+		Name:     name,
+		Enabled:  enabled,
+		Interval: interval,
+		Token:    tokenPtr,
+		Type:     typeMonSys,
+	}
+
+	err := ac.CreateMonitoringSystem(monitoringSystem)
+	if err != nil {
+		return diag.FromErr(err)
+	}
+
+	d.SetId(name)
+	return resourceMonitoringSystemRead(ctx, d, m)
+}
+
+func resourceMonitoringSystemRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+	ac := m.(*client.Client)
+	name := d.Id()
+
+	monitoringSystem, err := ac.GetMonitoringSystem(name)
+	if err != nil {
+		return diag.FromErr(err)
+	}
+
+	if monitoringSystem == nil {
+		d.SetId("")
+		return nil
+	}
+
+	d.Set("name", monitoringSystem.Name)
+	d.Set("type", monitoringSystem.Type)
+	d.Set("enabled", monitoringSystem.Enabled)
+	d.Set("interval", monitoringSystem.Interval)
+	d.Set("token", monitoringSystem.Token)
+
+	return nil
+}
+
+func resourceMonitoringSystemUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+	ac := m.(*client.Client)
+	name := d.Get("name").(string)
+	enabled := d.Get("enabled").(bool)
+	typeMonSys := d.Get("type").(string)
+
+	if d.HasChanges("interval", "token") {
+		interval := d.Get("interval").(int)
+		var tokenPtr *string
+		if v, ok := d.GetOk("token"); ok {
+			s := v.(string)
+			if s != "" {
+				tokenPtr = &s
+			}
+		}
+
+		monitoringSystem := client.MonitoringSystem{
+			Name:     name,
+			Enabled:  enabled,
+			Interval: interval,
+			Token:    tokenPtr,
+			Type:     typeMonSys,
+		}
+
+		err := ac.UpdateMonitoringSystem(monitoringSystem)
+		if err != nil {
+			return diag.FromErr(err)
+		}
+	}
+	return resourceMonitoringSystemRead(ctx, d, m)
+}
+
+func resourceMonitoringSystemDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+	ac := m.(*client.Client)
+	name := d.Get("name").(string)
+	enabled := false
+	interval := d.Get("interval").(int)
+
+	monitoringSystem := client.MonitoringSystem{
+		Name:     name,
+		Enabled:  enabled,
+		Interval: interval,
+	}
+	err := ac.DeleteMonitoringSystem(monitoringSystem)
+	if err != nil {
+		return diag.FromErr(err)
+	}
+
+	d.SetId("")
+	return nil
+}
