@@ -68,7 +68,7 @@ description: |-
 - `password` (String) The password for registry authentication
 - `prefixes` (List of String) List of possible prefixes to image names pulled from the registry
 - `registries_type` (String) The type of registries
-- `type` (String) Registry type (HUB / V1 / V2 / ACR / GAR / ENGINE / AWS / GCR).
+- `type` (String) Registry type (HUB / V1 / V2 / ACR / GAR / AWS / GCR / ENGINE / CTRDENGINE / ART / NEXUS / QUAY / DTR / ATOMIC / OPENSHIFT / CF / HARBOR / ICR / PODMAN)
 - `url` (String) The URL, address or region of the registry
 - `username` (String) The username for registry authentication.
 
