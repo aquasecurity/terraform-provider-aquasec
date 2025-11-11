@@ -277,20 +277,23 @@ func validateSaasResourceWarning(legacyResource, newResource string) schema.Sche
 }
 
 func flattenMonitoringSystem(monitors *[]client.MonitoringSystem) []interface{} {
-	if monitors != nil {
-		ms := make([]interface{}, len(*monitors), len(*monitors))
-		for i, monitor := range *monitors {
-			m := make(map[string]interface{})
-
-			m["name"] = monitor.Name
-			m["enabled"] = monitor.Enabled
-			m["token"] = monitor.Token
-			m["type"] = monitor.Type
-			m["interval"] = monitor.Interval
-
-			ms[i] = m
-		}
-		return ms
+	if monitors == nil {
+		return []interface{}{}
 	}
-	return make([]interface{}, 0)
+	ms := make([]interface{}, len(*monitors))
+	for i, monitor := range *monitors {
+		m := map[string]interface{}{
+			"name":     monitor.Name,
+			"enabled":  monitor.Enabled,
+			"type":     monitor.Type,
+			"interval": monitor.Interval,
+		}
+		if monitor.Token != nil {
+			m["token"] = *monitor.Token
+		} else {
+			m["token"] = ""
+		}
+		ms[i] = m
+	}
+	return ms
 }

@@ -18,15 +18,11 @@ func resourceMonitoringSystem() *schema.Resource {
 			StateContext: schema.ImportStatePassthroughContext,
 		},
 		Schema: map[string]*schema.Schema{
-			"id": {
-				Type:        schema.TypeString,
-				Description: "Id of the monitoring system.",
-				Computed:    true,
-			},
 			"name": {
 				Type:        schema.TypeString,
 				Description: "The name of the monitoring system.",
-				Required:    true,
+				Optional:    true,
+				Default:     "Prometheus",
 			},
 			"type": {
 				Type:        schema.TypeString,
@@ -87,34 +83,41 @@ func resourceMonitoringSystemCreate(ctx context.Context, d *schema.ResourceData,
 func resourceMonitoringSystemRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	ac := m.(*client.Client)
 	name := d.Id()
+	if name == "" {
+		if v, ok := d.GetOk("name"); ok {
+			name = v.(string)
+		}
+	}
 
-	monitoringSystem, err := ac.GetMonitoringSystem(name)
+	monitor, err := ac.GetMonitoringSystem(name)
 	if err != nil {
 		return diag.FromErr(err)
 	}
 
-	if monitoringSystem == nil {
+	if monitor == nil {
 		d.SetId("")
 		return nil
 	}
-
-	d.Set("name", monitoringSystem.Name)
-	d.Set("type", monitoringSystem.Type)
-	d.Set("enabled", monitoringSystem.Enabled)
-	d.Set("interval", monitoringSystem.Interval)
-	d.Set("token", monitoringSystem.Token)
-
+	_ = d.Set("name", monitor.Name)
+	_ = d.Set("type", monitor.Type)
+	_ = d.Set("enabled", monitor.Enabled)
+	_ = d.Set("interval", monitor.Interval)
+	if monitor.Token != nil {
+		_ = d.Set("token", *monitor.Token)
+	}
+	d.SetId(monitor.Name)
 	return nil
 }
 
 func resourceMonitoringSystemUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	ac := m.(*client.Client)
 	name := d.Get("name").(string)
-	enabled := d.Get("enabled").(bool)
-	typeMonSys := d.Get("type").(string)
 
-	if d.HasChanges("interval", "token") {
+	if d.HasChanges("interval", "token", "enabled", "type") {
 		interval := d.Get("interval").(int)
+		enabled := d.Get("enabled").(bool)
+		typeMonSys := d.Get("type").(string)
+
 		var tokenPtr *string
 		if v, ok := d.GetOk("token"); ok {
 			s := v.(string)

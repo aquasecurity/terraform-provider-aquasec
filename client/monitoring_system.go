@@ -10,7 +10,6 @@ import (
 )
 
 type MonitoringSystem struct {
-	Id       string  `json:"id"`
 	Name     string  `json:"name"`
 	Enabled  bool    `json:"enabled"`
 	Interval int     `json:"interval"`
@@ -39,11 +38,7 @@ func (cli *Client) GetMonitoringSystems() ([]MonitoringSystem, error) {
 			return nil, err
 		}
 	}
-	err = json.Unmarshal([]byte(body), &response)
-	if err != nil {
-		log.Printf("error unmarshalling monitoring systems list: %v", err)
-		return nil, err
-	}
+
 	return response, nil
 }
 
@@ -68,10 +63,6 @@ func (cli *Client) GetMonitoringSystem(name string) (*MonitoringSystem, error) {
 			log.Printf("Error calling func GetMonitoringSystem from %s%s, %v ", cli.url, apiPath, err)
 			return nil, err
 		}
-	}
-	if response.Name == "" {
-		err = fmt.Errorf("monitoring application: %s not found 404", name)
-		return nil, err
 	}
 	return &response, nil
 }
@@ -107,11 +98,14 @@ func (cli *Client) UpdateMonitoringSystem(monitoringSystem MonitoringSystem) err
 	apiPath := fmt.Sprintf("/api/v1/settings/monitoring/%s", monitoringSystem.Name)
 	err = cli.limiter.Wait(context.Background())
 	if err != nil {
-		return nil
+		return err
 	}
 	resp, data, errs := request.Clone().Set("Authorization", "Bearer "+cli.token).Put(cli.url + apiPath).Send(string(payload)).End()
 	if errs != nil {
-		return errors.Wrap(err, "failed modifying monitoring system")
+		return errors.Errorf("update monitoring system: request failed: %s", errs)
+	}
+	if resp == nil {
+		return fmt.Errorf("update monitoring system: no HTTP response (nil)")
 	}
 	if resp.StatusCode != 201 && resp.StatusCode != 204 && resp.StatusCode != 200 {
 		return errors.Errorf(data)
@@ -133,7 +127,7 @@ func (cli *Client) DeleteMonitoringSystem(monitoringSystem MonitoringSystem) err
 	}
 	resp, data, errs := request.Clone().Set("Authorization", "Bearer "+cli.token).Put(cli.url + apiPath).Send(string(payload)).End()
 	if errs != nil {
-		return errors.Wrap(err, "failed deleting monitoring system")
+		return errors.Errorf("delete monitoring system: request failed: %s", errs)
 	}
 
 	if resp.StatusCode != 201 && resp.StatusCode != 204 && resp.StatusCode != 200 {

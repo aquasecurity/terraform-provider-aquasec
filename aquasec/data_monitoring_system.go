@@ -12,11 +12,6 @@ func dataSourceMonitoringSystem() *schema.Resource {
 	return &schema.Resource{
 		ReadContext: dataSourceMonitoringSystemRead,
 		Schema: map[string]*schema.Schema{
-			"id": {
-				Type:        schema.TypeString,
-				Description: "A list of existing monitoring system.",
-				Computed:    true,
-			},
 			"monitors": {
 				Type:        schema.TypeList,
 				Description: "List of existing monitoring systems.",
@@ -59,15 +54,18 @@ func dataSourceMonitoringSystem() *schema.Resource {
 func dataSourceMonitoringSystemRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	ac := m.(*client.Client)
 	result, err := ac.GetMonitoringSystems()
-	if err == nil {
-		monitors := flattenMonitoringSystem(&result)
-		if err := d.Set("monitors", monitors); err != nil {
-			return diag.FromErr(err)
-		}
-	} else {
+	if err != nil {
+		return diag.FromErr(err)
+	}
+	monitors := flattenMonitoringSystem(&result)
+	if err := d.Set("monitors", monitors); err != nil {
 		return diag.FromErr(err)
 	}
 
+	if len(result) == 0 {
+		d.SetId("")
+		return nil
+	}
 	d.SetId(result[0].Name)
 	return nil
 }
