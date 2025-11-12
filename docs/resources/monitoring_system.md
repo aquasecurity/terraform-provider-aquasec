@@ -28,16 +28,16 @@ resource "aquasec_monitoring_system" "prometheus_monitoring" {
 ### Required
 
 - `enabled` (Boolean) Indicates whether the monitoring system is enabled.
-- `name` (String) The name of the monitoring system.
 - `type` (String) The type of the monitoring system.
 
 ### Optional
 
 - `interval` (Number) The interval in minutes for monitoring checks.
+- `name` (String) The name of the monitoring system.
 - `token` (String, Sensitive) The authentication token for the monitoring system.
 
 ### Read-Only
 
-- `id` (String) Id of the monitoring system.
+- `id` (String) The ID of this resource.
 
 

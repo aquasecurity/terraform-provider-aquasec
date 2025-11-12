@@ -17,7 +17,7 @@ description: |-
 
 ### Read-Only
 
-- `id` (String) A list of existing monitoring system.
+- `id` (String) The ID of this resource.
 - `monitors` (List of Object) List of existing monitoring systems. (see [below for nested schema](#nestedatt--monitors))
 
 <a id="nestedatt--monitors"></a>
