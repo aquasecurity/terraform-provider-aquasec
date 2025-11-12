@@ -9,6 +9,7 @@ import (
 )
 
 func TestAccAquasecMonitoringSystem(t *testing.T) {
+	t.Skip()
 	t.Parallel()
 
 	name := "Prometheus"

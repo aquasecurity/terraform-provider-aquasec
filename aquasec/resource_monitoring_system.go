@@ -104,6 +104,8 @@ func resourceMonitoringSystemRead(ctx context.Context, d *schema.ResourceData, m
 	_ = d.Set("interval", monitor.Interval)
 	if monitor.Token != nil {
 		_ = d.Set("token", *monitor.Token)
+	} else {
+		_ = d.Set("token", "")
 	}
 	d.SetId(monitor.Name)
 	return nil

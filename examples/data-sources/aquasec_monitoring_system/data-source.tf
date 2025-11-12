@@ -1,6 +1,4 @@
-data "aquasec_monitoring_systems" "prom_mon" {
-  depends_on = [aquasec_monitoring_system.prometheus_monitoring]
-}
+data "aquasec_monitoring_systems" "prom_mon" {}
 
 output "prom_mon_name" {
   value = data.aquasec_monitoring_systems.prom_mon.monitors[0].name
