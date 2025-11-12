@@ -100,13 +100,16 @@ func (cli *Client) CreateMonitoringSystem(monitoringSystem MonitoringSystem) err
 	if errs != nil {
 		return errors.Errorf("error calling %s", apiPath)
 	}
+	if resp == nil {
+		return fmt.Errorf("update monitoring system: no HTTP response (nil)")
+	}
 	if resp.StatusCode != 201 && resp.StatusCode != 204 && resp.StatusCode != 200 {
 		return errors.Errorf(body)
 	}
 	return nil
 }
 
-func (cli *Client) UpdateMonitoringSystem(monitoringSystem MonitoringSystem) error {
+/* func (cli *Client) UpdateMonitoringSystem(monitoringSystem MonitoringSystem) error {
 	payload, err := json.Marshal(monitoringSystem)
 	if err != nil {
 		return err
@@ -128,7 +131,7 @@ func (cli *Client) UpdateMonitoringSystem(monitoringSystem MonitoringSystem) err
 		return errors.Errorf(data)
 	}
 	return nil
-}
+} */
 
 func (cli *Client) DeleteMonitoringSystem(monitoringSystem MonitoringSystem) error {
 	payload, err := json.Marshal(monitoringSystem)
