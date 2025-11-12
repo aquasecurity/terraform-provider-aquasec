@@ -109,7 +109,7 @@ func (cli *Client) CreateMonitoringSystem(monitoringSystem MonitoringSystem) err
 	return nil
 }
 
-/* func (cli *Client) UpdateMonitoringSystem(monitoringSystem MonitoringSystem) error {
+func (cli *Client) UpdateMonitoringSystem(monitoringSystem MonitoringSystem) error {
 	payload, err := json.Marshal(monitoringSystem)
 	if err != nil {
 		return err
@@ -131,7 +131,7 @@ func (cli *Client) CreateMonitoringSystem(monitoringSystem MonitoringSystem) err
 		return errors.Errorf(data)
 	}
 	return nil
-} */
+}
 
 func (cli *Client) DeleteMonitoringSystem(monitoringSystem MonitoringSystem) error {
 	payload, err := json.Marshal(monitoringSystem)

@@ -12,6 +12,7 @@ func resourceMonitoringSystem() *schema.Resource {
 	return &schema.Resource{
 		CreateContext: resourceMonitoringSystemCreate,
 		ReadContext:   resourceMonitoringSystemRead,
+		UpdateContext: resourceMonitoringSYstemUpdate,
 		DeleteContext: resourceMonitoringSystemDelete,
 		Importer: &schema.ResourceImporter{
 			StateContext: schema.ImportStatePassthroughContext,
@@ -110,6 +111,36 @@ func resourceMonitoringSystemRead(ctx context.Context, d *schema.ResourceData, m
 	return nil
 }
 
+func resourceMonitoringSYstemUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+	ac := m.(*client.Client)
+	oldName := d.Id()
+
+	if d.HasChanges("interval", "enabled", "token", "type") {
+		enabled := d.Get("enabled").(bool)
+		interval := d.Get("interval").(int)
+		msType := d.Get("type").(string)
+		var tokenPtr *string
+		if v, ok := d.GetOk("token"); ok {
+			s := v.(string)
+			if s != "" {
+				tokenPtr = &s
+			}
+		}
+
+		monitor := client.MonitoringSystem{
+			Name:     oldName,
+			Enabled:  enabled,
+			Token:    tokenPtr,
+			Interval: interval,
+			Type:     msType,
+		}
+		err := ac.UpdateMonitoringSystem(monitor)
+		if err != nil {
+			return diag.FromErr(err)
+		}
+	}
+	return resourceMonitoringSystemRead(ctx, d, m)
+}
 func resourceMonitoringSystemDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	ac := m.(*client.Client)
 	name := d.Get("name").(string)
