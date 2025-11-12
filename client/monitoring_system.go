@@ -26,20 +26,28 @@ func (cli *Client) GetMonitoringSystems() ([]MonitoringSystem, error) {
 	if err != nil {
 		return nil, err
 	}
-	events, body, errs := request.Clone().Set("Authorization", "Bearer "+cli.token).Get(cli.url + apiPath).End()
+	resp, body, errs := request.Clone().Set("Authorization", "Bearer "+cli.token).Get(cli.url + apiPath).End()
 	if errs != nil {
 		err = fmt.Errorf("error calling %s", apiPath)
 		return nil, err
 	}
-	if events.StatusCode == 200 {
+	if resp == nil {
+		return nil, fmt.Errorf("no response from %s", apiPath)
+	}
+	if resp.StatusCode == 200 {
 		err = json.Unmarshal([]byte(body), &response)
 		if err != nil {
-			log.Printf("Error calling func GetMonitoringSystems from %s%s, %v ", cli.url, apiPath, err)
+			log.Printf("Error calling func GetMonitoringSystem from %s%s, %v ", cli.url, apiPath, err)
 			return nil, err
 		}
+		return response, nil
 	}
 
-	return response, nil
+	if resp.StatusCode == 404 {
+		return nil, nil
+	} else {
+		return nil, fmt.Errorf("GetMonitoringSystem: unexpected status %d from %s: %s", resp.StatusCode, apiPath, body)
+	}
 }
 
 func (cli *Client) GetMonitoringSystem(name string) (*MonitoringSystem, error) {
@@ -57,14 +65,23 @@ func (cli *Client) GetMonitoringSystem(name string) (*MonitoringSystem, error) {
 		err = fmt.Errorf("error calling %s", apiPath)
 		return nil, err
 	}
+	if resp == nil {
+		return nil, fmt.Errorf("no response from %s", apiPath)
+	}
 	if resp.StatusCode == 200 {
 		err = json.Unmarshal([]byte(data), &response)
 		if err != nil {
 			log.Printf("Error calling func GetMonitoringSystem from %s%s, %v ", cli.url, apiPath, err)
 			return nil, err
 		}
+		return &response, nil
 	}
-	return &response, nil
+
+	if resp.StatusCode == 404 {
+		return nil, nil
+	} else {
+		return nil, fmt.Errorf("GetMonitoringSystem: unexpected status %d from %s: %s", resp.StatusCode, apiPath, data)
+	}
 }
 
 func (cli *Client) CreateMonitoringSystem(monitoringSystem MonitoringSystem) error {

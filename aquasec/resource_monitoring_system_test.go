@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/acctest"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
@@ -12,7 +11,7 @@ import (
 func TestAccAquasecMonitoringSystem(t *testing.T) {
 	t.Parallel()
 
-	name := acctest.RandomWithPrefix("tf-ms")
+	name := "Prometheus"
 	msType := "prometheus"
 	token := "tf-acc-test-token"
 	enabled := true

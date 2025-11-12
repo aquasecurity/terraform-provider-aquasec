@@ -147,11 +147,13 @@ func resourceMonitoringSystemDelete(ctx context.Context, d *schema.ResourceData,
 	name := d.Get("name").(string)
 	enabled := false
 	interval := d.Get("interval").(int)
+	msType := d.Get("type").(string)
 
 	monitoringSystem := client.MonitoringSystem{
 		Name:     name,
 		Enabled:  enabled,
 		Interval: interval,
+		Type:     msType,
 	}
 	err := ac.DeleteMonitoringSystem(monitoringSystem)
 	if err != nil {
