@@ -978,6 +978,14 @@ resource "aquasec_serverless_application" "serverless_application" {
   auto_pull_time     = "03:00"
 }
 
+resource "aquasec_monitoring_system" "prometheus_monitoring" {
+  name     = "Prometheus"
+  enabled  = true
+  interval = 1
+  type     = "prometheus"
+  token    = ""
+}
+
 #Data sources block
 data "aquasec_acknowledges" "acknowledges" {}
 
@@ -1185,4 +1193,14 @@ data "aquasec_log_managements" "log_managements" {}
 
 output "log_managements" {
   value = data.aquasec_log_managements.log_managements
+}
+
+data "aquasec_monitoring_systems" "prom_mon" {}
+
+output "prom_mon_name" {
+  value = data.aquasec_monitoring_systems.prom_mon.monitors[0].name
+}
+
+output "prom_mon_interval" {
+  value = length(data.aquasec_monitoring_systems.prom_mon.monitors) > 0 ? data.aquasec_monitoring_systems.prom_mon.monitors[0].interval : null
 }
