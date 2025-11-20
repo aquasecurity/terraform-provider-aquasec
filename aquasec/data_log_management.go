@@ -2,6 +2,8 @@ package aquasec
 
 import (
 	"context"
+	"fmt"
+	"sort"
 
 	"github.com/aquasecurity/terraform-provider-aquasec/client"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
@@ -15,7 +17,7 @@ func dataLogManagement() *schema.Resource {
 			"name": {
 				Type:        schema.TypeString,
 				Description: "The name of the log-management configuration to look up.",
-				Required:    true,
+				Computed:    true,
 			},
 			"enable": {
 				Type:        schema.TypeBool,
@@ -212,66 +214,92 @@ func dataLogManagementRead(ctx context.Context, d *schema.ResourceData, m interf
 	ac := m.(*client.Client)
 	var diags diag.Diagnostics
 
-	name := d.Get("name").(string)
-	if name == "" {
-		return diag.Errorf("attribute \"name\" must be set")
-	}
-
 	logMgmt, err := ac.GetLogManagements()
 	if err != nil {
 		return diag.FromErr(err)
 	}
-	if logMgmt == nil {
+	if logMgmt == nil || len(*logMgmt) == 0 {
+		d.SetId("")
 		return diag.Errorf("no log management configurations returned")
 	}
+	names := make([]string, 0, len(*logMgmt))
+	for k := range *logMgmt {
+		names = append(names, k)
+	}
+	sort.Strings(names)
 
-	service, ok := (*logMgmt)[name]
-	if !ok {
-		return diag.Errorf("log management %q not found", name)
+	repIndex := -1
+	for i, providerName := range names {
+		svc := (*logMgmt)[providerName]
+		if svc.Enable {
+			repIndex = i
+			break
+		}
+	}
+	if repIndex == -1 {
+		repIndex = 0
+	}
+	repName := names[repIndex]
+	repSvc := (*logMgmt)[repName]
+
+	set := func(key string, value interface{}) {
+		if err := d.Set(key, value); err != nil {
+			diags = append(diags, diag.Diagnostic{
+				Severity: diag.Error,
+				Summary:  "Failed to set field",
+				Detail:   fmt.Sprintf("%s: %v", key, err),
+			})
+		}
 	}
 
-	if service.Name == "" {
-		service.Name = name
+	name := repSvc.Name
+	if name == "" {
+		name = repName
 	}
 
-	d.SetId(service.Name)
-	_ = d.Set("name", service.Name)
-	_ = d.Set("enable", service.Enable)
-	_ = d.Set("audit_filter", service.AuditFilter)
-	_ = d.Set("url", service.URL)
-	_ = d.Set("network", service.Network)
-	_ = d.Set("user", service.User)
-	_ = d.Set("password", service.Password)
-	_ = d.Set("token", service.Token)
-	_ = d.Set("workspace", service.Workspace)
-	_ = d.Set("key", service.Key)
-	_ = d.Set("verify_cert", service.VerifyCert)
-	_ = d.Set("ca_cert", service.CACert)
-	_ = d.Set("enable_alphanumeric_sorting", service.EnableAlphanumericSorting)
-	_ = d.Set("index", service.Index)
-	_ = d.Set("source", service.Source)
-	_ = d.Set("sourcetype", service.SourceType)
-	_ = d.Set("authentication_option", service.AuthenticationOption)
-	_ = d.Set("projectid", service.ProjectID)
-	_ = d.Set("logname", service.LogName)
-	_ = d.Set("credentials_json", service.CredentialsJSON)
-	_ = d.Set("external_id", service.ExternalID)
-	_ = d.Set("role_arn", service.RoleArn)
-	_ = d.Set("region", service.Region)
-	_ = d.Set("loggroup", service.LogGroup)
-	_ = d.Set("keyid", service.KeyID)
-	_ = d.Set("rule", service.Rule)
-	_ = d.Set("stream_name", service.StreamName)
-	_ = d.Set("tenant_id", service.TenantID)
-	_ = d.Set("client_id", service.ClientID)
-	_ = d.Set("client_secret", service.ClientSecret)
-	_ = d.Set("cloud", service.Cloud)
-	_ = d.Set("displayname", service.DisplayName)
-	_ = d.Set("hasnewlabel", service.HasNewLabel)
-	_ = d.Set("learnmore", service.LearnMore)
-	_ = d.Set("logo", service.Logo)
-	_ = d.Set("logofull", service.LogoFull)
-	_ = d.Set("audit", service.Audit)
+	set("name", name)
+	set("enable", repSvc.Enable)
+	set("audit_filter", repSvc.AuditFilter)
+	set("url", repSvc.URL)
+	set("network", repSvc.Network)
+	set("user", repSvc.User)
+	set("password", repSvc.Password)
+	set("token", repSvc.Token)
+	set("workspace", repSvc.Workspace)
+	set("key", repSvc.Key)
+	set("verify_cert", repSvc.VerifyCert)
+	set("ca_cert", repSvc.CACert)
+	set("enable_alphanumeric_sorting", repSvc.EnableAlphanumericSorting)
+	set("index", repSvc.Index)
+	set("source", repSvc.Source)
+	set("sourcetype", repSvc.SourceType)
+	set("authentication_option", repSvc.AuthenticationOption)
+	set("projectid", repSvc.ProjectID)
+	set("logname", repSvc.LogName)
+	set("credentials_json", repSvc.CredentialsJSON)
+	set("external_id", repSvc.ExternalID)
+	set("role_arn", repSvc.RoleArn)
+	set("region", repSvc.Region)
+	set("loggroup", repSvc.LogGroup)
+	set("keyid", repSvc.KeyID)
+	set("rule", repSvc.Rule)
+	set("stream_name", repSvc.StreamName)
+	set("tenant_id", repSvc.TenantID)
+	set("client_id", repSvc.ClientID)
+	set("client_secret", repSvc.ClientSecret)
+	set("cloud", repSvc.Cloud)
+	set("displayname", repSvc.DisplayName)
+	set("hasnewlabel", repSvc.HasNewLabel)
+	set("learnmore", repSvc.LearnMore)
+	set("logo", repSvc.Logo)
+	set("logofull", repSvc.LogoFull)
+	set("audit", repSvc.Audit)
+
+	if name != "" {
+		d.SetId(name)
+	} else {
+		d.SetId("all")
+	}
 
 	return diags
 }

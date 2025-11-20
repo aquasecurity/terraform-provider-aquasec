@@ -36,10 +36,6 @@ variable "aws_log_group" {
   description = "AWS Log Group"
   type        = string
 }
-variable "log_management_name" {
-  description = "Log Management Name"
-  type        = string
-}
 
 variable "enable_log_management" {
   description = "Enable Log Management"

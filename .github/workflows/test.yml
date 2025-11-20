@@ -82,6 +82,10 @@ jobs:
           AQUA_URL: ${{ secrets.AQUA_URL }}
           AQUA_USER: ${{ secrets.AQUA_USER }}
           AQUA_PASSWORD: ${{ secrets.AQUA_PASSWORD }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+          AWS_LOG_GROUP: ${{ secrets.AWS_LOG_GROUP }}
         with:
           max_attempts: 2
           timeout_minutes: 15

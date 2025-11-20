@@ -954,29 +954,29 @@ resource "aquasec_vmware_assurance_policy" "example_vmware_assurance_policy" {
 }
 
 resource "aquasec_log_management" "log_management_cloudwatch" {
-  name         = var.log_management_name
+  name         = "CloudWatch"
   region       = var.aws_region
   loggroup     = var.aws_log_group
   key          = var.aws_secret_key
   keyid        = var.aws_access_key
-  enable       = var.enable_log_management
+  enable       = true
   audit_filter = ""
 }
 
-resource "aquasec_serverless_application" "serverless_application" {
-  name               = "tf-test-sls"
-  region             = "us-west-1"
-  compute_provider   = 3 # 1 - AWS Lambda, 3 - Azure Function, 5 - Google Cloud Functions
-  username           = var.azure_username
-  password           = var.azure_password
-  tenant_id          = var.azure_tenant_id
-  subscription_id    = var.azure_subscription_id
-  scanner_type       = "any"
-  scanner_group_name = "test-remote-scanner"
-  description        = "Serverless Application terraform provider"
-  auto_pull          = true
-  auto_pull_time     = "03:00"
-}
+#resource "aquasec_serverless_application" "serverless_application" {
+#  name               = "tf-test-sls"
+#  region             = "us-west-1"
+#  compute_provider   = 3 # 1 - AWS Lambda, 3 - Azure Function, 5 - Google Cloud Functions
+#  username           = var.azure_username
+#  password           = var.azure_password
+#  tenant_id          = var.azure_tenant_id
+#  subscription_id    = var.azure_subscription_id
+#  scanner_type       = "any"
+#  scanner_group_name = "test-remote-scanner"
+#  description        = "Serverless Application terraform provider"
+#  auto_pull          = true
+#  auto_pull_time     = "03:00"
+#}
 
 resource "aquasec_monitoring_system" "prometheus_monitoring" {
   name     = "Prometheus"
@@ -1113,8 +1113,8 @@ output "first_group_name" {
 
 data "aquasec_image" "test" {
   registry   = "Docker Hub"
-  repository = "nginx"
-  tag        = "alpine3.19"
+  repository = "alpine"
+  tag        = "3.19"
 }
 
 output "image" {
@@ -1189,11 +1189,11 @@ output "data_dashboard_permissions_saas" {
   ]
 }
 
-data "aquasec_log_managements" "log_managements" {}
+#data "aquasec_log_managements" "log_managements" {}
 
-output "log_managements" {
-  value = data.aquasec_log_managements.log_managements
-}
+#output "log_managements" {
+#  value = data.aquasec_log_managements.log_managements
+#}
 
 data "aquasec_monitoring_systems" "prom_mon" {}
 
