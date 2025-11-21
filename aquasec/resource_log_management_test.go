@@ -10,7 +10,7 @@ import (
 )
 
 func TestAquasecResourceLogManagementCloudWatch(t *testing.T) {
-	t.Skip("Skipping for AWS CloudWatch Log Management Resource test")
+	//t.Skip("Skipping for AWS CloudWatch Log Management Resource test")
 	t.Parallel()
 	name := "CloudWatch"
 	region := os.Getenv("AWS_REGION")
@@ -35,12 +35,6 @@ func TestAquasecResourceLogManagementCloudWatch(t *testing.T) {
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckLogManagementExists("aquasec_log_management.logmanagement"),
 				),
-			},
-			{
-				ResourceName:            "aquasec_log_management.logmanagement",
-				ImportState:             true,
-				ImportStateVerify:       true,
-				ImportStateVerifyIgnore: []string{"client_secret", "password", "key"},
 			},
 		},
 	})

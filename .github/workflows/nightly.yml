@@ -43,6 +43,10 @@ jobs:
       TF_VAR_aquasec_url: ${{ secrets.AQUA_URL }}
       TF_VAR_aquasec_username: ${{ secrets.AQUA_USER }}
       TF_VAR_aquasec_password: ${{ secrets.AQUA_PASSWORD }}
+      TF_VAR_aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      TF_VAR_aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      TF_VAR_aws_region: ${{ secrets.AWS_REGION }}
+      TF_VAR_aws_log_group: ${{ secrets.AWS_LOG_GROUP }}
     defaults:
       run:
         working-directory: examples/
@@ -85,7 +89,8 @@ jobs:
           if [ -z "$exitcode" ]; then
             exitcode=99  # choose a default, e.g. 99 for unknown
           fi
-          echo "{\"version\":\"${{ matrix.terraform }}\",\"exitcode\":${{ steps.plan.outputs.exitcode }}}" > result-drift-${{ matrix.terraform }}.json
+          echo "{\"version\":\"${{ matrix.terraform }}\",\"exitcode\":${exitcode}}" \
+            > result-drift-${{ matrix.terraform }}.json
       - name: Upload result artifact
         uses: actions/upload-artifact@v4
         with:
@@ -110,6 +115,10 @@ jobs:
       AQUA_URL: ${{ secrets.AQUA_URL }}
       AQUA_USER: ${{ secrets.AQUA_USER }}
       AQUA_PASSWORD: ${{ secrets.AQUA_PASSWORD }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_REGION: ${{ secrets.AWS_REGION }}
+      AWS_LOG_GROUP: ${{ secrets.AWS_LOG_GROUP }}
     steps:
       - name: Set up Go
         uses: actions/setup-go@v5
@@ -135,7 +144,10 @@ jobs:
           AQUA_URL: ${{ secrets.AQUA_URL }}
           AQUA_USER: ${{ secrets.AQUA_USER }}
           AQUA_PASSWORD: ${{ secrets.AQUA_PASSWORD }}
-
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+          AWS_LOG_GROUP: ${{ secrets.AWS_LOG_GROUP }}
       - name: Write acceptance result file
         run: |
           version="${{ matrix.terraform }}"
@@ -148,7 +160,8 @@ jobs:
           if [ "${{ steps.accept_tests.outcome }}" = "success" ]; then
             result="success"
           fi
-          echo "{\"version\":\"${{ matrix.terraform }}\",\"result\":\"${result}\"}" > result-acceptance-${{ matrix.terraform }}.json
+          echo "{\"version\":\"${{ matrix.terraform }}\",\"result\":\"${result}\"}" \
+            > result-acceptance-${{ matrix.terraform }}.json
       - name: Debug before upload
         run: |
           echo "Current directory: $(pwd)"
