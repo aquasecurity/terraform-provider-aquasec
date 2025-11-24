@@ -24,6 +24,7 @@ func TestAquasecEnforcerGroupResource(t *testing.T) {
 		EnforcerImageName:    "registry.aquasec.com/enforcer:6.5.22034",
 		Orchestrator:         client.EnforcerOrchestrator{},
 		ScheduleScanSettings: client.EnforcerScheduleScanSettings{},
+		UnifiedMode:          false,
 	}
 
 	rootRef := enforcerGroupsRef(basicEnforcerGroup.ID)
@@ -44,6 +45,7 @@ func TestAquasecEnforcerGroupResource(t *testing.T) {
 					resource.TestCheckResourceAttr(rootRef, "enforce", fmt.Sprintf("%v", basicEnforcerGroup.Enforce)),
 					resource.TestCheckResourceAttr(rootRef, "gateways.0", basicEnforcerGroup.Gateways[0]),
 					resource.TestCheckResourceAttr(rootRef, "type", basicEnforcerGroup.Type),
+					resource.TestCheckResourceAttr(rootRef, "unified_mode", "false"),
 				),
 			},
 			{
@@ -55,6 +57,7 @@ func TestAquasecEnforcerGroupResource(t *testing.T) {
 					resource.TestCheckResourceAttr(rootRef, "enforce", fmt.Sprintf("%v", basicEnforcerGroup.Enforce)),
 					resource.TestCheckResourceAttr(rootRef, "gateways.0", basicEnforcerGroup.Gateways[0]),
 					resource.TestCheckResourceAttr(rootRef, "type", basicEnforcerGroup.Type),
+					resource.TestCheckResourceAttr(rootRef, "unified_mode", "false"),
 				),
 			},
 			{
@@ -66,6 +69,7 @@ func TestAquasecEnforcerGroupResource(t *testing.T) {
 					resource.TestCheckResourceAttr(rootRef, "enforce", fmt.Sprintf("%v", basicEnforcerGroup.Enforce)),
 					resource.TestCheckResourceAttr(rootRef, "gateways.0", basicEnforcerGroup.Gateways[0]),
 					resource.TestCheckResourceAttr(rootRef, "type", basicEnforcerGroup.Type),
+					resource.TestCheckResourceAttr(rootRef, "unified_mode", "false"),
 				),
 			},
 			{
@@ -92,6 +96,7 @@ func getBasicEnforcerGroupResource(enforcerGroup client.EnforcerGroup) string {
 			namespace = "%s"
 			master = "%v"
 		}
+		unified_mode = %v
 	}
 	`, enforcerGroup.ID,
 		enforcerGroup.ID,
@@ -104,6 +109,7 @@ func getBasicEnforcerGroupResource(enforcerGroup client.EnforcerGroup) string {
 		enforcerGroup.Orchestrator.ServiceAccount,
 		enforcerGroup.Orchestrator.Namespace,
 		enforcerGroup.Orchestrator.Master,
+		enforcerGroup.UnifiedMode,
 	)
 }
 
@@ -128,6 +134,7 @@ func getBasicEnforcerGroupResourceWithScheduleScanSettings(enforcerGroup client.
 			days      = [0,1,2,3,4,5,6]
 			time      = [4,0]
 		}
+		unified_mode = %v
 	}
 	`, enforcerGroup.ID,
 		enforcerGroup.ID,
@@ -140,6 +147,7 @@ func getBasicEnforcerGroupResourceWithScheduleScanSettings(enforcerGroup client.
 		enforcerGroup.Orchestrator.ServiceAccount,
 		enforcerGroup.Orchestrator.Namespace,
 		enforcerGroup.Orchestrator.Master,
+		enforcerGroup.UnifiedMode,
 	)
 }
 

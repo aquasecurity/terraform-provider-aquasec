@@ -419,6 +419,11 @@ func dataSourceEnforcerGroup() *schema.Resource {
 					},
 				},
 			},
+			"unified_mode": {
+				Type:        schema.TypeBool,
+				Description: "Indicates whether the Enforcer group is in unified mode.",
+				Computed:    true,
+			},
 		},
 	}
 }
@@ -490,6 +495,7 @@ func dataEnforcerGroupRead(ctx context.Context, d *schema.ResourceData, m interf
 		d.Set("allowed_applications", group.AllowedApplications)
 		d.Set("allowed_labels", group.AllowedLabels)
 		d.Set("allowed_registries", group.AllowedRegistries)
+		d.Set("unified_mode", group.UnifiedMode)
 
 		log.Println("[DEBUG]  setting id: ", name)
 		d.SetId(name)
