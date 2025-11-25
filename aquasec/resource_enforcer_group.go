@@ -438,6 +438,11 @@ func resourceEnforcerGroup() *schema.Resource {
 				Description: "Set `True` to apply User Access Control Policies to containers. Note that Aqua Enforcers must be deployed with the AQUA_RUNC_INTERCEPTION environment variable set to 0 in order to use User Access Control Policies.",
 				Optional:    true,
 			},
+			"unified_mode": {
+				Type:        schema.TypeBool,
+				Description: "",
+				Optional:    true,
+			},
 		},
 	}
 }
@@ -543,6 +548,7 @@ func resourceEnforcerGroupRead(ctx context.Context, d *schema.ResourceData, m in
 	d.Set("allowed_applications", r.AllowedApplications)
 	d.Set("allowed_labels", r.AllowedLabels)
 	d.Set("allowed_registries", r.AllowedRegistries)
+	d.Set("unified_mode", r.UnifiedMode)
 
 	return nil
 }
@@ -590,6 +596,7 @@ func resourceEnforcerGroupUpdate(ctx context.Context, d *schema.ResourceData, m 
 		"user_access_control",
 		"orchestrator",
 		"schedule_scan_settings",
+		"unified_mode",
 	) {
 
 		ac := m.(*client.Client)
@@ -839,6 +846,11 @@ func expandEnforcerGroup(d *schema.ResourceData) client.EnforcerGroup {
 	userAccessControl, ok := d.GetOk("user_access_control")
 	if ok {
 		enforcerGroup.UserAccessControl = userAccessControl.(bool)
+	}
+
+	unifiedMode, ok := d.GetOk("unified_mode")
+	if ok {
+		enforcerGroup.UnifiedMode = unifiedMode.(bool)
 	}
 
 	token, ok := d.GetOk("token")

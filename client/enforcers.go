@@ -97,6 +97,7 @@ type EnforcerGroup struct {
 	AllowedLabels                             []string                     `json:"allowed_labels"`
 	AllowedRegistries                         []string                     `json:"allowed_registries"`
 	ScheduleScanSettings                      EnforcerScheduleScanSettings `json:"schedule_scan_settings"`
+	UnifiedMode                               bool                         `json:"unified_mode"`
 }
 
 // GetEnforcerGroup - returns single Enforcer group

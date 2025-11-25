@@ -99,6 +99,7 @@ output "group_details" {
 - `syscall_enabled` (Boolean) When set to `True` allows profiling and monitoring system calls made by running containers.
 - `token` (String) The batch install token.
 - `type` (String) Enforcer Type.
+- `unified_mode` (Boolean) Indicates whether the Enforcer group is in unified mode.
 - `user_access_control` (Boolean) When set to `True` applies User Access Control Policies to containers. Note that Aqua Enforcers must be deployed with the AQUA_RUNC_INTERCEPTION environment variable set to 0 in order to use User Access Control Policies.
 
 <a id="nestedatt--command"></a>
