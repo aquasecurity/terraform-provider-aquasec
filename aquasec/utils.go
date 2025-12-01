@@ -5,6 +5,7 @@ import (
 	"fmt"
 	os "os"
 	"strings"
+	"time"
 
 	"github.com/aquasecurity/terraform-provider-aquasec/client"
 	"github.com/aquasecurity/terraform-provider-aquasec/consts"
@@ -296,4 +297,135 @@ func flattenMonitoringSystem(monitors *[]client.MonitoringSystem) []interface{} 
 		ms[i] = m
 	}
 	return ms
+}
+
+func flattenSuppressionRules(rules *[]client.SuppressionRule) ([]interface{}, string) {
+	id := ""
+	if rules != nil {
+		sr := make([]interface{}, len(*rules), len(*rules))
+		for i, rule := range *rules {
+			id = id + fmt.Sprintf("%v", rule.PolicyID)
+			r := make(map[string]interface{})
+
+			r["policy_id"] = rule.PolicyID
+			r["name"] = rule.Name
+			r["description"] = rule.Description
+			r["enable"] = rule.Enable
+			if rule.Created != nil {
+				r["created"] = rule.Created.Format(time.RFC3339)
+			} else {
+				r["created"] = ""
+			}
+			if rule.Updated != nil {
+				r["updated"] = rule.Updated.Format(time.RFC3339)
+			} else {
+				r["updated"] = ""
+			}
+			r["created_by"] = rule.CreatedBy
+			r["updated_by"] = rule.UpdatedBy
+			r["enforce"] = rule.Enforce
+			r["fail_build"] = rule.FailBuild
+			r["fail_pr"] = rule.FailPR
+			r["enforcement_schedule"] = rule.EnforcementSchedule
+			r["clear_schedule"] = rule.ClearSchedule
+			r["policy_type"] = []string{string(rule.PolicyType)}
+			r["controls"] = flattenSuppresionRuleControl(rule.Controls)
+			r["scope"] = flattenSuppresstionRuleScope(rule.Scope)
+			r["application_scopes"] = rule.ApplicationScopes
+			sr[i] = r
+		}
+		return sr, id
+	}
+	return make([]interface{}, 0), ""
+}
+
+func flattenSuppresstionRuleScope(scope1 client.BuildSecurityPolicyScope) []map[string]interface{} {
+	return []map[string]interface{}{
+		{
+			"expression": scope1.Expression,
+			"variables":  flattenSuppressionRuleScopeVariables(scope1.Variables),
+		},
+	}
+}
+
+func flattenSuppressionRuleScopeVariables(sVar []client.BuildSecurityScopeVariable) []interface{} {
+	check := make([]interface{}, len(sVar))
+	for i := range sVar {
+		check[i] = map[string]interface{}{
+			"attribute": sVar[i].Attribute,
+			"value":     sVar[i].Value,
+		}
+	}
+
+	return check
+}
+
+func flattenSuppresionRuleControl(controls []client.BuildSecuritypolicyControl) []map[string]interface{} {
+	result := make([]map[string]interface{}, 0, len(controls))
+
+	for _, c := range controls {
+		item := map[string]interface{}{
+			"type":                  c.Type,
+			"scan_type":             c.ScanType,
+			"provider":              c.Provider,
+			"service":               c.Service,
+			"dependency_name":       c.DependencyName,
+			"version":               c.Version,
+			"dependency_source":     c.DependencySource,
+			"operator":              c.Operator,
+			"severity":              c.Severity,
+			"vendorfix":             c.VendorFix,
+			"direct_only":           c.DirectOnly,
+			"reachable_only":        c.ReachableOnly,
+			"cve_ids":               c.CveIDs,
+			"avd_ids":               c.AvdIDs,
+			"dependency_ids":        c.DependencyIDs,
+			"ids":                   c.IDs,
+			"checks":                flattenSuppressionRuleCheck(c.Checks),
+			"patterns":              c.Patterns,
+			"ports":                 c.Ports,
+			"file_changes":          flattenSuppressionRuleFileChange(c.FileChanges),
+			"target_file":           c.TargetFile,
+			"target_line":           c.TargetLine,
+			"fingerprint":           c.Fingerprint,
+			"file_globs":            c.FileGlobs,
+			"published_date_filter": flattenSuppresionRulePublishedDateFilter(c.PublishedDateFilter),
+		}
+		result = append(result, item)
+	}
+	return result
+}
+
+func flattenSuppressionRuleCheck(checks []client.Check) []map[string]interface{} {
+	result := make([]map[string]interface{}, 0, len(checks))
+
+	for _, chk := range checks {
+		result = append(result, map[string]interface{}{
+			"provider_name": chk.ProviderName,
+			"service_name":  chk.ServiceName,
+			"check_id":      chk.CheckID,
+			"check_name":    chk.CheckName,
+			"scan_type":     chk.ScanType,
+		})
+	}
+
+	return result
+}
+
+func flattenSuppressionRuleFileChange(file client.FileChanges) []map[string]interface{} {
+	return []map[string]interface{}{
+		{
+			"pattern": file.Pattern,
+			"changes": file.Changes,
+		},
+	}
+}
+
+func flattenSuppresionRulePublishedDateFilter(date client.PublishedDateFilter) []map[string]interface{} {
+	return []map[string]interface{}{
+		{
+			"days":    date.Days,
+			"enabled": date.Enabled,
+		},
+	}
 }
