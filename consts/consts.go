@@ -23,4 +23,5 @@ const (
 	OIDCSettingsApiPath   = "/api/v1/settings/OIDCSettings/OIDCSettings"
 	OpenIdSettingsApiPath = "/api/v1/settings/OIDCSettings/OpenIdSettings"
 	LdapSettingsApiPath   = "/api/v1/settings/ldap"
+	SaasSupplyChainUrl    = "https://us-east-1.edge.cloud.aquasec.com/supply_chain"
 )
