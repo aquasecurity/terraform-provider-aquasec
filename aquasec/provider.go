@@ -249,17 +249,44 @@ func providerConfigure(ctx context.Context, d *schema.ResourceData) (interface{}
 				Summary:  "Initializing provider, aqua_url parameter is missing.",
 			})
 		}
-		if username == "" {
-			diags = append(diags, diag.Diagnostic{
-				Severity: diag.Error,
-				Summary:  "Initializing provider, username parameter is missing.",
-			})
-		}
-		if password == "" {
-			diags = append(diags, diag.Diagnostic{
-				Severity: diag.Error,
-				Summary:  "Initializing provider, password parameter is missing.",
-			})
+		apiPairOK := apiKey != "" && secretkey != ""
+		upOK := username != "" && password != ""
+		if !apiPairOK && !upOK {
+			if username != "" && password == "" {
+				diags = append(diags, diag.Diagnostic{
+					Severity: diag.Error,
+					Summary:  "Initializing provider, password parameter is missing.",
+				})
+			}
+
+			if password != "" && username == "" {
+				diags = append(diags, diag.Diagnostic{
+					Severity: diag.Error,
+					Summary:  "Initializing provider, username parameter is missing.",
+				})
+			}
+
+			if apiKey != "" && secretkey == "" {
+				diags = append(diags, diag.Diagnostic{
+					Severity: diag.Error,
+					Summary:  "Initializing provider, aqua_api_secret parameter is missing.",
+				})
+			}
+
+			if secretkey != "" && apiKey == "" {
+				diags = append(diags, diag.Diagnostic{
+					Severity: diag.Error,
+					Summary:  "Initializing provider, aqua_api_key parameter is missing.",
+				})
+			}
+
+			if username == "" && password == "" && apiKey == "" && secretkey == "" {
+				diags = append(diags, diag.Diagnostic{
+					Severity: diag.Error,
+					Summary:  "Initializing provider, credentials are missing.",
+					Detail:   "Provide either username+password or aqua_api_key+aqua_api_secret.",
+				})
+			}
 		}
 	}
 
@@ -277,7 +304,7 @@ func providerConfigure(ctx context.Context, d *schema.ResourceData) (interface{}
 		}
 	}
 
-	if diags != nil && len(diags) > 0 {
+	if len(diags) > 0 {
 		return nil, diags
 	}
 

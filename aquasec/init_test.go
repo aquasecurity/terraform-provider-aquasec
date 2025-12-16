@@ -22,8 +22,8 @@ func init() {
 	)
 
 	aquaURL, present = os.LookupEnv("AQUA_URL")
-	if !present {
-		panic("AQUA_URL env is missing, please set it")
+	if !present || aquaURL == "" {
+		panic("AQUA_URL env is missing or empty, please set it")
 	}
 
 	apiKey = os.Getenv("AQUA_API_KEY")
@@ -38,15 +38,24 @@ func init() {
 		}
 	}
 
+	if useAPIKey {
+		if apiKey == "" {
+			panic("AQUA_API_KEY env is missing or empty, please set it when using API key authentication")
+		}
+		if secretKey == "" {
+			panic("AQUA_API_SECRET env is missing or empty, please set it when using API key authentication")
+		}
+	}
+
 	if !useAPIKey {
 		username, present = os.LookupEnv("AQUA_USER")
-		if !present {
-			panic("AQUA_USER env is missing, please set it")
+		if !present || username == "" {
+			panic("AQUA_USER env is missing or empty, please set it")
 		}
 
 		password, present = os.LookupEnv("AQUA_PASSWORD")
-		if !present {
-			panic("AQUA_PASSWORD env is missing, please set it")
+		if !present || password == "" {
+			panic("AQUA_PASSWORD env is missing or empty, please set it")
 		}
 	}
 
