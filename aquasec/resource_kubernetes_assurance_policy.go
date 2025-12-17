@@ -8,6 +8,7 @@ import (
 	"github.com/aquasecurity/terraform-provider-aquasec/client"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/open-policy-agent/opa/rego"
 )
 
 func resourceKubernetesAssurancePolicy() *schema.Resource {
@@ -20,6 +21,7 @@ func resourceKubernetesAssurancePolicy() *schema.Resource {
 		Importer: &schema.ResourceImporter{
 			StateContext: schema.ImportStatePassthroughContext,
 		},
+		CustomizeDiff: validateRegoCustomizeDiff,
 		Schema: map[string]*schema.Schema{
 
 			"assurance_type": {
@@ -1143,4 +1145,69 @@ func resourceKubernetesAssurancePolicyDelete(ctx context.Context, d *schema.Reso
 		return diag.FromErr(err)
 	}
 	return nil
+}
+
+func validateRegoCustomizeDiff(ctx context.Context, diff *schema.ResourceDiff, v interface{}) error {
+	if !diff.HasChange("custom_checks") {
+		return nil
+	}
+
+	customChecksVal := diff.Get("custom_checks")
+	if customChecksVal == nil {
+		return nil
+	}
+
+	customChecks, ok := customChecksVal.([]interface{})
+	if !ok {
+		return nil
+	}
+
+	for _, check := range customChecks {
+		c, ok := check.(map[string]interface{})
+		if !ok {
+			continue
+		}
+
+		engine, ok := c["engine"].(string)
+		if !ok {
+			continue
+		}
+
+		snippet, ok := c["snippet"].(string)
+		if !ok {
+			continue
+		}
+
+		if strings.ToLower(engine) == "rego" {
+			_, errs := validateRego(ctx, snippet, "snippet")
+			if len(errs) > 0 {
+				return fmt.Errorf("rego validation error: %v", errs)
+			}
+		}
+	}
+	return nil
+}
+
+func validateRego(ctx context.Context, val interface{}, key string) (warns []string, errs []error) {
+	script, ok := val.(string)
+	if !ok {
+		errs = append(errs, fmt.Errorf("%q must be a string, got %T", key, val))
+		return nil, errs
+	}
+
+	if script == "" {
+		return nil, nil
+	}
+
+	_, err := rego.New(
+		rego.Query("x = data"),
+		rego.Module("validate.rego", script),
+	).PrepareForEval(ctx)
+
+	if err != nil {
+		errs = append(errs, err)
+		return nil, errs
+	}
+
+	return nil, nil
 }
