@@ -893,6 +893,18 @@ func resourceKubernetesAssurancePolicyCreate(ctx context.Context, d *schema.Reso
 		return diag.FromErr(err)
 	}
 	d.SetId(name)
+	
+	// Verify custom_checks were saved correctly (detect silent failures)
+	if len(iap.CustomChecks) > 0 {
+		createdPolicy, err := ac.GetAssurancePolicy(name, assurance_type)
+		if err != nil {
+			return diag.FromErr(fmt.Errorf("failed to verify policy creation: %v", err))
+		}
+		if len(createdPolicy.CustomChecks) != len(iap.CustomChecks) {
+			return diag.FromErr(fmt.Errorf("failed creating Assurance Policy: custom_checks were not saved. This may indicate invalid Rego script syntax"))
+		}
+	}
+	
 	return resourceKubernetesAssurancePolicyRead(ctx, d, m)
 
 }

@@ -317,23 +317,16 @@ func (cli *Client) CreateAssurancePolicy(assurancePolicy *AssurancePolicy, assur
 	if err != nil {
 		return err
 	}
-	resp, _, errs := request.Clone().Set("Authorization", "Bearer "+cli.token).Post(cli.url + apiPath).Send(string(payload)).End()
+	resp, body, errs := request.Clone().Set("Authorization", "Bearer "+cli.token).Post(cli.url + apiPath).Send(string(payload)).End()
 	if errs != nil {
 		return errors.Wrap(getMergedError(errs), "failed creating  Assurance Policy.")
 	}
-	if resp.StatusCode != 201 && resp.StatusCode != 204 {
-		body, err := io.ReadAll(resp.Body)
-		if err != nil {
-			log.Printf("Failed to read response Body")
-			return err
-		}
+	if resp.StatusCode != 204 {
 		var errorResponse ErrorResponse
-		err = json.Unmarshal(body, &errorResponse)
-		if err != nil {
-			log.Printf("Failed to Unmarshal response Body to ErrorResponse. Body: %v. error: %v", string(body), err)
-			return err
+		if body != "" {
+			json.Unmarshal([]byte(body), &errorResponse)
 		}
-		return fmt.Errorf("failed creating  Assurance Policy. status: %v. error message: %v", resp.Status, errorResponse.Message)
+		return fmt.Errorf("failed creating Assurance Policy. status: %v. error message: %v", resp.Status, errorResponse.Message)
 	}
 	return nil
 }
@@ -362,23 +355,16 @@ func (cli *Client) UpdateAssurancePolicy(assurancePolicy *AssurancePolicy, assur
 	if err != nil {
 		return err
 	}
-	resp, _, errs := request.Clone().Set("Authorization", "Bearer "+cli.token).Put(cli.url + apiPath).Send(string(payload)).End()
+	resp, body, errs := request.Clone().Set("Authorization", "Bearer "+cli.token).Put(cli.url + apiPath).Send(string(payload)).End()
 	if errs != nil {
 		return errors.Wrap(getMergedError(errs), "failed modifying  Assurance Policy")
 	}
-	if resp.StatusCode != 201 && resp.StatusCode != 204 {
-		body, err := io.ReadAll(resp.Body)
-		if err != nil {
-			log.Printf("Failed to read response Body")
-			return err
-		}
+	if resp.StatusCode != 204 {
 		var errorResponse ErrorResponse
-		err = json.Unmarshal(body, &errorResponse)
-		if err != nil {
-			log.Printf("Failed to Unmarshal response Body to ErrorResponse. Body: %v. error: %v", string(body), err)
-			return err
+		if body != "" {
+			json.Unmarshal([]byte(body), &errorResponse)
 		}
-		return fmt.Errorf("failed modifying  Assurance Policy. status: %v. error message: %v", resp.Status, errorResponse.Message)
+		return fmt.Errorf("failed modifying Assurance Policy. status: %v. error message: %v", resp.Status, errorResponse.Message)
 	}
 	return nil
 }
