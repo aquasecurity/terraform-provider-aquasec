@@ -146,6 +146,7 @@ func Provider(v string) *schema.Provider {
 			"aquasec_log_management":          resourceLogManagement(),
 			"aquasec_serverless_application":  resourceServerlessApplication(),
 			"aquasec_monitoring_system":       resourceMonitoringSystem(),
+			"aquasec_response_policy":         resourceResponsePolicy(),
 		},
 		DataSourcesMap: map[string]*schema.Resource{
 			"aquasec_users":                       dataSourceUsers(),
@@ -184,6 +185,8 @@ func Provider(v string) *schema.Provider {
 			"aquasec_log_managements":         dataLogManagement(),
 			"aquasec_serverless_applications": dataSourceServerlessApplication(),
 			"aquasec_monitoring_systems":      dataSourceMonitoringSystem(),
+			"aquasec_response_policies":       dataResponsePolicy(),
+			"aquasec_response_policy_config":  dataResponsePolicyConfig(),
 		},
 		ConfigureContextFunc: providerConfigure,
 	}
