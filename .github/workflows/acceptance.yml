@@ -1,0 +1,76 @@
+name: Acceptance Tests (dispatchable)
+
+on:
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: 'Pull request number to test (will fetch refs/pull/<pr_number>/head)'
+        required: true
+        type: number
+  schedule:
+    - cron: '30 0 * * *'
+
+jobs:
+  acceptance:
+    name: Acceptance Tests
+    runs-on: ubuntu-latest
+    strategy:
+      max-parallel: 1
+      fail-fast: false
+      matrix:
+        terraform:
+          - '0.15.5'
+          - '0.14.11'
+          - '1.1.2'
+          - '1.5.3'
+    env:
+      AQUA_URL: ${{ secrets.AQUA_URL }}
+      AQUA_USER: ${{ secrets.AQUA_USER }}
+      AQUA_PASSWORD: ${{ secrets.AQUA_PASSWORD }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_REGION: ${{ secrets.AWS_REGION }}
+      AWS_LOG_GROUP: ${{ secrets.AWS_LOG_GROUP }}
+    defaults:
+      run:
+        working-directory: examples/
+    steps:
+      - name: Check out repository (full)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Fetch PR head and checkout
+        run: |
+          git fetch origin +refs/pull/${{ inputs.pr_number }}/head:pr
+          git checkout pr
+
+      - name: Setup Terraform ${{ matrix.terraform }}
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ matrix.terraform }}
+          terraform_wrapper: true
+        id: setup_tf
+
+      - name: Terraform Init
+        run: terraform init -input=false
+
+      - name: Terraform Validate
+        run: terraform validate
+
+      - name: Run TF acceptance tests
+        uses: nick-fields/retry@v2
+        with:
+          max_attempts: 2
+          timeout_minutes: 15
+          command: go test -v -cover ./aquasec/ -timeout 15m
+        env:
+          TF_ACC: "1"
+          TF_ACC_TERRAFORM_VERSION: ${{ matrix.terraform }}
+          AQUA_URL: ${{ secrets.AQUA_URL }}
+          AQUA_USER: ${{ secrets.AQUA_USER }}
+          AQUA_PASSWORD: ${{ secrets.AQUA_PASSWORD }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+          AWS_LOG_GROUP: ${{ secrets.AWS_LOG_GROUP }}
