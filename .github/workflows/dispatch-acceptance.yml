@@ -1,0 +1,28 @@
+name: Dispatch Acceptance on label
+
+on:
+  pull_request_target:
+    types: [labeled]
+
+permissions:
+  actions: write
+  contents: read
+
+jobs:
+  dispatch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger acceptance workflow when `safe_to_test` label added
+        if: contains(github.event.pull_request.labels.*.name, 'safe_to_test')
+        env:
+          REPO: ${{ github.repository }}
+          WORKFLOW_FILE: acceptance.yml
+          REF: ${{ github.event.pull_request.base.ref }}
+          PR_NUM: ${{ github.event.pull_request.number }}
+        run: |
+          echo "Dispatching ${WORKFLOW_FILE} for PR #${PR_NUM} on ref ${REF}"
+          curl -sS -X POST \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            https://api.github.com/repos/${REPO}/actions/workflows/${WORKFLOW_FILE}/dispatches \
+            -d "{\"ref\": \"${REF}\", \"inputs\": {\"pr_number\": \"${PR_NUM}\"}}"
