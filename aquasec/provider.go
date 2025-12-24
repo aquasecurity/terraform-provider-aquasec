@@ -7,6 +7,7 @@ import (
 	"io"
 	"log"
 	"os"
+	"strings"
 
 	"github.com/aquasecurity/terraform-provider-aquasec/client"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
@@ -146,6 +147,7 @@ func Provider(v string) *schema.Provider {
 			"aquasec_log_management":          resourceLogManagement(),
 			"aquasec_serverless_application":  resourceServerlessApplication(),
 			"aquasec_monitoring_system":       resourceMonitoringSystem(),
+			"aquasec_suppression_rule":        resourceSuppressionRule(),
 		},
 		DataSourcesMap: map[string]*schema.Resource{
 			"aquasec_users":                       dataSourceUsers(),
@@ -184,6 +186,7 @@ func Provider(v string) *schema.Provider {
 			"aquasec_log_managements":         dataLogManagement(),
 			"aquasec_serverless_applications": dataSourceServerlessApplication(),
 			"aquasec_monitoring_systems":      dataSourceMonitoringSystem(),
+			"aquasec_suppression_rules":       dataSourceSuppressionRule(),
 		},
 		ConfigureContextFunc: providerConfigure,
 	}
@@ -235,12 +238,33 @@ func providerConfigure(ctx context.Context, d *schema.ResourceData) (interface{}
 	caCertPath := d.Get("ca_certificate_path").(string)
 	validate := d.Get("validate").(bool)
 
-	if username == "" && password == "" && aquaURL == "" && apiKey == "" && secretkey == "" {
-		username, password, aquaURL, apiKey, secretkey, err = getProviderConfigurationFromFile(d)
-		if err != nil && validate {
-			return nil, diag.FromErr(err)
+	if username == "" || password == "" || apiKey == "" || secretkey == "" {
+		uF, pF, fileURL, akF, skF, ferr := getProviderConfigurationFromFile(d)
+		if ferr != nil && validate {
+			return nil, diag.FromErr(ferr)
+		}
+		if username == "" {
+			username = uF
+		}
+		if password == "" {
+			password = pF
+		}
+		if aquaURL == "" && fileURL != "" {
+			aquaURL = fileURL
+		}
+		if apiKey == "" {
+			apiKey = akF
+		}
+		if secretkey == "" {
+			secretkey = skF
 		}
 	}
+
+	username = strings.TrimSpace(username)
+	password = strings.TrimSpace(password)
+	apiKey = strings.TrimSpace(apiKey)
+	secretkey = strings.TrimSpace(secretkey)
+	aquaURL = strings.TrimSpace(aquaURL)
 
 	if validate {
 		if aquaURL == "" {
@@ -309,16 +333,7 @@ func providerConfigure(ctx context.Context, d *schema.ResourceData) (interface{}
 	}
 
 	var aquaClient *client.Client
-	if username != "" && password != "" {
-		aquaClient, err = client.NewClientWithTokenAuth(aquaURL, username, password, verifyTLS, caCertByte)
-		if err != nil {
-			return nil, diag.Diagnostics{diag.Diagnostic{
-				Severity: diag.Error,
-				Summary:  "Error creating Aqua client with token authentication",
-				Detail:   err.Error(),
-			}}
-		}
-	} else if apiKey != "" {
+	if apiKey != "" {
 		aquaClient, err = client.NewClientWithAPIKey(aquaURL, apiKey, secretkey, verifyTLS, caCertByte)
 		if err != nil {
 			return nil, diag.Diagnostics{diag.Diagnostic{
@@ -335,6 +350,15 @@ func providerConfigure(ctx context.Context, d *schema.ResourceData) (interface{}
 		}
 		if v, ok := d.GetOk("csp_roles"); ok {
 			aquaClient.CSPRoles = convertStringArr(v.([]interface{}))
+		}
+	} else if username != "" && password != "" {
+		aquaClient, err = client.NewClientWithTokenAuth(aquaURL, username, password, verifyTLS, caCertByte)
+		if err != nil {
+			return nil, diag.Diagnostics{diag.Diagnostic{
+				Severity: diag.Error,
+				Summary:  "Error creating Aqua client with token authentication",
+				Detail:   err.Error(),
+			}}
 		}
 	} else {
 		return nil, diag.Diagnostics{diag.Diagnostic{
