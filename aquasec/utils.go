@@ -429,3 +429,308 @@ func flattenSuppresionRulePublishedDateFilter(date client.PublishedDateFilter) [
 		},
 	}
 }
+
+func flattenResponsePolicies(policies *[]client.ResponsePolicy) ([]interface{}, string) {
+	id := ""
+	if policies == nil {
+		return []interface{}{}, ""
+	}
+
+	pols := make([]interface{}, len(*policies))
+	for i, policy := range *policies {
+		id = id + fmt.Sprintf("%v", policy.Id)
+		p := map[string]interface{}{
+			"id":              policy.Id,
+			"title":           policy.Title,
+			"description":     policy.Description,
+			"enabled":         policy.Enabled,
+			"last_updated_by": policy.LastUpdatedBy,
+			"last_update":     policy.LastUpdate,
+			"created_at":      policy.CreatedAt,
+			"application_scopes": func() []interface{} {
+				if policy.ApplicationScope == nil {
+					return []interface{}{}
+				}
+				as := make([]interface{}, len(policy.ApplicationScope))
+				for i, v := range policy.ApplicationScope {
+					as[i] = v
+				}
+				return as
+			}(),
+			"trigger": flattenResponsePolicyTrigger(policy.Trigger),
+			"outputs": flattenResponsePolicyOutputs(policy.Outputs),
+		}
+		pols[i] = p
+	}
+	return pols, id
+}
+
+func flattenResponsePolicyTrigger(trigger *client.ResponsePolicyTrigger) []interface{} {
+	if trigger == nil {
+		return []interface{}{}
+	}
+
+	block := map[string]interface{}{
+		"predefined": trigger.Predefined,
+		"input":      flattenResponsePolicyTriggerInput(trigger.Input),
+	}
+
+	// Only include "custom" if non-empty
+	if trigger.Custom != nil && trigger.Custom.Rego != "" {
+		block["custom"] = []interface{}{
+			map[string]interface{}{
+				"rego": trigger.Custom.Rego,
+			},
+		}
+	}
+
+	return []interface{}{block}
+}
+
+func flattenResponsePolicyTriggerInput(inputs *client.ResponsePolicyInputTrigger) []interface{} {
+	if inputs == nil {
+		return []interface{}{}
+	}
+	inps := make([]interface{}, 1)
+	in := map[string]interface{}{
+		"name":       inputs.Name,
+		"attributes": flattenResponsePolicyTriggerInputAttributes(inputs.Attribute),
+	}
+	inps[0] = in
+	return inps
+}
+
+func flattenResponsePolicyTriggerInputAttributes(attrs []client.ResponsePolicyInputTriggerAttribute) []interface{} {
+	if len(attrs) == 0 {
+		return []interface{}{}
+	}
+	out := make([]interface{}, len(attrs))
+	for i, a := range attrs {
+		out[i] = map[string]interface{}{
+			"name":      a.Name,
+			"operation": a.Operation,
+			"value":     a.Value,
+		}
+	}
+	return out
+}
+
+func flattenResponsePolicyTriggerCustom(custom *client.ResponsePolicyCustomTrigger) []interface{} {
+	if custom == nil {
+		return []interface{}{}
+	}
+	cust := make([]interface{}, 1)
+	c := map[string]interface{}{
+		"rego": custom.Rego,
+	}
+	cust[0] = c
+	return cust
+}
+
+func flattenResponsePolicyOutputs(outputs []client.ResponsePolicyOutput) []interface{} {
+	if len(outputs) == 0 {
+		return []interface{}{}
+	}
+	result := make([]interface{}, len(outputs))
+	for i, o := range outputs {
+		result[i] = map[string]interface{}{
+			"name": o.Name,
+			"type": o.Type,
+		}
+	}
+	return result
+}
+
+func flattenResponsePolicyTriggerConfigs(triggers []client.TriggerConfigs) []interface{} {
+	if triggers == nil {
+		return []interface{}{}
+	}
+	trs := make([]interface{}, len(triggers))
+	for i, trigger := range triggers {
+		t := map[string]interface{}{
+			"name": trigger.Name,
+			"type": trigger.Type,
+		}
+		trs[i] = t
+	}
+	return trs
+}
+
+func flattenResponsePolicyInputsConfig(input client.InputConfig) []interface{} {
+	in := map[string]interface{}{
+		"asset_types": flattenResponsePolicyAssetTypesConfig(input.AssetTypes),
+		"attributes":  flattenResponsePolicyTriggerInputAttributesConfig(input.Attributes),
+		"operations":  flattenResponsePolicyTriggerInputOperationsConfig(input.Operations),
+	}
+	return []interface{}{in}
+}
+
+func flattenResponsePolicyTriggerInputAttributesConfig(attrs []client.InputAttribute) []interface{} {
+	if attrs == nil {
+		return []interface{}{}
+	}
+	atrs := make([]interface{}, len(attrs))
+	for i, attr := range attrs {
+		a := map[string]interface{}{
+			"name":         attr.Name,
+			"type":         attr.Type,
+			"input_type":   attr.InputType,
+			"asset_types":  attr.AssetTypes,
+			"display_name": attr.DisplayName,
+			"enabled":      attr.Enabled,
+			"options":      flattenResponsePolicyOptionsConfig(attr.Options),
+		}
+		atrs[i] = a
+	}
+	return atrs
+}
+
+func flattenResponsePolicyTriggerInputOperationsConfig(ops []client.AttributeOperation) []interface{} {
+	if ops == nil {
+		return []interface{}{}
+	}
+	operations := make([]interface{}, len(ops))
+	for i, op := range ops {
+		o := map[string]interface{}{
+			"name":         op.Name,
+			"type":         op.Type,
+			"display_name": op.DisplayName,
+			"enabled":      op.Enabled,
+		}
+		operations[i] = o
+	}
+	return operations
+}
+
+func flattenResponsePolicyAssetTypesConfig(assetTypes []client.AssetType) []interface{} {
+	if assetTypes == nil {
+		return []interface{}{}
+	}
+	ats := make([]interface{}, len(assetTypes))
+	for i, at := range assetTypes {
+		a := map[string]interface{}{
+			"display_name": at.DisplayName,
+			"field":        at.Field,
+			"value":        at.Value,
+		}
+		ats[i] = a
+	}
+	return ats
+}
+
+func flattenResponsePolicyOptionsConfig(options []client.Option) []interface{} {
+	if options == nil {
+		return []interface{}{}
+	}
+	opts := make([]interface{}, len(options))
+	for i, opt := range options {
+		o := map[string]interface{}{
+			"display_name": opt.DisplayName,
+			"value":        opt.Value,
+		}
+		opts[i] = o
+	}
+	return opts
+}
+
+func expandResponsePolicyTrigger(list []interface{}) *client.ResponsePolicyTrigger {
+	if len(list) == 0 {
+		return nil
+	}
+	item, ok := list[0].(map[string]interface{})
+	if !ok {
+		return nil
+	}
+
+	trigger := &client.ResponsePolicyTrigger{
+		Predefined: item["predefined"].(string),
+	}
+
+	if inList, ok := item["input"].([]interface{}); ok && len(inList) > 0 {
+		inMap, _ := inList[0].(map[string]interface{})
+		if inMap != nil {
+			trigger.Input = &client.ResponsePolicyInputTrigger{
+				Name: inMap["name"].(string),
+			}
+			// Process attributes if they exist
+			if attrs, ok := inMap["attributes"].([]interface{}); ok && len(attrs) > 0 {
+				trigger.Input.Attribute = expandResponsePolicyTriggerInputAttributes(attrs)
+			}
+		}
+	}
+
+	if customList, ok := item["custom"].([]interface{}); ok && len(customList) > 0 {
+		if cm, ok := customList[0].(map[string]interface{}); ok {
+			if rego, _ := cm["rego"].(string); rego != "" {
+				trigger.Custom = &client.ResponsePolicyCustomTrigger{Rego: rego}
+			}
+		}
+	}
+
+	return trigger
+}
+
+func expandResponsePolicyTriggerInputs(inputs []interface{}) []client.ResponsePolicyInputTrigger {
+	var rpit []client.ResponsePolicyInputTrigger
+	for _, in := range inputs {
+		inputMap, ok := in.(map[string]interface{})
+		if !ok {
+			continue
+		}
+		// attributes is defined as a TypeList in the schema, so expect []interface{}
+		var attrs []interface{}
+		if a, ok := inputMap["attributes"].([]interface{}); ok {
+			attrs = a
+		} else {
+			attrs = []interface{}{}
+		}
+		name, _ := inputMap["name"].(string)
+		rpit = append(rpit, client.ResponsePolicyInputTrigger{
+			Name:      name,
+			Attribute: expandResponsePolicyTriggerInputAttributes(attrs),
+		})
+	}
+	return rpit
+}
+
+func expandResponsePolicyTriggerInputAttributes(attrs []interface{}) []client.ResponsePolicyInputTriggerAttribute {
+	var rpita []client.ResponsePolicyInputTriggerAttribute
+	for _, a := range attrs {
+		attrMap := a.(map[string]interface{})
+		rpita = append(rpita, client.ResponsePolicyInputTriggerAttribute{
+			Name:      attrMap["name"].(string),
+			Operation: attrMap["operation"].(string),
+			Value:     attrMap["value"].(string),
+		})
+	}
+	return rpita
+}
+
+func expandResponsePolicyTriggerCustom(custom []interface{}) []client.ResponsePolicyCustomTrigger {
+	var rpct []client.ResponsePolicyCustomTrigger
+	for _, c := range custom {
+		customMap := c.(map[string]interface{})
+		rpct = append(rpct, client.ResponsePolicyCustomTrigger{
+			Rego: customMap["rego"].(string),
+		})
+	}
+	return rpct
+}
+
+func expandResponsePolicyOutputs(list []interface{}) []client.ResponsePolicyOutput {
+	outs := []client.ResponsePolicyOutput{}
+	for _, o := range list {
+		if outMap, ok := o.(map[string]interface{}); ok {
+			name, _ := outMap["name"].(string)
+			typ, _ := outMap["type"].(string)
+			// Preserve user-provided outputs even if name or type are empty strings.
+			// Filtering them out here caused asymmetric behavior with flattenResponsePolicyOutputs
+			// leading to state drift. Let API validation handle empty fields if necessary.
+			outs = append(outs, client.ResponsePolicyOutput{
+				Name: name,
+				Type: typ,
+			})
+		}
+	}
+	return outs
+}
