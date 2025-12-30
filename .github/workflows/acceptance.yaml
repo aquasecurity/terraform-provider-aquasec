@@ -1,0 +1,67 @@
+name: Acceptance Tests (trusted)
+
+on:
+  pull_request_target:
+    types: [labeled]
+  push:
+    branches: [main]
+
+jobs:
+  acceptance:
+    # Run if:
+    # 1) push to main
+    # 2) PR has safe_to_test label
+    if: >
+      github.event_name == 'push' ||
+      (github.event_name == 'pull_request_target' &&
+       contains(github.event.pull_request.labels.*.name, 'safe_to_test'))
+
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+
+    strategy:
+      max-parallel: 1
+      fail-fast: false
+      matrix:
+        terraform: ['0.15.5', '0.14.11', '1.1.2', '1.5.3']
+
+    permissions:
+      contents: read
+      pull-requests: read
+
+    steps:
+      # 1️⃣ Checkout BASE repo (trusted context)
+      - name: Checkout base repo
+        uses: actions/checkout@v4
+
+      # 2️⃣ Checkout PR code only for PR events
+      - name: Checkout PR code
+        if: github.event_name == 'pull_request_target'
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.18'
+
+      - name: Download dependencies
+        run: go mod download
+
+      - name: Run TF acceptance tests
+        uses: nick-fields/retry@v2
+        env:
+          TF_ACC: "1"
+          TF_ACC_TERRAFORM_VERSION: ${{ matrix.terraform }}
+          AQUA_URL: ${{ secrets.AQUA_URL }}
+          AQUA_USER: ${{ secrets.AQUA_USER }}
+          AQUA_PASSWORD: ${{ secrets.AQUA_PASSWORD }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+          AWS_LOG_GROUP: ${{ secrets.AWS_LOG_GROUP }}
+        with:
+          max_attempts: 2
+          timeout_minutes: 15
+          command: go test -v -cover ./aquasec/ -timeout 15m
