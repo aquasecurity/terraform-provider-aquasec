@@ -2,7 +2,7 @@ terraform {
   required_providers {
     aquasec = {
       source  = "aquasecurity/aquasec"
-      version = "0.12.1"
+      version = "0.13.0"
     }
   }
 }
@@ -986,6 +986,63 @@ resource "aquasec_monitoring_system" "prometheus_monitoring" {
   token    = ""
 }
 
+resource "aquasec_suppression_rule" "example" {
+  name               = "example-suppression-rule"
+  application_scopes = ["terraform-suppression-scope-testing"]
+  enable             = true
+  controls {
+    direct_only = true
+    file_globs  = []
+    published_date_filter {
+      enabled = false
+      days    = 30
+    }
+    reachable_only = true
+    scan_type      = "vulnerability"
+    severity       = "critical"
+    target_file    = ""
+    target_line    = 0
+    type           = "vulnerabilitySeverity"
+    vendorfix      = true
+  }
+  description    = "An example suppression rule"
+  clear_schedule = false
+  scope {
+    expression = "(v1) && (v2)"
+    variables {
+      attribute = "repository.branch"
+      value     = "main"
+    }
+    variables {
+      attribute = "repository.provider"
+      value     = "github"
+    }
+  }
+}
+
+resource "aquasec_response_policy" "test" {
+  title              = "Test Response Policy"
+  description        = "This is a test response policy"
+  enabled            = true
+  application_scopes = ["Global"]
+
+  trigger {
+    predefined = "Incidents with critical severity"
+
+    input {
+      name = "Incident event"
+    }
+
+    # custom block may be omitted if you don't have anything to set
+  }
+
+  outputs {
+    name = "Terraform Provider Test"
+    type = "email"
+  }
+
+}
+
 #Data sources block
 data "aquasec_acknowledges" "acknowledges" {}
 
@@ -1203,4 +1260,17 @@ output "prom_mon_name" {
 
 output "prom_mon_interval" {
   value = length(data.aquasec_monitoring_systems.prom_mon.monitors) > 0 ? data.aquasec_monitoring_systems.prom_mon.monitors[0].interval : null
+}
+
+data "aquasec_response_policies" "all" {}
+
+output "response_policy_id" {
+  value = data.aquasec_response_policies.all.data
+}
+
+data "aquasec_response_policy_config" "config" {
+}
+
+output "response_policy_config_id" {
+  value = data.aquasec_response_policy_config.config.triggers
 }
