@@ -50,6 +50,7 @@ func resourceRegistry() *schema.Resource {
 				Type:        schema.TypeString,
 				Description: "The password for registry authentication",
 				Optional:    true,
+				Sensitive:   true,
 			},
 			"type": {
 				Type: schema.TypeString,
