@@ -72,11 +72,10 @@ func TestResourceAquasecBasicContainerRuntimePolicyCreate(t *testing.T) {
 func TestResourceAquasecComplexContainerRuntimePolicyCreate(t *testing.T) {
 	t.Parallel()
 	var complexRuntimePolicy = client.RuntimePolicy{
-		Name:                  acctest.RandomWithPrefix("test-container-runtime-policy"),
-		Description:           "This is a test description of container runtime policy",
-		Enabled:               true,
-		Enforce:               true,
-		ForkGuardProcessLimit: 13,
+		Name:        acctest.RandomWithPrefix("test-container-runtime-policy"),
+		Description: "This is a test description of container runtime policy",
+		Enabled:     true,
+		Enforce:     true,
 	}
 
 	rootRef := containerRuntimePolicyRef("test")
@@ -134,9 +133,6 @@ func TestResourceAquasecComplexContainerRuntimePolicyCreate(t *testing.T) {
 					resource.TestCheckResourceAttr(rootRef, "auditing.0.audit_all_network", "true"),
 					resource.TestCheckResourceAttr(rootRef, "auditing.0.enabled", "true"),
 
-					resource.TestCheckResourceAttr(rootRef, "enable_fork_guard", "true"),
-					resource.TestCheckResourceAttr(rootRef, "fork_guard_process_limit", fmt.Sprintf("%v", complexRuntimePolicy.ForkGuardProcessLimit)),
-
 					resource.TestCheckResourceAttr(rootRef, "limit_container_privileges.0.enabled", "true"),
 					resource.TestCheckResourceAttr(rootRef, "limit_container_privileges.0.block_add_capabilities", "true"),
 					resource.TestCheckResourceAttr(rootRef, "limit_container_privileges.0.prevent_root_user", "true"),
@@ -154,13 +150,6 @@ func TestResourceAquasecComplexContainerRuntimePolicyCreate(t *testing.T) {
 					resource.TestCheckResourceAttr(rootRef, "port_block.0.block_outbound_ports.#", "1"),
 					resource.TestCheckResourceAttr(rootRef, "port_block.0.block_inbound_ports.0", "1-11"),
 					resource.TestCheckResourceAttr(rootRef, "port_block.0.block_outbound_ports.0", "1-11"),
-					resource.TestCheckResourceAttr(rootRef, "readonly_files.0.enabled", "true"),
-					resource.TestCheckResourceAttr(rootRef, "readonly_files.0.readonly_files.#", "2"),
-					resource.TestCheckResourceAttr(rootRef, "readonly_files.0.exceptional_readonly_files.#", "2"),
-					resource.TestCheckResourceAttr(rootRef, "readonly_files.0.exceptional_readonly_files_processes.#", "1"),
-					resource.TestCheckResourceAttr(rootRef, "readonly_files.0.exceptional_readonly_files_users.#", "1"),
-					resource.TestCheckResourceAttr(rootRef, "readonly_files.0.readonly_files_processes.#", "1"),
-					resource.TestCheckResourceAttr(rootRef, "readonly_files.0.readonly_files_users.#", "1"),
 
 					resource.TestCheckResourceAttr(rootRef, "allowed_registries.0.allowed_registries.#", "2"),
 					resource.TestCheckResourceAttr(rootRef, "allowed_registries.0.enabled", "true"),
@@ -190,9 +179,7 @@ func TestResourceAquasecFullContainerRuntimePolicyCreate(t *testing.T) {
 		BlockFilelessExec:          true,
 		BlockNonCompliantWorkloads: true,
 		BlockNonK8sContainers:      true,
-		EnableForkGuard:            true,
-		ForkGuardProcessLimit:      0,
-		EnableIPReputation:         true,
+		EnableIPReputation: true,
 		EnableCryptoMiningDns:      true,
 		EnablePortScanProtection:   true,
 		OnlyRegisteredImages:       true,
@@ -292,15 +279,6 @@ func TestResourceAquasecFullContainerRuntimePolicyCreate(t *testing.T) {
 					resource.TestCheckResourceAttr(rootRef, "port_block.0.block_outbound_ports.#", "1"),
 					resource.TestCheckResourceAttr(rootRef, "port_block.0.block_inbound_ports.0", "1-11"),
 					resource.TestCheckResourceAttr(rootRef, "port_block.0.block_outbound_ports.0", "1-11"),
-
-					// Readonly Files
-					resource.TestCheckResourceAttr(rootRef, "readonly_files.0.enabled", "true"),
-					resource.TestCheckResourceAttr(rootRef, "readonly_files.0.readonly_files.#", "2"),
-					resource.TestCheckResourceAttr(rootRef, "readonly_files.0.exceptional_readonly_files.#", "2"),
-					resource.TestCheckResourceAttr(rootRef, "readonly_files.0.exceptional_readonly_files_processes.#", "1"),
-					resource.TestCheckResourceAttr(rootRef, "readonly_files.0.exceptional_readonly_files_users.#", "1"),
-					resource.TestCheckResourceAttr(rootRef, "readonly_files.0.readonly_files_processes.#", "1"),
-					resource.TestCheckResourceAttr(rootRef, "readonly_files.0.readonly_files_users.#", "1"),
 
 					resource.TestCheckResourceAttr(rootRef, "allowed_registries.0.allowed_registries.#", "1"),
 					resource.TestCheckResourceAttr(rootRef, "allowed_registries.0.allowed_registries.0", "Docker Hub"),
@@ -402,8 +380,6 @@ func getComplexContainerRuntimePolicyResource(policy client.RuntimePolicy) strin
 			audit_process_cmdline = true
 			audit_all_network   = true
 	    }
-		enable_fork_guard        = true
-		fork_guard_process_limit = %v
 		limit_container_privileges{
 			enabled = true
 			block_add_capabilities   = true
@@ -421,15 +397,7 @@ func getComplexContainerRuntimePolicyResource(policy client.RuntimePolicy) strin
 			block_outbound_ports = ["1-11"]
 		}
 		# enable_port_scan_detection = true
-		readonly_files{
-			enabled = true
-			readonly_files = ["readonly","/dir/"]
-			exceptional_readonly_files = ["readonly2","/dir2/"]
-			readonly_files_processes = ["test"]
-			exceptional_readonly_files_processes = ["test"]
-			readonly_files_users = ["test"]
-			exceptional_readonly_files_users = ["test"]
-		}
+		# Note: readonly_files is deprecated for container runtime policies
 		allowed_registries{
 			enabled = true
 			allowed_registries = ["registry1","registry2"]
@@ -447,8 +415,7 @@ func getComplexContainerRuntimePolicyResource(policy client.RuntimePolicy) strin
 		policy.Description,
 		policy.Enabled,
 		policy.Enforce,
-		policy.EnforceAfterDays,
-		policy.ForkGuardProcessLimit)
+		policy.EnforceAfterDays)
 }
 
 func getFullContainerRuntimePolicyResource(policy client.RuntimePolicy) string {
@@ -592,15 +559,7 @@ func getFullContainerRuntimePolicyResource(policy client.RuntimePolicy) string {
 			block_outbound_ports = ["1-11"]
 		}
 		
-		readonly_files {
-			enabled = true
-			readonly_files = ["readonly","/dir/"]
-			exceptional_readonly_files = ["readonly2","/dir2/"]
-			readonly_files_processes = ["test"]
-			exceptional_readonly_files_processes = ["test"]
-			readonly_files_users = ["test"]
-			exceptional_readonly_files_users = ["test"]
-		}
+		# Note: readonly_files is deprecated for container runtime policies
 		
 		malware_scan_options {
 			enabled = true
@@ -623,7 +582,6 @@ func getFullContainerRuntimePolicyResource(policy client.RuntimePolicy) string {
 			failed_checks = ["CVE-2021-25741", "CVE-2022-0185"]
 		}
 		
-		enable_fork_guard = true
 		enable_ip_reputation = true
 		enable_crypto_mining_dns = true
 		enable_port_scan_protection = true

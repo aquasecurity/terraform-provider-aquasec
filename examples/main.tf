@@ -360,7 +360,7 @@ resource "aquasec_container_runtime_policy" "container_runtime_policy" {
   }
 
   # Additional security features
-  enable_fork_guard           = true
+  # Note: enable_fork_guard is deprecated for container runtime policies
   enable_ip_reputation        = true
   enable_crypto_mining_dns    = true
   enable_port_scan_protection = true

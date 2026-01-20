@@ -146,9 +146,7 @@ resource "aquasec_container_runtime_policy" "test" {
   audit_full_command_arguments = true
   audit_all_network_activity   = true
 
-  enable_fork_guard        = true
-  fork_guard_process_limit = 12
-
+  # Note: enable_fork_guard and fork_guard_process_limit are deprecated for container runtime policies
 
   malware_scan_options {
     enabled = true

@@ -250,7 +250,6 @@ resource "aquasec_container_runtime_policy" "container_runtime_policy" {
   }
 
   # Additional security features
-  enable_fork_guard           = true
   enable_ip_reputation        = true
   enable_crypto_mining_dns    = true
   enable_port_scan_protection = true
@@ -308,7 +307,7 @@ resource "aquasec_container_runtime_policy" "container_runtime_policy" {
 - `digest` (String)
 - `drift_prevention` (Block List) Drift prevention configuration. (see [below for nested schema](#nestedblock--drift_prevention))
 - `enable_crypto_mining_dns` (Boolean)
-- `enable_fork_guard` (Boolean) If true, fork bombs are prevented in the containers.
+- `enable_fork_guard` (Boolean, **Deprecated**) Fork Guard is no longer supported for container runtime policies. This attribute is ignored and will be removed in a future version.
 - `enable_ip_reputation` (Boolean)
 - `enable_port_scan_protection` (Boolean)
 - `enabled` (Boolean) Indicates if the runtime policy is enabled or not.
@@ -320,7 +319,7 @@ resource "aquasec_container_runtime_policy" "container_runtime_policy" {
 - `failed_kubernetes_checks` (Block List, Max: 1) (see [below for nested schema](#nestedblock--failed_kubernetes_checks))
 - `file_block` (Block List, Max: 1) (see [below for nested schema](#nestedblock--file_block))
 - `file_integrity_monitoring` (Block List) Configuration for file integrity monitoring. (see [below for nested schema](#nestedblock--file_integrity_monitoring))
-- `fork_guard_process_limit` (Number) Process limit for the fork guard.
+- `fork_guard_process_limit` (Number, **Deprecated**) Fork Guard is no longer supported for container runtime policies. This attribute is ignored and will be removed in a future version.
 - `image_name` (String)
 - `is_audit_checked` (Boolean)
 - `is_auto_generated` (Boolean)
