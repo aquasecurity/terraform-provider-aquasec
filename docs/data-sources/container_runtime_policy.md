@@ -82,7 +82,7 @@ output "container_runtime_policy_details" {
 - `drift_prevention` (List of Object) Drift prevention configuration. (see [below for nested schema](#nestedatt--drift_prevention))
 - `enable_crypto_mining_dns` (Boolean)
 - `enable_drift_prevention` (Boolean) If true, executables that are not in the original image is prevented from running.
-- `enable_fork_guard` (Boolean) If true, fork bombs are prevented in the containers.
+- `enable_fork_guard` (Boolean, **Deprecated**) Fork Guard is no longer supported for container runtime policies. This attribute will be removed in a future version.
 - `enable_ip_reputation` (Boolean)
 - `enable_ip_reputation_security` (Boolean) If true, detect and prevent communication from containers to IP addresses known to have a bad reputation.
 - `enable_port_scan_detection` (Boolean) If true, detects port scanning behavior in the container.
@@ -95,7 +95,7 @@ output "container_runtime_policy_details" {
 - `exclude_application_scopes` (List of String) List of excluded application scopes.
 - `exec_lockdown_white_list` (List of String) Specify processes that will be allowed
 - `failed_kubernetes_checks` (List of Object) Failed Kubernetes checks configuration. (see [below for nested schema](#nestedatt--failed_kubernetes_checks))
-- `fork_guard_process_limit` (Number) Process limit for the fork guard.
+- `fork_guard_process_limit` (Number, **Deprecated**) Fork Guard is no longer supported for container runtime policies. This attribute will be removed in a future version.
 - `id` (String) The ID of this resource.
 - `image_name` (String)
 - `is_audit_checked` (Boolean)
