@@ -174,83 +174,87 @@ jobs:
           if-no-files-found: error
 
   notify:
-    name: "Notify via Power Automate Webhook"
+    name: "Notify via Teams Webhook"
     runs-on: ubuntu-latest
     needs:
       - drift
       - acceptance
     if: ${{ always() }}
     steps:
-      - name: Download all drift artifacts
-        uses: actions/download-artifact@v4
-        with:
-          path: drift-artifacts
-
       - name: Download all artifacts
         uses: actions/download-artifact@v4
         with:
           path: artifacts
 
-      - name: Build summary payload
-        id: build_payload
+      - name: Build and send Teams notification
+        env:
+          TEAMS_WEBHOOK_URL: ${{ secrets.TEAMS_WEBHOOK_URL }}
+          GITHUB_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          WORKFLOW_NAME: ${{ github.workflow }}
+          BRANCH_NAME: ${{ github.ref_name }}
         run: |
-          echo "PWD: $(pwd)"
-          ls -R artifacts
-
-          drift_summary="{"
-          acc_summary="{"
-          first=true
-
-          # Loop through drift artifacts
+          # Build drift summary
+          drift_text=""
           for file in artifacts/drift-results-*/result-drift-*.json; do
             version=$(jq -r .version < "$file")
             exitcode=$(jq -r .exitcode < "$file")
-            status="unknown"
             if [ "$exitcode" -eq 0 ]; then
-              status="no_drift"
+              drift_text+="✅ TF $version: No drift\n"
             elif [ "$exitcode" -eq 2 ]; then
-              status="drift_detected"
-            elif [ "$exitcode" -eq 1 ]; then
-              status="error"
+              drift_text+="⚠️ TF $version: Drift detected\n"
+            else
+              drift_text+="❌ TF $version: Error\n"
             fi
-
-            if [ "$first" = false ]; then
-              drift_summary+=", "
-            fi
-            drift_summary+="\"${version}\": \"${status}\""
-            first=false
           done
-          drift_summary+="}"
 
-          first=true
-          # Loop through acceptance artifacts
+          # Build acceptance summary
+          acc_text=""
+          all_passed=true
           for file in artifacts/acceptance-results-*/result-acceptance-*.json; do
             version=$(jq -r .version < "$file")
             result=$(jq -r .result < "$file")
-
-            if [ "$first" = false ]; then
-              acc_summary+=", "
+            if [ "$result" = "success" ]; then
+              acc_text+="✅ TF $version: Passed\n"
+            else
+              acc_text+="❌ TF $version: Failed\n"
+              all_passed=false
             fi
-            acc_summary+="\"${version}\": \"${result}\""
-            first=false
           done
-          acc_summary+="}"
 
-          echo "payload="$(jq -n \
-            --arg wf "${{ github.workflow }}" \
-            --arg branch "${{ github.ref_name }}" \
-            --arg runid "${{ github.run_id }}" \
-            --arg url "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
-            --argjson tested_versions '["0.15.5","0.14.11","1.1.2","1.5.3"]' \
-            --argjson drift_summary "$drift_summary" \
-            --argjson acceptance_summary "$acc_summary" \
-            '{workflow: $wf, branch: $branch, run_id: $runid, github_url: $url, tested_versions: $tested_versions, drift_summary: $drift_summary, acceptance_summary: $acceptance_summary }') \
-            >> $GITHUB_OUTPUT
-      - name: Trigger Power Automate Flow
-        uses: fjogeleit/http-request-action@v1.16.3
-        with:
-          url: ${{ secrets.POWER_AUTOMATE_HOOK_URL }}
-          method: 'POST'
-          contentType: 'application/json'
-          data: |
-            ${{ steps.build_payload.outputs.payload }}
+          # Set title color based on results
+          if [ "$all_passed" = true ]; then
+            theme_color="00FF00"
+            title="✅ Nightly Tests Passed"
+          else
+            theme_color="FF0000"
+            title="❌ Nightly Tests Failed"
+          fi
+
+          # Send to Teams
+          curl -H "Content-Type: application/json" -d "{
+            \"@type\": \"MessageCard\",
+            \"@context\": \"http://schema.org/extensions\",
+            \"themeColor\": \"${theme_color}\",
+            \"summary\": \"${title}\",
+            \"sections\": [{
+              \"activityTitle\": \"${title}\",
+              \"facts\": [
+                { \"name\": \"Workflow\", \"value\": \"${WORKFLOW_NAME}\" },
+                { \"name\": \"Branch\", \"value\": \"${BRANCH_NAME}\" }
+              ],
+              \"markdown\": true
+            },
+            {
+              \"activityTitle\": \"Drift Detection\",
+              \"text\": \"${drift_text}\"
+            },
+            {
+              \"activityTitle\": \"Acceptance Tests\",
+              \"text\": \"${acc_text}\"
+            }],
+            \"potentialAction\": [{
+              \"@type\": \"OpenUri\",
+              \"name\": \"View in GitHub\",
+              \"targets\": [{ \"os\": \"default\", \"uri\": \"${GITHUB_URL}\" }]
+            }]
+          }" "${TEAMS_WEBHOOK_URL}"
