@@ -97,6 +97,11 @@ func dataSourceEnforcerGroup() *schema.Resource {
 				Description: "When set to `True` applies User Access Control Policies to containers. Note that Aqua Enforcers must be deployed with the AQUA_RUNC_INTERCEPTION environment variable set to 0 in order to use User Access Control Policies.",
 				Computed:    true,
 			},
+			"enable_enforcer_group_prometheus": {
+				Type:        schema.TypeBool,
+				Description: "Enable Prometheus metrics for the enforcer group.",
+				Computed:    true,
+			},
 			"image_assurance": {
 				Type:        schema.TypeBool,
 				Description: "When Set to `True` enables selected controls: Container Runtime Policy (`Block Non-Compliant Images`, `Block Unregistered Images`, and `Registries Allowed`) and Default Image Assurance Policy (`Images Blocked`).",
@@ -449,6 +454,7 @@ func dataEnforcerGroupRead(ctx context.Context, d *schema.ResourceData, m interf
 		d.Set("host_forensics_collection", group.HostForensicsCollection)
 		d.Set("host_network_protection", group.HostNetworkProtection)
 		d.Set("user_access_control", group.UserAccessControl)
+		d.Set("enable_enforcer_group_prometheus", group.EnableEnforcerGroupPrometheus)
 		d.Set("image_assurance", group.ImageAssurance)
 		d.Set("host_protection", group.HostProtection)
 		d.Set("audit_all", group.AuditAll)

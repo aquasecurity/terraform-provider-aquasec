@@ -43,6 +43,7 @@ description: |-
 - `container_activity_protection` (Boolean) Set `True` to apply Container Runtime Policies, Image Profiles, and Firewall Policies to containers.
 - `container_antivirus_protection` (Boolean) This setting is available only when you have license for `Advanced Malware Protection`. Send true to make use of the license and enable the `Real-time Malware Protection` control in the Container Runtime policies.
 - `description` (String) A description of the Aqua Enforcer group.
+- `enable_enforcer_group_prometheus` (Boolean) Enable Prometheus metrics for the enforcer group.
 - `enforce` (Boolean) Whether to enable enforce mode on the Enforcers, defaults to False.
 - `forensics` (Boolean) Select Enabled to send activity logs in your containers to the Aqua Server for forensics purposes.
 - `gateways` (List of String) List of Aqua gateway IDs for the Enforcers.

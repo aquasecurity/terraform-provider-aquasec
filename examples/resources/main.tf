@@ -93,6 +93,7 @@ resource "aquasec_enforcer_groups" "new" {
   description  = "Created1"
   logical_name = "terraform-eg"
   enforce      = true
+  enable_enforcer_group_prometheus = true
   gateways = [
     "local-cluster"
   ]

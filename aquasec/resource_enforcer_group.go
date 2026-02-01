@@ -438,6 +438,11 @@ func resourceEnforcerGroup() *schema.Resource {
 				Description: "Set `True` to apply User Access Control Policies to containers. Note that Aqua Enforcers must be deployed with the AQUA_RUNC_INTERCEPTION environment variable set to 0 in order to use User Access Control Policies.",
 				Optional:    true,
 			},
+			"enable_enforcer_group_prometheus": {
+				Type:        schema.TypeBool,
+				Description: "Enable Prometheus metrics for the enforcer group.",
+				Optional:    true,
+			},
 			"unified_mode": {
 				Type:        schema.TypeBool,
 				Description: "",
@@ -503,6 +508,7 @@ func resourceEnforcerGroupRead(ctx context.Context, d *schema.ResourceData, m in
 	d.Set("host_forensics_collection", r.HostForensicsCollection)
 	d.Set("host_network_protection", r.HostNetworkProtection)
 	d.Set("user_access_control", r.UserAccessControl)
+	d.Set("enable_enforcer_group_prometheus", r.EnableEnforcerGroupPrometheus)
 	d.Set("image_assurance", r.ImageAssurance)
 	d.Set("host_protection", r.HostProtection)
 	d.Set("audit_all", r.AuditAll)
@@ -594,6 +600,7 @@ func resourceEnforcerGroupUpdate(ctx context.Context, d *schema.ResourceData, m 
 		"syscall_enabled",
 		"type",
 		"user_access_control",
+		"enable_enforcer_group_prometheus",
 		"orchestrator",
 		"schedule_scan_settings",
 		"unified_mode",
@@ -846,6 +853,11 @@ func expandEnforcerGroup(d *schema.ResourceData) client.EnforcerGroup {
 	userAccessControl, ok := d.GetOk("user_access_control")
 	if ok {
 		enforcerGroup.UserAccessControl = userAccessControl.(bool)
+	}
+
+	enableEnforcerGroupPrometheus, ok := d.GetOk("enable_enforcer_group_prometheus")
+	if ok {
+		enforcerGroup.EnableEnforcerGroupPrometheus = enableEnforcerGroupPrometheus.(bool)
 	}
 
 	unifiedMode, ok := d.GetOk("unified_mode")
