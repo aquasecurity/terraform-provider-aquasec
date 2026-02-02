@@ -61,6 +61,7 @@ output "group_details" {
 - `description` (String) A description for the Aqua Enforcer group.
 - `disconnected_count` (Number) Number of disconnected enforcers in the enforcer group.
 - `enforce` (Boolean) Whether the enforce mode is enabled on the Enforcers.
+- `enable_enforcer_group_prometheus` (Boolean) Enable Prometheus metrics for the enforcer group.
 - `enforcer_image_name` (String) The specific Aqua Enforcer product image (with image tag) to be deployed.
 - `gateway_address` (String) Gateway Address
 - `gateway_name` (String) Gateway Name

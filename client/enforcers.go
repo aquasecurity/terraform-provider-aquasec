@@ -97,6 +97,7 @@ type EnforcerGroup struct {
 	AllowedLabels                             []string                     `json:"allowed_labels"`
 	AllowedRegistries                         []string                     `json:"allowed_registries"`
 	ScheduleScanSettings                      EnforcerScheduleScanSettings `json:"schedule_scan_settings"`
+	EnableEnforcerGroupPrometheus             bool                         `json:"enable_enforcer_group_prometheus"`
 	UnifiedMode                               bool                         `json:"unified_mode"`
 }
 
