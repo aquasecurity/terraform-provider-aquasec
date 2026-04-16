@@ -23,6 +23,22 @@ func dataSourceRegistry() *schema.Resource {
 				Description: "The password for registry authentication",
 				Computed:    true,
 			},
+			"connection_type": {
+				Type:        schema.TypeString,
+				Description: "Authentication mode for AWS registries.",
+				Computed:    true,
+			},
+			"role_arn": {
+				Type:        schema.TypeString,
+				Description: "AWS IAM role ARN used for ECR access delegation.",
+				Computed:    true,
+			},
+			"external_id": {
+				Type:        schema.TypeString,
+				Description: "External ID paired with `role_arn` for ECR access delegation.",
+				Computed:    true,
+				Sensitive:   true,
+			},
 			"type": {
 				Type: schema.TypeString,
 				Description: "Registry type (HUB / V1 / V2 / ACR / GAR / AWS / GCR / ENGINE / CTRDENGINE / " +
@@ -366,6 +382,9 @@ func dataRegistryRead(ctx context.Context, d *schema.ResourceData, m interface{}
 		scanner_name := d.Get("scanner_name").([]interface{})
 		d.Set("username", reg.Username)
 		d.Set("password", reg.Password)
+		d.Set("connection_type", detectRegistryConnectionType(reg.Type, reg.Username, reg.Password, reg.Options))
+		d.Set("role_arn", getRegistryOptionValue(reg.Options, registryOptionARNRole))
+		d.Set("external_id", getRegistryOptionValue(reg.Options, registryOptionSTSExternalID))
 		d.Set("name", reg.Name)
 		d.Set("description", reg.Description)
 		d.Set("type", reg.Type)

@@ -687,6 +687,9 @@ resource "aquasec_image_assurance_policy" "test_image_policy" {
 resource "aquasec_integration_registry" "integration_registry" {
   name                           = "integration_registry"
   type                           = "AWS"
+  connection_type                = "access_delegation"
+  role_arn                       = "arn:aws:iam::111111111111:role/terraform"
+  external_id                    = "test1-test2-test3"
   advanced_settings_cleanup      = false
   always_pull_patterns           = [":latest", ":v1"]
   author                         = "aqua@aquasec.com"
@@ -703,14 +706,6 @@ resource "aquasec_integration_registry" "integration_registry" {
   auto_pull_latest_xff_enabled   = true
   is_architecture_system_default = false
 
-  options {
-    option = "ARNRole"
-    value  = "arn:aws:iam::111111111111:role/terraform"
-  }
-  options {
-    option = "sts:ExternalId"
-    value  = "test1-test2-test3"
-  }
   options {
     option = "TestImagePull"
     value  = "nginx:latest"

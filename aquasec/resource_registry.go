@@ -13,6 +13,14 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
+const (
+	registryConnectionTypeCredentials      = "credentials"
+	registryConnectionTypeAccessDelegation = "access_delegation"
+	registryConnectionTypeSTSToken         = "sts_token"
+	registryOptionARNRole                  = "ARNRole"
+	registryOptionSTSExternalID            = "sts:ExternalId"
+)
+
 func resourceRegistry() *schema.Resource {
 	return &schema.Resource{
 		CreateContext: resourceRegistryCreate,
@@ -49,6 +57,28 @@ func resourceRegistry() *schema.Resource {
 			"password": {
 				Type:        schema.TypeString,
 				Description: "The password for registry authentication",
+				Optional:    true,
+				Sensitive:   true,
+			},
+			"connection_type": {
+				Type:        schema.TypeString,
+				Description: "Authentication mode for AWS registries. Use `access_delegation` with `role_arn` for ECR AssumeRole authentication.",
+				Optional:    true,
+				Computed:    true,
+				ValidateFunc: validation.StringInSlice([]string{
+					registryConnectionTypeCredentials,
+					registryConnectionTypeAccessDelegation,
+					registryConnectionTypeSTSToken,
+				}, false),
+			},
+			"role_arn": {
+				Type:        schema.TypeString,
+				Description: "AWS IAM role ARN used for ECR access delegation. Stored in Aqua as the `ARNRole` registry option.",
+				Optional:    true,
+			},
+			"external_id": {
+				Type:        schema.TypeString,
+				Description: "External ID paired with `role_arn` for ECR access delegation. Stored in Aqua as the `sts:ExternalId` registry option.",
 				Optional:    true,
 				Sensitive:   true,
 			},
@@ -423,6 +453,13 @@ func resourceRegistryCreate(ctx context.Context, d *schema.ResourceData, m inter
 	existsing_scanners := old.([]interface{})
 
 	scanner_name_added, scanner_name_removed := scannerNamesListCreate(old.([]interface{}), new.([]interface{}))
+	connectionType := d.Get("connection_type").(string)
+	roleArn := d.Get("role_arn").(string)
+	externalID := d.Get("external_id").(string)
+
+	if err := validateRegistryConnectionType(d.Get("type").(string), connectionType, roleArn, externalID); err != nil {
+		return diag.FromErr(err)
+	}
 
 	registry := client.Registry{
 		Username:                    d.Get("username").(string),
@@ -468,20 +505,7 @@ func resourceRegistryCreate(ctx context.Context, d *schema.ResourceData, m inter
 		PullTagsPattern:             convertStringArr(pull_tags_pattern),
 		AutoPullLatestXffEnabled:    d.Get("auto_pull_latest_xff_enabled").(bool),
 	}
-	options, ok := d.GetOk("options")
-	if ok {
-		options1 := options.([]interface{})
-		optionsarray := make([]client.Options, len(options1))
-		for i, Data := range options1 {
-			options2 := Data.(map[string]interface{})
-			Options := client.Options{
-				Option: options2["option"].(string),
-				Value:  options2["value"].(string),
-			}
-			optionsarray[i] = Options
-		}
-		registry.Options = optionsarray
-	}
+	registry.Options = expandRegistryOptions(d.Get("options").([]interface{}), roleArn, externalID)
 	webhook, ok := d.GetOk("webhook")
 	if ok {
 		for _, webhookMap := range webhook.(*schema.Set).List() {
@@ -596,6 +620,15 @@ func resourceRegistryRead(ctx context.Context, d *schema.ResourceData, m interfa
 		return diag.FromErr(err)
 	}
 	if err = d.Set("password", r.Password); err != nil {
+		return diag.FromErr(err)
+	}
+	if err = d.Set("connection_type", detectRegistryConnectionType(r.Type, r.Username, r.Password, r.Options)); err != nil {
+		return diag.FromErr(err)
+	}
+	if err = d.Set("role_arn", getRegistryOptionValue(r.Options, registryOptionARNRole)); err != nil {
+		return diag.FromErr(err)
+	}
+	if err = d.Set("external_id", getRegistryOptionValue(r.Options, registryOptionSTSExternalID)); err != nil {
 		return diag.FromErr(err)
 	}
 	if err = d.Set("scanner_type", r.ScannerType); err != nil {
@@ -726,7 +759,7 @@ func resourceRegistryUpdate(ctx context.Context, d *schema.ResourceData, m inter
 		autoPullInterval = 1
 	}
 
-	if d.HasChanges("name", "registry_scan_timeout", "username", "description", "pull_image_tag_pattern", "password", "url", "type", "auto_pull", "auto_pull_rescan", "auto_pull_max", "advanced_settings_cleanup", "auto_pull_time", "auto_pull_interval", "auto_cleanup", "image_creation_date_condition", "scanner_name", "prefixes", "pull_image_count", "pull_image_age", "options", "webhook", "always_pull_patterns", "pull_repo_patterns_excluded", "scanner_group_name", "auto_scan_time", "client_cert", "client_key", "architecture", "cloud_resources", "error_msg", "force_save", "force_ootb", "image_s3_prefixes", "permission", "pull_max_tags", "pull_tags_pattern", "pull_repo_patterns", "auto_pull_latest_xff_enabled", "nexus_mtts_ff_enabled", "is_architecture_system_default") {
+	if d.HasChanges("name", "registry_scan_timeout", "username", "description", "pull_image_tag_pattern", "password", "url", "type", "auto_pull", "auto_pull_rescan", "auto_pull_max", "advanced_settings_cleanup", "auto_pull_time", "auto_pull_interval", "auto_cleanup", "image_creation_date_condition", "scanner_name", "prefixes", "pull_image_count", "pull_image_age", "options", "webhook", "always_pull_patterns", "pull_repo_patterns_excluded", "scanner_group_name", "auto_scan_time", "client_cert", "client_key", "architecture", "cloud_resources", "error_msg", "force_save", "force_ootb", "image_s3_prefixes", "permission", "pull_max_tags", "pull_tags_pattern", "pull_repo_patterns", "auto_pull_latest_xff_enabled", "nexus_mtts_ff_enabled", "is_architecture_system_default", "connection_type", "role_arn", "external_id") {
 		prefixes := d.Get("prefixes").([]interface{})
 		var defaultPrefix string
 		// Add default_prefix to prefixes
@@ -749,6 +782,13 @@ func resourceRegistryUpdate(ctx context.Context, d *schema.ResourceData, m inter
 		existsing_scanners := old.([]interface{})
 
 		scanner_name_added, scanner_name_removed := scannerNamesListCreate(old.([]interface{}), new.([]interface{}))
+		connectionType := d.Get("connection_type").(string)
+		roleArn := d.Get("role_arn").(string)
+		externalID := d.Get("external_id").(string)
+
+		if err := validateRegistryConnectionType(d.Get("type").(string), connectionType, roleArn, externalID); err != nil {
+			return diag.FromErr(err)
+		}
 
 		registry := client.Registry{
 			Name:                        d.Get("name").(string),
@@ -796,20 +836,7 @@ func resourceRegistryUpdate(ctx context.Context, d *schema.ResourceData, m inter
 			AutoPullLatestXffEnabled:    d.Get("auto_pull_latest_xff_enabled").(bool),
 		}
 
-		options, ok := d.GetOk("options")
-		if ok {
-			options1 := options.([]interface{})
-			optionsarray := make([]client.Options, len(options1))
-			for i, Data := range options1 {
-				options2 := Data.(map[string]interface{})
-				Options := client.Options{
-					Option: options2["option"].(string),
-					Value:  options2["value"].(string),
-				}
-				optionsarray[i] = Options
-			}
-			registry.Options = optionsarray
-		}
+		registry.Options = expandRegistryOptions(d.Get("options").([]interface{}), roleArn, externalID)
 		webhook, ok := d.GetOk("webhook")
 		if ok {
 			for _, webhookMap := range webhook.(*schema.Set).List() {
@@ -942,4 +969,76 @@ func flattenautoscantime(autoscantime client.AutoScanTime) []map[string]interfac
 			"week_days":      autoscantime.WeekDays,
 		},
 	}
+}
+
+func expandRegistryOptions(options []interface{}, roleArn string, externalID string) []client.Options {
+	filteredOptions := make([]client.Options, 0, len(options)+2)
+	for _, data := range options {
+		optionData, ok := data.(map[string]interface{})
+		if !ok {
+			continue
+		}
+		optionName := optionData["option"].(string)
+		if optionName == registryOptionARNRole || optionName == registryOptionSTSExternalID {
+			continue
+		}
+		filteredOptions = append(filteredOptions, client.Options{
+			Option: optionName,
+			Value:  optionData["value"].(string),
+		})
+	}
+	if roleArn != "" {
+		filteredOptions = append(filteredOptions, client.Options{
+			Option: registryOptionARNRole,
+			Value:  roleArn,
+		})
+	}
+	if externalID != "" {
+		filteredOptions = append(filteredOptions, client.Options{
+			Option: registryOptionSTSExternalID,
+			Value:  externalID,
+		})
+	}
+	return filteredOptions
+}
+
+func getRegistryOptionValue(options []client.Options, optionName string) string {
+	for _, option := range options {
+		if option.Option == optionName {
+			return option.Value
+		}
+	}
+	return ""
+}
+
+func detectRegistryConnectionType(registryType string, username string, password string, options []client.Options) string {
+	if registryType != "AWS" {
+		return ""
+	}
+	if getRegistryOptionValue(options, registryOptionARNRole) != "" {
+		return registryConnectionTypeAccessDelegation
+	}
+	if username != "" || password != "" {
+		return registryConnectionTypeCredentials
+	}
+	return ""
+}
+
+func validateRegistryConnectionType(registryType string, connectionType string, roleArn string, externalID string) error {
+	if connectionType == "" {
+		if externalID != "" && roleArn == "" {
+			return fmt.Errorf("role_arn must be provided when external_id is set")
+		}
+		return nil
+	}
+	if registryType != "AWS" {
+		return fmt.Errorf("connection_type is only supported for AWS registry integrations")
+	}
+	if connectionType == registryConnectionTypeAccessDelegation && roleArn == "" {
+		return fmt.Errorf("role_arn must be provided when connection_type is %q", registryConnectionTypeAccessDelegation)
+	}
+	if externalID != "" && roleArn == "" {
+		return fmt.Errorf("role_arn must be provided when external_id is set")
+	}
+	return nil
 }
