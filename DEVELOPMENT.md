@@ -32,7 +32,7 @@ git clone https://github.com/aquasecurity/terraform-provider-aquasec.git
 
 cd terraform-provider-aquasec
 
-git checkout v0.14.0
+git checkout v0.15.0
 ```
 
 **Build and install the provider**
