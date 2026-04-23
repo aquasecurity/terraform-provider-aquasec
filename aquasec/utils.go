@@ -734,3 +734,15 @@ func expandResponsePolicyOutputs(list []interface{}) []client.ResponsePolicyOutp
 	}
 	return outs
 }
+
+// suppressExcludeNoFixDiff suppresses diff on *_exclude_no_fix fields when
+// the corresponding parent *_enabled field is false or unset,
+// preventing phantom drift when the parent control is disabled.
+func suppressExcludeNoFixDiff(parentKey string) schema.SchemaDiffSuppressFunc {
+	return func(k, old, new string, d *schema.ResourceData) bool {
+		// d.Get returns the zero value (false) when unset, so this is safe.
+		// Suppress only when parent is false; allow diff when parent is true.
+		enabled, ok := d.Get(parentKey).(bool)
+		return !ok || !enabled
+	}
+}

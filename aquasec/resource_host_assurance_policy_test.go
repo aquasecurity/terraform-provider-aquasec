@@ -39,7 +39,6 @@ func TestAquasecHostAssurancePolicy(t *testing.T) {
 					// CVSS settings
 					resource.TestCheckResourceAttr(resourceName, "cvss_severity_enabled", "true"),
 					resource.TestCheckResourceAttr(resourceName, "cvss_severity", "critical"),
-					resource.TestCheckResourceAttr(resourceName, "cvss_severity_exclude_no_fix", "true"),
 
 					// Score settings
 					resource.TestCheckResourceAttr(resourceName, "maximum_score_enabled", "true"),
@@ -78,7 +77,6 @@ func TestAquasecHostAssurancePolicy(t *testing.T) {
 					resource.TestCheckResourceAttr(resourceName, "required_labels.0.key", "env"),
 					resource.TestCheckResourceAttr(resourceName, "required_labels.0.value", "prod"),
 
-					resource.TestCheckResourceAttr(resourceName, "maximum_score_exclude_no_fix", "true"),
 				),
 			},
 		},

@@ -69,9 +69,10 @@ func resourceImageAssurancePolicy() *schema.Resource {
 				Optional:    true,
 			},
 			"cvss_severity_exclude_no_fix": {
-				Type:        schema.TypeBool,
-				Description: "Indicates that policy should ignore cvss cases that do not have a known fix.",
-				Optional:    true,
+				Type:             schema.TypeBool,
+				Description:     "Indicates that policy should ignore cvss cases that do not have a known fix.",
+				Optional:        true,
+				DiffSuppressFunc: suppressExcludeNoFixDiff("cvss_severity_enabled"),
 			},
 			"custom_severity_enabled": {
 				Type:     schema.TypeBool,
@@ -88,8 +89,8 @@ func resourceImageAssurancePolicy() *schema.Resource {
 				Optional:    true,
 			},
 			"control_exclude_no_fix": {
-				Type:     schema.TypeBool,
-				Optional: true,
+				Type:             schema.TypeBool,
+				Optional:        true,
 			},
 			"category": {
 				Type:     schema.TypeString,
@@ -762,9 +763,10 @@ func resourceImageAssurancePolicy() *schema.Resource {
 				Optional: true,
 			},
 			"maximum_score_exclude_no_fix": {
-				Type:        schema.TypeBool,
-				Description: "",
-				Optional:    true,
+				Type:             schema.TypeBool,
+				Description:     "",
+				Optional:        true,
+				DiffSuppressFunc: suppressExcludeNoFixDiff("maximum_score_enabled"),
 			},
 			//JSON
 			"lastupdate": {
