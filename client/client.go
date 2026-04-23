@@ -112,13 +112,13 @@ func NewClient(url, user, password, apiKey, secretkey string, useAPIKey, verifyT
 		c.clientType = Saas
 		c.tokenUrl = consts.SaasEu1TokenUrl
 		c.saasUrl = consts.SaasEu1Url
-		c.saasScpUrl = consts.SaasSupplyChainUrl
+		c.saasScpUrl = consts.SaasEu1SupplyChainUrl
 		break
 	case consts.SaasAsia1Url:
 		c.clientType = Saas
 		c.tokenUrl = consts.SaasAsia1TokenUrl
 		c.saasUrl = consts.SaasAsia1Url
-		c.saasScpUrl = consts.SaasSupplyChainUrl
+		c.saasScpUrl = consts.SaasAsia1SupplyChainUrl
 		break
 	case consts.SaasAsia2Url:
 		c.clientType = Saas
@@ -130,13 +130,13 @@ func NewClient(url, user, password, apiKey, secretkey string, useAPIKey, verifyT
 		c.clientType = Saas
 		c.tokenUrl = consts.SaasAu2TokenUrl
 		c.saasUrl = consts.SaaSAu2Url
-		c.saasScpUrl = consts.SaasSupplyChainUrl
+		c.saasScpUrl = consts.SaasAu2SupplyChainUrl
 		break
 	case consts.SaasDevUrl:
 		c.clientType = SaasDev
 		c.tokenUrl = consts.SaasDevTokenUrl
 		c.saasUrl = consts.SaasDevUrl
-		c.saasScpUrl = consts.SaasSupplyChainUrl
+		c.saasScpUrl = consts.SaasDevSupplyChainUrl
 		break
 	default:
 		c.clientType = Csp
@@ -347,6 +347,16 @@ func (cli *Client) GetUSEAuthToken() (string, string, error) {
 func (cli *Client) makeRequest() *gorequest.SuperAgent {
 	userAgent := fmt.Sprintf("%s/%s", UserAgentBase, version)
 	return cli.gorequest.Clone().Set("User-Agent", userAgent)
+}
+
+// scpRequest returns a SuperAgent configured for supply chain API calls.
+// The supply chain API only accepts JWT Bearer tokens (no HMAC signing).
+func (cli *Client) scpRequest() (*gorequest.SuperAgent, error) {
+	if cli.token == "" {
+		return nil, fmt.Errorf("no auth token available for supply chain API request")
+	}
+	agent := cli.gorequest.Clone().Set("Authorization", "Bearer "+cli.token)
+	return agent, nil
 }
 
 func (cli *Client) signedRequest(method, fullURL string, body []byte) (*gorequest.SuperAgent, error) {

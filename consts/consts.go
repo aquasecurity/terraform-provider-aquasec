@@ -23,5 +23,9 @@ const (
 	OIDCSettingsApiPath   = "/api/v1/settings/OIDCSettings/OIDCSettings"
 	OpenIdSettingsApiPath = "/api/v1/settings/OIDCSettings/OpenIdSettings"
 	LdapSettingsApiPath   = "/api/v1/settings/ldap"
+	SaasDevSupplyChainUrl   = "https://us-east-1.staging.edge.cloud.aquasec.com/supply_chain"
 	SaasSupplyChainUrl    = "https://us-east-1.edge.cloud.aquasec.com/supply_chain"
+	SaasEu1SupplyChainUrl  = "https://eu-central-1.edge.cloud.aquasec.com/supply_chain"
+	SaasAsia1SupplyChainUrl = "https://ap-southeast-1.edge.cloud.aquasec.com/supply_chain"
+	SaasAu2SupplyChainUrl   = "https://ap-southeast-2.edge.cloud.aquasec.com/supply_chain"
 )

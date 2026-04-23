@@ -187,8 +187,6 @@ type SuppressionRuleQuery struct {
 }
 
 func (cli *Client) GetSuppressionRules(query SuppressionRuleQuery) (*SuppressionRuleResp, error) {
-	request := cli.gorequest
-
 	orderBy := query.OrderBy
 	apiPath := fmt.Sprintf("/v2/build/suppressionsV2?page=%d&page_size=%d&order_by=%s&type=%s",
 		query.Page, query.PageSize, url.QueryEscape(orderBy), "suppression")
@@ -196,8 +194,11 @@ func (cli *Client) GetSuppressionRules(query SuppressionRuleQuery) (*Suppression
 	if err := cli.limiter.Wait(context.Background()); err != nil {
 		return nil, err
 	}
-	resp, body, errs := request.Clone().
-		Set("Authorization", "Bearer "+cli.token).
+	agent, err := cli.scpRequest()
+	if err != nil {
+		return nil, fmt.Errorf("error signing request for %s: %v", apiPath, err)
+	}
+	resp, body, errs := agent.
 		Get(cli.saasScpUrl + apiPath).
 		End()
 	if errs != nil {
@@ -225,13 +226,16 @@ func (cli *Client) GetSuppressionRule(id string) (*SuppressionRule, error) {
 	var err error
 	var response SuppressionRule
 
-	request := cli.gorequest
 	apiPath := fmt.Sprintf("/v2/build/suppressionsV2/%s", id)
 	err = cli.limiter.Wait(context.Background())
 	if err != nil {
 		return nil, err
 	}
-	resp, body, errs := request.Clone().Set("Authorization", "Bearer "+cli.token).Get(cli.saasScpUrl + apiPath).End()
+	agent, err := cli.scpRequest()
+	if err != nil {
+		return nil, fmt.Errorf("error signing request for %s: %v", apiPath, err)
+	}
+	resp, body, errs := agent.Get(cli.saasScpUrl + apiPath).End()
 	if errs != nil {
 		return nil, fmt.Errorf("error calling %s", apiPath)
 	}
@@ -257,14 +261,16 @@ func (cli *Client) CreateSuppressionRule(rule *SuppressionRule) (*SuppressionRul
 		return nil, err
 	}
 
-	request := cli.gorequest
 	apiPath := "/v2/build/suppressionsV2"
 	if err := cli.limiter.Wait(context.Background()); err != nil {
 		return nil, err
 	}
 
-	resp, body, errs := request.Clone().
-		Set("Authorization", "Bearer "+cli.token).
+	agent, err := cli.scpRequest()
+	if err != nil {
+		return nil, fmt.Errorf("error signing request for %s: %v", apiPath, err)
+	}
+	resp, body, errs := agent.
 		Post(cli.saasScpUrl + apiPath).
 		Send(string(payload)).
 		End()
@@ -305,14 +311,17 @@ func (cli *Client) UpdateSuppressionRule(id string, rule *SuppressionRule) error
 	if err != nil {
 		return err
 	}
-	request := cli.gorequest
 	apiPath := fmt.Sprintf("/v2/build/suppressionsV2/%s", id)
 	if err := cli.limiter.Wait(context.Background()); err != nil {
 		return err
 	}
 
-	resp, body, errs := request.Clone().
-		Set("Authorization", "Bearer "+cli.token).
+	agent, err := cli.scpRequest()
+	if err != nil {
+		return fmt.Errorf("error signing request for %s: %v", apiPath, err)
+	}
+
+	resp, body, errs := agent.
 		Put(cli.saasScpUrl + apiPath).
 		Send(string(payload)).
 		End()
@@ -333,12 +342,15 @@ func (cli *Client) UpdateSuppressionRule(id string, rule *SuppressionRule) error
 }
 
 func (cli *Client) DeleteSuppressionRule(id string) error {
-	request := cli.gorequest
 	apiPath := fmt.Sprintf("/v2/build/suppressionsV2/%s", id)
 	if err := cli.limiter.Wait(context.Background()); err != nil {
 		return err
 	}
-	resp, body, errs := request.Clone().Set("Authorization", "Bearer "+cli.token).Delete(cli.saasScpUrl + apiPath).End()
+	agent, err := cli.scpRequest()
+	if err != nil {
+		return fmt.Errorf("error signing request for %s: %v", apiPath, err)
+	}
+	resp, body, errs := agent.Delete(cli.saasScpUrl + apiPath).End()
 	if errs != nil {
 		return fmt.Errorf("error calling %s: %v", apiPath, errs)
 	}
