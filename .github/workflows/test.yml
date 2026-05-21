@@ -16,6 +16,9 @@ on:
   # change.
   # schedule:
   #   - cron: '0 13 * * *'
+permissions:
+  contents: read
+
 jobs:
   build:
     if: contains(github.event.pull_request.labels.*.name, 'safe_to_test')
