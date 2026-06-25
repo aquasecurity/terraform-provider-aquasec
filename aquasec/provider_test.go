@@ -62,6 +62,10 @@ func testAccPreCheck(t *testing.T) {
 			t.Fatal("AQUA_API_SECRET must be set for API key authentication")
 		}
 	}
+
+	if err := ensureAcceptanceTestAuth(); err != nil {
+		t.Fatalf("failed to initialize acceptance test auth: %v", err)
+	}
 }
 
 func TestProviderConfigure_ValidationLogic(t *testing.T) {

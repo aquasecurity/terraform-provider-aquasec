@@ -16,6 +16,9 @@ description: |-
 resource "aquasec_integration_registry" "integration_registry" {
   name                           = "integration_registry"
   type                           = "AWS"
+  connection_type                = "access_delegation"
+  role_arn                       = "arn:aws:iam::111111111111:role/terraform"
+  external_id                    = "test1-test2-test3"
   advanced_settings_cleanup      = false
   always_pull_patterns           = [":latest", ":v1"]
   author                         = "aqua@aquasec.com"
@@ -32,14 +35,6 @@ resource "aquasec_integration_registry" "integration_registry" {
   auto_pull_latest_xff_enabled   = true
   is_architecture_system_default = false
 
-  options {
-    option = "ARNRole"
-    value  = "arn:aws:iam::111111111111:role/terraform"
-  }
-  options {
-    option = "sts:ExternalId"
-    value  = "test1-test2-test3"
-  }
   options {
     option = "TestImagePull"
     value  = "nginx:latest"
@@ -109,9 +104,11 @@ resource "aquasec_integration_registry" "integration_registry" {
 - `auto_scan_time` (Block Set) When enabled, registry events are sent to the given Aqua webhook url (see [below for nested schema](#nestedblock--auto_scan_time))
 - `client_cert` (String) The client certificate for the registry
 - `client_key` (String) The client key for the registry
+- `connection_type` (String) Authentication mode for AWS registries. Use `access_delegation` with `role_arn` for ECR AssumeRole authentication.
 - `cloud_resources` (List of String) The cloud resource of the registry
 - `description` (String) The description of the registry
 - `error_msg` (String) The error message of the registry
+- `external_id` (String, Sensitive) External ID paired with `role_arn` for ECR access delegation. Stored in Aqua as the `sts:ExternalId` registry option.
 - `force_ootb` (Boolean) To identify and ignore supersonic client calls initiated from OOTB
 - `force_save` (Boolean) Whether to force save the registry even if the test connection fails
 - `image_creation_date_condition` (String) Additional condition for pulling and rescanning images, Defaults to 'none'
@@ -131,6 +128,7 @@ resource "aquasec_integration_registry" "integration_registry" {
 - `pull_repo_patterns_excluded` (List of String) List of image patterns to exclude
 - `pull_tags_pattern` (List of String) Patterns for tags to be pulled from auto pull
 - `registry_scan_timeout` (Number) Registry scan timeout in Minutes
+- `role_arn` (String) AWS IAM role ARN used for ECR access delegation. Stored in Aqua as the `ARNRole` registry option.
 - `scanner_group_name` (String) The scanner group name (required when scanner_type = "specific" type)
 - `scanner_name` (List of String) List of scanner names
 - `scanner_type` (String) The Scanner type (either "any" or "specific")

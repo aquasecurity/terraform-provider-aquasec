@@ -5,109 +5,120 @@ import (
 	"log"
 	"os"
 	"strconv"
+	"sync"
 
 	"github.com/aquasecurity/terraform-provider-aquasec/client"
 )
 
-func init() {
-	log.Println("setup suite")
-	var (
-		present                                          bool
-		username, password, aquaURL                      string
-		verifyTLS, useAPIKey                             bool
-		verifyTLSString, apiKey, secretKey, useAPIKeyStr string
-		caCertPath                                       string
-		err                                              error
-		caCertByte                                       []byte
-	)
+var (
+	acceptanceTestAuthOnce sync.Once
+	acceptanceTestAuthErr  error
+)
 
-	aquaURL, present = os.LookupEnv("AQUA_URL")
-	if !present || aquaURL == "" {
-		panic("AQUA_URL env is missing or empty, please set it")
-	}
+func ensureAcceptanceTestAuth() error {
+	acceptanceTestAuthOnce.Do(func() {
+		log.Println("setup acceptance test auth")
 
-	apiKey = os.Getenv("AQUA_API_KEY")
-	secretKey = os.Getenv("AQUA_API_SECRET")
-	useAPIKeyStr = os.Getenv("AQUA_USE_API_KEY")
-	useAPIKey = false
+		var (
+			present                                          bool
+			username, password, aquaURL                      string
+			verifyTLS, useAPIKey                             bool
+			verifyTLSString, apiKey, secretKey, useAPIKeyStr string
+			caCertPath                                       string
+			err                                              error
+			caCertByte                                       []byte
+		)
 
-	// Check if AQUA_USE_API_KEY is explicitly set
-	if useAPIKeyStr != "" {
-		var err error
-		useAPIKey, err = strconv.ParseBool(useAPIKeyStr)
-		if err != nil {
-			panic(fmt.Sprintf("Invalid boolen for AQUA_USE_API_KEY: %v", err))
+		aquaURL, present = os.LookupEnv("AQUA_URL")
+		if !present || aquaURL == "" {
+			acceptanceTestAuthErr = fmt.Errorf("AQUA_URL env is missing or empty, please set it")
+			return
 		}
-	} else {
-		// Auto-detect: use API key auth if API key credentials are provided
-		if apiKey != "" && secretKey != "" {
+
+		apiKey = os.Getenv("AQUA_API_KEY")
+		secretKey = os.Getenv("AQUA_API_SECRET")
+		useAPIKeyStr = os.Getenv("AQUA_USE_API_KEY")
+
+		if useAPIKeyStr != "" {
+			useAPIKey, err = strconv.ParseBool(useAPIKeyStr)
+			if err != nil {
+				acceptanceTestAuthErr = fmt.Errorf("invalid boolean for AQUA_USE_API_KEY: %w", err)
+				return
+			}
+		} else if apiKey != "" && secretKey != "" {
 			useAPIKey = true
 		}
-	}
 
-	// Get credentials based on auth method
-	if useAPIKey {
-		if apiKey == "" {
-			panic("AQUA_API_KEY env is missing or empty, please set it when using API key authentication")
-		}
-		if secretKey == "" {
-			panic("AQUA_API_SECRET env is missing or empty, please set it when using API key authentication")
-		}
-	} else {
-		username, present = os.LookupEnv("AQUA_USER")
-		if !present || username == "" {
-			panic("AQUA_USER env is missing or empty, please set it (or use AQUA_API_KEY and AQUA_API_SECRET for API key auth)")
-		}
+		if useAPIKey {
+			if apiKey == "" {
+				acceptanceTestAuthErr = fmt.Errorf("AQUA_API_KEY env is missing or empty, please set it when using API key authentication")
+				return
+			}
+			if secretKey == "" {
+				acceptanceTestAuthErr = fmt.Errorf("AQUA_API_SECRET env is missing or empty, please set it when using API key authentication")
+				return
+			}
+		} else {
+			username, present = os.LookupEnv("AQUA_USER")
+			if !present || username == "" {
+				acceptanceTestAuthErr = fmt.Errorf("AQUA_USER env is missing or empty, please set it (or use AQUA_API_KEY and AQUA_API_SECRET for API key auth)")
+				return
+			}
 
-		password, present = os.LookupEnv("AQUA_PASSWORD")
-		if !present || password == "" {
-			panic("AQUA_PASSWORD env is missing or empty, please set it (or use AQUA_API_KEY and AQUA_API_SECRET for API key auth)")
-		}
-	}
-
-	verifyTLSString, present = os.LookupEnv("AQUA_TLS_VERIFY")
-	if !present {
-		verifyTLSString = "true"
-	}
-	verifyTLS, _ = strconv.ParseBool(verifyTLSString)
-
-	caCertPath, present = os.LookupEnv("AQUA_CA_CERT_PATH")
-	if present {
-		if caCertPath != "" {
-			caCertByte, err = os.ReadFile(caCertPath)
-			if err != nil {
-				panic("Unable to read CA certificates")
+			password, present = os.LookupEnv("AQUA_PASSWORD")
+			if !present || password == "" {
+				acceptanceTestAuthErr = fmt.Errorf("AQUA_PASSWORD env is missing or empty, please set it (or use AQUA_API_KEY and AQUA_API_SECRET for API key auth)")
+				return
 			}
 		}
-	}
 
-	var aquaClient *client.Client
-	if useAPIKey {
-		aquaClient, err = client.NewClientWithAPIKey(aquaURL, apiKey, secretKey, verifyTLS, caCertByte)
-		if err != nil {
-			panic(fmt.Errorf("failed to create client with api key auth, error: %s", err))
+		verifyTLSString, present = os.LookupEnv("AQUA_TLS_VERIFY")
+		if !present {
+			verifyTLSString = "true"
 		}
-	} else {
-		aquaClient, err = client.NewClientWithTokenAuth(aquaURL, username, password, verifyTLS, caCertByte)
-		if err != nil {
-			panic(fmt.Errorf("failed to create client with token auth, error: %s", err))
+		verifyTLS, _ = strconv.ParseBool(verifyTLSString)
+
+		caCertPath, present = os.LookupEnv("AQUA_CA_CERT_PATH")
+		if present && caCertPath != "" {
+			caCertByte, err = os.ReadFile(caCertPath)
+			if err != nil {
+				acceptanceTestAuthErr = fmt.Errorf("unable to read CA certificates: %w", err)
+				return
+			}
 		}
-	}
-	token, url, err := aquaClient.GetAuthToken()
 
-	if err != nil {
-		panic(fmt.Errorf("failed to receive token, error: %s", err))
-	}
+		var aquaClient *client.Client
+		if useAPIKey {
+			aquaClient, err = client.NewClientWithAPIKey(aquaURL, apiKey, secretKey, verifyTLS, caCertByte)
+			if err != nil {
+				acceptanceTestAuthErr = fmt.Errorf("failed to create client with api key auth: %w", err)
+				return
+			}
+		} else {
+			aquaClient, err = client.NewClientWithTokenAuth(aquaURL, username, password, verifyTLS, caCertByte)
+			if err != nil {
+				acceptanceTestAuthErr = fmt.Errorf("failed to create client with token auth: %w", err)
+				return
+			}
+		}
 
-	err = os.Setenv("TESTING_AUTH_TOKEN", token)
-	if err != nil {
-		panic("Failed to set AUTH_TOKEN env")
-	}
+		token, url, err := aquaClient.GetAuthToken()
+		if err != nil {
+			acceptanceTestAuthErr = fmt.Errorf("failed to receive token: %w", err)
+			return
+		}
 
-	err = os.Setenv("TESTING_URL", url)
-	if err != nil {
-		panic("Failed to set TESTING_URL env")
-	}
-	log.Println("Finished to set token")
+		if err = os.Setenv("TESTING_AUTH_TOKEN", token); err != nil {
+			acceptanceTestAuthErr = fmt.Errorf("failed to set AUTH_TOKEN env: %w", err)
+			return
+		}
+		if err = os.Setenv("TESTING_URL", url); err != nil {
+			acceptanceTestAuthErr = fmt.Errorf("failed to set TESTING_URL env: %w", err)
+			return
+		}
 
+		log.Println("finished setting acceptance test token")
+	})
+
+	return acceptanceTestAuthErr
 }
