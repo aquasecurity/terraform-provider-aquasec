@@ -33,15 +33,15 @@ func TestDataAquasecFunctionRuntimePolicy(t *testing.T) {
 					resource.TestCheckResourceAttr(rootRef, "name", runtimePolicy.Name),
 					resource.TestCheckResourceAttr(rootRef, "description", runtimePolicy.Description),
 					resource.TestCheckResourceAttr(rootRef, "author", os.Getenv("AQUA_USER")),
-					
+
 					// Policy control fields
 					resource.TestCheckResourceAttr(rootRef, "enabled", fmt.Sprintf("%v", runtimePolicy.Enabled)),
 					resource.TestCheckResourceAttr(rootRef, "enforce", fmt.Sprintf("%v", runtimePolicy.Enforce)),
-					
+
 					// Application scopes
 					resource.TestCheckResourceAttr(rootRef, "application_scopes.#", "1"),
 					resource.TestCheckResourceAttr(rootRef, "application_scopes.0", "Global"),
-					
+
 					// Function security controls
 					resource.TestCheckResourceAttr(rootRef, "drift_prevention.0.enabled", "true"),
 					resource.TestCheckResourceAttr(rootRef, "drift_prevention.0.exec_lockdown", "true"),
@@ -49,7 +49,7 @@ func TestDataAquasecFunctionRuntimePolicy(t *testing.T) {
 					resource.TestCheckResourceAttr(rootRef, "drift_prevention.0.exec_lockdown_white_list.#", "1"),
 					resource.TestCheckResourceAttr(rootRef, "executable_blacklist.0.enabled", "true"),
 					resource.TestCheckResourceAttr(rootRef, "executable_blacklist.0.executables.#", "2"),
-					
+
 					// Block settings
 					resource.TestCheckResourceAttr(rootRef, "block_fileless_exec", "true"),
 					resource.TestCheckResourceAttr(rootRef, "block_non_compliant_workloads", "true"),

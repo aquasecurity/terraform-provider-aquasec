@@ -132,7 +132,7 @@ func (cli *Client) getSsoBasic(apiPath string) (string, error) {
 	if err := cli.limiter.Wait(context.Background()); err != nil {
 		return "", err
 	}
-	resp, body, errs := cli.gorequest.Get(cli.url + apiPath).Set("Authorization", fmt.Sprintf("Bearer %s", cli.token)).End()
+	resp, body, errs := cli.gorequest.Get(cli.url+apiPath).Set("Authorization", fmt.Sprintf("Bearer %s", cli.token)).End()
 	if errs != nil {
 		return "", fmt.Errorf("failed GET %s: %v", apiPath, errs)
 	}
@@ -153,7 +153,7 @@ func (cli *Client) createSsoBasic(apiPath string, sso interface{}) error {
 	if err := cli.limiter.Wait(context.Background()); err != nil {
 		return err
 	}
-	resp, _, errs := cli.gorequest.Put(cli.url + apiPath).Set("Authorization", fmt.Sprintf("Bearer %s", cli.token)).Send(string(payload)).End()
+	resp, _, errs := cli.gorequest.Put(cli.url+apiPath).Set("Authorization", fmt.Sprintf("Bearer %s", cli.token)).Send(string(payload)).End()
 	if errs != nil {
 		return fmt.Errorf("failed PUT %s: %v", apiPath, errs)
 	}
@@ -170,7 +170,7 @@ func (cli *Client) GetIntegrationState() (*IntegrationState, error) {
 	if err := cli.limiter.Wait(context.Background()); err != nil {
 		return nil, err
 	}
-	resp, body, errs := cli.gorequest.Get(cli.url + "/api/v2/integrationsEnabledState").Set("Authorization", fmt.Sprintf("Bearer %s", cli.token)).End()
+	resp, body, errs := cli.gorequest.Get(cli.url+"/api/v2/integrationsEnabledState").Set("Authorization", fmt.Sprintf("Bearer %s", cli.token)).End()
 	if errs != nil {
 		return nil, fmt.Errorf("error calling integrations state API")
 	}

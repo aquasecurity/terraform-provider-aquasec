@@ -22,6 +22,7 @@ func TestAccAquasecRoleMappingSaas_basic(t *testing.T) {
 	roleName := acctest.RandomWithPrefix("tf-role")
 	permSetName := acctest.RandomWithPrefix("tf-pset")
 	samlGroups := []string{"DevTeam", "SecTeam"}
+	permissionActions, _ := testAccPermissionSetActionFixtures(t)
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
@@ -29,7 +30,7 @@ func TestAccAquasecRoleMappingSaas_basic(t *testing.T) {
 		CheckDestroy: testAccCheckRoleMappingSaasDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccRoleMappingSaasConfig(permSetName, roleName, samlGroups),
+				Config: testAccRoleMappingSaasConfig(permSetName, roleName, samlGroups, permissionActions),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckRoleMappingSaasExists(testRoleMappingSaasResourceName),
 					resource.TestCheckResourceAttr(testRoleMappingSaasResourceName, "csp_role", roleName),
@@ -45,7 +46,7 @@ func TestAccAquasecRoleMappingSaas_basic(t *testing.T) {
 	})
 }
 
-func testAccRoleMappingSaasConfig(permSetName, roleName string, groups []string) string {
+func testAccRoleMappingSaasConfig(permSetName, roleName string, groups, permissionActions []string) string {
 	groupsStr := ""
 	for _, g := range groups {
 		groupsStr += fmt.Sprintf("\"%s\", ", g)
@@ -56,7 +57,7 @@ func testAccRoleMappingSaasConfig(permSetName, roleName string, groups []string)
 resource "aquasec_permission_set_saas" "ps" {
   name        = "%s"
   description = "TF-generated permission set"
-  actions     = ["account_mgmt.groups.read"]
+  actions     = [%s]
 }
 
 resource "aquasec_role" "r" {
@@ -70,7 +71,7 @@ resource "aquasec_role_mapping_saas" "test" {
   saml_groups = [%s]
   csp_role    = aquasec_role.r.role_name
 }
-`, permSetName, roleName, groupsStr)
+`, permSetName, permissionSetActionsConfig(permissionActions), roleName, groupsStr)
 }
 
 func testAccCheckRoleMappingSaasExists(n string) resource.TestCheckFunc {
