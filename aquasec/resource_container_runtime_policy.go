@@ -13,59 +13,67 @@ import (
 func resourceContainerRuntimePolicyResourceV0() *schema.Resource {
 	return &schema.Resource{
 		Schema: map[string]*schema.Schema{
-			"name":                                      {Type: schema.TypeString, Required: true},
-			"description":                               {Type: schema.TypeString, Optional: true},
-			"application_scopes":                        {Type: schema.TypeList, Optional: true, Elem: &schema.Schema{Type: schema.TypeString}},
-			"scope_expression":                          {Type: schema.TypeString, Optional: true},
-			"scope_variables":                           {Type: schema.TypeList, Optional: true, Elem: &schema.Resource{Schema: map[string]*schema.Schema{"attribute": {Type: schema.TypeString, Required: true}, "name": {Type: schema.TypeString, Optional: true}, "value": {Type: schema.TypeString, Required: true}}}},
-			"enabled":                                   {Type: schema.TypeBool, Optional: true},
-			"enforce":                                   {Type: schema.TypeBool, Optional: true},
-			"enforce_after_days":                        {Type: schema.TypeInt, Optional: true},
-			"author":                                    {Type: schema.TypeString, Optional: true, Computed: true},
-			"block_container_exec":                      {Type: schema.TypeBool, Optional: true},
-			"container_exec_allowed_processes":          {Type: schema.TypeList, Optional: true, Elem: &schema.Schema{Type: schema.TypeString}},
-			"block_cryptocurrency_mining":               {Type: schema.TypeBool, Optional: true},
-			"block_fileless_exec":                       {Type: schema.TypeBool, Optional: true},
-			"block_non_compliant_images":                {Type: schema.TypeBool, Optional: true},
-			"block_non_compliant_workloads":             {Type: schema.TypeBool, Optional: true},
-			"block_non_k8s_containers":                  {Type: schema.TypeBool, Optional: true},
-			"block_reverse_shell":                       {Type: schema.TypeBool, Optional: true},
-			"reverse_shell_allowed_processes":           {Type: schema.TypeList, Optional: true, Elem: &schema.Schema{Type: schema.TypeString}},
-			"reverse_shell_allowed_ips":                 {Type: schema.TypeList, Optional: true, Elem: &schema.Schema{Type: schema.TypeString}},
-			"block_unregistered_images":                 {Type: schema.TypeBool, Optional: true},
-			"blocked_capabilities":                      {Type: schema.TypeList, Optional: true, Elem: &schema.Schema{Type: schema.TypeString}},
-			"enable_ip_reputation_security":             {Type: schema.TypeBool, Optional: true},
-			"enable_drift_prevention":                   {Type: schema.TypeBool, Optional: true},
-			"exec_lockdown_white_list":                  {Type: schema.TypeList, Optional: true, Elem: &schema.Schema{Type: schema.TypeString}},
-			"allowed_executables":                       {Type: schema.TypeList, Optional: true, Elem: &schema.Schema{Type: schema.TypeString}},
-			"blocked_executables":                       {Type: schema.TypeList, Optional: true, Elem: &schema.Schema{Type: schema.TypeString}},
-			"blocked_files":                             {Type: schema.TypeList, Optional: true, Elem: &schema.Schema{Type: schema.TypeString}},
-			"malware_scan_options":                      {Type: schema.TypeList, Optional: true, MaxItems: 1, Elem: &schema.Resource{Schema: map[string]*schema.Schema{"enabled": {Type: schema.TypeBool, Optional: true}, "action": {Type: schema.TypeString, Optional: true}, "exclude_directories": {Type: schema.TypeList, Optional: true, Elem: &schema.Schema{Type: schema.TypeString}}, "exclude_processes": {Type: schema.TypeList, Optional: true, Elem: &schema.Schema{Type: schema.TypeString}}}}},
-			"file_integrity_monitoring":                 {Type: schema.TypeList, Optional: true, MaxItems: 1, Elem: &schema.Resource{Schema: map[string]*schema.Schema{"enabled": {Type: schema.TypeBool, Optional: true}, "monitored_files": {Type: schema.TypeList, Optional: true, Elem: &schema.Schema{Type: schema.TypeString}}, "exceptional_monitored_files": {Type: schema.TypeList, Optional: true, Elem: &schema.Schema{Type: schema.TypeString}}, "monitored_files_read": {Type: schema.TypeBool, Optional: true}, "monitored_files_modify": {Type: schema.TypeBool, Optional: true}, "monitored_files_attributes": {Type: schema.TypeBool, Optional: true}, "monitored_files_create": {Type: schema.TypeBool, Optional: true}, "monitored_files_delete": {Type: schema.TypeBool, Optional: true}, "monitored_files_processes": {Type: schema.TypeList, Optional: true, Elem: &schema.Schema{Type: schema.TypeString}}, "exceptional_monitored_files_processes": {Type: schema.TypeList, Optional: true, Elem: &schema.Schema{Type: schema.TypeString}}, "monitored_files_users": {Type: schema.TypeList, Optional: true, Elem: &schema.Schema{Type: schema.TypeString}}, "exceptional_monitored_files_users": {Type: schema.TypeList, Optional: true, Elem: &schema.Schema{Type: schema.TypeString}}}}},
-			"audit_all_processes_activity":              {Type: schema.TypeBool, Optional: true},
-			"audit_full_command_arguments":              {Type: schema.TypeBool, Optional: true},
-			"audit_all_network_activity":                {Type: schema.TypeBool, Optional: true},
-			"enable_fork_guard":                         {Type: schema.TypeBool, Optional: true},
-			"fork_guard_process_limit":                  {Type: schema.TypeInt, Optional: true},
-			"block_access_host_network":                 {Type: schema.TypeBool, Optional: true},
-			"block_adding_capabilities":                 {Type: schema.TypeBool, Optional: true},
-			"block_root_user":                           {Type: schema.TypeBool, Optional: true},
-			"block_privileged_containers":               {Type: schema.TypeBool, Optional: true},
-			"block_use_ipc_namespace":                   {Type: schema.TypeBool, Optional: true},
-			"block_use_pid_namespace":                   {Type: schema.TypeBool, Optional: true},
-			"block_use_user_namespace":                  {Type: schema.TypeBool, Optional: true},
-			"block_use_uts_namespace":                   {Type: schema.TypeBool, Optional: true},
-			"block_low_port_binding":                    {Type: schema.TypeBool, Optional: true},
-			"limit_new_privileges":                      {Type: schema.TypeBool, Optional: true},
-			"blocked_packages":                          {Type: schema.TypeList, Optional: true, Elem: &schema.Schema{Type: schema.TypeString}},
-			"blocked_inbound_ports":                     {Type: schema.TypeList, Optional: true, Elem: &schema.Schema{Type: schema.TypeString}},
-			"blocked_outbound_ports":                    {Type: schema.TypeList, Optional: true, Elem: &schema.Schema{Type: schema.TypeString}},
-			"enable_port_scan_detection":                {Type: schema.TypeBool, Optional: true},
-			"readonly_files_and_directories":            {Type: schema.TypeList, Optional: true, Elem: &schema.Schema{Type: schema.TypeString}},
+			"name":                             {Type: schema.TypeString, Required: true},
+			"description":                      {Type: schema.TypeString, Optional: true},
+			"application_scopes":               {Type: schema.TypeList, Optional: true, Elem: &schema.Schema{Type: schema.TypeString}},
+			"scope_expression":                 {Type: schema.TypeString, Optional: true},
+			"scope_variables":                  {Type: schema.TypeList, Optional: true, Elem: &schema.Resource{Schema: map[string]*schema.Schema{"attribute": {Type: schema.TypeString, Required: true}, "name": {Type: schema.TypeString, Optional: true}, "value": {Type: schema.TypeString, Required: true}}}},
+			"enabled":                          {Type: schema.TypeBool, Optional: true},
+			"enforce":                          {Type: schema.TypeBool, Optional: true},
+			"enforce_after_days":               {Type: schema.TypeInt, Optional: true},
+			"author":                           {Type: schema.TypeString, Optional: true, Computed: true},
+			"block_container_exec":             {Type: schema.TypeBool, Optional: true},
+			"container_exec_allowed_processes": {Type: schema.TypeList, Optional: true, Elem: &schema.Schema{Type: schema.TypeString}},
+			"block_cryptocurrency_mining":      {Type: schema.TypeBool, Optional: true},
+			"block_fileless_exec":              {Type: schema.TypeBool, Optional: true},
+			"block_non_compliant_images":       {Type: schema.TypeBool, Optional: true},
+			"block_non_compliant_workloads":    {Type: schema.TypeBool, Optional: true},
+			"block_non_k8s_containers":         {Type: schema.TypeBool, Optional: true},
+			"block_reverse_shell":              {Type: schema.TypeBool, Optional: true},
+			"reverse_shell_allowed_processes":  {Type: schema.TypeList, Optional: true, Elem: &schema.Schema{Type: schema.TypeString}},
+			"reverse_shell_allowed_ips":        {Type: schema.TypeList, Optional: true, Elem: &schema.Schema{Type: schema.TypeString}},
+			"block_unregistered_images":        {Type: schema.TypeBool, Optional: true},
+			"blocked_capabilities":             {Type: schema.TypeList, Optional: true, Elem: &schema.Schema{Type: schema.TypeString}},
+			"enable_ip_reputation_security":    {Type: schema.TypeBool, Optional: true},
+			"enable_drift_prevention":          {Type: schema.TypeBool, Optional: true},
+			"exec_lockdown_white_list":         {Type: schema.TypeList, Optional: true, Elem: &schema.Schema{Type: schema.TypeString}},
+			"allowed_executables": {Type: schema.TypeList, Optional: true, Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+				"enabled":                {Type: schema.TypeBool, Optional: true},
+				"allow_executables":      {Type: schema.TypeList, Optional: true, Elem: &schema.Schema{Type: schema.TypeString}},
+				"separate_executables":   {Type: schema.TypeBool, Optional: true},
+				"allow_root_executables": {Type: schema.TypeList, Optional: true, Elem: &schema.Schema{Type: schema.TypeString}},
+			}}},
+			"blocked_executables":                        {Type: schema.TypeList, Optional: true, Elem: &schema.Schema{Type: schema.TypeString}},
+			"blocked_files":                              {Type: schema.TypeList, Optional: true, Elem: &schema.Schema{Type: schema.TypeString}},
+			"malware_scan_options":                       {Type: schema.TypeList, Optional: true, MaxItems: 1, Elem: &schema.Resource{Schema: map[string]*schema.Schema{"enabled": {Type: schema.TypeBool, Optional: true}, "action": {Type: schema.TypeString, Optional: true}, "exclude_directories": {Type: schema.TypeList, Optional: true, Elem: &schema.Schema{Type: schema.TypeString}}, "exclude_processes": {Type: schema.TypeList, Optional: true, Elem: &schema.Schema{Type: schema.TypeString}}}}},
+			"file_integrity_monitoring":                  {Type: schema.TypeList, Optional: true, MaxItems: 1, Elem: &schema.Resource{Schema: map[string]*schema.Schema{"enabled": {Type: schema.TypeBool, Optional: true}, "monitored_files": {Type: schema.TypeList, Optional: true, Elem: &schema.Schema{Type: schema.TypeString}}, "exceptional_monitored_files": {Type: schema.TypeList, Optional: true, Elem: &schema.Schema{Type: schema.TypeString}}, "monitored_files_read": {Type: schema.TypeBool, Optional: true}, "monitored_files_modify": {Type: schema.TypeBool, Optional: true}, "monitored_files_attributes": {Type: schema.TypeBool, Optional: true}, "monitored_files_create": {Type: schema.TypeBool, Optional: true}, "monitored_files_delete": {Type: schema.TypeBool, Optional: true}, "monitored_files_processes": {Type: schema.TypeList, Optional: true, Elem: &schema.Schema{Type: schema.TypeString}}, "exceptional_monitored_files_processes": {Type: schema.TypeList, Optional: true, Elem: &schema.Schema{Type: schema.TypeString}}, "monitored_files_users": {Type: schema.TypeList, Optional: true, Elem: &schema.Schema{Type: schema.TypeString}}, "exceptional_monitored_files_users": {Type: schema.TypeList, Optional: true, Elem: &schema.Schema{Type: schema.TypeString}}}}},
+			"audit_all_processes_activity":               {Type: schema.TypeBool, Optional: true},
+			"audit_full_command_arguments":               {Type: schema.TypeBool, Optional: true},
+			"audit_all_network_activity":                 {Type: schema.TypeBool, Optional: true},
+			"enable_fork_guard":                          {Type: schema.TypeBool, Optional: true},
+			"fork_guard_process_limit":                   {Type: schema.TypeInt, Optional: true},
+			"block_access_host_network":                  {Type: schema.TypeBool, Optional: true},
+			"block_adding_capabilities":                  {Type: schema.TypeBool, Optional: true},
+			"block_root_user":                            {Type: schema.TypeBool, Optional: true},
+			"block_privileged_containers":                {Type: schema.TypeBool, Optional: true},
+			"block_use_ipc_namespace":                    {Type: schema.TypeBool, Optional: true},
+			"block_use_pid_namespace":                    {Type: schema.TypeBool, Optional: true},
+			"block_use_user_namespace":                   {Type: schema.TypeBool, Optional: true},
+			"block_use_uts_namespace":                    {Type: schema.TypeBool, Optional: true},
+			"block_low_port_binding":                     {Type: schema.TypeBool, Optional: true},
+			"limit_new_privileges":                       {Type: schema.TypeBool, Optional: true},
+			"blocked_packages":                           {Type: schema.TypeList, Optional: true, Elem: &schema.Schema{Type: schema.TypeString}},
+			"blocked_inbound_ports":                      {Type: schema.TypeList, Optional: true, Elem: &schema.Schema{Type: schema.TypeString}},
+			"blocked_outbound_ports":                     {Type: schema.TypeList, Optional: true, Elem: &schema.Schema{Type: schema.TypeString}},
+			"enable_port_scan_detection":                 {Type: schema.TypeBool, Optional: true},
+			"readonly_files_and_directories":             {Type: schema.TypeList, Optional: true, Elem: &schema.Schema{Type: schema.TypeString}},
 			"exceptional_readonly_files_and_directories": {Type: schema.TypeList, Optional: true, Elem: &schema.Schema{Type: schema.TypeString}},
-			"allowed_registries":                        {Type: schema.TypeList, Optional: true, Elem: &schema.Schema{Type: schema.TypeString}},
-			"monitor_system_time_changes":               {Type: schema.TypeBool, Optional: true},
-			"blocked_volumes":                           {Type: schema.TypeList, Optional: true, Elem: &schema.Schema{Type: schema.TypeString}},
+			"allowed_registries": {Type: schema.TypeList, Optional: true, Elem: &schema.Resource{Schema: map[string]*schema.Schema{
+				"enabled":            {Type: schema.TypeBool, Optional: true},
+				"allowed_registries": {Type: schema.TypeList, Optional: true, Elem: &schema.Schema{Type: schema.TypeString}},
+			}}},
+			"monitor_system_time_changes": {Type: schema.TypeBool, Optional: true},
+			"blocked_volumes":             {Type: schema.TypeList, Optional: true, Elem: &schema.Schema{Type: schema.TypeString}},
 		},
 	}
 }
@@ -123,15 +131,17 @@ func resourceContainerRuntimePolicyStateUpgradeV0(ctx context.Context, rawState 
 	}
 	delete(rawState, "block_non_compliant_images")
 
-	// Migrate old flat allowed_executables ([]string) to new block format
+	// Migrate old flat allowed_executables ([]string) to new block format.
+	// Version 0 was also used after this field became a block, so preserve that shape.
 	if v, ok := rawState["allowed_executables"]; ok {
-		if strList, ok := v.([]interface{}); ok && len(strList) > 0 {
-			delete(rawState, "allowed_executables")
-			rawState["allowed_executables"] = []interface{}{map[string]interface{}{
-				"enabled":              true,
-				"allow_executables":    strList,
-				"separate_executables": false,
-			}}
+		if executableList, ok := v.([]interface{}); ok && len(executableList) > 0 {
+			if _, alreadyNested := executableList[0].(map[string]interface{}); !alreadyNested {
+				rawState["allowed_executables"] = []interface{}{map[string]interface{}{
+					"enabled":              true,
+					"allow_executables":    executableList,
+					"separate_executables": false,
+				}}
+			}
 		} else {
 			delete(rawState, "allowed_executables")
 		}
@@ -164,14 +174,16 @@ func resourceContainerRuntimePolicyStateUpgradeV0(ctx context.Context, rawState 
 		delete(rawState, "exceptional_readonly_files_and_directories")
 	}
 
-	// Migrate old flat allowed_registries ([]string) to new block format
+	// Migrate old flat allowed_registries ([]string) to new block format.
+	// Version 0 was also used after this field became a block, so preserve that shape.
 	if v, ok := rawState["allowed_registries"]; ok {
-		if strList, ok := v.([]interface{}); ok && len(strList) > 0 {
-			delete(rawState, "allowed_registries")
-			rawState["allowed_registries"] = []interface{}{map[string]interface{}{
-				"enabled":            true,
-				"allowed_registries": strList,
-			}}
+		if registryList, ok := v.([]interface{}); ok && len(registryList) > 0 {
+			if _, alreadyNested := registryList[0].(map[string]interface{}); !alreadyNested {
+				rawState["allowed_registries"] = []interface{}{map[string]interface{}{
+					"enabled":            true,
+					"allowed_registries": registryList,
+				}}
+			}
 		} else {
 			delete(rawState, "allowed_registries")
 		}

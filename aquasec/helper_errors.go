@@ -4,7 +4,7 @@ import (
 	"fmt"
 )
 
-//NewNotFoundErrorf - godoc
+// NewNotFoundErrorf - godoc
 func NewNotFoundErrorf(format string, a ...interface{}) error {
 	return fmt.Errorf("%s %s", "Could not find", fmt.Sprintf(format, a...))
 }

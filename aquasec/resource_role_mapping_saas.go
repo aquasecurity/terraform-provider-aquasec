@@ -80,7 +80,6 @@ func resourceRoleMappingSaasRead(ctx context.Context, d *schema.ResourceData, m 
 	return nil
 }
 
-
 func resourceRoleMappingSaasCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	c := m.(*client.Client)
 

@@ -167,6 +167,9 @@ func (cli *Client) AuthenticateWithAPIKey() (string, error) {
 	case consts.SaaSAu2Url:
 		provUrl = consts.SaasAu2ProvUrl
 		break
+	case consts.SaasDevUrl:
+		provUrl = consts.SaasDevProvUrl
+		break
 	default:
 		return "", fmt.Errorf("%v URL is not allowed USE url", cli.url)
 	}

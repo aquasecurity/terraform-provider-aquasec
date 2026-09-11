@@ -147,9 +147,11 @@ func resourceService() *schema.Resource {
 										Required:    true,
 									},
 									"resource": {
-										Type:        schema.TypeString,
-										Description: "Custom ip for the inbound network rule (e.g., 190.1.2.3/12).",
-										Optional:    true,
+										Type:             schema.TypeString,
+										Description:      "Custom ip for the inbound network rule (e.g., 190.1.2.3/12). For anywhere rules, the provider uses 0.0.0.0/0.",
+										Optional:         true,
+										Computed:         true,
+										DiffSuppressFunc: suppressEquivalentAnywhereNetworkResourceDiff,
 									},
 									"allow": {
 										Type:        schema.TypeBool,
@@ -176,9 +178,11 @@ func resourceService() *schema.Resource {
 										Required:    true,
 									},
 									"resource": {
-										Type:        schema.TypeString,
-										Description: "Custom ip for the outbound network rule (e.g., 190.1.2.3/12).",
-										Optional:    true,
+										Type:             schema.TypeString,
+										Description:      "Custom ip for the outbound network rule (e.g., 190.1.2.3/12). For anywhere rules, the provider uses 0.0.0.0/0.",
+										Optional:         true,
+										Computed:         true,
+										DiffSuppressFunc: suppressEquivalentAnywhereNetworkResourceDiff,
 									},
 									"allow": {
 										Type:        schema.TypeBool,
@@ -547,10 +551,12 @@ func expandNetworks(networks []interface{}) []client.NetworkRule {
 	networkRules := make([]client.NetworkRule, 0)
 	for _, n := range networks {
 		rule := n.(map[string]interface{})
+		resourceType := rule["resource_type"].(string)
+		resource, _ := rule["resource"].(string)
 		networkRules = append(networkRules, client.NetworkRule{
 			PortRange:    rule["port_range"].(string),
-			ResourceType: rule["resource_type"].(string),
-			Resource:     rule["resource"].(string),
+			ResourceType: resourceType,
+			Resource:     normalizeNetworkResource(resourceType, resource),
 			Allow:        rule["allow"].(bool),
 		})
 	}
