@@ -135,7 +135,7 @@ Required:
 
 Optional:
 
-- `resource` (String) Custom ip for the inbound network rule (e.g., 190.1.2.3/12).
+- `resource` (String) Custom IP for the inbound network rule (e.g., 190.1.2.3/12). For anywhere rules, omit this attribute; the provider sends the canonical value 0.0.0.0/0. Because the attribute is Optional and Computed, a value returned by the server may populate state even when configuration omits it.
 
 
 <a id="nestedblock--local_policies--outbound_networks"></a>
@@ -149,7 +149,7 @@ Required:
 
 Optional:
 
-- `resource` (String) Custom ip for the outbound network rule (e.g., 190.1.2.3/12).
+- `resource` (String) Custom IP for the outbound network rule (e.g., 190.1.2.3/12). For anywhere rules, omit this attribute; the provider sends the canonical value 0.0.0.0/0. Because the attribute is Optional and Computed, a value returned by the server may populate state even when configuration omits it.
 
 
 

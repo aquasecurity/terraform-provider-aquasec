@@ -23,7 +23,6 @@ import (
 // Client - API client
 type Client struct {
 	url              string
-	saasUrl          string
 	tokenUrl         string
 	saasScpUrl       string
 	user             string
@@ -105,37 +104,31 @@ func NewClient(url, user, password, apiKey, secretkey string, useAPIKey, verifyT
 	case consts.SaasUrl:
 		c.clientType = Saas
 		c.tokenUrl = consts.SaasTokenUrl
-		c.saasUrl = consts.SaasUrl
 		c.saasScpUrl = consts.SaasSupplyChainUrl
 		break
 	case consts.SaasEu1Url:
 		c.clientType = Saas
 		c.tokenUrl = consts.SaasEu1TokenUrl
-		c.saasUrl = consts.SaasEu1Url
 		c.saasScpUrl = consts.SaasEu1SupplyChainUrl
 		break
 	case consts.SaasAsia1Url:
 		c.clientType = Saas
 		c.tokenUrl = consts.SaasAsia1TokenUrl
-		c.saasUrl = consts.SaasAsia1Url
 		c.saasScpUrl = consts.SaasAsia1SupplyChainUrl
 		break
 	case consts.SaasAsia2Url:
 		c.clientType = Saas
 		c.tokenUrl = consts.SaasAsia2TokenUrl
-		c.saasUrl = consts.SaasAsia2Url
 		c.saasScpUrl = consts.SaasSupplyChainUrl
 		break
 	case consts.SaaSAu2Url:
 		c.clientType = Saas
 		c.tokenUrl = consts.SaasAu2TokenUrl
-		c.saasUrl = consts.SaaSAu2Url
 		c.saasScpUrl = consts.SaasAu2SupplyChainUrl
 		break
 	case consts.SaasDevUrl:
 		c.clientType = SaasDev
 		c.tokenUrl = consts.SaasDevTokenUrl
-		c.saasUrl = consts.SaasDevUrl
 		c.saasScpUrl = consts.SaasDevSupplyChainUrl
 		break
 	default:
@@ -166,6 +159,9 @@ func (cli *Client) AuthenticateWithAPIKey() (string, error) {
 		break
 	case consts.SaaSAu2Url:
 		provUrl = consts.SaasAu2ProvUrl
+		break
+	case consts.SaasDevUrl:
+		provUrl = consts.SaasDevProvUrl
 		break
 	default:
 		return "", fmt.Errorf("%v URL is not allowed USE url", cli.url)

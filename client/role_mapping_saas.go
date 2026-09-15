@@ -6,7 +6,6 @@ import (
 	"fmt"
 
 	"github.com/pkg/errors"
-
 )
 
 type RoleMappingSaas struct {
@@ -25,7 +24,7 @@ type RoleMappingSaasResponse struct {
 	RoleMappingSaas RoleMappingSaas `json:"data"`
 }
 
-const roleMappingBasePath = "/api/cspm/v2/samlmappings"
+const roleMappingBasePath = "/v2/samlmappings"
 
 func (cli *Client) GetRoleMappingSaas(id string) (*RoleMappingSaas, error) {
 	if cli.clientType != Saas && cli.clientType != SaasDev {
@@ -36,7 +35,7 @@ func (cli *Client) GetRoleMappingSaas(id string) (*RoleMappingSaas, error) {
 		return nil, err
 	}
 
-	url := fmt.Sprintf("%s%s/%s", cli.saasUrl, roleMappingBasePath, id)
+	url := fmt.Sprintf("%s%s/%s", cli.tokenUrl, roleMappingBasePath, id)
 	resp, body, errs := cli.gorequest.Clone().Get(url).
 		Set("Authorization", fmt.Sprintf(authHeaderFormat, cli.token)).End()
 
@@ -63,7 +62,7 @@ func (cli *Client) GetRolesMappingSaas() (*RoleMappingSaasList, error) {
 		return nil, err
 	}
 
-	url := fmt.Sprintf("%s%s", cli.saasUrl, roleMappingBasePath)
+	url := fmt.Sprintf("%s%s", cli.tokenUrl, roleMappingBasePath)
 	resp, body, errs := cli.gorequest.Clone().Get(url).
 		Set("Authorization", fmt.Sprintf(authHeaderFormat, cli.token)).End()
 
@@ -90,9 +89,9 @@ func (cli *Client) CreateRoleMappingSaas(saas *RoleMappingSaas) error {
 		return err
 	}
 
-	url := fmt.Sprintf("%s%s", cli.saasUrl, roleMappingBasePath)
+	url := fmt.Sprintf("%s%s", cli.tokenUrl, roleMappingBasePath)
 	saasPayload := map[string]interface{}{
-		"csp_role":     saas.CspRole,
+		"csp_role":    saas.CspRole,
 		"saml_groups": saas.SamlGroups,
 	}
 	payload, _ := json.Marshal(saasPayload)
@@ -127,7 +126,7 @@ func (cli *Client) UpdateRoleMappingSaas(saas *RoleMappingSaas, id string) error
 		return err
 	}
 
-	url := fmt.Sprintf("%s%s/%s", cli.saasUrl, roleMappingBasePath, id)
+	url := fmt.Sprintf("%s%s/%s", cli.tokenUrl, roleMappingBasePath, id)
 	payloadMap := map[string]interface{}{
 		"saml_groups": saas.SamlGroups,
 	}
@@ -155,7 +154,7 @@ func (cli *Client) DeleteRoleMappingSaas(id string) error {
 		return err
 	}
 
-	url := fmt.Sprintf("%s%s/%s", cli.saasUrl, roleMappingBasePath, id)
+	url := fmt.Sprintf("%s%s/%s", cli.tokenUrl, roleMappingBasePath, id)
 	resp, body, errs := cli.gorequest.Clone().Delete(url).
 		Set("Authorization", fmt.Sprintf(authHeaderFormat, cli.token)).End()
 

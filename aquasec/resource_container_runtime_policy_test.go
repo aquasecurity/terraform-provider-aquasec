@@ -1,13 +1,227 @@
 package aquasec
 
 import (
+	"context"
 	"fmt"
 	"testing"
 
 	"github.com/aquasecurity/terraform-provider-aquasec/client"
+	"github.com/hashicorp/go-cty/cty"
+	"github.com/hashicorp/go-cty/cty/msgpack"
+	"github.com/hashicorp/terraform-plugin-go/tfprotov5"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/acctest"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
+
+func TestContainerRuntimePolicyStateUpgradeV0_AllowedExecutablesLists(t *testing.T) {
+	t.Parallel()
+
+	testCases := []struct {
+		name                    string
+		rawState                string
+		expectedExecutables     []string
+		expectedRootExecutables []string
+		expectedEnabled         bool
+		expectedSeparate        bool
+	}{
+		{
+			name:                    "populated nested executable block",
+			rawState:                `{"name":"policy","allowed_executables":[{"enabled":false,"allow_executables":["/bin/bash","/usr/bin/env"],"separate_executables":true,"allow_root_executables":["/sbin/init"]}]}`,
+			expectedExecutables:     []string{"/bin/bash", "/usr/bin/env"},
+			expectedRootExecutables: []string{"/sbin/init"},
+			expectedEnabled:         false,
+			expectedSeparate:        true,
+		},
+		{
+			name:                    "empty allow and root executable lists",
+			rawState:                `{"name":"policy","allowed_executables":[{"enabled":true,"allow_executables":[],"separate_executables":false,"allow_root_executables":[]}]}`,
+			expectedExecutables:     []string{},
+			expectedRootExecutables: []string{},
+			expectedEnabled:         true,
+			expectedSeparate:        false,
+		},
+		{
+			name:                    "omitted allow executable list",
+			rawState:                `{"name":"policy","allowed_executables":[{"enabled":true,"separate_executables":false,"allow_root_executables":[]}]}`,
+			expectedExecutables:     []string{},
+			expectedRootExecutables: []string{},
+			expectedEnabled:         true,
+			expectedSeparate:        false,
+		},
+		{
+			name:                    "omitted root executable list",
+			rawState:                `{"name":"policy","allowed_executables":[{"enabled":true,"allow_executables":[],"separate_executables":false}]}`,
+			expectedExecutables:     []string{},
+			expectedRootExecutables: []string{},
+			expectedEnabled:         true,
+			expectedSeparate:        false,
+		},
+		{
+			name:                    "legacy flat executable list",
+			rawState:                `{"name":"policy","allowed_executables":["/bin/sh"]}`,
+			expectedExecutables:     []string{"/bin/sh"},
+			expectedRootExecutables: []string{},
+			expectedEnabled:         true,
+			expectedSeparate:        false,
+		},
+		{
+			name:     "empty top-level executable list",
+			rawState: `{"name":"policy","allowed_executables":[]}`,
+		},
+	}
+
+	for _, testCase := range testCases {
+		testCase := testCase
+		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
+			policyResource := resourceContainerRuntimePolicy()
+			server := schema.NewGRPCProviderServer(&schema.Provider{
+				ResourcesMap: map[string]*schema.Resource{
+					"aquasec_container_runtime_policy": policyResource,
+				},
+			})
+			response, err := server.UpgradeResourceState(context.Background(), &tfprotov5.UpgradeResourceStateRequest{
+				TypeName: "aquasec_container_runtime_policy",
+				Version:  0,
+				RawState: &tfprotov5.RawState{JSON: []byte(testCase.rawState)},
+			})
+			if err != nil {
+				t.Fatalf("upgrade container runtime policy state: %v", err)
+			}
+			if len(response.Diagnostics) != 0 {
+				t.Fatalf("unexpected upgrade diagnostics: %#v", response.Diagnostics)
+			}
+			if response.UpgradedState == nil {
+				t.Fatal("upgraded state is nil")
+			}
+
+			state, err := msgpack.Unmarshal(response.UpgradedState.MsgPack, policyResource.CoreConfigSchema().ImpliedType())
+			if err != nil {
+				t.Fatalf("decode upgraded state: %v", err)
+			}
+			allowedExecutables := state.GetAttr("allowed_executables")
+			if testCase.expectedExecutables == nil {
+				assertCtyListLength(t, allowedExecutables, 0)
+				return
+			}
+			if allowedExecutables.IsNull() || allowedExecutables.LengthInt() != 1 {
+				t.Fatalf("expected one allowed_executables block, got %s", allowedExecutables.GoString())
+			}
+			allowedExecutable := allowedExecutables.Index(cty.NumberIntVal(0))
+			enabled := allowedExecutable.GetAttr("enabled")
+			if enabled.IsNull() || enabled.True() != testCase.expectedEnabled {
+				t.Fatalf("expected allowed_executables enabled=%t, got %s", testCase.expectedEnabled, enabled.GoString())
+			}
+			separate := allowedExecutable.GetAttr("separate_executables")
+			if separate.IsNull() || separate.True() != testCase.expectedSeparate {
+				t.Fatalf("expected separate_executables=%t, got %s", testCase.expectedSeparate, separate.GoString())
+			}
+			assertCtyStringList(t, allowedExecutable.GetAttr("allow_executables"), testCase.expectedExecutables)
+			assertCtyStringList(t, allowedExecutable.GetAttr("allow_root_executables"), testCase.expectedRootExecutables)
+		})
+	}
+}
+
+func TestContainerRuntimePolicyStateUpgradeV0_AllowedRegistries(t *testing.T) {
+	t.Parallel()
+
+	testCases := []struct {
+		name               string
+		rawState           string
+		expectedEnabled    bool
+		expectedRegistries []string
+	}{
+		{
+			name:               "nested allowed registries block",
+			rawState:           `{"name":"policy","allowed_registries":[{"enabled":false,"allowed_registries":["nested.example.com"]}]}`,
+			expectedEnabled:    false,
+			expectedRegistries: []string{"nested.example.com"},
+		},
+		{
+			name:               "legacy flat allowed registries list",
+			rawState:           `{"name":"policy","allowed_registries":["registry.example.com"]}`,
+			expectedEnabled:    true,
+			expectedRegistries: []string{"registry.example.com"},
+		},
+		{
+			name:     "empty top-level allowed registries list",
+			rawState: `{"name":"policy","allowed_registries":[]}`,
+		},
+	}
+
+	for _, testCase := range testCases {
+		testCase := testCase
+		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+
+			policyResource := resourceContainerRuntimePolicy()
+			server := schema.NewGRPCProviderServer(&schema.Provider{
+				ResourcesMap: map[string]*schema.Resource{
+					"aquasec_container_runtime_policy": policyResource,
+				},
+			})
+			response, err := server.UpgradeResourceState(context.Background(), &tfprotov5.UpgradeResourceStateRequest{
+				TypeName: "aquasec_container_runtime_policy",
+				Version:  0,
+				RawState: &tfprotov5.RawState{JSON: []byte(testCase.rawState)},
+			})
+			if err != nil {
+				t.Fatalf("upgrade container runtime policy state: %v", err)
+			}
+			if len(response.Diagnostics) != 0 {
+				t.Fatalf("unexpected upgrade diagnostics: %#v", response.Diagnostics)
+			}
+			if response.UpgradedState == nil {
+				t.Fatal("upgraded state is nil")
+			}
+
+			state, err := msgpack.Unmarshal(response.UpgradedState.MsgPack, policyResource.CoreConfigSchema().ImpliedType())
+			if err != nil {
+				t.Fatalf("decode upgraded state: %v", err)
+			}
+			allowedRegistries := state.GetAttr("allowed_registries")
+			if testCase.expectedRegistries == nil {
+				assertCtyListLength(t, allowedRegistries, 0)
+				return
+			}
+			if allowedRegistries.IsNull() || allowedRegistries.LengthInt() != 1 {
+				t.Fatalf("expected one allowed_registries block, got %s", allowedRegistries.GoString())
+			}
+			allowedRegistry := allowedRegistries.Index(cty.NumberIntVal(0))
+			enabled := allowedRegistry.GetAttr("enabled")
+			if enabled.IsNull() || enabled.True() != testCase.expectedEnabled {
+				t.Fatalf("expected allowed_registries enabled=%t, got %s", testCase.expectedEnabled, enabled.GoString())
+			}
+			assertCtyStringList(t, allowedRegistry.GetAttr("allowed_registries"), testCase.expectedRegistries)
+		})
+	}
+}
+
+func assertCtyStringList(t *testing.T, value cty.Value, expected []string) {
+	t.Helper()
+	assertCtyListLength(t, value, len(expected))
+	for i, expectedValue := range expected {
+		actualValue := value.Index(cty.NumberIntVal(int64(i)))
+		if actualValue.IsNull() || actualValue.AsString() != expectedValue {
+			t.Fatalf("expected list[%d]=%q, got %s", i, expectedValue, actualValue.GoString())
+		}
+	}
+}
+
+func assertCtyListLength(t *testing.T, value cty.Value, expected int) {
+	t.Helper()
+	if value.IsNull() {
+		if expected == 0 {
+			return
+		}
+		t.Fatalf("expected list length %d, got null", expected)
+	}
+	if actual := value.LengthInt(); actual != expected {
+		t.Fatalf("expected list length %d, got %d", expected, actual)
+	}
+}
 
 func TestResourceAquasecBasicContainerRuntimePolicyCreate(t *testing.T) {
 	t.Parallel()
@@ -179,7 +393,7 @@ func TestResourceAquasecFullContainerRuntimePolicyCreate(t *testing.T) {
 		BlockFilelessExec:          true,
 		BlockNonCompliantWorkloads: true,
 		BlockNonK8sContainers:      true,
-		EnableIPReputation: true,
+		EnableIPReputation:         true,
 		EnableCryptoMiningDns:      true,
 		EnablePortScanProtection:   true,
 		OnlyRegisteredImages:       true,
