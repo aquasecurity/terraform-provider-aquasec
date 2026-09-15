@@ -11,6 +11,11 @@ import (
 
 func init() {
 	log.Println("setup suite")
+	if os.Getenv("TF_ACC") == "" {
+		log.Println("skipping acceptance test setup because TF_ACC is not set")
+		return
+	}
+
 	var (
 		present                                          bool
 		username, password, aquaURL                      string

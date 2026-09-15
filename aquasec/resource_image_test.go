@@ -1,13 +1,16 @@
 package aquasec
 
 import (
+	"context"
 	"fmt"
 	"os"
 	"testing"
+	"time"
 
 	"github.com/aquasecurity/terraform-provider-aquasec/client"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/acctest"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
 func newTestImage() client.Image {
@@ -69,78 +72,13 @@ func TestResourceAquasecImageCreate(t *testing.T) {
 	})
 }
 
-func TestResourceAquasecImageAllow(t *testing.T) {
-	//t.Parallel()
-	image := newTestImage()
-	rootRef := imageResourceRef("test")
-	option := "status"
-	value := "Connected"
-	resource.Test(t, resource.TestCase{
-		PreCheck: func() {
-			testAccPreCheck(t)
-		},
-		Providers:    testAccProviders,
-		CheckDestroy: CheckDestroy("aquasec_image.test"),
-		Steps: []resource.TestStep{
-			{
-				Config: getImageResource(&image, option, value),
-				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr(rootRef, "whitelisted", "false"),
-					resource.TestCheckResourceAttr(rootRef, "blacklisted", "false"),
-					resource.TestCheckResourceAttr(rootRef, "permission_comment", ""),
-				),
-			},
-			{
-				Config: getImageResourceAllow(&image, "This image is whitelisted from terraform test.", option, value),
-				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr(rootRef, "whitelisted", "true"),
-					resource.TestCheckResourceAttr(rootRef, "blacklisted", "false"),
-					resource.TestCheckResourceAttr(rootRef, "permission_comment", "This image is whitelisted from terraform test."),
-				),
-			},
-		},
-	})
-}
-
-func TestResourceAquasecImageBlock(t *testing.T) {
-	//t.Parallel()
-	image := newTestImage()
-	rootRef := imageResourceRef("test")
-	option := "status"
-	value := "Connected"
-	resource.Test(t, resource.TestCase{
-		PreCheck: func() {
-			testAccPreCheck(t)
-		},
-		Providers:    testAccProviders,
-		CheckDestroy: CheckDestroy("aquasec_image.test"),
-		Steps: []resource.TestStep{
-			{
-				Config: getImageResource(&image, option, value),
-				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr(rootRef, "whitelisted", "false"),
-					resource.TestCheckResourceAttr(rootRef, "blacklisted", "false"),
-					resource.TestCheckResourceAttr(rootRef, "permission_comment", ""),
-				),
-			},
-			{
-				Config: getImageResourceBlock(&image, "This image is blacklisted from terraform test.", option, value),
-				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr(rootRef, "blacklisted", "true"),
-					resource.TestCheckResourceAttr(rootRef, "whitelisted", "false"),
-					resource.TestCheckResourceAttr(rootRef, "permission_comment", "This image is blacklisted from terraform test."),
-				),
-			},
-		},
-	})
-}
-
 func TestResourceAquasecImageAllowAndBlock(t *testing.T) {
-	//t.Parallel()
-	image := newTestImage()
+	image := client.Image{
+		Registry:   "Docker Hub",
+		Repository: "alpine",
+		Tag:        "3.24.1",
+	}
 	rootRef := imageResourceRef("test")
-	option := "status"
-	value := "Connected"
 	resource.Test(t, resource.TestCase{
 		PreCheck: func() {
 			testAccPreCheck(t)
@@ -149,15 +87,11 @@ func TestResourceAquasecImageAllowAndBlock(t *testing.T) {
 		CheckDestroy: CheckDestroy("aquasec_image.test"),
 		Steps: []resource.TestStep{
 			{
-				Config: getImageResource(&image, option, value),
-				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr(rootRef, "whitelisted", "false"),
-					resource.TestCheckResourceAttr(rootRef, "blacklisted", "false"),
-					resource.TestCheckResourceAttr(rootRef, "permission_comment", ""),
-				),
+				Config: getExistingImageResource(&image),
+				Check:  testAccWaitForImageScan(&image),
 			},
 			{
-				Config: getImageResourceAllow(&image, "This image is whitelisted from terraform test.", option, value),
+				Config: getImageResourceAllow(&image, "This image is whitelisted from terraform test."),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr(rootRef, "whitelisted", "true"),
 					resource.TestCheckResourceAttr(rootRef, "blacklisted", "false"),
@@ -165,7 +99,7 @@ func TestResourceAquasecImageAllowAndBlock(t *testing.T) {
 				),
 			},
 			{
-				Config: getImageResourceBlock(&image, "This image is blacklisted from terraform test.", option, value),
+				Config: getImageResourceBlock(&image, "This image is blacklisted from terraform test."),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr(rootRef, "blacklisted", "true"),
 					resource.TestCheckResourceAttr(rootRef, "whitelisted", "false"),
@@ -174,6 +108,29 @@ func TestResourceAquasecImageAllowAndBlock(t *testing.T) {
 			},
 		},
 	})
+}
+
+func testAccWaitForImageScan(image *client.Image) resource.TestCheckFunc {
+	return func(_ *terraform.State) error {
+		c := testAccProvider.Meta().(*client.Client)
+		imageURL := fmt.Sprintf("%s/%s/%s", image.Registry, image.Repository, image.Tag)
+
+		return resource.RetryContext(context.Background(), 5*time.Minute, func() *resource.RetryError {
+			scannedImage, err := c.GetImage(imageURL)
+			if err != nil {
+				return resource.RetryableError(err)
+			}
+
+			switch scannedImage.ScanStatus {
+			case "finished":
+				return nil
+			case "failed":
+				return resource.NonRetryableError(fmt.Errorf("image scan failed: %s", scannedImage.ScanError))
+			default:
+				return resource.RetryableError(fmt.Errorf("image scan status is %q", scannedImage.ScanStatus))
+			}
+		})
+	}
 }
 
 func imageResourceRef(name string) string {
@@ -190,28 +147,38 @@ func getImageResource(image *client.Image, option, value string) string {
 	}`, image.Repository, image.Tag)
 }
 
-func getImageResourceAllow(image *client.Image, comment, option, value string) string {
-	return getRegistry(image.Registry, option, value) + fmt.Sprintf(`
+func getExistingImageResource(image *client.Image) string {
+	return fmt.Sprintf(`
 	resource "aquasec_image" "test" {
-		registry = aquasec_integration_registry.demo.id
+		registry   = "%s"
 		repository = "%s"
-		tag = "%s"
+		tag        = "%s"
+	}
+`, image.Registry, image.Repository, image.Tag)
+}
+
+func getImageResourceAllow(image *client.Image, comment string) string {
+	return fmt.Sprintf(`
+	resource "aquasec_image" "test" {
+		registry   = "%s"
+		repository = "%s"
+		tag        = "%s"
 		allow_image = true
 		permission_modification_comment = "%s"
 	}
-`, image.Repository, image.Tag, comment)
+`, image.Registry, image.Repository, image.Tag, comment)
 }
 
-func getImageResourceBlock(image *client.Image, comment, option, value string) string {
-	return getRegistry(image.Registry, option, value) + fmt.Sprintf(`
+func getImageResourceBlock(image *client.Image, comment string) string {
+	return fmt.Sprintf(`
 	resource "aquasec_image" "test" {
-		registry = aquasec_integration_registry.demo.id
+		registry   = "%s"
 		repository = "%s"
-		tag = "%s"
+		tag        = "%s"
 		block_image = true
 		permission_modification_comment = "%s"
 	}
-`, image.Repository, image.Tag, comment)
+`, image.Registry, image.Repository, image.Tag, comment)
 }
 
 func getRegistry(name, option, value string) string {

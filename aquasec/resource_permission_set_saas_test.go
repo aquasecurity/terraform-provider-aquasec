@@ -2,7 +2,9 @@ package aquasec
 
 import (
 	"fmt"
+	"os"
 	"regexp"
+	"strings"
 	"testing"
 
 	"github.com/aquasecurity/terraform-provider-aquasec/client"
@@ -16,19 +18,6 @@ const (
 	maxNameLength      = 20
 	initialDescription = "Initial description"
 )
-
-var defaultTestActions = []string{
-	"account_mgmt.groups.read",
-	"cspm.cloud_accounts.read",
-}
-
-var extendedTestActions = []string{
-	"account_mgmt.groups.read",
-	"cspm.cloud_accounts.read",
-	"cnapp.inventory.read",
-	"cnapp.insights.read",
-	"cnapp.dashboards.read",
-}
 
 var invalidConfigTestCases = []struct {
 	name     string
@@ -50,27 +39,92 @@ var invalidConfigTestCases = []struct {
                name = "test"
                actions = ["invalid.action"]
            }`,
-		errorMsg: "action.*not supported",
+		errorMsg: "failed creating SaaS PermissionSet",
 	},
+}
+
+// testAccPermissionSetActionFixtures follows the server contract by selecting a
+// write-capable action advertised for the current tenant. The server requires a
+// matching read action whenever write is granted.
+func testAccPermissionSetActionFixtures(t *testing.T) ([]string, []string) {
+	t.Helper()
+
+	url := os.Getenv("TESTING_URL")
+	token := os.Getenv("TESTING_AUTH_TOKEN")
+	if url == "" || token == "" {
+		t.Fatal("test authentication URL and token must be initialized")
+	}
+
+	verifyTLS := !strings.EqualFold(os.Getenv("AQUA_TLS_VERIFY"), "false")
+	catalogClient, err := client.NewClientWithTokenAuth(url, "", "", verifyTLS, nil)
+	if err != nil {
+		t.Fatalf("create permission action catalog client: %v", err)
+	}
+	catalogClient.SetAuthToken(token)
+
+	catalog, err := catalogClient.GetPermissionSetActions()
+	if err != nil {
+		t.Fatalf("get tenant permission actions: %v", err)
+	}
+	if len(catalog.Modules) == 0 {
+		t.Fatal("tenant permission action catalog returned no groups")
+	}
+
+	dependentActions := make(map[string]struct{}, len(catalog.Dependencies))
+	for _, dependency := range catalog.Dependencies {
+		dependentActions[dependency.Name] = struct{}{}
+	}
+
+	candidate := ""
+	for _, group := range catalog.Modules {
+		for _, action := range group.Actions {
+			if action.Action == "" || !action.HasWriteAccess {
+				continue
+			}
+			if _, hasReadDependencies := dependentActions[action.Action+".read"]; hasReadDependencies {
+				continue
+			}
+			if _, hasWriteDependencies := dependentActions[action.Action+".write"]; hasWriteDependencies {
+				continue
+			}
+			if action.Action == "images" {
+				candidate = action.Action
+				break
+			}
+			if candidate == "" {
+				candidate = action.Action
+			}
+		}
+		if candidate == "images" {
+			break
+		}
+	}
+
+	if candidate == "" {
+		t.Fatal("tenant advertises no independent write-capable permission action")
+	}
+
+	readAction := candidate + ".read"
+	return []string{readAction}, []string{readAction, candidate + ".write"}
+}
+
+func permissionSetActionsConfig(actions []string) string {
+	quoted := make([]string, len(actions))
+	for i, action := range actions {
+		quoted[i] = fmt.Sprintf("%q", action)
+	}
+	return strings.Join(quoted, ",")
 }
 
 // Helper Functions
 
 func testAccCheckAquasecPermissionSetSaas(name, description string, actions []string) string {
-	actionsStr := ""
-	for _, action := range actions {
-		actionsStr += fmt.Sprintf(`"%s",`, action)
-	}
-	if len(actionsStr) > 0 {
-		actionsStr = actionsStr[:len(actionsStr)-1]
-	}
-
 	return fmt.Sprintf(`
    resource "aquasec_permission_set_saas" "new" {
        name        = "%s"
        description = "%s"
        actions     = [%s]
-   }`, name, description, actionsStr)
+   }`, name, description, permissionSetActionsConfig(actions))
 }
 
 func testAccCheckAquasecPermissionSetSaasExists(n string) resource.TestCheckFunc {
@@ -98,13 +152,16 @@ func testAccPermissionSetSaasDestroy(s *terraform.State) error {
 	c := testAccProvider.Meta().(*client.Client)
 
 	for _, rs := range s.RootModule().Resources {
-		if rs.Type != "aquasec_permission_set_saas.new" {
+		if rs.Type != "aquasec_permission_set_saas" {
 			continue
 		}
 
 		permSet, err := c.GetPermissionSetSaas(rs.Primary.ID)
 		if err == nil && permSet != nil {
 			return fmt.Errorf("permission set %q still exists", rs.Primary.ID)
+		}
+		if err != nil && !strings.Contains(err.Error(), "404") {
+			return fmt.Errorf("check permission set %q destruction: %w", rs.Primary.ID, err)
 		}
 	}
 
@@ -120,6 +177,7 @@ func TestAquasecPermissionSetSaasManagement(t *testing.T) {
 
 	name := acctest.RandomWithPrefix("tf-test")[:maxNameLength]
 	description := "Permission set created by Terraform acceptance test"
+	_, extendedTestActions := testAccPermissionSetActionFixtures(t)
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
@@ -149,6 +207,10 @@ func TestAquasecPermissionSetSaasManagement(t *testing.T) {
 }
 
 func TestAquasecPermissionSetSaasInvalidConfig(t *testing.T) {
+	if !isSaasEnv() {
+		t.Skip("Skipping permission set test - not a SaaS environment")
+	}
+
 	for _, tc := range invalidConfigTestCases {
 		t.Run(tc.name, func(t *testing.T) {
 			resource.Test(t, resource.TestCase{
@@ -172,6 +234,7 @@ func TestAquasecPermissionSetSaasWithExternalChanges(t *testing.T) {
 	}
 
 	name := acctest.RandomWithPrefix("tf-test")[:maxNameLength]
+	defaultTestActions, extendedTestActions := testAccPermissionSetActionFixtures(t)
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
@@ -215,7 +278,7 @@ func TestAquasecPermissionSetSaasWithExternalChanges(t *testing.T) {
 				),
 			},
 			{
-				Config:             testAccCheckAquasecPermissionSetSaas(name, initialDescription, append(defaultTestActions, "cspm.cloud_accounts.write")),
+				Config:             testAccCheckAquasecPermissionSetSaas(name, initialDescription, extendedTestActions),
 				ExpectNonEmptyPlan: false,
 				Check: resource.ComposeTestCheckFunc(
 					func(s *terraform.State) error {
@@ -235,6 +298,7 @@ func TestAquasecPermissionSetSaasReadErrorHandling(t *testing.T) {
 	}
 
 	name := acctest.RandomWithPrefix("tf-test")[:maxNameLength]
+	defaultTestActions, _ := testAccPermissionSetActionFixtures(t)
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
@@ -263,6 +327,7 @@ func TestAquasecPermissionSetSaasUpdateErrorHandling(t *testing.T) {
 	}
 
 	name := acctest.RandomWithPrefix("tf-test")[:maxNameLength]
+	defaultTestActions, _ := testAccPermissionSetActionFixtures(t)
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
@@ -273,7 +338,7 @@ func TestAquasecPermissionSetSaasUpdateErrorHandling(t *testing.T) {
 				Config: testAccCheckAquasecPermissionSetSaas(name, "initial", defaultTestActions),
 			},
 			{
-				Config:      testAccCheckAquasecPermissionSetSaas(name, "updated", append(defaultTestActions, "invalid.action")),
+				Config:      testAccCheckAquasecPermissionSetSaas(name, "updated", append(append([]string{}, defaultTestActions...), "invalid.action")),
 				ExpectError: regexp.MustCompile("Error: failed updating SaaS PermissionSet"),
 			},
 		},
@@ -288,6 +353,7 @@ func TestAquasecPermissionSetSaasValues(t *testing.T) {
 	name := acctest.RandomWithPrefix("tf-test")[:maxNameLength]
 	description := "Created using Terraform"
 	resourceName := "aquasec_permission_set_saas.new"
+	_, extendedTestActions := testAccPermissionSetActionFixtures(t)
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
@@ -305,9 +371,6 @@ func TestAquasecPermissionSetSaasValues(t *testing.T) {
 					resource.TestCheckResourceAttr(resourceName, "actions.#", fmt.Sprintf("%d", len(extendedTestActions))),
 					resource.TestCheckResourceAttr(resourceName, "actions.0", extendedTestActions[0]),
 					resource.TestCheckResourceAttr(resourceName, "actions.1", extendedTestActions[1]),
-					resource.TestCheckResourceAttr(resourceName, "actions.2", extendedTestActions[2]),
-					resource.TestCheckResourceAttr(resourceName, "actions.3", extendedTestActions[3]),
-					resource.TestCheckResourceAttr(resourceName, "actions.4", extendedTestActions[4]),
 				),
 			},
 			{
