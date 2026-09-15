@@ -2,8 +2,8 @@ package aquasec
 
 import (
 	"fmt"
-	"testing"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"testing"
 )
 
 func TestDataApplicationScope(t *testing.T) {

@@ -87,9 +87,9 @@ type RuntimePolicy struct {
 	WhitelistedOsUsers        WhitelistedOsUsers        `json:"whitelisted_os_users"`
 	//JSON
 	//EnableCryptoMiningDNS bool `json:"enable_crypto_mining_dns"`
-	BlockContainerExec       bool     `json:"block_container_exec,omitempty"`
-	IsOOTBPolicy             bool     `json:"is_ootb_policy,omitempty"`
-	RuntimeMode              int      `json:"runtime_mode,omitempty"`
+	BlockContainerExec         bool                       `json:"block_container_exec,omitempty"`
+	IsOOTBPolicy               bool                       `json:"is_ootb_policy,omitempty"`
+	RuntimeMode                int                        `json:"runtime_mode,omitempty"`
 	ExcludeApplicationScopes   []string                   `json:"exclude_application_scopes,omitempty"`
 	SecureAIDiscovery          SecureAIDiscovery          `json:"secure_ai_discovery"`
 	SecureAIProtection         SecureAIProtection         `json:"secure_ai_protection"`
@@ -205,11 +205,11 @@ type LinuxCapabilities struct {
 }
 
 type MalwareScanOptions struct {
-	Action                string   `json:"action"`
-	Enabled               bool     `json:"enabled"`
-	ExcludeDirectories    []string `json:"exclude_directories"`
-	ExcludeProcesses      []string `json:"exclude_processes"`
-	IncludeDirectories    []string `json:"include_directories"`
+	Action                 string   `json:"action"`
+	Enabled                bool     `json:"enabled"`
+	ExcludeDirectories     []string `json:"exclude_directories"`
+	ExcludeProcesses       []string `json:"exclude_processes"`
+	IncludeDirectories     []string `json:"include_directories"`
 	FileForensicCollection bool     `json:"file_forensic_collection"`
 }
 

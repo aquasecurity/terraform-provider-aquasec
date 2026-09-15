@@ -76,7 +76,6 @@ func TestAquasecHostAssurancePolicy(t *testing.T) {
 					resource.TestCheckResourceAttr(resourceName, "required_labels_enabled", "true"),
 					resource.TestCheckResourceAttr(resourceName, "required_labels.0.key", "env"),
 					resource.TestCheckResourceAttr(resourceName, "required_labels.0.value", "prod"),
-
 				),
 			},
 		},

@@ -21,29 +21,29 @@ func dataSourceRoles() *schema.Resource {
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"name": {
-							Type:     schema.TypeString,
+							Type:        schema.TypeString,
 							Description: "The name of the role, comprised of alphanumeric characters and '-', '_', ' ', ':', '.', '@', '!', '^'.",
-							Computed: true,
+							Computed:    true,
 						},
 						"description": {
-							Type:     schema.TypeString,
+							Type:        schema.TypeString,
 							Description: "Free text description for the role.",
-							Computed: true,
+							Computed:    true,
 						},
 						"updated_at": {
-							Type:     schema.TypeString,
+							Type:        schema.TypeString,
 							Description: "The date of the last modification of the role.",
-							Computed: true,
+							Computed:    true,
 						},
 						"permission": {
-							Type:     schema.TypeString,
+							Type:        schema.TypeString,
 							Description: "The name of the Permission Set that will affect the users assigned to this specific Role.",
-							Computed: true,
+							Computed:    true,
 						},
 						"scopes": {
-							Type:     schema.TypeList,
+							Type:        schema.TypeList,
 							Description: "List of Application Scopes that will affect the users assigned to this specific Role.",
-							Computed: true,
+							Computed:    true,
 							Elem: &schema.Schema{
 								Type: schema.TypeString,
 							},

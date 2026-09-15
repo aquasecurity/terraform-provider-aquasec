@@ -142,11 +142,11 @@ func dataApplicationScope() *schema.Resource {
 										},
 									},
 									"codebuild": {
-                						Type:     schema.TypeSet,
-                						Optional: true,
-                						Elem: &schema.Resource{
-                    						Schema: map[string]*schema.Schema{
-                        						"expression": {
+										Type:     schema.TypeSet,
+										Optional: true,
+										Elem: &schema.Resource{
+											Schema: map[string]*schema.Schema{
+												"expression": {
 													Type:     schema.TypeString,
 													Optional: true,
 													Computed: true,
