@@ -100,7 +100,7 @@ func TestResourceAquasecFunctionRuntimePolicyUpgrade(t *testing.T) {
 func TestResourceAquasecFunctionRuntimePolicyComprehensive(t *testing.T) {
 	t.Parallel()
 	policyName := acctest.RandomWithPrefix("test-func-policy-full")
-	
+
 	rootRef := functionRuntimePolicyRef("comprehensive")
 	resource.Test(t, resource.TestCase{
 		PreCheck: func() {
@@ -118,23 +118,23 @@ func TestResourceAquasecFunctionRuntimePolicyComprehensive(t *testing.T) {
 					resource.TestCheckResourceAttr(rootRef, "enabled", "true"),
 					resource.TestCheckResourceAttr(rootRef, "enforce", "true"),
 					resource.TestCheckResourceAttr(rootRef, "enforce_after_days", "7"),
-					
+
 					// Application scopes
 					resource.TestCheckResourceAttr(rootRef, "application_scopes.#", "1"),
 					resource.TestCheckResourceAttr(rootRef, "application_scopes.0", "Global"),
 					resource.TestCheckResourceAttr(rootRef, "exclude_application_scopes.#", "0"),
-					
+
 					// Security controls
 					resource.TestCheckResourceAttr(rootRef, "drift_prevention.0.enabled", "true"),
 					resource.TestCheckResourceAttr(rootRef, "allowed_executables.0.enabled", "true"),
 					resource.TestCheckResourceAttr(rootRef, "allowed_executables.0.allow_executables.#", "2"),
 					resource.TestCheckResourceAttr(rootRef, "file_integrity_monitoring.0.enabled", "true"),
 					resource.TestCheckResourceAttr(rootRef, "file_integrity_monitoring.0.monitored_files.#", "1"),
-					
+
 					// Malware protection
 					resource.TestCheckResourceAttr(rootRef, "malware_scan_options.0.enabled", "true"),
 					resource.TestCheckResourceAttr(rootRef, "malware_scan_options.0.action", "Alert"),
-					
+
 					// Additional security controls
 					resource.TestCheckResourceAttr(rootRef, "block_fileless_exec", "true"),
 				),
@@ -157,7 +157,7 @@ func TestResourceAquasecFunctionRuntimePolicyComprehensive(t *testing.T) {
 func TestResourceAquasecFunctionRuntimePolicyScopeExpression(t *testing.T) {
 	t.Parallel()
 	policyName := acctest.RandomWithPrefix("test-func-scope")
-	
+
 	rootRef := functionRuntimePolicyRef("scope")
 	resource.Test(t, resource.TestCase{
 		PreCheck: func() {

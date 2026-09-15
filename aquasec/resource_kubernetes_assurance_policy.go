@@ -70,8 +70,8 @@ func resourceKubernetesAssurancePolicy() *schema.Resource {
 			},
 			"cvss_severity_exclude_no_fix": {
 				Type:             schema.TypeBool,
-				Description:     "Indicates that policy should ignore cvss cases that do not have a known fix.",
-				Optional:        true,
+				Description:      "Indicates that policy should ignore cvss cases that do not have a known fix.",
+				Optional:         true,
 				DiffSuppressFunc: suppressExcludeNoFixDiff("cvss_severity_enabled"),
 			},
 			"custom_severity_enabled": {
@@ -89,8 +89,8 @@ func resourceKubernetesAssurancePolicy() *schema.Resource {
 				Optional:    true,
 			},
 			"control_exclude_no_fix": {
-				Type:             schema.TypeBool,
-				Optional:        true,
+				Type:     schema.TypeBool,
+				Optional: true,
 			},
 			"category": {
 				Type:     schema.TypeString,
@@ -663,8 +663,8 @@ func resourceKubernetesAssurancePolicy() *schema.Resource {
 			},
 			"maximum_score_exclude_no_fix": {
 				Type:             schema.TypeBool,
-				Description:     "Indicates that policy should ignore cases that do not have a known fix.",
-				Optional:        true,
+				Description:      "Indicates that policy should ignore cases that do not have a known fix.",
+				Optional:         true,
 				DiffSuppressFunc: suppressExcludeNoFixDiff("maximum_score_enabled"),
 			},
 			//JSON

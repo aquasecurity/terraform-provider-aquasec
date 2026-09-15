@@ -552,13 +552,12 @@ func createCategory(a map[string]interface{}, w map[string]interface{}, i map[st
 		} else {
 			image = createEmptyCommonStruct()
 		}
-		
-		if codebuildSet, ok := a["codebuild"].(*schema.Set); ok && codebuildSet != nil && len(codebuildSet.List()) > 0 {
-            codebuild = createCommonStruct(codebuildSet.List()[0].(map[string]interface{}))
-        } else {
-            codebuild = createEmptyCommonStruct()
-        }
 
+		if codebuildSet, ok := a["codebuild"].(*schema.Set); ok && codebuildSet != nil && len(codebuildSet.List()) > 0 {
+			codebuild = createCommonStruct(codebuildSet.List()[0].(map[string]interface{}))
+		} else {
+			codebuild = createEmptyCommonStruct()
+		}
 
 		if len(a["function"].(*schema.Set).List()) != 0 {
 			function = createCommonStruct(a["function"].(*schema.Set).List()[0].(map[string]interface{}))
