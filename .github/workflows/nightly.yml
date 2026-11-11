@@ -13,12 +13,12 @@ jobs:
     timeout-minutes: 5
     steps:
       - name: Set up Go
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@v5.6.0
         with:
           go-version: '1.18'
 
       - name: Check out code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.4.0
 
       - name: Get dependencies
         run: go mod download
@@ -55,10 +55,10 @@ jobs:
         working-directory: examples/
     steps:
       - name: Check out repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.4.0
 
       - name: Setup Terraform ${{ matrix.terraform }}
-        uses: hashicorp/setup-terraform@v3
+        uses: hashicorp/setup-terraform@v3.1.2
         with:
           terraform_version: ${{ matrix.terraform }}
           terraform_wrapper: true
@@ -95,7 +95,7 @@ jobs:
           echo "{\"version\":\"${{ matrix.terraform }}\",\"exitcode\":${exitcode}}" \
             > result-drift-${{ matrix.terraform }}.json
       - name: Upload result artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v4.6.2
         with:
           name: drift-results-${{ matrix.terraform }}
           path: examples/result-drift-${{ matrix.terraform }}.json
@@ -124,19 +124,19 @@ jobs:
       AWS_LOG_GROUP: ${{ secrets.AWS_LOG_GROUP }}
     steps:
       - name: Set up Go
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@v5.6.0
         with:
           go-version: '1.18'
 
       - name: Check out repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.4.0
 
       - name: Get dependencies
         run: go mod download
 
       - name: Run TF acceptance tests
         id: accept_tests
-        uses: nick-fields/retry@v2
+        uses: nick-fields/retry@v2.9.0
         with:
           max_attempts: 2
           timeout_minutes: 15
@@ -170,7 +170,7 @@ jobs:
           echo "Current directory: $(pwd)"
           ls -la .
       - name: Upload acceptance result artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v4.6.2
         with:
           name: acceptance-results-${{ matrix.terraform }}
           path: ./result-acceptance-${{ matrix.terraform }}.json
@@ -185,7 +185,7 @@ jobs:
     if: ${{ always() }}
     steps:
       - name: Download all artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v4.3.0
         with:
           path: artifacts
 
