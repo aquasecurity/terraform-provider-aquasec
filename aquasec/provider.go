@@ -150,6 +150,7 @@ func Provider(v string) *schema.Provider {
 			"aquasec_suppression_rule":        resourceSuppressionRule(),
 			"aquasec_response_policy":         resourceResponsePolicy(),
 			"aquasec_secure_ai_integration":   resourceSecureAIIntegration(),
+			"aquasec_cspm_plugin":             resourceCspmPlugin(),
 		},
 		DataSourcesMap: map[string]*schema.Resource{
 			"aquasec_users":                       dataSourceUsers(),
