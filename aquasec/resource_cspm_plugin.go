@@ -143,7 +143,7 @@ func resourceCspmPlugin() *schema.Resource {
 			},
 			"asl": {
 				Type:        schema.TypeList,
-				Optional:    true,
+				Required:    true,
 				MaxItems:    1,
 				Description: "Aqua Security Language — the plugin's check logic.",
 				Elem: &schema.Resource{
@@ -234,6 +234,10 @@ func resourceCspmPluginRead(ctx context.Context, d *schema.ResourceData, m inter
 
 	id, err := strconv.Atoi(d.Id())
 	if err != nil {
+		if strings.Contains(fmt.Sprintf("%s", err), "404") {
+			d.SetId("")
+			return nil
+		}
 		return diag.Errorf("Invalid plugin ID in state: %s", err)
 	}
 
@@ -265,7 +269,6 @@ func resourceCspmPluginRead(ctx context.Context, d *schema.ResourceData, m inter
 
 func resourceCspmPluginUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	c := m.(*client.Client)
-	var diags diag.Diagnostics
 
 	id, err := strconv.Atoi(d.Id())
 	if err != nil {
@@ -299,8 +302,7 @@ func resourceCspmPluginUpdate(ctx context.Context, d *schema.ResourceData, m int
 		return diag.Errorf("Failed to update severity: %s", err)
 	}
 
-	resourceCspmPluginRead(ctx, d, m)
-	return diags
+	return resourceCspmPluginRead(ctx, d, m)
 }
 
 func resourceCspmPluginDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
@@ -346,6 +348,9 @@ func buildASLFromData(d *schema.ResourceData) (*client.ASL, error) {
 	}
 
 	targetResource := aslMap["target_resource"].(string)
+	if !containsString(apis, targetResource) {
+		return nil, fmt.Errorf("ASL api not declared: targetResource references api %q which is not listed in asl.apis", targetResource)
+	}
 
 	var conditions json.RawMessage
 	if cs, ok := aslMap["conditions"].(string); ok && cs != "" {
@@ -355,6 +360,12 @@ func buildASLFromData(d *schema.ResourceData) (*client.ASL, error) {
 	var scope json.RawMessage
 	if sc, ok := aslMap["scope"].(string); ok && sc != "" {
 		scope = json.RawMessage(sc)
+		// Validate APIs referenced in scope are present in the 'apis' list
+		for _, ref := range collectConditionAPIs(scope) {
+			if !containsString(apis, ref) {
+				return nil, fmt.Errorf("ASL api not declared: scope references api %q which is not listed in asl.apis", ref)
+			}
+		}
 	}
 
 	// Validate APIs referenced in conditions are present in the 'apis' list

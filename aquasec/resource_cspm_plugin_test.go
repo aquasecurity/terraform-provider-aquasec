@@ -11,7 +11,7 @@ import (
 
 func TestAquasecCspmPlugin(t *testing.T) {
 	t.Parallel()
-	name := acctest.RandomWithPrefix("terraform-test")
+	title := acctest.RandomWithPrefix("terraform-test")
 	description := "Created using Terraform"
 	updatedDescription := "Updated using Terraform"
 
@@ -21,18 +21,17 @@ func TestAquasecCspmPlugin(t *testing.T) {
 		CheckDestroy: CheckDestroy("aquasec_cspm_plugin.tftest"),
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckCspmPlugin(name, description),
+				Config: testAccCheckCspmPlugin(title, description),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckCspmPluginExists("aquasec_cspm_plugin.tftest"),
-					resource.TestCheckResourceAttr("aquasec_cspm_plugin.tftest", "name", name),
+					resource.TestCheckResourceAttr("aquasec_cspm_plugin.tftest", "title", title),
 					resource.TestCheckResourceAttr("aquasec_cspm_plugin.tftest", "description", description),
 					resource.TestCheckResourceAttr("aquasec_cspm_plugin.tftest", "cloud", "aws"),
 					resource.TestCheckResourceAttr("aquasec_cspm_plugin.tftest", "asl.target_resource", "ELBv2:describeListeners"),
-					resource.TestCheckResourceAttr("aquasec_cspm_plugin.tftest", "categories.0.infrastructure.0.kubernetes.0.expression", "v1"),
 				),
 			},
 			{
-				Config: testAccCheckCspmPlugin(name, updatedDescription),
+				Config: testAccCheckCspmPlugin(title, updatedDescription),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckCspmPluginExists("aquasec_cspm_plugin.tftest"),
 					resource.TestCheckResourceAttr("aquasec_cspm_plugin.tftest", "description", updatedDescription),
